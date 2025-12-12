@@ -19,12 +19,19 @@
  * \file       core/modules/fichinter/doc/pdf_soleilsign.modules.php
  * \ingroup    fichinter
  * \brief      PDF model with fixed signature placement for interventions
+ * @author     Pierre Ardoin <developpeur@lesmetiersdubatiment.fr>
  */
 
-require_once DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+dol_include_once('/core/modules/fichinter/modules_fichinter.php');
+dol_include_once('/core/lib/company.lib.php');
+dol_include_once('/core/lib/pdf.lib.php');
+dol_include_once('/core/lib/functions2.lib.php');
+
+if (!class_exists('ModelePDFFichinter')) {
+	// EN: Abort if the base intervention PDF model is not available
+	dol_print_error(null, 'Class ModelePDFFichinter not found');
+	return;
+}
 
 /**
  * Class to manage generation of intervention document Soleil with fixed signature
