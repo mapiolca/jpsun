@@ -170,7 +170,8 @@ class pdf_fichinterjpsun extends ModelePDFFichinter
 
 			$pdf = pdf_getInstance($this->format);
 			$default_font_size = pdf_getPDFFontSize($outputlangs);
-			$pdf->SetAutoPageBreak(1, 0);
+			// EN: Use bottom margin to avoid unexpected automatic page breaks pushing signature placeholders
+			$pdf->SetAutoPageBreak(1, $this->marge_basse);
 			$pdf->setPrintHeader(false);
 			$pdf->setPrintFooter(false);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs));
@@ -287,7 +288,13 @@ class pdf_fichinterjpsun extends ModelePDFFichinter
 		}
 
 		$currentPage = $pdf->getPage();
-		$pdf->setPage($signatureInfo['page']);
+		$targetPage = empty($signatureInfo['page']) ? $currentPage : $signatureInfo['page'];
+		$pageCount = $pdf->getNumPages();
+		if (!empty($pageCount) && $targetPage > $pageCount) {
+			// EN: Clamp the target page to the last generated page if offsets drift
+			$targetPage = $pageCount;
+		}
+		$pdf->setPage($targetPage, true);
 
 		$margin = 2;
 		$targetWidth = $signatureInfo['width'] - ($margin * 2);
