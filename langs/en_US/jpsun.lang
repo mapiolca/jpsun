@@ -1,0 +1,7 @@
+# Dolibarr language file - en_US - jpsun<br>
+CHARSET=UTF-8<br>
+SoleilSignatureFixedName = Soleil with fixed signature<br>
+SoleilSignatureFixedDescription = Intervention document with signature kept on the signing block page.<br>
+
+FichinterJpsunName = Intervention JPSUN<br>
+FichinterJpsunDescription = Intervention document with signature kept on the signing block page.<br>
