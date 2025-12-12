@@ -227,3 +227,8 @@ jpsun_SupplierProposalsExcludingRefusedTooltip = Sans les brouillons, celles ref
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 TICKET_ADD_AUTHOR_AS_CONTACT = Si la valeur est définie sur 1 : l'auteur est automatiquement ajouté comme contact interne. Si la valeur est définie sur 2 : l'auteur est automatiquement ajouté comme contact externe s'il s'agit d'un utilisateur externe. (v20 et ultérieures)
 TICKET_SHOW_MESSAGES_ON_CARD = Afficher tous les messages liés au ticket sur la carte du ticket principal.(v10.0 et ultérieures)
+SoleilSignatureFixedName = Soleil avec signature corrigée<br>
+SoleilSignatureFixedDescription = Modèle d'intervention Soleil avec signature affichée dans l'encart prévu.<br>
+
+FichinterJpsunName = Intervention JPSUN<br>
+FichinterJpsunDescription = Modèle de fiche d'intervention avec signature sur le bloc de signature.<br>
