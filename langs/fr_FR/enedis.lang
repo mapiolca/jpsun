@@ -1,0 +1,16 @@
+# Dolibarr language file - fr_FR - tos
+# Admin form
+CHARSET=iso-8859-1
+
+projet_enedis = Demande de Raccordement ENEDIS
+
+jpsun_ddr_suivi_enedis = Suivi de la demande de raccordement ENEDIS
+
+JPSUN_DDR_SEND = DDR | JPSUN | Demande de raccordement
+JPSUN_DDR_R_ENEDIS = DDR | ENEDIS | Dossier incomplet
+JPSUN_DDR_R_JPSUN = DDR | JPSUN | Complément de dossier
+JPSUN_DDR_R_CLIENT = DDR | Client | Retour d'informations
+JPSUN_DDR_R_TIERS = DDR | Autre | Réponse d'un tiers
+JPSUN_DDR_REL = DDR | JPSUN | Relance
+JPSUN_DDR_COMP = DDR | T0 | Obtention de la complétude
+JPSUN_DDR_INFO = DDR | JPSUN | Demande d'informations
