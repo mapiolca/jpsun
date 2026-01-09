@@ -249,22 +249,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-					$object->fetch_thirdparty();
-					$Client = '
-
-					'.$object->thirdparty->name.'<br>
-					'.$object->thirdparty->address.'<br>
-					'.$object->thirdparty->zip.' '.$object->thirdparty->town.'';
-
-					//var_dump($object->thirdparty);
-
-					$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
-
-					$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
-
-
-					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+					
 
 
 			// Page 2
@@ -280,6 +265,22 @@ class pdf_contratpartv3 extends ModelePDFContract
 					if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+
+					$pdf->SetFont('Calibri','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
+					$object->fetch_thirdparty();
+					$Client = '
+
+					'.$object->thirdparty->name.'<br>
+					'.$object->thirdparty->address.'<br>
+					'.$object->thirdparty->zip.' '.$object->thirdparty->town.'';
+
+					//var_dump($object->thirdparty);
+
+					$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
+
+					$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
+
+					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 					
 					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 					
