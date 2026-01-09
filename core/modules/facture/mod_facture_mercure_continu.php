@@ -40,7 +40,7 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 	/**
 	 * @var string Sub-module name
 	 */
-	public $name = 'MercureContinu';
+	public $name = 'Mercure_Continu';
 
 	/**
 	 * @var int		Position
