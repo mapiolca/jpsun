@@ -1,5 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.7 (09/01/2026)
+
+- Ajout des extrafields contrats JPSUN pour les contrats.
+
 ## 1.6.6
 
 - Ajout des extrafields contrats JPSUN pour les contrats. (09/01/2026)
