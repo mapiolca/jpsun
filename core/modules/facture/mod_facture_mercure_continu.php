@@ -295,27 +295,40 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 		$counterLen = 0;
 		$regex = $this->buildRegexFromMask($mask, $counterLen);
 
-		$newCounterStr = (string) $newCounter;
-		if ($counterLen > 0 && dol_strlen($newCounterStr) < $counterLen) {
-			$newCounterStr = str_pad($newCounterStr, $counterLen, '0', STR_PAD_LEFT);
-		}
+		$newCounterStrRaw = (string) $newCounter;
 
 		if (!empty($regex)) {
 			$matches = array();
 			if (preg_match($regex, $ref, $matches, PREG_OFFSET_CAPTURE) && isset($matches['counter'][0], $matches['counter'][1])) {
 				$offset = $matches['counter'][1];
-				$len = dol_strlen($matches['counter'][0]);
+				$lenFound = dol_strlen($matches['counter'][0]);
 
-				return substr($ref, 0, $offset).$newCounterStr.substr($ref, $offset + $len);
+				$padLen = $lenFound;
+				if ($counterLen > $padLen) $padLen = $counterLen;
+
+				$newCounterStr = $newCounterStrRaw;
+				if ($padLen > 0 && dol_strlen($newCounterStr) < $padLen) {
+					$newCounterStr = str_pad($newCounterStr, $padLen, '0', STR_PAD_LEFT);
+				}
+
+				return substr($ref, 0, $offset).$newCounterStr.substr($ref, $offset + $lenFound);
 			}
 		}
 
 		// Fallback: replace last block of digits
 		if (preg_match('/(\d+)(?!.*\d)/', $ref, $m2, PREG_OFFSET_CAPTURE)) {
 			$offset = $m2[1][1];
-			$len = dol_strlen($m2[1][0]);
+			$lenFound = dol_strlen($m2[1][0]);
 
-			return substr($ref, 0, $offset).$newCounterStr.substr($ref, $offset + $len);
+			$padLen = $lenFound;
+			if ($counterLen > $padLen) $padLen = $counterLen;
+
+			$newCounterStr = $newCounterStrRaw;
+			if ($padLen > 0 && dol_strlen($newCounterStr) < $padLen) {
+				$newCounterStr = str_pad($newCounterStr, $padLen, '0', STR_PAD_LEFT);
+			}
+
+			return substr($ref, 0, $offset).$newCounterStr.substr($ref, $offset + $lenFound);
 		}
 
 		// If we can't find a counter at all, return original ref (and let validation fail)
@@ -349,9 +362,11 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 
 				$token = substr($mask, $i + 1, $end - $i - 1);
 
-				if (preg_match('/^0+$/', $token)) {
-					$counterLen = dol_strlen($token);
-					$regex .= '(?P<counter>\d{'.$counterLen.'})';
+				// Counter token can be {000}, or with start/offset like {000@99}, {0000+1}, etc.
+				if (preg_match('/^(0+)(?:[@+\-].*)?$/', $token, $m0)) {
+					$counterLen = dol_strlen($m0[1]);
+					// Allow overflow (counter longer than mask length) by matching at least $counterLen digits
+					$regex .= '(?P<counter>\d{'.$counterLen.',})';
 				} elseif ($token === 'yyyy') {
 					$regex .= '\d{4}';
 				} elseif ($token === 'yy') {
@@ -361,7 +376,7 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 				} elseif ($token === 'dd') {
 					$regex .= '\d{2}';
 				} else {
-					// Unknown token: accept any non-greedy chars
+					// Unknown token see get_next_value: accept any non-greedy chars
 					$regex .= '.*?';
 				}
 
