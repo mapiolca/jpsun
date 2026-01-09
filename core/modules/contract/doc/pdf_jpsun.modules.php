@@ -256,39 +256,6 @@ class pdf_jpsun extends ModelePDFContract
 				// @phan-suppress-next-line PhanPluginSuspiciousParamOrder
 				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
 
-
-				// Page 1
-				$pdf->AddPage();
-				
-                $pagecount = $pdf->setSourceFile(DOL_DOCUMENT_ROOT.'/custom/jpdun/core/modules/contract/doc/pdf/Contrat_maintenance_V3_Particuliers-2026.pdf');
-                $tplidx = $pdf->importPage(1);
-                
-				
-				if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
-				//dol_include_once('./pdf/DC1-2019.php');
-
-				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
-
-				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, 10, 10, "", 10);
-
-				$this->_pagefoot($pdf,$object,$outputlangs,1);
-				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
-				//Contenu
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-					$object->fetch_thirdparty();
-					$Client = '
-
-					'.$object->thirdparty->name.'<br>
-					'.$object->thirdparty->address.'<br>
-					'.$object->thirdparty->zip.' '.$object->thirdparty->town.'';
-					//var_dump($object->thirdparty);
-					//$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
-					//$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
-					//$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
-/*				
 				// New page
 				$pdf->AddPage();
 				if (!empty($tplidx)) {
@@ -547,8 +514,336 @@ class pdf_jpsun extends ModelePDFContract
 			return 0;
 		}
 	}
-*/
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
+	/**
+	 *   Show table for lines
+	 *
+	 *   @param		TCPDF		$pdf     		Object PDF
+	 *   @param		float|int	$tab_top		Top position of table
+	 *   @param		float|int	$tab_height		Height of table (rectangle)
+	 *   @param		int			$nexY			Y
+	 *   @param		Translate	$outputlangs	Langs object
+	 *   @param		int			$hidetop		Hide top bar of array
+	 *   @param		int			$hidebottom		Hide bottom bar of array
+	 *   @return	void
+	 */
+	protected function _tableau(&$pdf, $tab_top, $tab_height, $nexY, $outputlangs, $hidetop = 0, $hidebottom = 0)
+	{
+		global $conf;
+
+		// Force to disable hidetop and hidebottom
+		$hidebottom = 0;
+		if ($hidetop) {
+			$hidetop = -1;
+		}
+
+		//$default_font_size = pdf_getPDFFontSize($outputlangs);
+
+		/*
+		$pdf->SetXY($this->marge_gauche, $tab_top);
+		$pdf->MultiCell(190,8,$outputlangs->transnoentities("Description"),0,'L',0);
+		$pdf->line($this->marge_gauche, $tab_top + 8, $this->page_largeur-$this->marge_droite, $tab_top + 8);
+
+		$pdf->SetFont('','', $default_font_size - 1);
+
+		$pdf->MultiCell(0, 3, '');		// Set interline to 3
+		$pdf->SetXY($this->marge_gauche, $tab_top + 8);
+		$text=$object->description;
+		if ($object->duree > 0)
+		{
+			$totaltime=convertSecondToTime($object->duree,'all',$conf->global->MAIN_DURATION_OF_WORKDAY);
+			$text.=($text?' - ':'').$langs->trans("Total").": ".$totaltime;
+		}
+		$desc=dol_htmlentitiesbr($text,1);
+		//print $outputlangs->convToOutputCharset($desc); exit;
+
+		$pdf->writeHTMLCell(180, 3, 10, $tab_top + 8, $outputlangs->convToOutputCharset($desc), 0, 1);
+		$nexY = $pdf->GetY();
+
+		$pdf->line($this->marge_gauche, $nexY, $this->page_largeur-$this->marge_droite, $nexY);
+
+		$pdf->MultiCell(0, 3, '');		// Set interline to 3. Then writeMultiCell must use 3 also.
+		*/
+
+		// Output Rect
+		$this->printRoundedRect($pdf, $this->marge_gauche, $tab_top, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $tab_height + 3, $this->corner_radius, $hidetop, $hidebottom, 'D'); // Rect takes a length in 3rd parameter and 4th parameter
+	}
+
+	/**
+	 * Show footer signature of page
+	 *
+	 * @param   TCPDF       $pdf            Object PDF
+	 * @param   int         $tab_top        tab height position
+	 * @param   int         $tab_height     tab height
+	 * @param   Translate   $outputlangs    Object language for output
+	 * @return void
+	 */
+	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
+	{
+		$pdf->SetDrawColor(128, 128, 128);
+		$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
+		$posy = $tab_top + $tab_height + 3 + 3;
+
+		if (!getDolGlobalString('CONTRACT_HIDE_MYCOMPANY_SIGNATURE_SECTION_PDF')) {
+			$pdf->SetXY($this->marge_gauche, $posy);
+			$pdf->MultiCell($posmiddle - $this->marge_gauche - 5, 5, $outputlangs->transnoentities("ContactNameAndSignature", $this->emetteur->name), 0, 'L', 0);
+
+			$pdf->SetXY($this->marge_gauche, $posy + 5);
+			$pdf->RoundedRect($this->marge_gauche, $posy + 5, $posmiddle - $this->marge_gauche - 5, 20, $this->corner_radius, '1234', 'D');
+		}
+
+		if (!getDolGlobalString('CONTRACT_HIDE_THIRPARTY_SIGNATURE_SECTION_PDF')) {
+			$pdf->SetXY($posmiddle + 5, $posy);
+			$pdf->MultiCell($this->page_largeur - $this->marge_droite - $posmiddle - 5, 5, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 'L', 0);
+
+			$pdf->SetXY($posmiddle + 5, $posy + 5);
+			$pdf->RoundedRect($posmiddle + 5, $posy + 5, $this->page_largeur - $this->marge_droite - $posmiddle - 5, 20, $this->corner_radius, '1234', 'D');
+		}
+	}
+
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
+	/**
+	 *  Show top header of page.
+	 *
+	 *  @param	TCPDF		$pdf     		Object PDF
+	 *  @param  Contrat		$object     	Object to show
+	 *  @param  int	    	$showaddress    0=no, 1=yes
+	 *  @param  Translate	$outputlangs	Object lang for output
+	 *  @param  Translate	$outputlangsbis	Object lang for output bis
+	 *  @param	string		$titlekey		Translation key to show as title of document
+	 *  @return	float|int                   Return topshift value
+	 */
+	protected function _pagehead(&$pdf, $object, $showaddress, $outputlangs, $outputlangsbis = null, $titlekey = "Contract")
+	{
+		// phpcs:enable
+		global $conf;
+
+		$top_shift = 0;
+
+		$ltrdirection = 'L';
+		if ($outputlangs->trans("DIRECTION") == 'rtl') {
+			$ltrdirection = 'R';
+		}
+
+		// Load traductions files required by page
+		$outputlangs->loadLangs(array("main", "dict", "contract", "companies"));
+
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
+
+		pdf_pagehead($pdf, $outputlangs, $this->page_hauteur);
+
+		$pdf->SetTextColor(0, 0, 60);
+		$pdf->SetFont('', 'B', $default_font_size + 3);
+
+		$w = 100;
+
+		$posy = $this->marge_haute;
+		$posx = $this->page_largeur - $this->marge_droite - $w;
+
+		$pdf->SetXY($this->marge_gauche, $posy);
+
+		// Logo
+		if (!getDolGlobalString('PDF_DISABLE_MYCOMPANY_LOGO')) {
+			if ($this->emetteur->logo) {
+				$logodir = $conf->mycompany->dir_output;
+				if (getMultidirOutput($object, 'mycompany')) {
+					$logodir = getMultidirOutput($object, 'mycompany');
+				}
+				if (!getDolGlobalString('MAIN_PDF_USE_LARGE_LOGO')) {
+					$logo = $logodir.'/logos/thumbs/'.$this->emetteur->logo_small;
+				} else {
+					$logo = $logodir.'/logos/'.$this->emetteur->logo;
+				}
+				if (is_readable($logo)) {
+					$height = pdf_getHeightForLogo($logo);
+					$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height); // width=0 (auto)
+				} else {
+					$pdf->SetTextColor(200, 0, 0);
+					$pdf->SetFont('', 'B', $default_font_size - 2);
+					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+					$pdf->MultiCell($w, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				}
+			} else {
+				$text = $this->emetteur->name;
+				$pdf->MultiCell($w, 4, $outputlangs->convToOutputCharset($text), 0, $ltrdirection);
+			}
+		}
+
+		$pdf->SetFont('', 'B', $default_font_size + 3);
+		$pdf->SetXY($posx, $posy);
+		$pdf->SetTextColor(0, 0, 60);
+		$title = $outputlangs->transnoentities($titlekey);
+		$title .= ' '.$outputlangs->convToOutputCharset($object->ref);
+		if ($object->status == $object::STATUS_DRAFT) {
+			$pdf->SetTextColor(128, 0, 0);
+			$title .= ' - '.$outputlangs->transnoentities("NotValidated");
+		}
+		$pdf->MultiCell($w, 3, $title, '', 'R');
+
+		$pdf->SetFont('', 'B', $default_font_size);
+
+		/*
+		$posy += 5;
+		$pdf->SetXY($posx, $posy);
+		$pdf->SetTextColor(0, 0, 60);
+		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref")." : ".$outputlangs->convToOutputCharset($object->ref), '', 'R');
+		*/
+
+		$posy += 3;
+		$pdf->SetFont('', '', $default_font_size - 1);
+
+		$posy += 4;
+		$pdf->SetXY($posx, $posy);
+		$pdf->SetTextColor(0, 0, 60);
+		$pdf->MultiCell($w, 3, $outputlangs->transnoentities("Date")." : ".dol_print_date($object->date_contrat, "day", false, $outputlangs, true), '', 'R');
+
+		if (!getDolGlobalString('MAIN_PDF_HIDE_CUSTOMER_CODE') && $object->thirdparty->code_client) {
+			$posy += 4;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerCode")." : ".$outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+		}
+
+		if (!getDolGlobalString('MAIN_PDF_HIDE_CUSTOMER_ACCOUNTING_CODE') && $object->thirdparty->code_compta_client) {
+			$posy += 4;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell($w, 3, $outputlangs->transnoentities("CustomerAccountancyCode")." : ".$outputlangs->transnoentities($object->thirdparty->code_compta_client), '', 'R');
+		}
+
+		if ($showaddress) {
+			// Sender properties
+			$carac_emetteur = '';
+			// Add internal contact of object if defined
+			if ($object->getIdContact('internal', 'INTERREPFOLL')) {
+			    $arrayidcontact = $object->getIdContact('internal', 'INTERREPFOLL');
+			} else {
+			    $arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
+			}
+			
+			/*
+			if (count($arrayidcontact) > 0) {
+				$object->fetch_user($arrayidcontact[0]);
+				$labelbeforecontactname = ($outputlangs->transnoentities("FromContactName") != 'FromContactName' ? $outputlangs->transnoentities("FromContactName") : $outputlangs->transnoentities("Name"));
+				$carac_emetteur .= ($carac_emetteur ? "\n" : '').$labelbeforecontactname.": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs));
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') || getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ' (' : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') && !empty($object->user->office_phone)) ? $object->user->office_phone : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') && getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ', ' : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT') && !empty($object->user->email)) ? $object->user->email : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') || getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ')' : '';
+				$carac_emetteur .= "\n";
+			}
+			*/
+			if (count($arrayidcontact) > 0) {
+				$object->fetch_user($arrayidcontact[0]);
+				//$labelbeforecontactname = ($outputlangs->transnoentities("FromContactName") != 'FromContactName' ? $outputlangs->transnoentities("FromContactName") : $outputlangs->transnoentities("Name"));
+				$carac_emetteur .= ($carac_emetteur ? "\n" : '').$labelbeforecontactname."".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs));
+				//$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') || getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ' (' : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') && !empty($object->user->user_mobile)) ? "\n".$outputlangs->transnoentities('MobileShort').": ".$object->user->user_mobile : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') && getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ' | ' : '';
+				$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT') && !empty($object->user->email)) ? $outputlangs->transnoentities("Mail")." : ".$object->user->email : '';
+				//$carac_emetteur .= (getDolGlobalInt('PDF_SHOW_PHONE_AFTER_USER_CONTACT') || getDolGlobalInt('PDF_SHOW_EMAIL_AFTER_USER_CONTACT')) ? ')' : '';
+				$carac_emetteur .= "\n";
+			}
+
+
+			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, '', 0, 'source', $object);
+
+			// Show sender
+			$posy = 42;
+			$posx = $this->marge_gauche;
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT')) {
+				$posx = $this->page_largeur - $this->marge_droite - 80;
+			}
+			$hautcadre = 40;
+
+			// Show sender frame
+			if (!getDolGlobalString('MAIN_PDF_NO_SENDER_FRAME')) {
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size - 2);
+				$pdf->SetXY($posx, $posy - 5);
+				$pdf->SetXY($posx, $posy);
+				$pdf->SetFillColor(230, 230, 230);
+				$pdf->RoundedRect($posx, $posy, 82, $hautcadre, $this->corner_radius, '1234', 'F');
+				$pdf->SetTextColor(0, 0, 60);
+			}
+
+			// Show sender name
+			if (!getDolGlobalString('MAIN_PDF_HIDE_SENDER_NAME')) {
+				$pdf->SetXY($posx + 2, $posy + 3);
+				$pdf->SetTextColor(0, 0, 60);
+				$pdf->SetFont('', 'B', $default_font_size);
+				$pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+				$posy = $pdf->getY();
+			}
+
+			// Show sender information
+			$pdf->SetXY($posx + 2, $posy);
+			$pdf->SetFont('', '', $default_font_size - 1);
+			$pdf->MultiCell(80, 4, $carac_emetteur, 0, 'L');
+
+
+			// If CUSTOMER contact defined, we use it
+			$usecontact = false;
+			$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
+			if (count($arrayidcontact) > 0) {
+				$usecontact = true;
+				$result = $object->fetch_contact($arrayidcontact[0]);
+			}
+
+			$this->recipient = $object->thirdparty;
+
+			// Recipient name
+			if ($usecontact && ($object->contact->socid != $object->thirdparty->id) && (!isset($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) || getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))) {
+				$thirdparty = $object->contact;
+			} else {
+				$thirdparty = $object->thirdparty;
+			}
+
+			$this->recipient->name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
+
+			$mode = 'target';
+			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, (isset($object->contact) ? $object->contact : ''), ($usecontact ? 1 : 0), $mode, $object);
+
+			// Show recipient
+			$widthrecbox = getDolGlobalString('MAIN_PDF_USE_ISO_LOCATION') ? 92 : 100;
+			if ($this->page_largeur < 210) {
+				$widthrecbox = 84; // To work with US executive format
+			}
+			$posy = getDolGlobalString('MAIN_PDF_USE_ISO_LOCATION') ? 40 : 42;
+			$posy += $top_shift;
+			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT')) {
+				$posx = $this->marge_gauche;
+			}
+
+			// Show recipient frame
+			if (!getDolGlobalString('MAIN_PDF_NO_RECIPENT_FRAME')) {
+				$pdf->SetTextColor(0, 0, 0);
+				$pdf->SetFont('', '', $default_font_size - 2);
+				$pdf->SetXY($posx + 2, $posy - 5);
+				$pdf->RoundedRect($posx, $posy, $widthrecbox, $hautcadre, $this->corner_radius, '1234', 'D');
+				$pdf->SetTextColor(0, 0, 0);
+			}
+
+			// Show recipient name
+			$pdf->SetXY($posx + 2, $posy + 3);
+			$pdf->SetFont('', 'B', $default_font_size);
+			$pdf->MultiCell($widthrecbox, 4, $this->recipient->name, 0, $ltrdirection);
+
+			$posy = $pdf->getY();
+
+			// Show recipient information
+			$pdf->SetFont('', '', $default_font_size - 1);
+			$pdf->SetXY($posx + 2, $posy);
+			// @phan-suppress-next-line PhanPluginSuspiciousParamOrder
+			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, $ltrdirection);
+		}
+
+		$pdf->SetTextColor(0, 0, 0);
+
+		return $top_shift;
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
