@@ -506,8 +506,9 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
-				
+				//$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				pdf->MultiCell (100,4, 95, 56, $outputlangs->convToOutputCharset($object->array_options ['options_JpsunContractSiteName']),0,'L');
+
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
