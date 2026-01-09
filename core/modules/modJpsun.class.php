@@ -443,7 +443,7 @@ class modJpsun extends DolibarrModules
 				'unique' => 0,
 				'required' => 1,
 				'default_value' => '',
-				'param' => 'a:1:{s:7:"options";a:1:{s:34:"product:ref:rowid::(finished:=:4)";N;}}',
+				'param' => 'a:1:{s:7:"options";a:1:{s:34:"product:ref|label:rowid::(finished:=:4)";N;}}',
 				'alwayseditable' => 1,
 				'perms' => '',
 				'list' => -1,
@@ -702,6 +702,7 @@ class modJpsun extends DolibarrModules
 	 *					This function is called by this->init.
 	 * 		\return		int		<=0 if KO, >0 if OK
 	 */
+
 	function load_tables()
 	{
 		return $this->_load_tables('/jpsun/sql/');
