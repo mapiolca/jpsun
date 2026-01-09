@@ -228,7 +228,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right			
 
 				$extrafields = new ExtraFields($db);
-				$extralabels=$extrafields->fetch_name_optionals_label($object->table_element);
+				$extralabels=$extrafields->fetch_name_optionals_label('contract');
 
 
 			// Page 1
