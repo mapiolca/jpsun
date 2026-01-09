@@ -226,7 +226,9 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) $pdf->SetCompression(false);
 
 				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right			
-				
+
+				$extrafields = new ExtraFields($db);
+				$extralabels=$extrafields->fetch_name_optionals_label($object->table_element);
 
 
 			// Page 1
