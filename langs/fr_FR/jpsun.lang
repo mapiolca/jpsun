@@ -182,6 +182,26 @@ jpsun_project_mes_date_help = Date de mise en service autorisée ou prévue par/
 MAIN_SEARCH_PRODUCT_BY_FOURN_REF = Permet de rechercher un produit par référence fournisseur dans le formulaire d'ajout de ligne du document.
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+// #Contrats<br>
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+<br>
+JpsunContractSiteName = Nom du site<br>
+JpsunContractDistanceFromCompanyKm = Distance depuis la société (km)<br>
+JpsunContractInstalledPowerKwc = Puissance installée (kWc)<br>
+JpsunContractRevaluationIndexSn = Indice de revalorisation (Sn)<br>
+JpsunContractPvModules = Modules PV<br>
+JpsunContractPvModulesQty = Nombre de modules PV<br>
+JpsunContractInverters = Onduleurs<br>
+JpsunContractInvertersQty = Nombre d'onduleurs<br>
+JpsunContractInvertersInstallHeightM = Hauteur d'installation Onduleurs (m)<br>
+JpsunContractDcBoxesQty = Nombre de coffrets DC<br>
+JpsunContractDcBoxInstallHeightM = Hauteur d'installation Coffret DC (m)<br>
+JpsunContractAcBoxesQty = Nombre de coffret AC<br>
+JpsunContractAcBoxInstallHeightM = Hauteur d'installation Coffret AC (m)<br>
+JpsunContractAccessCode = Code accès (si nécessaire)<br>
+JpsunContractPdlNumber = N° de PDL :<br>
+<br>
 //#Partie ENEDIS<br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 <br>

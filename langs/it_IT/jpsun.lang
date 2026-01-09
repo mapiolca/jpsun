@@ -1,0 +1,18 @@
+# Dolibarr language file - it_IT - jpsun<br>
+# Contracts<br>
+CHARSET=iso-8859-1<br>
+JpsunContractSiteName=Nome del sito<br>
+JpsunContractDistanceFromCompanyKm=Distanza dall'azienda (km)<br>
+JpsunContractInstalledPowerKwc=Potenza installata (kWc)<br>
+JpsunContractRevaluationIndexSn=Indice di rivalutazione (Sn)<br>
+JpsunContractPvModules=Moduli FV<br>
+JpsunContractPvModulesQty=Numero di moduli FV<br>
+JpsunContractInverters=Inverter<br>
+JpsunContractInvertersQty=Numero di inverter<br>
+JpsunContractInvertersInstallHeightM=Altezza installazione inverter (m)<br>
+JpsunContractDcBoxesQty=Numero di quadri DC<br>
+JpsunContractDcBoxInstallHeightM=Altezza installazione quadro DC (m)<br>
+JpsunContractAcBoxesQty=Numero di quadri AC<br>
+JpsunContractAcBoxInstallHeightM=Altezza installazione quadro AC (m)<br>
+JpsunContractAccessCode=Codice di accesso (se necessario)<br>
+JpsunContractPdlNumber=Numero PDL:<br>
