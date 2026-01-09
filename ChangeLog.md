@@ -1,7 +1,12 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.7 (09/01/2026)
+
+- Ajout des extrafields contrats JPSUN pour les contrats.
+
 ## 1.6.6
 
+- Ajout des extrafields contrats JPSUN pour les contrats. (09/01/2026)
 - Ajout de l'extrafiel "Détail Produit" dans les fiches produit. (17/09/2025)
 - L'extrafield "Puissance crête" n'est désormais affiché que lorsque la nature du produit est "2 - Modules Photovoltaïque". (15/09/2025)
 - Ajout du support de la constante "TICKET_SHOW_MESSAGES_ON_CARD" dans les réglages.(11/09/2025)
