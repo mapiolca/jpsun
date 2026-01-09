@@ -285,10 +285,10 @@ class pdf_jpsun extends ModelePDFContract
 					'.$object->thirdparty->address.'<br>
 					'.$object->thirdparty->zip.' '.$object->thirdparty->town.'';
 					//var_dump($object->thirdparty);
-					$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
-					$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
-					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
-				
+					//$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
+					//$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
+					//$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+/*				
 				// New page
 				$pdf->AddPage();
 				if (!empty($tplidx)) {
@@ -547,7 +547,7 @@ class pdf_jpsun extends ModelePDFContract
 			return 0;
 		}
 	}
-
+*/
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
 	/**
 	 *   Show table for lines
