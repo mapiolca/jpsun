@@ -243,7 +243,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$logo=$conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 
 				$height=pdf_getHeightForLogo($logo);
-				$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->Image($logo, 10, 10, "", 10);
 
 				$this->_pagefoot($pdf,$object,$outputlangs,1);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
@@ -273,7 +273,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$tplidx = $pdf->importPage(2);
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
-				$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->Image($logo, 10, 10, "", 10);
 				
 				// Pied de page
 					$this->_pagefoot($pdf, $object, $outputlangs);
@@ -369,7 +369,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$tplidx = $pdf->importPage(3);
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
-				$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->Image($logo, 10, 10, "", 10);
 				//Nature des Travaux
 				//$pdf->setXY(10,10); // fixe les positions x et y courantes
 				//$pdf->SetFont('','',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
@@ -393,7 +393,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$tplidx = $pdf->importPage(4);
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
-				$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->Image($logo, 10, 10, "", 10);
 				
 				// Pied de page
 					$this->_pagefoot($pdf, $object, $outputlangs);
@@ -438,7 +438,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$tplidx = $pdf->importPage(5);
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
-				$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->Image($logo, 10, 10, "", 10);
 				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
@@ -450,8 +450,168 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
-					
+			// Page 6
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(6);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 7
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(7);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 8
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(8);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 9
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(9);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 10
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(10);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+			
+			// Page 11
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(11);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 12
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(12);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu		
+			
+			// Page 13
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(13);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+
+			// Page 14
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(14);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+			// Page 15
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(15);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+
+				//Contenu
+
+
 			// Fermture Formulaire
 				$pdf->Close();
 
@@ -702,4 +862,3 @@ class pdf_contratpartv3 extends ModelePDFContract
 	}
 
 }
-
