@@ -39,7 +39,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 /**
  *	Class to generate the supplier orders with the JPSUN model
  */
-class pdf_ContratParticulierV3 extends ModelePDFContract
+class pdf_contratpartv3 extends ModelePDFContract
 {
     	/**
 	 * @var DoliDB Database handler
