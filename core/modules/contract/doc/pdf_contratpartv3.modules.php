@@ -266,7 +266,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
-					$pdf->SetFont('Calibri','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
+					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 					$object->fetch_thirdparty();
 					$Client = '
 
