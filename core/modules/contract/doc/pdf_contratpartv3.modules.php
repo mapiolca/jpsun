@@ -416,15 +416,15 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->writeHTMLCell(100,4, 95, 57.3, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_installed_power_kwc']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 62.6, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_product']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 67.9, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 72.2, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 77.5, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 80.8, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_install_height_m']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 86.1, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_boxes_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 91.4, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_box_install_height_m']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 96.7, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_boxes_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 102, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_box_install_height_m']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 107.3, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_access_code']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 112.6, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pdl_number']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 73.2, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 78.5, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 83.8, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 89.1, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_boxes_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 94.4, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 99.7, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_boxes_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 104, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 109.3, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_access_code']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 114.6, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pdl_number']),0,1);
 
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
