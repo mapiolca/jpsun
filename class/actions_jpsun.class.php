@@ -231,64 +231,49 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	public function AddSignature($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;
-
-		// On ne filtre PAS sur $parameters['context'] : il n'existe pas ici.
-		// On filtre simplement sur le fait que c'est un contrat.
-		if (!is_object($object) || get_class($object) !== 'Contrat') {
-			return 0; // Laisse Dolibarr faire pour les autres docs
+		dol_syslog("JPSUN AddSignature called for contract ".$object->ref, LOG_WARNING);
+	
+		// On ne s'occupe que des contrats
+		if (empty($object->element) || $object->element !== 'contrat') {
+			return 0;
 		}
-
+	
 		$sourcefile = $parameters['sourcefile'] ?? '';
 		$newpdffilename = $parameters['newpdffilename'] ?? '';
-
+	
 		if (empty($sourcefile) || empty($newpdffilename) || !dol_is_file($sourcefile)) {
 			$this->errors[] = 'AddSignature: missing/invalid sourcefile/newpdffilename';
-			return -1;
+			return -1; // IMPORTANT: on bloque le fallback core (page 15)
 		}
-
-		// Dans le core : $filename = "signatures/".$date."_signature.png"
-		// et $newpdffilename = $upload_dir.$ref."_signed-".$date.".pdf"
+	
+		// Retrouver le PNG de signature (même logique que le core: signatures/YYYYMMDDHHMMSS_signature.png)
 		$date = '';
-		if (preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) {
-			$date = $m[1];
-		}
-
+		if (preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) $date = $m[1];
+	
 		$upload_dir = dirname($sourcefile).'/';
 		$signimg = $upload_dir.'signatures/'.$date.'_signature.png';
-
-		// Fallback si regex foire (rare) : on prend la plus récente
+	
 		if (empty($date) || !dol_is_file($signimg)) {
-			$list = glob($upload_dir.'signatures/*_signature.png');
-			if (!empty($list)) {
-				usort($list, function($a, $b) { return filemtime($b) <=> filemtime($a); });
-				$signimg = $list[0];
-			}
+			$this->errors[] = 'AddSignature: signature image not found: '.$signimg;
+			return -1; // IMPORTANT: pas de fallback core
 		}
-
-		if (!dol_is_file($signimg)) {
-			$this->errors[] = 'AddSignature: signature image not found in '.$upload_dir.'signatures/';
-			return -1;
-		}
-
+	
 		$pdf = pdf_getInstance();
 		if (class_exists('TCPDF')) {
 			$pdf->setPrintHeader(false);
 			$pdf->setPrintFooter(false);
 		}
 		$pdf->SetFont(pdf_getPDFFont($langs));
-		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) {
-			$pdf->SetCompression(false);
-		}
-
+	
 		$pagecount = $pdf->setSourceFile($sourcefile);
-
+	
 		for ($i = 1; $i <= $pagecount; $i++) {
 			$tpl = $pdf->importPage($i);
 			$s = $pdf->getTemplatesize($tpl);
-
+	
 			$pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
 			$pdf->useTemplate($tpl);
-
+	
 			if ($i == 8) {
 				$param = array(
 					'online_sign_name' => GETPOST('onlinesignname', 'alphanohtml'),
@@ -297,20 +282,20 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 					'yforimgstart'     => 150,
 					'wforimg'          => 70,
 				);
-
-				// Fonction définie dans core/ajax/onlineSign.php
+	
 				dolPrintSignatureImage($pdf, $langs, $param);
 			}
 		}
-
+	
 		$pdf->Output($newpdffilename, 'F');
-
-		// IMPORTANT : si on retourne 1, le core ne fait pas indexFile() -> donc on le fait.
+	
+		// Si on remplace le core, on doit indexer nous-mêmes
 		$object->indexFile($newpdffilename, 1);
-
-		// CRUCIAL : on retourne NON-ZERO pour empêcher le collage par défaut (dernière page).
-		return 1;
+	
+		return 1; // CRUCIAL: empêche le core de signer page 15
 	}
+
 }
+
 
 
