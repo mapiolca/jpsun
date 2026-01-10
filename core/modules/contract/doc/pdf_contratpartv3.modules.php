@@ -375,6 +375,8 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+				$this->tabSignature($pdf, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforfreetext - $heightforfooter, $outputlangs);
+
 
 			// Page 9
 				$pdf->AddPage();
@@ -718,7 +720,29 @@ class pdf_contratpartv3 extends ModelePDFContract
 */
 		}
 	}
+	/**
+	 * Show footer signature of page
+	 *
+	 * @param   TCPDF       $pdf            Object PDF
+	 * @param   int         $tab_top        tab height position
+	 * @param   int         $tab_height     tab height
+	 * @param   Translate   $outputlangs    Object language for output
+	 * @return void
+	 */
+	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
+	{
+		$pdf->SetDrawColor(128, 128, 128);
+		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
+		//$posy = $tab_top + $tab_height + 3 + 3;
 
+		if (!getDolGlobalString('CONTRACT_HIDE_THIRPARTY_SIGNATURE_SECTION_PDF')) {
+			//$pdf->SetXY($posmiddle + 5, $posy);
+			$pdf->MultiCell(64, 145, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 'L', 0);
+
+			//$pdf->SetXY($posmiddle + 5, $posy + 5);
+			$pdf->RoundedRect(64, 150, $this->page_largeur - $this->marge_droite - $posmiddle - 5, 20, $this->corner_radius, '1234', 'D');
+		}
+	}
 
 		/**
 	 *   	Show footer of page. Need this->emetteur object
