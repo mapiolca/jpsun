@@ -103,7 +103,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 		$langs->load("jpsun@jpsun");
 
 		$this->db = $db;
-		$this->name = "Contrat de maintenance particulier V3";
+		$this->name = 'contratpartv3';
 		$this->description = $langs->trans('JpsunContratParticulierV3Description');
 
 		// Dimension page pour format A4
