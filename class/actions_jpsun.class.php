@@ -225,5 +225,88 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		return 0;
 	}
 
+	/**
+	 * Hook called by core/ajax/onlineSign.php
+	 */
+	public function AddSignature($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
 
+		// Only for this context
+		if (empty($parameters['context']) || !in_array('ajaxonlinesign', explode(':', $parameters['context']))) {
+			return 0;
+		}
+
+		// Only for contracts
+		if (empty($object) || empty($object->element) || $object->element !== 'contrat') {
+			return 0;
+		}
+
+		$sourcefile = $parameters['sourcefile'] ?? '';
+		$newpdffilename = $parameters['newpdffilename'] ?? '';
+		if (empty($sourcefile) || empty($newpdffilename) || !dol_is_file($sourcefile)) {
+			$this->errors[] = 'AddSignature: missing or invalid source/new file.';
+			return -1;
+		}
+
+		// Rebuild signature image path from the "_signed-YYYYMMDDHHMMSS.pdf"
+		$upload_dir = dirname($sourcefile).'/';
+		$base = basename($newpdffilename);
+
+		$date = '';
+		if (preg_match('/_signed-(\d{14})\.pdf$/', $base, $m)) {
+			$date = $m[1];
+		}
+
+		$signimg = $upload_dir.'signatures/'.$date.'_signature.png';
+		if (empty($date) || !dol_is_file($signimg)) {
+			$this->errors[] = 'AddSignature: signature image not found ('.$signimg.').';
+			return -1;
+		}
+
+		// Build new PDF from source
+		$pdf = pdf_getInstance();
+		if (class_exists('TCPDF')) {
+			$pdf->setPrintHeader(false);
+			$pdf->setPrintFooter(false);
+		}
+		$pdf->SetFont(pdf_getPDFFont($langs));
+		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) {
+			$pdf->SetCompression(false);
+		}
+
+		$pagecount = $pdf->setSourceFile($sourcefile);
+
+		$param = array(
+			'online_sign_name' => GETPOST('onlinesignname', 'alphanohtml'),
+			'pathtoimage' => $signimg,
+		);
+
+		for ($i = 1; $i <= $pagecount; $i++) {
+			$tpl = $pdf->importPage($i);
+			$s = $pdf->getTemplatesize($tpl);
+
+			$pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
+			$pdf->useTemplate($tpl);
+
+			// Put signature ONLY on page 8
+			if ($i == 8) {
+				$param['xforimgstart'] = 66;
+				$param['yforimgstart'] = 150;
+				$param['wforimg'] = 70;
+
+				// Function provided by core/ajax/onlineSign.php
+				dolPrintSignatureImage($pdf, $langs, $param);
+			}
+		}
+
+		$pdf->Output($newpdffilename, 'F');
+
+		// IMPORTANT: core does indexFile() only in the default branch.
+		$object->indexFile($newpdffilename, 1);
+
+		// Return 1 = replace standard code (so core won't also stamp last page)
+		return 1;
+	}
 }
+
