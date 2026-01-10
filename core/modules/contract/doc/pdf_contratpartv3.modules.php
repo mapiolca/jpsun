@@ -277,92 +277,8 @@ class pdf_contratpartv3 extends ModelePDFContract
 					//var_dump($object->thirdparty);
 
 					$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
-
-					$pdf->writeHTMLCell(150,4, 20, 224, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->objet_consultation)),0,1);	
-
-					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 					
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-					
-				if ($dc1_line->objet_candidature == '1') {
-					
-					$pdf->writeHTMLCell(190,4, 25, 43, dol_htmlentitiesbr("X"),0,1);
-
-				} elseif ($dc1_line->objet_candidature == '2'|| $dc1_line->objet_candidature == '4') {
-					
-					$pdf->writeHTMLCell(190,4, 25, 59.4, dol_htmlentitiesbr("X"),0,1);
-
-					if ($dc1_line->objet_candidature == '2') {
-
-						$pdf->writeHTMLCell(190,4, 51, 59.4, dol_htmlentitiesbr($dc1_line->n_lots),0,1);
-
-					} elseif ($dc1_line->objet_candidature == '4'){
-						$pdf->writeHTMLCell(190,4, 80, 59.4, dol_htmlentitiesbr($dc1_line->n_lots),0,1);
-					}
-
-					$pdf->writeHTMLCell(150,4, 20, 75, dol_htmlentitiesbr($outputlangs->convToOutputCharset($dc1_line->designation_lot)),0,1);
-
-				}elseif ($dc1_line->objet_candidature == '3') {
-					
-					$pdf->writeHTMLCell(190,4, 25, 51.2, dol_htmlentitiesbr("X"),0,1);
-
-				}
-
-				$Societe = '
-
-					'.$conf->global->MAIN_INFO_SOCIETE_NOM.'<br>
-					'.$conf->global->MAIN_INFO_SOCIETE_ADDRESS.'<br>
-					'.$conf->global->MAIN_INFO_SOCIETE_ZIP.' '.$conf->global->MAIN_INFO_SOCIETE_TOWN.'';
-
-					$Forme_Juridique_Societe = getFormeJuridiqueLabel($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
-
-					$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty);
-
-					$SIREN_Societe = '
-
-					N° SIRET : '.$conf->global->MAIN_INFO_SIRET.'<br>
-					N° TVA Intracommunautaire : '.$conf->global->MAIN_INFO_TVAINTRA.'<br>
-					Code APE : '.$conf->global->MAIN_INFO_APE.'<br>
-					Forme juridique : '.$Forme_Juridique_Societe;
-
-
-					if ($dc1_line->candidat_statut == '1') {
-					
-						$pdf->writeHTMLCell(190,4, 25, 100.5, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 130, dol_htmlentitiesbr($conf->global->MAIN_INFO_SOCIETE_NOM),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 145, dol_htmlentitiesbr($conf->global->MAIN_INFO_SOCIETE_ADDRESS),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 150, dol_htmlentitiesbr($conf->global->MAIN_INFO_SOCIETE_ZIP.' '.$conf->global->MAIN_INFO_SOCIETE_TOWN),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 162.5, dol_htmlentitiesbr($conf->global->MAIN_INFO_SOCIETE_MAIL),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 180, dol_htmlentitiesbr($langs->trans('Tel.').' : '.dol_print_phone($conf->global->MAIN_INFO_SOCIETE_TEL, $object->country_code, 0, 0, 1)),0,1);
-						$pdf->writeHTMLCell(190,4, 25, 200, dol_htmlentitiesbr($conf->global->MAIN_INFO_SIRET),0,1);
-
-						$pdf->SetFont('','B',8); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-						//$pdf->writeHTMLCell(100,4, 25, 70, dol_htmlentitiesbr($SIREN_Societe),0,1);
-						//$pdf->writeHTMLCell(100,4, 120, 65, dol_htmlentitiesbr($carac_emetteur),0,1);
-						
-						
-
-
-					}elseif ($dc1_line->candidat_statut == '2') {
-						
-						$pdf->writeHTMLCell(190,4, 25, 86.5, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 35, 95.65, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 85, 117, dol_htmlentitiesbr("X"),0,1);
-
-					}elseif ($dc1_line->candidat_statut == '3') {
-
-						$pdf->writeHTMLCell(190,4, 25, 86.5, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 35, 95.65, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 35, 117, dol_htmlentitiesbr("X"),0,1);
-
-					}elseif ($dc1_line->candidat_statut == '4') {
-						
-						$pdf->writeHTMLCell(190,4, 25, 86.5, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 85, 95.65, dol_htmlentitiesbr("X"),0,1);
-
-					}
-
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+					//$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)				
 
 			// Page 3
 				$pdf->AddPage();
@@ -382,11 +298,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-
-
-					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
-
+					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
 			// Page 4
 				$pdf->AddPage();
@@ -431,8 +343,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 					}
 					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 
-
-
 			// Page 5
 				$pdf->AddPage();
 
@@ -445,7 +355,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
 
 				//Contenu
 
@@ -463,8 +372,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
-
+				
 				//Contenu
 
 			// Page 7
@@ -479,8 +387,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
-
+				
 				//Contenu
 
 			// Page 8
@@ -490,12 +397,10 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
 
 				//Contenu
 
@@ -506,13 +411,23 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				//$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+				
 				$pdf->writeHTMLCell(100,4, 95, 56, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_site_name']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 61, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_product']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 66, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 71, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 76, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 81, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 86, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_boxes_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 91, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 96, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_boxes_qty']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 101, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 106, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_access_code']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 111, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pdl_number']),0,1);
 
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
 
 				//Contenu
 
@@ -529,7 +444,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
-
 				//Contenu
 			
 			// Page 11
@@ -544,7 +458,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
 
 				//Contenu
 
@@ -561,7 +474,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
-
 				//Contenu		
 			
 			// Page 13
@@ -576,7 +488,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
-
 
 				//Contenu
 
@@ -594,7 +505,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
-
 				//Contenu
 
 			// Page 15
@@ -610,15 +520,11 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$this->_pagefoot($pdf, $object, $outputlangs);
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
-
 				//Contenu
-
 
 			// Fermture Formulaire
 				$pdf->Close();
-
 				$pdf->Output($file,'F');
-
 
 				// Add pdfgeneration hook
 				$hookmanager->initHooks(array('pdfgeneration'));
@@ -644,7 +550,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 			return 0;
 		}
 	}
-
 
 /**
 	 *  Show top header of page.
