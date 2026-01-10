@@ -99,7 +99,6 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 		$langs->load("main");
 		$langs->load("bills");
-		$langs->load("btp@btp");
 		$langs->load("jpsun@jpsun");
 
 		$this->db = $db;
@@ -228,7 +227,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right			
 
 				$extrafields = new ExtraFields($this->$db);
-				$extralabels=$extrafields->fetch_name_optionals_label('contract');
+				$extralabels=$extrafields->fetch_name_optionals_label('contrat');
 
 				// EN: Ensure extra fields are loaded for the contract
 				// FR: S'assurer que les extrafields sont chargés pour le contrat
