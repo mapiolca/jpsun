@@ -277,7 +277,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 					//var_dump($object->thirdparty);
 
-					$pdf->writeHTMLCell(150,4, 20, 170, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
+					$pdf->writeHTMLCell(150,4, 38, 30, dol_htmlentitiesbr($outputlangs->convToOutputCharset($Client)),0,1);
 					
 					//$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)				
 
