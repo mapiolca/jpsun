@@ -737,10 +737,10 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 		if (!getDolGlobalString('CONTRACT_HIDE_THIRPARTY_SIGNATURE_SECTION_PDF')) {
 			//$pdf->SetXY($posmiddle + 5, $posy);
-			$pdf->MultiCell(64, 145, 66, 145, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 'L', 0);
+			$pdf->writeHTMLCell(100, 4, 66, 145, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 1);
 
 			//$pdf->SetXY($posmiddle + 5, $posy + 5);
-			$pdf->RoundedRect(66, 150, 50, 20, $this->corner_radius, '1234', 'D');
+			$pdf->RoundedRect(66, 150, 70, 30, $this->corner_radius, '1234', 'D');
 		}
 	}
 
