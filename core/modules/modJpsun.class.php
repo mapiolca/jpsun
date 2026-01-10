@@ -88,7 +88,7 @@ class modJpsun extends DolibarrModules
 		$this->module_parts = array(
 			//'css' => array(''),
 			'models' => 1,
-			'hooks' => array('projectOverview', 'toprightmenu'),
+			'hooks' => array('projectOverview', 'toprightmenu','data' => array('ajaxonlinesign'), 'entity' => '0',),
 			'picto'=>'object_jpsun@jpsun'
 		);
 
@@ -710,3 +710,4 @@ class modJpsun extends DolibarrModules
 }
 
 ?>
+
