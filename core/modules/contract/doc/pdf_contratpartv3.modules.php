@@ -152,6 +152,12 @@ class pdf_contratpartv3 extends ModelePDFContract
 		{
 			$object->fetch_thirdparty();
 
+			// EN: Ensure extra fields are loaded for the contract
+			// FR: S'assurer que les extrafields sont chargés pour le contrat
+			if (empty($object->array_options)) {
+				$object->fetch_optionals();
+			}
+
 			$deja_regle = 0;
 			$amount_credit_notes_included = 0;
 			$amount_deposits_included = 0;
@@ -501,7 +507,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
-			// Page 9
+				// Page 9
 				$pdf->AddPage();
 
 				$tplidx = $pdf->importPage(9);
@@ -509,7 +515,15 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//$pdf->Image($logo, 10, 10, "", 10);
 				//$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 56, $outputlangs->convToOutputCharset($object->array_options['options_JpsunContractSiteName']),0,1);
+				// EN: Read extra field with normalized key (lowercase) and legacy key
+				// FR: Lire l'extrafield avec la clé normalisée (minuscule) et la clé historique
+				$contract_site_name = '';
+				if (isset($object->array_options['options_jpsuncontractsitename'])) {
+					$contract_site_name = $object->array_options['options_jpsuncontractsitename'];
+				} elseif (isset($object->array_options['options_JpsunContractSiteName'])) {
+					$contract_site_name = $object->array_options['options_JpsunContractSiteName'];
+				}
+				$pdf->writeHTMLCell(100,4, 95, 56, $outputlangs->convToOutputCharset($contract_site_name),0,1);
 
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
