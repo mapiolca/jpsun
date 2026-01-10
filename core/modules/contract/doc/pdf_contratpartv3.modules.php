@@ -354,7 +354,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//$pdf->Image($logo, 10, 10, "", 10);
 				$pdf->SetFont('','B',11); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-				$pdf->writeHTMLCell(100,4, 71, 188, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_revaluation_index_sn'], 2)),0,1);
+				$pdf->writeHTMLCell(100,4, 71.5, 187.5, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_revaluation_index_sn'], 2)),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -426,7 +426,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -441,7 +440,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -456,7 +454,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -472,7 +469,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -487,7 +483,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
