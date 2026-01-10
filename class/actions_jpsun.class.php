@@ -231,71 +231,73 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	public function AddSignature($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;
-		dol_syslog("JPSUN AddSignature called for contract ".$object->ref, LOG_WARNING);
-	
-		// On ne s'occupe que des contrats
-		if (empty($object->element) || $object->element !== 'contrat') {
-			return 0;
-		}
-	
-		$sourcefile = $parameters['sourcefile'] ?? '';
+
+		// On ne gère que la signature des CONTRATS
+		$mode = GETPOST('mode', 'aZ09');
+		if ($mode !== 'contract') return 0;
+
+		$sourcefile     = $parameters['sourcefile'] ?? '';
 		$newpdffilename = $parameters['newpdffilename'] ?? '';
-	
-		if (empty($sourcefile) || empty($newpdffilename) || !dol_is_file($sourcefile)) {
-			$this->errors[] = 'AddSignature: missing/invalid sourcefile/newpdffilename';
-			return -1; // IMPORTANT: on bloque le fallback core (page 15)
-		}
-	
-		// Retrouver le PNG de signature (même logique que le core: signatures/YYYYMMDDHHMMSS_signature.png)
-		$date = '';
-		if (preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) $date = $m[1];
-	
+		if (empty($sourcefile) || empty($newpdffilename)) return 0;
+
+		// Récupère le "date stamp" pour retrouver l'image de signature : signatures/YYYYMMDDHHMMSS_signature.png
+		if (!preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) return 0;
+		$date = $m[1];
+
 		$upload_dir = dirname($sourcefile).'/';
-		$signimg = $upload_dir.'signatures/'.$date.'_signature.png';
-	
-		if (empty($date) || !dol_is_file($signimg)) {
-			$this->errors[] = 'AddSignature: signature image not found: '.$signimg;
-			return -1; // IMPORTANT: pas de fallback core
-		}
-	
+		$sigpath = $upload_dir.'signatures/'.$date.'_signature.png';
+
+		if (!dol_is_file($sourcefile) || !dol_is_file($sigpath)) return 0;
+
+		$online_sign_name = GETPOST('onlinesignname', 'alphanohtml');
+
+		// Reconstruit le PDF et colle la signature en PAGE 8
 		$pdf = pdf_getInstance();
 		if (class_exists('TCPDF')) {
 			$pdf->setPrintHeader(false);
 			$pdf->setPrintFooter(false);
 		}
 		$pdf->SetFont(pdf_getPDFFont($langs));
-	
+		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) $pdf->SetCompression(false);
+
 		$pagecount = $pdf->setSourceFile($sourcefile);
-	
+
 		for ($i = 1; $i <= $pagecount; $i++) {
 			$tpl = $pdf->importPage($i);
 			$s = $pdf->getTemplatesize($tpl);
-	
+
 			$pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
 			$pdf->useTemplate($tpl);
-	
+
 			if ($i == 8) {
-				$param = array(
-					'online_sign_name' => GETPOST('onlinesignname', 'alphanohtml'),
-					'pathtoimage'      => $signimg,
-					'xforimgstart'     => 66,
-					'yforimgstart'     => 150,
-					'wforimg'          => 70,
-				);
-	
-				dolPrintSignatureImage($pdf, $langs, $param);
+				// Coordonnées de TA box (celles de tabSignature)
+				$x = 66;
+				$y = 150;
+				$w = 70;
+				$h = round($w / 4); // ratio utilisé par Dolibarr
+
+				// Image signature
+				$pdf->Image($sigpath, $x, $y + 2, $w, $h);
+
+				// Légende (optionnelle)
+				$pdf->SetFont(pdf_getPDFFont($langs), '', pdf_getPDFFontSize($langs) - 1);
+				$pdf->SetTextColor(80, 80, 80);
+				$pdf->SetXY($x, $y + 2 + $h + 1);
+				$pdf->MultiCell($w, 4, $langs->trans("Signature").' : '.dol_print_date(dol_now(), "day", false, $langs, true).' - '.$online_sign_name, 0, 'L');
 			}
 		}
-	
+
 		$pdf->Output($newpdffilename, 'F');
-	
-		// Si on remplace le core, on doit indexer nous-mêmes
+
+		// IMPORTANT : on indexe le fichier signé, sinon Dolibarr peut “perdre” le doc
 		$object->indexFile($newpdffilename, 1);
-	
-		return 1; // CRUCIAL: empêche le core de signer page 15
+
+		// On dit à Dolibarr : "c'est bon, je l'ai fait" => pas de fallback (signature page 15)
+		return 1;
 	}
 
 }
+
 
 
 
