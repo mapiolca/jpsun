@@ -231,30 +231,24 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	public function AddSignature($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs;
-
-		dol_syslog('JPSUN AddSignature CALLED mode='.GETPOST('mode','aZ09'), LOG_WARNING);
-		return -1;
-
-		// On ne gère que la signature des CONTRATS
+	
 		$mode = GETPOST('mode', 'aZ09');
 		if ($mode !== 'contract') return 0;
-
+	
 		$sourcefile     = $parameters['sourcefile'] ?? '';
 		$newpdffilename = $parameters['newpdffilename'] ?? '';
 		if (empty($sourcefile) || empty($newpdffilename)) return 0;
-
-		// Récupère le "date stamp" pour retrouver l'image de signature : signatures/YYYYMMDDHHMMSS_signature.png
+	
 		if (!preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) return 0;
 		$date = $m[1];
-
+	
 		$upload_dir = dirname($sourcefile).'/';
 		$sigpath = $upload_dir.'signatures/'.$date.'_signature.png';
-
+	
 		if (!dol_is_file($sourcefile) || !dol_is_file($sigpath)) return 0;
-
+	
 		$online_sign_name = GETPOST('onlinesignname', 'alphanohtml');
-
-		// Reconstruit le PDF et colle la signature en PAGE 8
+	
 		$pdf = pdf_getInstance();
 		if (class_exists('TCPDF')) {
 			$pdf->setPrintHeader(false);
@@ -262,44 +256,45 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		}
 		$pdf->SetFont(pdf_getPDFFont($langs));
 		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) $pdf->SetCompression(false);
-
+	
 		$pagecount = $pdf->setSourceFile($sourcefile);
-
+	
+		$targetPage = 8;
+	
+		// Coordonnées de ta box (tabSignature)
+		$x = 66;
+		$y = 150;
+		$w = 70;
+		$h = $w / 4;
+	
 		for ($i = 1; $i <= $pagecount; $i++) {
 			$tpl = $pdf->importPage($i);
 			$s = $pdf->getTemplatesize($tpl);
-
-			$pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
+	
+			// IMPORTANT: on force le format exact de la page importée
+			$pdf->AddPage(($s['h'] > $s['w'] ? 'P' : 'L'), array($s['w'], $s['h']));
 			$pdf->useTemplate($tpl);
-
-			if ($i == 8) {
-				// Coordonnées de TA box (celles de tabSignature)
-				$x = 66;
-				$y = 150;
-				$w = 70;
-				$h = round($w / 4); // ratio utilisé par Dolibarr
-
-				// Image signature
+	
+			if ($i == $targetPage) {
 				$pdf->Image($sigpath, $x, $y + 2, $w, $h);
-
-				// Légende (optionnelle)
+	
 				$pdf->SetFont(pdf_getPDFFont($langs), '', pdf_getPDFFontSize($langs) - 1);
 				$pdf->SetTextColor(80, 80, 80);
 				$pdf->SetXY($x, $y + 2 + $h + 1);
 				$pdf->MultiCell($w, 4, $langs->trans("Signature").' : '.dol_print_date(dol_now(), "day", false, $langs, true).' - '.$online_sign_name, 0, 'L');
 			}
 		}
-
+	
 		$pdf->Output($newpdffilename, 'F');
-
-		// IMPORTANT : on indexe le fichier signé, sinon Dolibarr peut “perdre” le doc
+	
 		$object->indexFile($newpdffilename, 1);
-
-		// On dit à Dolibarr : "c'est bon, je l'ai fait" => pas de fallback (signature page 15)
+	
+		// CRUCIAL: si tu ne renvoies pas 1, Dolibarr refait son fallback page 15
 		return 1;
 	}
 
 }
+
 
 
 
