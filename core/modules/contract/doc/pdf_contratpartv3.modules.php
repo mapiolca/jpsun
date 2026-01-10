@@ -412,7 +412,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//$pdf->Image($logo, 10, 10, "", 10);
 				
-				$pdf->writeHTMLCell(100,4, 95, 56, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_site_name']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 53, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_site_name']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 61, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_product']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 66, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 71, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
