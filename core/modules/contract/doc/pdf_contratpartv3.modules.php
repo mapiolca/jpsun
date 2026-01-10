@@ -164,7 +164,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 			} else {
 				$objectref = dol_sanitizeFileName($object->ref);
 				$dir = getMultidirOutput($object)."/".$objectref;
-				$file = $dir."/".$objectref." - Contrat.pdf";
+				$file = $dir."/".$objectref.".pdf";
 			}
 
 			if (!file_exists($dir)) {
