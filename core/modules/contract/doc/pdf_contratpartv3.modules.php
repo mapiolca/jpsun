@@ -495,7 +495,10 @@ class pdf_contratpartv3 extends ModelePDFContract
 			// Fermture Formulaire
 				$pdf->Close();
 				$pdf->Output($file,'F');
-
+				
+				dolChmod($file);
+				$this->result = array('fullpath' => $file);
+				
 				// Add pdfgeneration hook
 				$hookmanager->initHooks(array('pdfgeneration'));
 				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
