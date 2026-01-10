@@ -232,39 +232,44 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	{
 		global $langs;
 
-		// Only for this context
-		if (empty($parameters['context']) || !in_array('ajaxonlinesign', explode(':', $parameters['context']))) {
-			return 0;
-		}
-
-		// Only for contracts
-		if (empty($object) || empty($object->element) || $object->element !== 'contrat') {
-			return 0;
+		// On ne filtre PAS sur $parameters['context'] : il n'existe pas ici.
+		// On filtre simplement sur le fait que c'est un contrat.
+		if (!is_object($object) || get_class($object) !== 'Contrat') {
+			return 0; // Laisse Dolibarr faire pour les autres docs
 		}
 
 		$sourcefile = $parameters['sourcefile'] ?? '';
 		$newpdffilename = $parameters['newpdffilename'] ?? '';
+
 		if (empty($sourcefile) || empty($newpdffilename) || !dol_is_file($sourcefile)) {
-			$this->errors[] = 'AddSignature: missing or invalid source/new file.';
+			$this->errors[] = 'AddSignature: missing/invalid sourcefile/newpdffilename';
 			return -1;
 		}
 
-		// Rebuild signature image path from the "_signed-YYYYMMDDHHMMSS.pdf"
-		$upload_dir = dirname($sourcefile).'/';
-		$base = basename($newpdffilename);
-
+		// Dans le core : $filename = "signatures/".$date."_signature.png"
+		// et $newpdffilename = $upload_dir.$ref."_signed-".$date.".pdf"
 		$date = '';
-		if (preg_match('/_signed-(\d{14})\.pdf$/', $base, $m)) {
+		if (preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) {
 			$date = $m[1];
 		}
 
+		$upload_dir = dirname($sourcefile).'/';
 		$signimg = $upload_dir.'signatures/'.$date.'_signature.png';
+
+		// Fallback si regex foire (rare) : on prend la plus récente
 		if (empty($date) || !dol_is_file($signimg)) {
-			$this->errors[] = 'AddSignature: signature image not found ('.$signimg.').';
+			$list = glob($upload_dir.'signatures/*_signature.png');
+			if (!empty($list)) {
+				usort($list, function($a, $b) { return filemtime($b) <=> filemtime($a); });
+				$signimg = $list[0];
+			}
+		}
+
+		if (!dol_is_file($signimg)) {
+			$this->errors[] = 'AddSignature: signature image not found in '.$upload_dir.'signatures/';
 			return -1;
 		}
 
-		// Build new PDF from source
 		$pdf = pdf_getInstance();
 		if (class_exists('TCPDF')) {
 			$pdf->setPrintHeader(false);
@@ -277,11 +282,6 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$pagecount = $pdf->setSourceFile($sourcefile);
 
-		$param = array(
-			'online_sign_name' => GETPOST('onlinesignname', 'alphanohtml'),
-			'pathtoimage' => $signimg,
-		);
-
 		for ($i = 1; $i <= $pagecount; $i++) {
 			$tpl = $pdf->importPage($i);
 			$s = $pdf->getTemplatesize($tpl);
@@ -289,24 +289,28 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
 			$pdf->useTemplate($tpl);
 
-			// Put signature ONLY on page 8
 			if ($i == 8) {
-				$param['xforimgstart'] = 66;
-				$param['yforimgstart'] = 150;
-				$param['wforimg'] = 70;
+				$param = array(
+					'online_sign_name' => GETPOST('onlinesignname', 'alphanohtml'),
+					'pathtoimage'      => $signimg,
+					'xforimgstart'     => 66,
+					'yforimgstart'     => 150,
+					'wforimg'          => 70,
+				);
 
-				// Function provided by core/ajax/onlineSign.php
+				// Fonction définie dans core/ajax/onlineSign.php
 				dolPrintSignatureImage($pdf, $langs, $param);
 			}
 		}
 
 		$pdf->Output($newpdffilename, 'F');
 
-		// IMPORTANT: core does indexFile() only in the default branch.
+		// IMPORTANT : si on retourne 1, le core ne fait pas indexFile() -> donc on le fait.
 		$object->indexFile($newpdffilename, 1);
 
-		// Return 1 = replace standard code (so core won't also stamp last page)
+		// CRUCIAL : on retourne NON-ZERO pour empêcher le collage par défaut (dernière page).
 		return 1;
 	}
 }
+
 
