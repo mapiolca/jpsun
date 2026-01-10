@@ -226,15 +226,8 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right			
 
-				$extrafields = new ExtraFields($this->$db);
+				$extrafields = new ExtraFields($this->db);
 				$extralabels=$extrafields->fetch_name_optionals_label('contrat');
-
-				// EN: Ensure extra fields are loaded for the contract
-				// FR: S'assurer que les extrafields sont chargés pour le contrat
-				if (empty($object->array_options)) {
-					$object->fetch_optionals();
-				}
-
 
 			// Page 1
 				$pdf->AddPage();
