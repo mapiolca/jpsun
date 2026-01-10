@@ -385,16 +385,16 @@ class pdf_contratpartv3 extends ModelePDFContract
 				//$pdf->Image($logo, 10, 10, "", 10);
 				
 				$pdf->writeHTMLCell(100,4, 95, 52, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_site_name']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 57.35, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_installed_power_kwc']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 57.35, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_installed_power_kwc'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 62.7, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_product']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 68.05, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 73.4, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 78.75, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 84.1, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 84.1, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_inverter_install_height_m'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 89.45, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_boxes_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 94.8, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 94.8, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_dc_box_install_height_m'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 100.15, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_boxes_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 105.5, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_ac_box_install_height_m']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 105.5, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_ac_box_install_height_m'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 110.85, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_access_code']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 116.2, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pdl_number']),0,1);
 
