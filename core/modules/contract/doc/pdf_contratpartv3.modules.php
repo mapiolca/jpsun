@@ -314,34 +314,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
-
-
-					if ($dc1_line->F_engagement == '1') {
-					
-						$pdf->writeHTMLCell(190,4, 84.25, 78.5, dol_htmlentitiesbr("X"),0,1);
-						
-					}
-
-					$pdf->writeHTMLCell(190,4, 20, 145, dol_htmlentitiesbr($dc1_line->adresse_internet),0,1);
-					$pdf->writeHTMLCell(190,4, 20, 160, dol_htmlentitiesbr($dc1_line->renseignement_adresse),0,1);
-
-
-					if ($dc1_line->dc2 == '1') {
-					
-						$pdf->writeHTMLCell(190,4, 24.6, 197.85, dol_htmlentitiesbr("X"),0,1);
-						
-					}elseif($dc1_line->dc2 == '2') {
-					
-						$pdf->writeHTMLCell(190,4, 95, 197.85, dol_htmlentitiesbr("X"),0,1);
-						
-					}elseif($dc1_line->dc2 == '3') {
-					
-						$pdf->writeHTMLCell(190,4, 24.6, 197.85, dol_htmlentitiesbr("X"),0,1);
-						$pdf->writeHTMLCell(190,4, 95, 197.85, dol_htmlentitiesbr("X"),0,1);
-						
-					}
-					$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
+					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
 			// Page 5
 				$pdf->AddPage();
@@ -358,7 +331,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
-					$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
+					//$pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
 			// Page 6
 				$pdf->AddPage();
@@ -367,7 +340,6 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 100, 276.7, $outputlangs->convToOutputCharset($dc1_line->ref_consultation),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
@@ -382,6 +354,7 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
+				//$pdf->SetFont('','B',11); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 				$pdf->writeHTMLCell(100,4, 71, 188, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_revaluation_index_sn'], 2)),0,1);
 				
 				// Pied de page
