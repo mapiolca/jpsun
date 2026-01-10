@@ -382,7 +382,7 @@ class pdf_contratpartv3 extends ModelePDFContract
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
 
 				//$pdf->Image($logo, 10, 10, "", 10);
-				$pdf->writeHTMLCell(100,4, 72, 189, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_revaluation_index_sn'], 2)),0,1);
+				$pdf->writeHTMLCell(100,4, 71, 188, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_revaluation_index_sn'], 2)),0,1);
 				
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);
