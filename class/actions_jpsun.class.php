@@ -232,6 +232,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	{
 		global $langs;
 
+		dol_syslog('JPSUN AddSignature CALLED mode='.GETPOST('mode','aZ09'), LOG_WARNING);
+		return -1;
+
 		// On ne gère que la signature des CONTRATS
 		$mode = GETPOST('mode', 'aZ09');
 		if ($mode !== 'contract') return 0;
@@ -297,6 +300,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	}
 
 }
+
 
 
 
