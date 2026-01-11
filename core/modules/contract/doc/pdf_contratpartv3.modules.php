@@ -387,9 +387,22 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//$pdf->Image($logo, 10, 10, "", 10);
 				
+				// EN: Load PV module product reference and label
+				// FR: Charger la reference et le libelle du produit module PV
+				$pv_module_product_label = $object->array_options['options_jpsun_pv_module_product'];
+				if (! empty($object->array_options['options_jpsun_pv_module_product'])) {
+					$pv_module_product = new Product($this->db);
+					if ($pv_module_product->fetch((int) $object->array_options['options_jpsun_pv_module_product']) > 0) {
+						$pv_module_product_label = $pv_module_product->ref;
+						if (! empty($pv_module_product->label)) {
+							$pv_module_product_label .= ' - '.$pv_module_product->label;
+						}
+					}
+				}
+
 				$pdf->writeHTMLCell(100,4, 95, 52, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_site_name']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 57.35, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_installed_power_kwc'],2)),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 62.7, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_product']),0,1);
+				$pdf->writeHTMLCell(100,4, 95, 62.7, $outputlangs->convToOutputCharset($pv_module_product_label),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 68.05, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 73.4, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 78.75, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
