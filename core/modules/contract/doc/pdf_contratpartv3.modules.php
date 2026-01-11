@@ -833,14 +833,14 @@ class pdf_contratpartv3 extends ModelePDFContract
 	 * Show footer signature of page
 	 *
 	 * @param   TCPDF       $pdf            Object PDF
-	 * @param   int         $tab_top        tab height position
-	 * @param   int         $tab_height     tab height
-	 * @param   Translate   $outputlangs    Object language for output
+	 * @param   CommonObject $object        Object to show
+	 * @param   int          $tab_top       tab height position
+	 * @param   int          $tab_height    tab height
+	 * @param   Translate    $outputlangs   Object language for output
 	 * @return void
 	 */
-	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
+	protected function tabSignature(&$pdf, $object, $tab_top, $tab_height, $outputlangs)
 	{
-		global $object ;
 		$object->fetch_thirdparty();
 		$pdf->SetDrawColor(128, 128, 128);
 		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
