@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.6.6';
+		$this->version = '1.7';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -710,6 +710,7 @@ class modJpsun extends DolibarrModules
 }
 
 ?>
+
 
 
 
