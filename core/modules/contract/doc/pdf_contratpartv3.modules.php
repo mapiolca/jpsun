@@ -855,7 +855,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 		//$posy = $tab_top + $tab_height + 3 + 3;
 
 		if (!getDolGlobalString('CONTRACT_HIDE_THIRPARTY_SIGNATURE_SECTION_PDF')) {
-			//$pdf->SetXY($posmiddle + 5, $posy);
+			$pdf->SetFont('', 'B', 9);
 			$pdf->writeHTMLCell(100, 4, 25, 160, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 1);
 
 			//$pdf->SetXY($posmiddle + 5, $posy + 5);
