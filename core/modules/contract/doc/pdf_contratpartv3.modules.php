@@ -347,7 +347,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 						$pdf->writeHTMLCell(120, 4, 25, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['zip'])) {
-						$pdf->writeHTMLCell(40, 4, 156, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+						$pdf->writeHTMLCell(40, 4, 157, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['town'])) {
 						$pdf->writeHTMLCell(80, 4, 98, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
@@ -359,28 +359,28 @@ class pdf_contratpartv3 extends ModelePDFContract
 						$pdf->writeHTMLCell(80, 4, 25, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 65, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 66, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 108, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['email'])) {
-						$pdf->writeHTMLCell(80, 4, 150, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 147, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
 					}
 
 					// EN: Write representative 2 fields
 					// FR: Ecrire les champs du représentant 2
 					if (! empty($contact_data['SITEREPRESANT2']['fullname'])) {
-						$pdf->writeHTMLCell(80, 4, 25, 77, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 25, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 65, 77, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 66, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 77, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 108, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['email'])) {
-						$pdf->writeHTMLCell(80, 4, 150, 77, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 147, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
 					}
 
 					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
