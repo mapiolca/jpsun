@@ -376,7 +376,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
-				$this->tabSignature($pdf, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforfreetext - $heightforfooter, $outputlangs);
+				$this->tabSignature($pdf, $object, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforfreetext - $heightforfooter, $outputlangs);
 
 
 			// Page 9
