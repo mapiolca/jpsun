@@ -737,7 +737,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 	{
 		global $object ;
 		$object->fetch_thirdparty();
-		
+		var_dump($object->thirdparty->name);
 		$pdf->SetDrawColor(128, 128, 128);
 		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
 		//$posy = $tab_top + $tab_height + 3 + 3;
