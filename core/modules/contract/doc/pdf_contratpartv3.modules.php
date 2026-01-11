@@ -346,12 +346,14 @@ class pdf_contratpartv3 extends ModelePDFContract
 					if (! empty($contact_data['SITEADDRESS']['address'])) {
 						$pdf->writeHTMLCell(120, 4, 25, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
 					}
-					if (! empty($contact_data['SITEADDRESS']['zip'])) {
-						$pdf->writeHTMLCell(40, 4, 157, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
-					}
 					if (! empty($contact_data['SITEADDRESS']['town'])) {
 						$pdf->writeHTMLCell(80, 4, 98, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
 					}
+					if (! empty($contact_data['SITEADDRESS']['zip'])) {
+						$pdf->writeHTMLCell(40, 4, 157, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+					}
+					$pdf->writeHTMLCell(100,4, 90, 44, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_distance_company_km'], 2)),0,1);
+
 
 					// EN: Write representative 1 fields
 					// FR: Ecrire les champs du représentant 1
