@@ -878,7 +878,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
 		$pdf->SetFont('', 'B', 9);
 		$title=$outputlangs->transnoentities("Reference")." ".$outputlangs->convToOutputCharset($object->ref);
-		$pdf->writeHTMLCell(150,4, 10, 285, $title,0,1);
+		$pdf->writeHTMLCell(150,4, 10, 282.5, $title,0,1);
 		return pdf_pagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
 	}
 
