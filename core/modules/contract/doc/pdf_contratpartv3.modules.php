@@ -255,15 +255,13 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->SetTextColor(0,0,60);
 				$title=$outputlangs->transnoentities("Reference")." ".$outputlangs->convToOutputCharset($object->ref);
 				$pdf->writeHTMLCell(150,4, 80, 220, $title,0,1);
-					
+				$pdf->SetTextColor(0,0,0);
 
 			// Page 2
 				$pdf->AddPage();
 
 				$tplidx = $pdf->importPage(2);
                 if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-
-				//$pdf->Image($logo, 10, 10, "", 10);
 				
 				// Pied de page
 					$this->_pagefoot($pdf, $object, $outputlangs);
@@ -878,7 +876,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 	{
 		global $conf;
 		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
-		//return pdf_pagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
+		return pdf_pagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
 	}
 
 }
