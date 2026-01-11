@@ -254,8 +254,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->SetFont('', 'B', $default_font_size + 3);
 				$pdf->SetTextColor(0,0,60);
 				$title=$outputlangs->transnoentities("Reference")." ".$outputlangs->convToOutputCharset($object->ref);
-				$pdf->writeHTMLCell(150,4, 100, 200, $title,0,1);
-				$pdf->MultiCell(100, 250, $title, '', 'C');
+				$pdf->writeHTMLCell(150,4, 85, 250, $title,0,1);
 					
 
 			// Page 2
