@@ -344,13 +344,13 @@ class pdf_contratpartv3 extends ModelePDFContract
 					// EN: Write site address fields
 					// FR: Ecrire les champs d'adresse du site
 					if (! empty($contact_data['SITEADDRESS']['address'])) {
-						$pdf->writeHTMLCell(120, 4, 20, 60, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
+						$pdf->writeHTMLCell(120, 4, 27, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['zip'])) {
-						$pdf->writeHTMLCell(40, 4, 20, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+						$pdf->writeHTMLCell(40, 4, 158, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['town'])) {
-						$pdf->writeHTMLCell(80, 4, 65, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 100, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
 					}
 
 					// EN: Write representative 1 fields
