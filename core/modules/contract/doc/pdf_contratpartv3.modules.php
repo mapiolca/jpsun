@@ -733,7 +733,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 	 * @param   Translate   $outputlangs    Object language for output
 	 * @return void
 	 */
-	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
+	protected function tabSignature(&$pdf, , $object, $tab_top, $tab_height, $outputlangs)
 	{
 		global $object ;
 		$object->fetch_thirdparty();
