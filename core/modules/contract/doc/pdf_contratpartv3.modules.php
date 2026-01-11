@@ -404,7 +404,20 @@ class pdf_contratpartv3 extends ModelePDFContract
 				$pdf->writeHTMLCell(100,4, 95, 57.35, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_installed_power_kwc'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 62.7, $outputlangs->convToOutputCharset($pv_module_product_label),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 68.05, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_pv_module_qty']),0,1);
-				$pdf->writeHTMLCell(100,4, 95, 73.4, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_product']),0,1);
+				// EN: Load inverter product reference and label
+				// FR: Charger la reference et le libelle du produit onduleur
+				$inverter_product_label = $object->array_options['options_jpsun_inverter_product'];
+				if (! empty($object->array_options['options_jpsun_inverter_product'])) {
+					$inverter_product = new Product($this->db);
+					if ($inverter_product->fetch((int) $object->array_options['options_jpsun_inverter_product']) > 0) {
+						$inverter_product_label = $inverter_product->ref;
+						if (! empty($inverter_product->label)) {
+							$inverter_product_label .= ' - '.$inverter_product->label;
+						}
+					}
+				}
+
+				$pdf->writeHTMLCell(100,4, 95, 73.4, $outputlangs->convToOutputCharset($inverter_product_label),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 78.75, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_inverter_qty']),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 84.1, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_inverter_install_height_m'],2)),0,1);
 				$pdf->writeHTMLCell(100,4, 95, 89.45, $outputlangs->convToOutputCharset($object->array_options['options_jpsun_dc_boxes_qty']),0,1);
