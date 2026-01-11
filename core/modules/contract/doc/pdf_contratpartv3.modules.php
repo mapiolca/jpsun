@@ -35,6 +35,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 
 /**
  *	Class to generate the supplier orders with the JPSUN model
@@ -299,6 +300,83 @@ class pdf_contratpartv3 extends ModelePDFContract
 					if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+
+					// EN: Load selected external contacts for the contract
+					// FR: Charger les contacts externes sélectionnés du contrat
+					$contact_labels = array(
+						'SITEADDRESS' => $outputlangs->trans('JpsunContractSiteAddress'),
+						'SITEREPRESANT1' => $outputlangs->trans('JpsunContractSiteRepresentative1'),
+						'SITEREPRESANT2' => $outputlangs->trans('JpsunContractSiteRepresentative2')
+					);
+					$contact_details = array();
+					$contactlist = $object->liste_contact(-1, 'external');
+					$contactstatic = new Contact($this->db);
+					foreach ($contactlist as $contact) {
+						$contactcode = '';
+						if (! empty($contact['code'])) {
+							$contactcode = $contact['code'];
+						} elseif (! empty($contact['typecode'])) {
+							$contactcode = $contact['typecode'];
+						}
+						if (empty($contactcode) || ! isset($contact_labels[$contactcode])) {
+							continue;
+						}
+						if (! empty($contact['id'])) {
+							$contactstatic->fetch((int) $contact['id']);
+						}
+						$contact_lines = array();
+						$fullname = '';
+						if (! empty($contactstatic->id)) {
+							$fullname = $contactstatic->getFullName($outputlangs, 1);
+						}
+						if (empty($fullname)) {
+							$firstname = ! empty($contact['firstname']) ? $contact['firstname'] : '';
+							$lastname = ! empty($contact['lastname']) ? $contact['lastname'] : '';
+							$fullname = trim($firstname.' '.$lastname);
+						}
+						if (! empty($fullname)) {
+							$contact_lines[] = $fullname;
+						}
+						$address = '';
+						if (! empty($contactstatic->address)) {
+							$address = $contactstatic->address;
+						} elseif (! empty($contact['address'])) {
+							$address = $contact['address'];
+						}
+						if (! empty($address)) {
+							$contact_lines[] = $address;
+						}
+						$zip = '';
+						$town = '';
+						if (! empty($contactstatic->zip)) {
+							$zip = $contactstatic->zip;
+						} elseif (! empty($contact['zip'])) {
+							$zip = $contact['zip'];
+						}
+						if (! empty($contactstatic->town)) {
+							$town = $contactstatic->town;
+						} elseif (! empty($contact['town'])) {
+							$town = $contact['town'];
+						}
+						$cityline = trim($zip.' '.$town);
+						if (! empty($cityline)) {
+							$contact_lines[] = $cityline;
+						}
+						if (! empty($contact_lines)) {
+							$contact_details[$contactcode] = implode('<br>', $contact_lines);
+						}
+					}
+
+					$contact_html_lines = array();
+					foreach ($contact_labels as $contact_code => $contact_label) {
+						if (! empty($contact_details[$contact_code])) {
+							$contact_html_lines[] = '<strong>'.$contact_label.'</strong><br>'.$contact_details[$contact_code];
+						}
+					}
+					$contact_html = implode('<br><br>', $contact_html_lines);
+					if (! empty($contact_html)) {
+						$pdf->writeHTMLCell(170, 4, 20, 60, dol_htmlentitiesbr($outputlangs->convToOutputCharset($contact_html)), 0, 1);
+					}
 
 					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
