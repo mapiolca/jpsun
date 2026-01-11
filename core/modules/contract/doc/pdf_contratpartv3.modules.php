@@ -251,8 +251,11 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+				$pdf->SetFont('', 'B', $default_font_size + 3);
+				$pdf->SetTextColor(0,0,60);
+				$title=$outputlangs->transnoentities("Reference")." ".$outputlangs->convToOutputCharset($object->ref);
+				$pdf->writeHTMLCell(150,4, 100, 200, $title,0,1);
 					
-
 
 			// Page 2
 				$pdf->AddPage();
