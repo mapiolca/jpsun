@@ -340,47 +340,47 @@ class pdf_contratpartv3 extends ModelePDFContract
 							$contact_data[$contactcode]['email'] = ! empty($contactstatic->email) ? $contactstatic->email : (isset($contact['email']) ? $contact['email'] : '');
 						}
 					}
-
+					$pdf->SetFont('','',9); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 					// EN: Write site address fields
 					// FR: Ecrire les champs d'adresse du site
 					if (! empty($contact_data['SITEADDRESS']['address'])) {
-						$pdf->writeHTMLCell(120, 4, 27, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
+						$pdf->writeHTMLCell(120, 4, 25, 39, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['zip'])) {
-						$pdf->writeHTMLCell(40, 4, 158, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+						$pdf->writeHTMLCell(40, 4, 156, 39, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
 					}
 					if (! empty($contact_data['SITEADDRESS']['town'])) {
-						$pdf->writeHTMLCell(80, 4, 100, 40, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 98, 39, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
 					}
 
 					// EN: Write representative 1 fields
 					// FR: Ecrire les champs du représentant 1
 					if (! empty($contact_data['SITEREPRESANT1']['fullname'])) {
-						$pdf->writeHTMLCell(80, 4, 20, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 25, 70, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 50, 70, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 20, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 100, 70, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['email'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 150, 70, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
 					}
 
 					// EN: Write representative 2 fields
 					// FR: Ecrire les champs du représentant 2
 					if (! empty($contact_data['SITEREPRESANT2']['fullname'])) {
-						$pdf->writeHTMLCell(80, 4, 20, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 25, 75, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 50, 75, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 20, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 100, 75, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['email'])) {
-						$pdf->writeHTMLCell(80, 4, 110, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 150, 75, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
 					}
 
 					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
