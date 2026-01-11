@@ -269,6 +269,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 					$pdf->SetFont('','',11); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 					$object->fetch_thirdparty();
+					$this->recipient = $object->thirdparty;   // <- important
 					$Client = '
 
 					'.$object->thirdparty->name.'<br>
@@ -733,17 +734,16 @@ class pdf_contratpartv3 extends ModelePDFContract
 	 * @param   Translate   $outputlangs    Object language for output
 	 * @return void
 	 */
-	protected function tabSignature(&$pdf, $object, $tab_top, $tab_height, $outputlangs)
+	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
 	{
-		$object->fetch_thirdparty();
-		var_dump($object->thirdparty->name);
+		var_dump($this->recipient->name);
 		$pdf->SetDrawColor(128, 128, 128);
 		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
 		//$posy = $tab_top + $tab_height + 3 + 3;
 
 		if (!getDolGlobalString('CONTRACT_HIDE_THIRPARTY_SIGNATURE_SECTION_PDF')) {
 			//$pdf->SetXY($posmiddle + 5, $posy);
-			$pdf->writeHTMLCell(100, 4, 66, 145, $outputlangs->transnoentities("ContactNameAndSignature", $object->thirdparty->name), 0, 1);
+			$pdf->writeHTMLCell(100, 4, 66, 145, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 1);
 
 			//$pdf->SetXY($posmiddle + 5, $posy + 5);
 			$pdf->RoundedRect(66, 150, 70, 30, $this->corner_radius, '1234', 'D');
