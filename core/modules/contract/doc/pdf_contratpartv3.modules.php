@@ -303,79 +303,84 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 					// EN: Load selected external contacts for the contract
 					// FR: Charger les contacts externes sélectionnés du contrat
-					$contact_labels = array(
-						'SITEADDRESS' => $outputlangs->trans('JpsunContractSiteAddress'),
-						'SITEREPRESANT1' => $outputlangs->trans('JpsunContractSiteRepresentative1'),
-						'SITEREPRESANT2' => $outputlangs->trans('JpsunContractSiteRepresentative2')
+					$contact_data = array(
+						'SITEADDRESS' => array('address' => '', 'zip' => '', 'town' => ''),
+						'SITEREPRESANT1' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
+						'SITEREPRESANT2' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => '')
 					);
-					$contact_details = array();
 					$contactlist = $object->liste_contact(-1, 'external');
-					$contactstatic = new Contact($this->db);
 					foreach ($contactlist as $contact) {
+						$contactstatic = new Contact($this->db);
 						$contactcode = '';
 						if (! empty($contact['code'])) {
 							$contactcode = $contact['code'];
 						} elseif (! empty($contact['typecode'])) {
 							$contactcode = $contact['typecode'];
 						}
-						if (empty($contactcode) || ! isset($contact_labels[$contactcode])) {
+						if (empty($contactcode) || ! isset($contact_data[$contactcode])) {
 							continue;
 						}
 						if (! empty($contact['id'])) {
 							$contactstatic->fetch((int) $contact['id']);
 						}
-						$contact_lines = array();
-						$fullname = '';
-						if (! empty($contactstatic->id)) {
+						if ($contactcode === 'SITEADDRESS') {
+							$contact_data[$contactcode]['address'] = ! empty($contactstatic->address) ? $contactstatic->address : (isset($contact['address']) ? $contact['address'] : '');
+							$contact_data[$contactcode]['zip'] = ! empty($contactstatic->zip) ? $contactstatic->zip : (isset($contact['zip']) ? $contact['zip'] : '');
+							$contact_data[$contactcode]['town'] = ! empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
+						} else {
 							$fullname = $contactstatic->getFullName($outputlangs, 1);
-						}
-						if (empty($fullname)) {
-							$firstname = ! empty($contact['firstname']) ? $contact['firstname'] : '';
-							$lastname = ! empty($contact['lastname']) ? $contact['lastname'] : '';
-							$fullname = trim($firstname.' '.$lastname);
-						}
-						if (! empty($fullname)) {
-							$contact_lines[] = $fullname;
-						}
-						$address = '';
-						if (! empty($contactstatic->address)) {
-							$address = $contactstatic->address;
-						} elseif (! empty($contact['address'])) {
-							$address = $contact['address'];
-						}
-						if (! empty($address)) {
-							$contact_lines[] = $address;
-						}
-						$zip = '';
-						$town = '';
-						if (! empty($contactstatic->zip)) {
-							$zip = $contactstatic->zip;
-						} elseif (! empty($contact['zip'])) {
-							$zip = $contact['zip'];
-						}
-						if (! empty($contactstatic->town)) {
-							$town = $contactstatic->town;
-						} elseif (! empty($contact['town'])) {
-							$town = $contact['town'];
-						}
-						$cityline = trim($zip.' '.$town);
-						if (! empty($cityline)) {
-							$contact_lines[] = $cityline;
-						}
-						if (! empty($contact_lines)) {
-							$contact_details[$contactcode] = implode('<br>', $contact_lines);
+							if (empty($fullname)) {
+								$firstname = ! empty($contact['firstname']) ? $contact['firstname'] : '';
+								$lastname = ! empty($contact['lastname']) ? $contact['lastname'] : '';
+								$fullname = trim($firstname.' '.$lastname);
+							}
+							$contact_data[$contactcode]['fullname'] = $fullname;
+							$contact_data[$contactcode]['job'] = ! empty($contactstatic->poste) ? $contactstatic->poste : (isset($contact['poste']) ? $contact['poste'] : '');
+							$contact_data[$contactcode]['phone'] = ! empty($contactstatic->phone_pro) ? $contactstatic->phone_pro : (isset($contact['phone']) ? $contact['phone'] : '');
+							$contact_data[$contactcode]['email'] = ! empty($contactstatic->email) ? $contactstatic->email : (isset($contact['email']) ? $contact['email'] : '');
 						}
 					}
 
-					$contact_html_lines = array();
-					foreach ($contact_labels as $contact_code => $contact_label) {
-						if (! empty($contact_details[$contact_code])) {
-							$contact_html_lines[] = '<strong>'.$contact_label.'</strong><br>'.$contact_details[$contact_code];
-						}
+					// EN: Write site address fields
+					// FR: Ecrire les champs d'adresse du site
+					if (! empty($contact_data['SITEADDRESS']['address'])) {
+						$pdf->writeHTMLCell(120, 4, 20, 60, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
 					}
-					$contact_html = implode('<br><br>', $contact_html_lines);
-					if (! empty($contact_html)) {
-						$pdf->writeHTMLCell(170, 4, 20, 60, dol_htmlentitiesbr($outputlangs->convToOutputCharset($contact_html)), 0, 1);
+					if (! empty($contact_data['SITEADDRESS']['zip'])) {
+						$pdf->writeHTMLCell(40, 4, 20, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+					}
+					if (! empty($contact_data['SITEADDRESS']['town'])) {
+						$pdf->writeHTMLCell(80, 4, 65, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
+					}
+
+					// EN: Write representative 1 fields
+					// FR: Ecrire les champs du représentant 1
+					if (! empty($contact_data['SITEREPRESANT1']['fullname'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['job'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['phone'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['email'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
+					}
+
+					// EN: Write representative 2 fields
+					// FR: Ecrire les champs du représentant 2
+					if (! empty($contact_data['SITEREPRESANT2']['fullname'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['job'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['phone'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['email'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
 					}
 
 					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
