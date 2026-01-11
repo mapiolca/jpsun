@@ -352,22 +352,22 @@ class pdf_contratpartv3 extends ModelePDFContract
 					if (! empty($contact_data['SITEADDRESS']['zip'])) {
 						$pdf->writeHTMLCell(40, 4, 157, 39.5, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
 					}
-					$pdf->writeHTMLCell(100,4, 90, 44, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_distance_company_km'], 2)),0,1);
+					$pdf->writeHTMLCell(100,4, 85, 44.5, $outputlangs->convToOutputCharset(round($object->array_options['options_jpsun_distance_company_km'], 2)),0,1);
 
 
 					// EN: Write representative 1 fields
 					// FR: Ecrire les champs du représentant 1
 					if (! empty($contact_data['SITEREPRESANT1']['fullname'])) {
-						$pdf->writeHTMLCell(80, 4, 25, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 25, 71.5, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 66, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 66.5, 71.5, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 108, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 107, 71.5, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT1']['email'])) {
-						$pdf->writeHTMLCell(80, 4, 147, 72, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 147, 71.5, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
 					}
 
 					// EN: Write representative 2 fields
@@ -376,10 +376,10 @@ class pdf_contratpartv3 extends ModelePDFContract
 						$pdf->writeHTMLCell(80, 4, 25, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['job'])) {
-						$pdf->writeHTMLCell(80, 4, 66, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 66.5, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['phone'])) {
-						$pdf->writeHTMLCell(80, 4, 108, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
+						$pdf->writeHTMLCell(80, 4, 107, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
 					}
 					if (! empty($contact_data['SITEREPRESANT2']['email'])) {
 						$pdf->writeHTMLCell(80, 4, 147, 76, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
