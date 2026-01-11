@@ -1,8 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.7 (09/01/2026)
+## 1.7 (11/01/2026)
 
 - Ajout des extrafields contrats JPSUN pour les contrats.
+- Ajout du modèle de contrat particulier v3.
+- Ajout des traductions manquantes.
+- Ajout des types de contact "Adresse du Site" , "Représentant du site 1" et Représentant du site 2".
 
 ## 1.6.6
 
