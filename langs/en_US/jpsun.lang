@@ -201,6 +201,9 @@ JpsunContractAcBoxesQty = Nombre de coffret AC<br>
 JpsunContractAcBoxInstallHeightM = Hauteur d'installation Coffret AC (m)<br>
 JpsunContractAccessCode = Code accès (si nécessaire)<br>
 JpsunContractPdlNumber = N° de PDL :<br>
+JpsunContractSiteAddress = Site address<br>
+JpsunContractSiteRepresentative1 = Site representative 1<br>
+JpsunContractSiteRepresentative2 = Site representative 2<br>
 <br>
 //#Partie ENEDIS<br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
