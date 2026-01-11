@@ -170,6 +170,14 @@ DELETE FROM llx_overwrite_trans WHERE lang='fr_FR' AND transkey='DeliveryDate' A
 INSERT IGNORE INTO `llx_overwrite_trans` (`rowid`, `entity`, `lang`, `transkey`, `transvalue`) VALUES (NULL, '__ENTITY__', 'fr_FR', 'ExtrafieldMail', 'Courriel');
 INSERT IGNORE INTO `llx_overwrite_trans` (`rowid`, `entity`, `lang`, `transkey`, `transvalue`) VALUES (NULL, '__ENTITY__', 'fr_FR', 'DeliveryDate', 'Date de livraison');
 
+-- CONTACT TYPES
 
+DELETE FROM llx_c_type_contact WHERE element='contrat' AND source='external' AND code='SITEADDRESS';
+DELETE FROM llx_c_type_contact WHERE element='contrat' AND source='external' AND code='SITEREPRESANT1';
+DELETE FROM llx_c_type_contact WHERE element='contrat' AND source='external' AND code='SITEREPRESANT2';
+
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEADDRESS', 'Adresse du site', 1, NULL);
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT1', 'Représentant du site 1', 1, NULL);
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT2', 'Représentant du site 2', 1, NULL);
 
 

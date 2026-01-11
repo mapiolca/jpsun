@@ -225,5 +225,78 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		return 0;
 	}
 
+	/**
+	 * Hook called by core/ajax/onlineSign.php
+	 */
+	public function AddSignature($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+	
+		$mode = GETPOST('mode', 'aZ09');
+		if ($mode !== 'contract') return 0;
+	
+		$sourcefile     = $parameters['sourcefile'] ?? '';
+		$newpdffilename = $parameters['newpdffilename'] ?? '';
+		if (empty($sourcefile) || empty($newpdffilename)) return 0;
+	
+		if (!preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) return 0;
+		$date = $m[1];
+	
+		$upload_dir = dirname($sourcefile).'/';
+		$sigpath = $upload_dir.'signatures/'.$date.'_signature.png';
+	
+		if (!dol_is_file($sourcefile) || !dol_is_file($sigpath)) return 0;
+	
+		$online_sign_name = GETPOST('onlinesignname', 'alphanohtml');
+	
+		$pdf = pdf_getInstance();
+		if (class_exists('TCPDF')) {
+			$pdf->setPrintHeader(false);
+			$pdf->setPrintFooter(false);
+		}
+		$pdf->SetFont(pdf_getPDFFont($langs));
+		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) $pdf->SetCompression(false);
+	
+		$pagecount = $pdf->setSourceFile($sourcefile);
+	
+		$targetPage = 8;
+	
+		// Coordonnées de ta box (tabSignature)
+		$x = 66;
+		$y = 150;
+		$w = 70;
+		$h = $w / 4;
+	
+		for ($i = 1; $i <= $pagecount; $i++) {
+			$tpl = $pdf->importPage($i);
+			$s = $pdf->getTemplatesize($tpl);
+	
+			// IMPORTANT: on force le format exact de la page importée
+			$pdf->AddPage(($s['h'] > $s['w'] ? 'P' : 'L'), array($s['w'], $s['h']));
+			$pdf->useTemplate($tpl);
+	
+			if ($i == $targetPage) {
+				$pdf->Image($sigpath, $x, $y + 2, $w, $h);
+	
+				$pdf->SetFont(pdf_getPDFFont($langs), '', pdf_getPDFFontSize($langs) - 1);
+				$pdf->SetTextColor(80, 80, 80);
+				$pdf->SetXY($x, $y + 2 + $h + 1);
+				$pdf->MultiCell($w, 4, $langs->trans("Signature").' : '.dol_print_date(dol_now(), "day", false, $langs, true).' - '.$online_sign_name, 0, 'L');
+			}
+		}
+	
+		$pdf->Output($newpdffilename, 'F');
+	
+		$object->indexFile($newpdffilename, 1);
+	
+		// CRUCIAL: si tu ne renvoies pas 1, Dolibarr refait son fallback page 15
+		return 1;
+	}
 
 }
+
+
+
+
+
+
