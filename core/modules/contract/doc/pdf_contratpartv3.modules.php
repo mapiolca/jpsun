@@ -35,6 +35,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 
 /**
  *	Class to generate the supplier orders with the JPSUN model
@@ -299,6 +300,88 @@ class pdf_contratpartv3 extends ModelePDFContract
 					if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+
+					// EN: Load selected external contacts for the contract
+					// FR: Charger les contacts externes sélectionnés du contrat
+					$contact_data = array(
+						'SITEADDRESS' => array('address' => '', 'zip' => '', 'town' => ''),
+						'SITEREPRESANT1' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
+						'SITEREPRESANT2' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => '')
+					);
+					$contactlist = $object->liste_contact(-1, 'external');
+					foreach ($contactlist as $contact) {
+						$contactstatic = new Contact($this->db);
+						$contactcode = '';
+						if (! empty($contact['code'])) {
+							$contactcode = $contact['code'];
+						} elseif (! empty($contact['typecode'])) {
+							$contactcode = $contact['typecode'];
+						}
+						if (empty($contactcode) || ! isset($contact_data[$contactcode])) {
+							continue;
+						}
+						if (! empty($contact['id'])) {
+							$contactstatic->fetch((int) $contact['id']);
+						}
+						if ($contactcode === 'SITEADDRESS') {
+							$contact_data[$contactcode]['address'] = ! empty($contactstatic->address) ? $contactstatic->address : (isset($contact['address']) ? $contact['address'] : '');
+							$contact_data[$contactcode]['zip'] = ! empty($contactstatic->zip) ? $contactstatic->zip : (isset($contact['zip']) ? $contact['zip'] : '');
+							$contact_data[$contactcode]['town'] = ! empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
+						} else {
+							$fullname = $contactstatic->getFullName($outputlangs, 1);
+							if (empty($fullname)) {
+								$firstname = ! empty($contact['firstname']) ? $contact['firstname'] : '';
+								$lastname = ! empty($contact['lastname']) ? $contact['lastname'] : '';
+								$fullname = trim($firstname.' '.$lastname);
+							}
+							$contact_data[$contactcode]['fullname'] = $fullname;
+							$contact_data[$contactcode]['job'] = ! empty($contactstatic->poste) ? $contactstatic->poste : (isset($contact['poste']) ? $contact['poste'] : '');
+							$contact_data[$contactcode]['phone'] = ! empty($contactstatic->phone_pro) ? $contactstatic->phone_pro : (isset($contact['phone']) ? $contact['phone'] : '');
+							$contact_data[$contactcode]['email'] = ! empty($contactstatic->email) ? $contactstatic->email : (isset($contact['email']) ? $contact['email'] : '');
+						}
+					}
+
+					// EN: Write site address fields
+					// FR: Ecrire les champs d'adresse du site
+					if (! empty($contact_data['SITEADDRESS']['address'])) {
+						$pdf->writeHTMLCell(120, 4, 20, 60, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['address']), 0, 1);
+					}
+					if (! empty($contact_data['SITEADDRESS']['zip'])) {
+						$pdf->writeHTMLCell(40, 4, 20, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['zip']), 0, 1);
+					}
+					if (! empty($contact_data['SITEADDRESS']['town'])) {
+						$pdf->writeHTMLCell(80, 4, 65, 66, $outputlangs->convToOutputCharset($contact_data['SITEADDRESS']['town']), 0, 1);
+					}
+
+					// EN: Write representative 1 fields
+					// FR: Ecrire les champs du représentant 1
+					if (! empty($contact_data['SITEREPRESANT1']['fullname'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['fullname']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['job'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 80, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['job']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['phone'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['phone']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT1']['email'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 86, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT1']['email']), 0, 1);
+					}
+
+					// EN: Write representative 2 fields
+					// FR: Ecrire les champs du représentant 2
+					if (! empty($contact_data['SITEREPRESANT2']['fullname'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['fullname']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['job'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 100, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['job']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['phone'])) {
+						$pdf->writeHTMLCell(80, 4, 20, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['phone']), 0, 1);
+					}
+					if (! empty($contact_data['SITEREPRESANT2']['email'])) {
+						$pdf->writeHTMLCell(80, 4, 110, 106, $outputlangs->convToOutputCharset($contact_data['SITEREPRESANT2']['email']), 0, 1);
+					}
 
 					// $pdf->SetFont('','B',10); // fixe la police, le type ( 'B' pour gras, 'I' pour italique, '' pour normal,...)
 
@@ -755,14 +838,14 @@ class pdf_contratpartv3 extends ModelePDFContract
 	 * Show footer signature of page
 	 *
 	 * @param   TCPDF       $pdf            Object PDF
-	 * @param   int         $tab_top        tab height position
-	 * @param   int         $tab_height     tab height
-	 * @param   Translate   $outputlangs    Object language for output
+	 * @param   CommonObject $object        Object to show
+	 * @param   int          $tab_top       tab height position
+	 * @param   int          $tab_height    tab height
+	 * @param   Translate    $outputlangs   Object language for output
 	 * @return void
 	 */
-	protected function tabSignature(&$pdf, $tab_top, $tab_height, $outputlangs)
+	protected function tabSignature(&$pdf, $object, $tab_top, $tab_height, $outputlangs)
 	{
-		global $object ;
 		$object->fetch_thirdparty();
 		$pdf->SetDrawColor(128, 128, 128);
 		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
