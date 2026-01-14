@@ -4,6 +4,7 @@ CHARSET=iso-8859-1<br>
 Module999999Desc= Module rassemblant toutes les modifications développées pour JPSUN.<br>
 Module999999Name=JPSUN<br>
 jpsun=JPSUN<br>
+JpsunTriggerAutoProjectOnPropalSignedDesc=Trigger JPSUN: creazione automatica del progetto alla firma del preventivo.<br>
 <br>
 SetupG=Général <br>
 <br>
@@ -93,6 +94,10 @@ JpsunWithPicturesName = JPSUN avec images<br>
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.<br>
 JpsunWithoutPicturesName = JPSUN sans images<br>
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.<br>
+JpsunPropalSignedProjectAlreadyLinked = Un progetto è già collegato al preventivo %s (id %s).<br>
+JpsunPropalSignedProjectNoRef = Impossibile generare il riferimento del progetto per il preventivo %s (id %s).<br>
+JpsunPropalSignedProjectCreateError = Errore durante la creazione del progetto per il preventivo %s (id %s): %s.<br>
+JpsunPropalSignedProjectCreated = Progetto creato per il preventivo %s (id %s). ID progetto %s. Campi extra copiati: %s. Ordini collegati: %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>

@@ -1,5 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.8 (14/01/2026)
+
+- Création automatique d'un projet validé à la signature d'un devis, avec liens aux objets et copie des extrachamps.
+
 ## 1.7 (11/01/2026)
 
 - Ajout des extrafields contrats JPSUN pour les contrats.
