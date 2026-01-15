@@ -1764,7 +1764,7 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 
 			// Show sender name
 			if (!getDolGlobalString('MAIN_PDF_HIDE_SENDER_NAME')) {
-				$pdf->SetXY($posx + 2, $posy + 3);
+				$pdf->SetXY($posx + 2, $posy + 1);
 				$pdf->SetFont('', 'B', $default_font_size);
 				$pdf->MultiCell($widthrecbox - 2, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, $ltrdirection);
 				$posy = $pdf->getY();
