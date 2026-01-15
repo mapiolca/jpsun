@@ -165,7 +165,8 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref, $copiedExtraFields, $linkedOrders), LOG_INFO);
+		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref), LOG_INFO);
+		dol_syslog($langs->trans('JpsunPropalSignedProjectCreatedDetails', $copiedExtraFields, $linkedOrders), LOG_INFO);
 
 		return 1;
 	}
