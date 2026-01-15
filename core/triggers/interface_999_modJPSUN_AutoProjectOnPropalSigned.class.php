@@ -212,7 +212,11 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $copiedExtraFields, $linkedOrders), LOG_INFO);
+		// EN: Build log message without translate argument filtering
+		// FR: Construire le message de log sans filtrage des arguments de traduction
+		$message = $langs->trans('JpsunPropalSignedProjectCreated');
+		$message = sprintf($message, $object->ref, $object->id, $project->id, $copiedExtraFields, $linkedOrders);
+		dol_syslog($message, LOG_INFO);
 
 		return 1;
 	}
