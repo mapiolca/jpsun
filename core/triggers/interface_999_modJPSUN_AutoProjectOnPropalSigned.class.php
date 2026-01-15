@@ -110,68 +110,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		$project->status = Project::STATUS_VALIDATED;
 		$project->statut = Project::STATUS_VALIDATED;
 
-		// EN: Generate reference using the project numbering module
-		// FR: Générer la référence via le module de numérotation des projets
-		$defaultref = getDolGlobalString('PROJECT_ADDON');
-		if (empty($defaultref)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		$filefound = '';
-		if (!empty($conf->modules_parts['models'])) {
-			foreach ($conf->modules_parts['models'] as $reldir) {
-				$file = dol_buildpath($reldir.'project/'.$defaultref.'.php', 0);
-				if (file_exists($file)) {
-					$filefound = $file;
-					break;
-				}
-			}
-		}
-		if (empty($filefound)) {
-			$projectfile = DOL_DOCUMENT_ROOT.'/projet/core/modules/project/'.$defaultref.'.php';
-			if (file_exists($projectfile)) {
-				$filefound = $projectfile;
-			}
-		}
-		if (empty($filefound)) {
-			$corefile = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
-			if (file_exists($corefile)) {
-				$filefound = $corefile;
-			}
-		}
-		if (empty($filefound)) {
-			// EN: Search in custom modules for the configured numbering model
-			// FR: Rechercher dans les modules personnalisés le modèle de numérotation configuré
-			dol_include_once('/core/lib/files.lib.php');
-			$files = dol_dir_list(DOL_DOCUMENT_ROOT.'/custom', 'files', 0, '/core\\/modules\\/project\\/'.preg_quote($defaultref, '/').'\\.php$/', '', 'name', SORT_ASC, 1);
-			if (!empty($files)) {
-				$filefound = $files[0]['fullname'];
-			}
-		}
-		if (!file_exists($filefound)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		dol_include_once($filefound);
-		$classname = $defaultref;
-		if (!class_exists($classname)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		$modProject = new $classname($this->db);
-		$project->ref = $modProject->getNextValue($object->thirdparty, $project);
-		if (empty($project->ref)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
+		$project->ref = '';
 
 		// EN: Copy extrafields with matching codes
 		// FR: Copier les extrachamps avec les mêmes codes
@@ -193,10 +132,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
+		dol_syslog('JPSUN AutoProject: creating project from propal id='.$object->id.' using PROJECT_ADDON='.getDolGlobalString('PROJECT_ADDON'), LOG_DEBUG);
 		$res = $project->create($user);
 		if ($res <= 0) {
 			$this->error = $project->error;
 			$this->errors = $project->errors;
+			dol_syslog('JPSUN AutoProject: project->create failed: '.$project->error, LOG_ERR);
 			dol_syslog($langs->trans('JpsunPropalSignedProjectCreateError', $object->ref, $object->id, $this->error), LOG_ERR);
 			return -1;
 		}
