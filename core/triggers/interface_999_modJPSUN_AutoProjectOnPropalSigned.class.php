@@ -114,7 +114,9 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		// FR: Générer la référence via le module de numérotation des projets
 		$defaultref = getDolGlobalString('PROJECT_ADDON');
 		if (empty($defaultref)) {
-			dol_syslog($langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id), LOG_ERR);
+			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
+			$this->errors[] = $this->error;
+			dol_syslog($this->error, LOG_ERR);
 			return -1;
 		}
 		$filefound = '';
@@ -128,15 +130,15 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 		if (empty($filefound)) {
-			$corefile = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
-			if (file_exists($corefile)) {
-				$filefound = $corefile;
-			}
-		}
-		if (empty($filefound)) {
 			$projectfile = DOL_DOCUMENT_ROOT.'/projet/core/modules/project/'.$defaultref.'.php';
 			if (file_exists($projectfile)) {
 				$filefound = $projectfile;
+			}
+		}
+		if (empty($filefound)) {
+			$corefile = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
+			if (file_exists($corefile)) {
+				$filefound = $corefile;
 			}
 		}
 		if (empty($filefound)) {
@@ -149,19 +151,25 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 		if (!file_exists($filefound)) {
-			dol_syslog($langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id), LOG_ERR);
+			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
+			$this->errors[] = $this->error;
+			dol_syslog($this->error, LOG_ERR);
 			return -1;
 		}
 		dol_include_once($filefound);
 		$classname = $defaultref;
 		if (!class_exists($classname)) {
-			dol_syslog($langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id), LOG_ERR);
+			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
+			$this->errors[] = $this->error;
+			dol_syslog($this->error, LOG_ERR);
 			return -1;
 		}
 		$modProject = new $classname($this->db);
 		$project->ref = $modProject->getNextValue($object->thirdparty, $project);
 		if (empty($project->ref)) {
-			dol_syslog($langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id), LOG_ERR);
+			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
+			$this->errors[] = $this->error;
+			dol_syslog($this->error, LOG_ERR);
 			return -1;
 		}
 
