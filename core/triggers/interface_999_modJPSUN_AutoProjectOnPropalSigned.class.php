@@ -16,7 +16,7 @@
  */
 
 /**
- *	\file		custom/jpsun/core/triggers/interface_999_modJPSUN_AutoProjectOnPropalSigned.class.php
+ *	\file		core/triggers/interface_999_modJPSUN_AutoProjectOnPropalSigned.class.php
  *	\ingroup	jpsun
  *	\brief		Trigger file for JPSUN
  */
