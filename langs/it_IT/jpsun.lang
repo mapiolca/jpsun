@@ -98,7 +98,7 @@ JpsunPropalSignedProjectAlreadyLinked = Un progetto è già collegato al prevent
 JpsunPropalSignedProjectNoRef = Impossibile generare il riferimento del progetto per il preventivo %s (id %s).<br>
 JpsunPropalSignedProjectModelNotFound = Modello di numerazione del progetto non trovato (%s) per il preventivo %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Errore durante la creazione del progetto per il preventivo %s (id %s): %s.<br>
-JpsunPropalSignedProjectCreated = Progetto creato per il preventivo %s (id %s). ID progetto %s. Campi extra copiati: %s. Ordini collegati: %s.<br>
+JpsunPropalSignedProjectCreated = Progetto creato per il preventivo %s (id %s). ID progetto %s. Riferimento progetto %s. Campi extra copiati: %s. Ordini collegati: %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>

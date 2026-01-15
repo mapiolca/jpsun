@@ -98,7 +98,7 @@ JpsunPropalSignedProjectAlreadyLinked = Ya existe un proyecto vinculado al presu
 JpsunPropalSignedProjectNoRef = No se pudo generar la referencia del proyecto para el presupuesto %s (id %s).<br>
 JpsunPropalSignedProjectModelNotFound = Modelo de numeración de proyectos no encontrado (%s) para el presupuesto %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Error al crear el proyecto para el presupuesto %s (id %s): %s.<br>
-JpsunPropalSignedProjectCreated = Proyecto creado para el presupuesto %s (id %s). Id del proyecto %s. Campos extra copiados: %s. Pedidos vinculados: %s.<br>
+JpsunPropalSignedProjectCreated = Proyecto creado para el presupuesto %s (id %s). Id del proyecto %s. Referencia del proyecto %s. Campos extra copiados: %s. Pedidos vinculados: %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>

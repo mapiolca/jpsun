@@ -98,7 +98,7 @@ JpsunPropalSignedProjectAlreadyLinked = Ein Projekt ist bereits mit dem Angebot 
 JpsunPropalSignedProjectNoRef = Referenz für das Projekt kann für das Angebot %s (ID %s) nicht erstellt werden.<br>
 JpsunPropalSignedProjectModelNotFound = Projekt-Nummerierungsmodell nicht gefunden (%s) für das Angebot %s (ID %s).<br>
 JpsunPropalSignedProjectCreateError = Fehler beim Erstellen des Projekts für das Angebot %s (ID %s): %s.<br>
-JpsunPropalSignedProjectCreated = Projekt für das Angebot %s (ID %s) erstellt. Projekt-ID %s. Kopierte Extrafelder: %s. Verknüpfte Aufträge: %s.<br>
+JpsunPropalSignedProjectCreated = Projekt für das Angebot %s (ID %s) erstellt. Projekt-ID %s. Projektreferenz %s. Kopierte Extrafelder: %s. Verknüpfte Aufträge: %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>
