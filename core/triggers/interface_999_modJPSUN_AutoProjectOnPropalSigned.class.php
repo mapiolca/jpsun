@@ -134,12 +134,22 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-		dol_syslog('JPSUN AutoProject: creating project from propal id='.$object->id.' using PROJECT_ADDON='.getDolGlobalString('PROJECT_ADDON'), LOG_DEBUG);
+		// EN: Ensure ref is provisional before create for native numbering
+		// FR: S'assurer d'une ref provisoire avant create pour la numérotation native
+		if (empty($project->ref)) {
+			$project->ref = '(PROV)';
+		}
+		dol_syslog(
+			'JPSUN AutoProject: creating project from propal id='.$object->id
+			.' using PROJECT_ADDON='.getDolGlobalString('PROJECT_ADDON')
+			.' ref='.$project->ref.' title='.$project->title.' socid='.$project->socid.' entity='.$project->entity,
+			LOG_DEBUG
+		);
 		$res = $project->create($user);
 		if ($res <= 0) {
 			$this->error = $project->error;
 			$this->errors = $project->errors;
-			dol_syslog('JPSUN AutoProject: project->create failed: '.$project->error, LOG_ERR);
+			dol_syslog('JPSUN AutoProject: project->create failed: '.$project->error.' ref='.$project->ref.' title='.$project->title.' socid='.$project->socid, LOG_ERR);
 			dol_syslog($langs->trans('JpsunPropalSignedProjectCreateError', $object->ref, $object->id, $this->error), LOG_ERR);
 			return -1;
 		}
