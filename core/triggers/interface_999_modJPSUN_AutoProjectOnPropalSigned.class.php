@@ -112,7 +112,11 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		// EN: Generate reference using the project numbering module
 		// FR: Générer la référence via le module de numérotation des projets
-		$defaultref = getDolGlobalString('PROJECT_ADDON', 'mod_project_simple');
+		$defaultref = getDolGlobalString('PROJECT_ADDON');
+		if (empty($defaultref)) {
+			dol_syslog($langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id), LOG_ERR);
+			return -1;
+		}
 		$filefound = '';
 		if (!empty($conf->modules_parts['models'])) {
 			foreach ($conf->modules_parts['models'] as $reldir) {
