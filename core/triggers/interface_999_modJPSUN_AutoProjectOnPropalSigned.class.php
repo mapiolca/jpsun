@@ -128,10 +128,22 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 		if (empty($filefound)) {
-			$filefound = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
+			$corefile = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
+			if (file_exists($corefile)) {
+				$filefound = $corefile;
+			}
+		}
+		if (empty($filefound)) {
+			// EN: Search in custom modules for the configured numbering model
+			// FR: Rechercher dans les modules personnalisés le modèle de numérotation configuré
+			dol_include_once('/core/lib/files.lib.php');
+			$files = dol_dir_list(DOL_DOCUMENT_ROOT.'/custom', 'files', 0, '/'.preg_quote($defaultref, '/').'\.php$/', '', 'name', SORT_ASC, 1);
+			if (!empty($files)) {
+				$filefound = $files[0]['fullname'];
+			}
 		}
 		if (!file_exists($filefound)) {
-			dol_syslog($langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id), LOG_ERR);
+			dol_syslog($langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id), LOG_ERR);
 			return -1;
 		}
 		dol_include_once($filefound);
