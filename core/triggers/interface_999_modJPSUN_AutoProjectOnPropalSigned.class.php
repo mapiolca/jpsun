@@ -132,6 +132,10 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 		dol_include_once($filefound);
 		$classname = $defaultref;
+		if (!class_exists($classname)) {
+			dol_syslog($langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id), LOG_ERR);
+			return -1;
+		}
 		$modProject = new $classname($this->db);
 		$project->ref = $modProject->getNextValue($object->thirdparty, $project);
 		if (empty($project->ref)) {

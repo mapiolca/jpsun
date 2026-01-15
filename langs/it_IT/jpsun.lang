@@ -96,6 +96,7 @@ JpsunWithoutPicturesName = JPSUN sans images<br>
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.<br>
 JpsunPropalSignedProjectAlreadyLinked = Un progetto è già collegato al preventivo %s (id %s).<br>
 JpsunPropalSignedProjectNoRef = Impossibile generare il riferimento del progetto per il preventivo %s (id %s).<br>
+JpsunPropalSignedProjectModelNotFound = Modello di numerazione del progetto non trovato (%s) per il preventivo %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Errore durante la creazione del progetto per il preventivo %s (id %s): %s.<br>
 JpsunPropalSignedProjectCreated = Progetto creato per il preventivo %s (id %s). ID progetto %s. Campi extra copiati: %s. Ordini collegati: %s.<br>
 <br>

@@ -96,6 +96,7 @@ JpsunWithoutPicturesName = JPSUN sans images<br>
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.<br>
 JpsunPropalSignedProjectAlreadyLinked = A project is already linked to proposal %s (id %s).<br>
 JpsunPropalSignedProjectNoRef = Unable to generate project reference for proposal %s (id %s).<br>
+JpsunPropalSignedProjectModelNotFound = Project numbering model not found (%s) for proposal %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Error creating project for proposal %s (id %s): %s.<br>
 JpsunPropalSignedProjectCreated = Project created for proposal %s (id %s). Project id %s. Extrafields copied: %s. Linked orders: %s.<br>
 <br>
