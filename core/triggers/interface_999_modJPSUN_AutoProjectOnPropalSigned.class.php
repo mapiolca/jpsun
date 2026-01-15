@@ -24,10 +24,10 @@
 dol_include_once('/core/triggers/dolibarrtriggers.class.php');
 
 /**
- *	\class		InterfaceJpsunAutoProjectOnPropalSigned
+ *	\class		InterfaceAutoProjectOnPropalSigned
  *	\brief		Class of trigger for JPSUN
  */
-class InterfaceJpsunAutoProjectOnPropalSigned extends DolibarrTriggers
+class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 {
 	/**
 	 * Constructor
