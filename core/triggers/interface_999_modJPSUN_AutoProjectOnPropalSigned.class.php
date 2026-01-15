@@ -110,7 +110,9 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		$project->status = Project::STATUS_VALIDATED;
 		$project->statut = Project::STATUS_VALIDATED;
 
-		$project->ref = '';
+		// EN: Let Dolibarr generate the reference with numbering module
+		// FR: Laisser Dolibarr générer la référence via le module de numérotation
+		$project->ref = '(PROV)';
 
 		// EN: Copy extrafields with matching codes
 		// FR: Copier les extrachamps avec les mêmes codes
