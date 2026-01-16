@@ -110,10 +110,6 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		$project->status = Project::STATUS_VALIDATED;
 		$project->statut = Project::STATUS_VALIDATED;
 
-		// EN: Let Dolibarr generate the reference with numbering module
-		// FR: Laisser Dolibarr générer la référence via le module de numérotation
-		$project->ref = '(PROV)';
-
 		// EN: Copy extrafields with matching codes
 		// FR: Copier les extrachamps avec les mêmes codes
 		$extrafields = new ExtraFields($this->db);
@@ -134,10 +130,32 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-		// EN: Ensure ref is provisional before create for native numbering
-		// FR: S'assurer d'une ref provisoire avant create pour la numérotation native
-		if (empty($project->ref)) {
-			$project->ref = '(PROV)';
+		// EN: Build project reference using numbering module
+		// FR: Générer la référence projet via le module de numérotation
+		$obj = getDolGlobalString('PROJECT_ADDON', 'mod_project_simple');
+		$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
+		$defaultref = '';
+		$filefound = '';
+		foreach ($dirmodels as $reldir) {
+			$file = dol_buildpath($reldir.'core/modules/project/'.$obj.'.php', 0);
+			if (file_exists($file)) {
+				$filefound = $file;
+				dol_include_once($reldir.'core/modules/project/'.$obj.'.php');
+				$modProject = new $obj();
+				'@phan-var-force ModeleNumRefProjects $modProject';
+				$project->date_c = dol_now();
+				$defaultref = $modProject->getNextValue(is_object($object->thirdparty) ? $object->thirdparty : null, $project);
+				break;
+			}
+		}
+		dol_syslog('JPSUN AutoProject: numbering model='.$obj.' file='.$filefound.' ref='.$defaultref, LOG_DEBUG);
+		if (empty($defaultref) || (is_numeric($defaultref) && $defaultref <= 0)) {
+			// EN: Fallback to a unique provisional ref to avoid failure
+			// FR: Repli sur une référence provisoire unique pour éviter l'échec
+			$project->ref = '(PROV-'.$object->id.')';
+			dol_syslog('JPSUN AutoProject: numbering failed, fallback ref='.$project->ref, LOG_WARNING);
+		} else {
+			$project->ref = $defaultref;
 		}
 		dol_syslog(
 			'JPSUN AutoProject: creating project from propal id='.$object->id
