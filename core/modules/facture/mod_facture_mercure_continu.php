@@ -162,7 +162,7 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 	 */
 	public function getNextValue($objsoc, $invoice, $mode = 'next')
 	{
-		global $db;
+		global $db, $conf;
 
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
@@ -204,6 +204,17 @@ class mod_facture_mercure_continu extends ModeleNumRefFactures
 
 		// Get entities (multicompany / shared numbering)
 		$entity = getEntity('invoicenumber', 1, $invoice);
+
+		// Fallback for Dolibarr v21 + Multicompany: if getEntity() returns empty, force current entity
+		if (empty($entity)) {
+			$entity = (!empty($invoice) && is_object($invoice) && !empty($invoice->entity)) ? (string) ((int) $invoice->entity) : (string) ((int) $conf->entity);
+		}
+
+		// Sanitize entity list (expected format: "1" or "1,2,3")
+		$entity = preg_replace('/[^0-9,]/', '', (string) $entity);
+		if (empty($entity)) {
+			$entity = (string) ((int) $conf->entity);
+		}
 
 		$refDate = (empty($invoice) ? dol_now() : $invoice->date);
 
