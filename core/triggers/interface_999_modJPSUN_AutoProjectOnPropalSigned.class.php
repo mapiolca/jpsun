@@ -167,6 +167,9 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref), LOG_INFO);
 		dol_syslog($langs->trans('JpsunPropalSignedProjectCreatedDetails', $copiedExtraFields, $linkedOrders), LOG_INFO);
+		// EN: Notify user about project creation
+		// FR: Notifier l'utilisateur de la création du projet
+		setEventMessage($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref));
 
 		return 1;
 	}
