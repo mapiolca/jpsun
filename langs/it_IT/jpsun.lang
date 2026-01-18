@@ -1,47 +1,47 @@
 # Dolibarr language file - fr_FR - tos
 # Admin form
 CHARSET=iso-8859-1
-Module999999Desc= Module rassemblant toutes les modifications développées pour JPSUN.
+Module999999Desc=Modulo che raccoglie tutte le modifiche sviluppate per JPSUN.
 Module999999Name=JPSUN
 jpsun=JPSUN
 JpsunTriggerAutoProjectOnPropalSignedDesc=Trigger JPSUN: creazione automatica del progetto alla firma del preventivo.
 
-SetupG=Général 
+SetupG=Generale
 
-jpsun_Setup=Réglages JPSUN - Général
+jpsun_Setup=Impostazioni JPSUN - Generale
 
-ReadEnedisTab=Lire l'onglet ENEDIS dans les projets
+ReadEnedisTab=Leggere la scheda ENEDIS nei progetti
 
-unitMPV = Modules Photovoltaïques
-MPV = Modules Photovoltaïques
-unitSET = Ensemble
+unitMPV=Moduli fotovoltaici
+MPV=Moduli fotovoltaici
+unitSET=Set
 
-DeliveryDate = Date de Livraison
+DeliveryDate=Data di consegna
 
-MobileShort = Port.
+MobileShort=Cell.
 
-ref_project = Référence du chantier
+ref_project=Riferimento progetto
 
 DocModelJPSUNName = JPSUN
-DocModelJPSUNDescription = Modèle de demande de prix pour/par JPSUN.
+DocModelJPSUNDescription=Modello di preventivo fornitore di JPSUN.
 
-DocModelJPSUNwithpricesName = JPSUN avec les prix
-DocModelJPSUNwithpricesDescription = Modèle de demande de prix pour/par JPSUN, laissant apparaître les prix du fournisseur déjà en base de données.
+DocModelJPSUNwithpricesName=JPSUN con prezzi
+DocModelJPSUNwithpricesDescription=Modello di preventivo fornitore di JPSUN con prezzi del fornitore in base dati.
 
-StandardContractsTemplatebyJpsun= Modèle de contrat pour/par JPSUN.
+StandardContractsTemplatebyJpsun=Modello di contratto di JPSUN.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Utilisateurs
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_user_monogramme = Monogramme
-jpsun_user_monogramme_help = Monogramme utilisé dans le masque de numérotation des devis clients
-jpsunMailPerso = Courriel Personnel
-jpsunTelPerso = Tel. Personnel
-jpsunTypeContrat = Type de contrat
-jpsunContrat = Libellé du contrat
-jpsunGrade = Grade
-jpsunTHR = Taux horaire réel
+jpsun_user_monogramme=Monogramma
+jpsun_user_monogramme_help=Monogramma usato nella maschera di numerazione dei preventivi clienti
+jpsunMailPerso=Email personale
+jpsunTelPerso=Tel. personale
+jpsunTypeContrat=Tipo di contratto
+jpsunContrat=Etichetta del contratto
+jpsunGrade=Grado
+jpsunTHR=Tariffa oraria reale
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Divers
@@ -49,53 +49,53 @@ jpsunTHR = Taux horaire réel
 
 JpsunSetup = Impostazioni del modulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Creare automaticamente un progetto alla firma del preventivo
-PRODUCT_USE_UNITS = Les produits utilisent des unités
-SetupSituationTitle = Facture de situation
-INVOICE_USE_SITUATION = Prise en charge des factures de situation
-SituationParamsAvailablesHere = Les paramêtres des factures de situations sont disponibles ici : 
+PRODUCT_USE_UNITS=I prodotti usano unità
+SetupSituationTitle=Fattura di stato avanzamento
+INVOICE_USE_SITUATION=Abilitare fatture di stato avanzamento
+SituationParamsAvailablesHere=I parametri delle fatture di stato avanzamento sono disponibili qui: 
 
-JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en compte dans le prévisionnel
-JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel
+JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tariffa oraria per previsioni
+JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=La vista progetto mostra il profitto previsto
 
-JpsunPdfDocuments= Documents PDF
+JpsunPdfDocuments=Documenti PDF
 SupplierProposals = Preventivi fornitore
-PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet
-PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.
-Thirdparty = Tiers
+PDF_SHOW_PROJECT_TITLE=I documenti PDF mostrano il titolo del progetto
+PRODUIT_PDF_MERGE_PROPAL=Durante la generazione del PDF della proposta, vengono inclusi i PDF collegati ai prodotti.
+Thirdparty=Terzo
 
-4weeks	= 4 semaines
-5weeks	= 5 semaines
-6weeks	= 6 semaines
-8weeks	= 8 semaines
-10weeks = 10 semaines
-12weeks = 12 semaines
-14weeks = 14 semaines
-16weeks = 16 semaines
+4weeks=4 settimane
+5weeks=5 settimane
+6weeks=6 settimane
+8weeks=8 settimane
+10weeks=10 settimane
+12weeks=12 settimane
+14weeks=14 settimane
+16weeks=16 settimane
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Permissions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-ReadEnedisTab = Lire l'onglet ENEDIS dans les projets
+ReadEnedisTab=Leggere la scheda ENEDIS nei progetti
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Tiers
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MAIN_ALL_TO_UPPER = Dolibarr met en majuscules les noms des tiers, des contacts ou des membres si ce n'est pas fait. Attention, avec certaines langues (dont les mots en majuscules ne sont pas identiques, ou dont le code de page n'est pas toujours en majuscule, comme le cyrillique), cette fonctionnalité peut altérer vos données.
-jpsunEncoursFourn = Encours Fournisseur
+MAIN_ALL_TO_UPPER=Dolibarr converte in maiuscolo i nomi di terzi, contatti o membri se non lo sono già. Attenzione: in alcune lingue può alterare i dati.
+jpsunEncoursFourn=Fido fornitore
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Propositions commerciales
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunCustomerProposal=Devis client
-JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN = Masquer la TVA dans les modèles de PDF de JPSUN (Devis clients uniquement).
-PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT = Les devis clients ajoutent automatiquement l'utilisateur qui valide en contact.
-JpsunWithPicturesName = JPSUN avec images
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.
-JpsunWithoutPicturesName = JPSUN sans images
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.
+JpsunCustomerProposal=Preventivo cliente
+JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN=Nascondere l’IVA nei modelli PDF JPSUN (solo preventivi clienti).
+PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT=I preventivi clienti aggiungono automaticamente l’utente validatore come contatto.
+JpsunWithPicturesName=JPSUN con immagini
+DocModelJpsunWithPicturesDescription=Un modello di proposta completo personalizzato da JPSUN.
+JpsunWithoutPicturesName=JPSUN senza immagini
+DocModelJpsunWithPicturesDescription=Un modello di proposta completo personalizzato da JPSUN.
 JpsunPropalSignedProjectAlreadyLinked = Un progetto è già collegato al preventivo %s (id %s).
 JpsunPropalSignedProjectNoRef = Impossibile generare il riferimento del progetto per il preventivo %s (id %s).
 JpsunPropalSignedProjectModelNotFound = Modello di numerazione del progetto non trovato (%s) per il preventivo %s (id %s).
@@ -109,65 +109,65 @@ JpsunPropalSignedProjectCreatedDetails = Campi extra copiati: %s - Ordini colleg
 // #Commandes Clients
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER = Recopier la référence client du devis client vers la commande client.
+MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER=Copiare la referenza cliente dal preventivo all’ordine cliente.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Demandes de prix fournisseurs
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT = Les demandes de prix fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.
-SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD = Autoriser le téléchargement externe (sans connexion, en utilisant un lien partagé)
+SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT=I preventivi fornitore aggiungono automaticamente l’utente validatore come contatto.
+SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD=Consentire download esterno (senza login, con link condiviso)
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Commandes fournisseurs
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SuppliersCommandModelJPSUN = Modèle de commande fournisseur par JPSUN
-SUPPLIER_ORDER_AUTOADD_USER_CONTACT = Les commandes fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.
-MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER = Autoriser l'utilisateur à changer le Fournisseur lorsque la commande est à l'état de brouillon.
+SuppliersCommandModelJPSUN=Modello di ordine fornitore di JPSUN
+SUPPLIER_ORDER_AUTOADD_USER_CONTACT=Gli ordini fornitore aggiungono automaticamente l’utente validatore come contatto.
+MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER=Consentire di cambiare il fornitore quando l’ordine è in bozza.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Multiples
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_link = Lien vers les fichiers
-jpsun_link_help = Entrez ici le lien de téléchargement des éléments (Lien de partage Nextcloud, Dropbox, weTransfer, etc.)
+jpsun_link=Link ai file
+jpsun_link_help=Inserire qui il link di download (Nextcloud, Dropbox, WeTransfer, ecc.)
 
-jpsun_qualite_representant =  Qualité du Représentant
-jpsun_qualite_representant_help = Directeur, Gérant, Président, etc.
+jpsun_qualite_representant=Qualifica del rappresentante
+jpsun_qualite_representant_help=Direttore, gerente, presidente, ecc.
 
-jpsun_libelle = Libellé
-jpsun_libelle_help = Description succincte du contenu de la demande de prix afin de pouvoir la retrouver plus facilement dans les tableaux. Par exemple : "Onduleur" ou "Câblerie". (Maximum 50 caractères)
+jpsun_libelle=Etichetta
+jpsun_libelle_help=Breve descrizione per trovare più facilmente nelle liste, es. "Inverter" o "Cavi". (Max 50 caratteri)
 
 
-jpsun_n_devis_fourn = N° de Devis Fournisseur
-jpsun_n_devis_fourn_help = Numéro du devis que vous avez reçu du fournisseur.
+jpsun_n_devis_fourn=N° preventivo fornitore
+jpsun_n_devis_fourn_help=Numero del preventivo ricevuto dal fornitore.
 
-jpsun_date_devis_fourn = Date du Devis Fournisseur
-jpsun_date_devis_fourn_help = Date du devis que vous avez reçu de ce fournisseur.
+jpsun_date_devis_fourn=Data del preventivo fornitore
+jpsun_date_devis_fourn_help=Data del preventivo ricevuto dal fornitore.
 
-jpsun_date_de_livraison_souhaitee = Date de livraison souhaitée
-jpsun_DateDeliveryWanted = Date de livraison souhaitée	   
-jpsun_date_de_livraison_souhaitee_help = Date de livraison à laquelle vous souhaitez que votre commande arrive à sa destination.
+jpsun_date_de_livraison_souhaitee=Data di consegna desiderata
+jpsun_DateDeliveryWanted=Data di consegna desiderata
+jpsun_date_de_livraison_souhaitee_help=Data in cui si desidera ricevere l’ordine.
 
-jpsun_dontremise = Remise comprise	   
-jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.
+jpsun_dontremise=Sconto incluso
+jpsun_dontremise_infobulle=Sconto fisso o eccezionale incluso nel prezzo di acquisto.
 
-jpsun_dontremise = Remise comprise
-jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.
+jpsun_dontremise=Sconto incluso
+jpsun_dontremise_infobulle=Sconto fisso o eccezionale incluso nel prezzo di acquisto.
 MAIN_DISABLE_TRUNC = Désactiver toutes les troncatures dans la liste de sélection.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Produits
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_marque = Fabricant | Marque
-jpsun_marque_help = Saisissez la Marque ou le Fabricant de ce produit.
+jpsun_marque=Produttore | Marca
+jpsun_marque_help=Inserire marca o produttore del prodotto.
 
-jpsun_module_pv_pc = Puissance crête (Wc)
-jpsun_module_pv_pc_help = Puissance crête (Pp ou Pc) du module photovoltaïque exprimée en Watt-crête (Wc).
+jpsun_module_pv_pc=Potenza di picco (Wp)
+jpsun_module_pv_pc_help=Potenza di picco del modulo fotovoltaico in watt-picco (Wp).
 
-JpsunProduitsCompatibles = Produit(s) compatible(s)
-JpsunProduitsCompatibles_help = Sélectionnez le(s) produit(s) compatible(s) avec ce produit (Ne gère pas la réciprocité).
+JpsunProduitsCompatibles=Prodotto/i compatibile/i
+JpsunProduitsCompatibles_help=Selezionare i prodotti compatibili (senza reciprocità).
 jpsun_ProductDet = Détails
 jpsun_ProductDet_help = Caractéristiques diverses qui n'apparaitront pas sur les devis/commandes/factures.
 
@@ -175,22 +175,22 @@ jpsun_ProductDet_help = Caractéristiques diverses qui n'apparaitront pas sur le
 // #Projets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_project_pc = Puissance crête (kWc)
-jpsun_project_pc_help = Puissance crête (Pp ou Pc) de l'installation exprimée en kilo-Watt-crête (kWc).
-jpsun_project_n_ddr = DDR | N°
-jpsun_project_n_ddr_help = N° de Demande de raccordement attribué par ENEDIS après réception.
-jpsun_project_type_racc = DDR | Type
-jpsun_project_type_racc_help = Saisir le type de raccordement souhaité par le client ou le bénéficiaire de l'installation.
-jpsun_project_t0 = DDR | T0
-jpsun_project_t0_help = T0 de la demande de raccordement, date à laquelle le prix de rachat de la production est figé.
-jpsun_project_type_racc_vt = Vente Totale
-jpsun_project_type_racc_as = Autoconsommation avec revente du surplus
-jpsun_project_type_racc_at = Autoconsommation
-jpsun_project_prix_rachat = Tarif rachat (€/kWh)
-jpsun_project_prix_rachat_help = Prix en euros (€) de rachat au kilo-Watt-heure (kWh), de la production ou du surplus, en vigueur au T0.
-jpsun_project_mes_date = Mise en Service
-jpsun_project_mes_date_help = Date de mise en service autorisée ou prévue par/avec ENEDIS.
-MAIN_SEARCH_PRODUCT_BY_FOURN_REF = Permet de rechercher un produit par référence fournisseur dans le formulaire d'ajout de ligne du document.
+jpsun_project_pc=Potenza di picco (kWp)
+jpsun_project_pc_help=Potenza di picco dell’impianto in kilowatt-picco (kWp).
+jpsun_project_n_ddr=DDR | N°
+jpsun_project_n_ddr_help=Numero di richiesta connessione assegnato da ENEDIS.
+jpsun_project_type_racc=DDR | Tipo
+jpsun_project_type_racc_help=Inserire il tipo di connessione richiesto.
+jpsun_project_t0=DDR | T0
+jpsun_project_t0_help=T0 della richiesta di connessione, data di fissazione tariffa.
+jpsun_project_type_racc_vt=Vendita totale
+jpsun_project_type_racc_as=Autoconsumo con vendita surplus
+jpsun_project_type_racc_at=Autoconsumo
+jpsun_project_prix_rachat=Tariffa di acquisto (€/kWh)
+jpsun_project_prix_rachat_help=Prezzo in €/kWh della produzione o surplus valido a T0.
+jpsun_project_mes_date=Messa in servizio
+jpsun_project_mes_date_help=Data di messa in servizio autorizzata o prevista da/con ENEDIS.
+MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Consente di cercare un prodotto per riferimento fornitore nel modulo di aggiunta riga.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -248,12 +248,12 @@ JPSUNNumRefModelDesc = Renvoie le numéro sous la forme YYYYPN000 où YYYY est l
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Budget Prévisionnel
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-jpsun_ForecastProfit = Bénéfice prévisionnel
-jpsun_RealProfit = Bénéfice consolidé
+jpsun_ForecastProfit=Profitto previsto
+jpsun_RealProfit=Profitto consolidato
 
 SupplierProposalsExcludingRefused = Preventivi fornitore (senza bozze, rifiutati e ordinati)
-ProposalsExcludingRefused = Proposition commerciales (Sans les brouillons, celles refusées ou celles commandées)
-jpsun_ProposalsExcludingRefusedTooltip = Sans les brouillons, celles refusées ou celles commandées.
+ProposalsExcludingRefused=Preventivi clienti (senza bozze, rifiutati o ordinati)
+jpsun_ProposalsExcludingRefusedTooltip=Senza bozze, rifiutati o ordinati.
 jpsun_SupplierProposalsExcludingRefusedTooltip = Senza bozze, rifiutati e ordinati.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
