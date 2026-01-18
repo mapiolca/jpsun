@@ -85,6 +85,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			return 0;
 		}
 
+		// EN: Stop if auto project creation is disabled
+		// FR: Stopper si la création automatique de projet est désactivée
+		if (!getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			return 0;
+		}
+
 		$langs->loadLangs(array('jpsun@jpsun'));
 
 		// EN: Avoid duplicates when a project is already linked
@@ -108,9 +114,18 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		$project = new Project($this->db);
 		$project->socid = $object->socid;
-		$project->title = !empty($object->title) ? $object->title : trim($object->ref.' - '.(empty($object->thirdparty) ? '' : $object->thirdparty->name));
+		// EN: Build title with thirdparty name and customer reference
+		// FR: Construire le libellé avec le nom du client et la référence client
+		$titleParts = array();
+		if (!empty($object->thirdparty) && !empty($object->thirdparty->name)) {
+			$titleParts[] = $object->thirdparty->name;
+		}
+		if (!empty($object->ref_client)) {
+			$titleParts[] = $object->ref_client;
+		}
+		$project->title = implode(' - ', $titleParts);
 		if (empty($project->title)) {
-			$project->title = $object->ref;
+			$project->title = !empty($object->title) ? $object->title : $object->ref;
 		}
 		$project->description = $object->note_public;
 		$project->status = Project::STATUS_VALIDATED;

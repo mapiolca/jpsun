@@ -48,6 +48,7 @@ jpsunTHR = Taux horaire réel
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 <br>
 JpsunSetup = Réglages du module JPSUN<br>
+JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Automatically create a project on proposal signature<br>
 PRODUCT_USE_UNITS = Les produits utilisent des unités<br>
 SetupSituationTitle = Facture de situation<br>
 INVOICE_USE_SITUATION = Prise en charge des factures de situation<br>
