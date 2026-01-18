@@ -58,6 +58,7 @@ JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel<br>
 <br>
 JpsunPdfDocuments= Documents PDF<br>
+SupplierProposals = Devis fournisseur<br>
 PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet<br>
 PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.<br>
 Thirdparty = Tiers

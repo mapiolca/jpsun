@@ -1,6 +1,6 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.8 (14/01/2026)
+## 1.8 (18/01/2026)
 
 - Création automatique d'un projet validé à la signature d'un devis, avec liens aux objets et copie des extrachamps.
 - Ajout d'un réglage pour activer la création automatique de projet et mise à jour du libellé projet avec la référence client.
