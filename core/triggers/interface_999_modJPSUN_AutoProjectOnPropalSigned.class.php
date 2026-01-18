@@ -85,6 +85,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			return 0;
 		}
 
+		// EN: Stop if auto project creation is disabled
+		// FR: Stopper si la création automatique de projet est désactivée
+		if (!getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			return 0;
+		}
+
 		$langs->loadLangs(array('jpsun@jpsun'));
 
 		// EN: Avoid duplicates when a project is already linked
@@ -108,9 +114,18 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		$project = new Project($this->db);
 		$project->socid = $object->socid;
-		$project->title = !empty($object->title) ? $object->title : trim($object->ref.' - '.(empty($object->thirdparty) ? '' : $object->thirdparty->name));
+		// EN: Build title with thirdparty name and customer reference
+		// FR: Construire le libellé avec le nom du client et la référence client
+		$titleParts = array();
+		if (!empty($object->thirdparty) && !empty($object->thirdparty->name)) {
+			$titleParts[] = $object->thirdparty->name;
+		}
+		if (!empty($object->ref_client)) {
+			$titleParts[] = $object->ref_client;
+		}
+		$project->title = implode(' - ', $titleParts);
 		if (empty($project->title)) {
-			$project->title = $object->ref;
+			$project->title = !empty($object->title) ? $object->title : $object->ref;
 		}
 		$project->description = $object->note_public;
 		$project->status = Project::STATUS_VALIDATED;
@@ -194,8 +209,30 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		$linkedOrders = 0;
 		$object->fetchObjectLinked($object->id, $object->element, null, 'commande', 'OR', 0, 'sourcetype', 0);
+		$linkedOrderIds = array();
 		if (!empty($object->linkedObjectsIds['commande'])) {
-			foreach ($object->linkedObjectsIds['commande'] as $idcommande) {
+			$linkedOrderIds = $object->linkedObjectsIds['commande'];
+		}
+
+		// EN: Link auto-created order when workflow is enabled
+		// FR: Lier la commande auto-créée si le workflow est activé
+		if (getDolGlobalInt('WORKFLOW_PROPAL_AUTOCREATE_ORDER') && !empty($linkedOrderIds)) {
+			foreach ($linkedOrderIds as $idcommande) {
+				$resOrderLink = $project->update_element('commande', $idcommande);
+				if ($resOrderLink < 0) {
+					$this->error = $langs->trans('JpsunPropalSignedProjectOrderLinkError', $object->ref, $object->id, $idcommande);
+					$this->errors[] = $this->error;
+					dol_syslog('JPSUN AutoProject: failed to set fk_projet on order id='.$idcommande.' project id='.$project->id.' : '.$project->error.' '.$this->db->lasterror(), LOG_ERR);
+					return -1;
+				}
+			}
+			dol_syslog('JPSUN AutoProject: linked orders to project id='.$project->id.' via workflow', LOG_INFO);
+		}
+
+		$project->add_object_linked('propal', $object->id, $user);
+
+		if (!empty($linkedOrderIds)) {
+			foreach ($linkedOrderIds as $idcommande) {
 				$project->add_object_linked('commande', $idcommande, $user);
 				$linkedOrders++;
 			}

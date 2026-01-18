@@ -1,252 +1,263 @@
 # Dolibarr language file - de_DE - tos
-# Admin form
-CHARSET=iso-8859-1
-Module999999Desc= Modul, das alle für JPSUN entwickelten Änderungen bündelt.
+# Admin-Formular
+CHARSET=ISO-8859-1
+Module999999Desc=Modul mit allen für JPSUN entwickelten Änderungen.
 Module999999Name=JPSUN
 jpsun=JPSUN
+JpsunTriggerAutoProjectOnPropalSignedDesc=JPSUN-Trigger: automatische Projekterstellung bei Angebotsunterzeichnung.
 
 SetupG=Allgemein
 
 jpsun_Setup=JPSUN-Einstellungen - Allgemein
 
-ReadEnedisTab=ENEDIS-Registerkarte in Projekten lesen
+ReadEnedisTab=ENEDIS-Register in Projekten lesen
 
-unitMPV = Photovoltaikmodule
-MPV = Photovoltaikmodule
-unitSET = Satz
+unitMPV=Photovoltaikmodule
+MPV=Photovoltaikmodule
+unitSET=Satz
 
-DeliveryDate = Lieferdatum
+DeliveryDate=Lieferdatum
 
-MobileShort = Mob.
+MobileShort=Mob.
 
-ref_project = Referenz der Baustelle
+ref_project=Projektreferenz
 
-DocModelJPSUNName = JPSUN
-DocModelJPSUNDescription = Preisanfragevorlage für/von JPSUN.
+DocModelJPSUNName=JPSUN
+DocModelJPSUNDescription=Lieferantenangebot-Vorlage von JPSUN.
 
-DocModelJPSUNwithpricesName = JPSUN mit Preisen
-DocModelJPSUNwithpricesDescription = Preisanfragevorlage für/von JPSUN, mit bereits in der Datenbank vorhandenen Lieferantenpreisen.
+DocModelJPSUNwithpricesName=JPSUN mit Preisen
+DocModelJPSUNwithpricesDescription=Lieferantenangebot-Vorlage von JPSUN, zeigt Lieferantenpreise aus der Datenbank.
 
-StandardContractsTemplatebyJpsun= Vertragsvorlage für/von JPSUN.
+StandardContractsTemplatebyJpsun=Vertragsvorlage von JPSUN.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Benutzer
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_user_monogramme = Monogramm
-jpsun_user_monogramme_help = Monogramm, das in der Nummerierungsmaske der Kundenangebote verwendet wird
-jpsunMailPerso = Persönliche E-Mail
-jpsunTelPerso = Persönliches Tel.
-jpsunTypeContrat = Vertragstyp
-jpsunContrat = Vertragsbezeichnung
-jpsunGrade = Rang
-jpsunTHR = Tatsächlicher Stundensatz
+jpsun_user_monogramme=Monogramm
+jpsun_user_monogramme_help=Monogramm im Nummerierungsmaske der Kundenangebote
+jpsunMailPerso=Persönliche E-Mail
+jpsunTelPerso=Persönliches Telefon
+jpsunTypeContrat=Vertragstyp
+jpsunContrat=Vertragsbezeichnung
+jpsunGrade=Rang
+jpsunTHR=Tatsächlicher Stundensatz
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Verschiedenes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunSetup = Einstellungen des JPSUN-Moduls
-PRODUCT_USE_UNITS = Produkte verwenden Einheiten
-SetupSituationTitle = Abschlagsrechnung
-INVOICE_USE_SITUATION = Unterstützung von Abschlagsrechnungen
-SituationParamsAvailablesHere = Die Parameter der Abschlagsrechnungen sind hier verfügbar: 
+JpsunSetup =JPSUN-Modul-Einstellungen
+JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Projekt automatisch bei Angebotsunterzeichnung erstellen
+PRODUCT_USE_UNITS=Produkte verwenden Einheiten
+SetupSituationTitle=Abschlagsrechnung
+INVOICE_USE_SITUATION=Abschlagsrechnungen aktivieren
+SituationParamsAvailablesHere=Parameter für Abschlagsrechnungen sind hier verfügbar:
 
-JPSUN_PROJECT_FORECAST_DEFAULT_THM = Stundensatz für Arbeitskraft, der in der Planung berücksichtigt wird
-JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = Die Projektübersicht zeigt den prognostizierten Gewinn
+JPSUN_PROJECT_FORECAST_DEFAULT_THM=Stundensatz für Prognosen
+JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=Projektübersicht zeigt prognostizierten Gewinn
 
-JpsunPdfDocuments= PDF-Dokumente
+JpsunPdfDocuments=PDF-Dokumente
+SupplierProposals =Lieferantenangebote
 PDF_SHOW_PROJECT_TITLE=PDF-Dokumente zeigen den Projekttitel
-PRODUIT_PDF_MERGE_PROPAL=Bei der Erstellung des Angebots-PDF werden alle mit den Angebotsprodukten verknüpften PDFs ebenfalls im endgültigen PDF enthalten.
-Thirdparty = Dritter
+PRODUIT_PDF_MERGE_PROPAL=Beim Erstellen des Angebots-PDF werden alle mit Produkten verknüpften PDFs ebenfalls eingefügt.
+Thirdparty=Drittpartei
 
-4weeks	= 4 Wochen
-5weeks	= 5 Wochen
-6weeks	= 6 Wochen
-8weeks	= 8 Wochen
-10weeks = 10 Wochen
-12weeks = 12 Wochen
-14weeks = 14 Wochen
-16weeks = 16 Wochen
+4weeks=4 Wochen
+5weeks=5 Wochen
+6weeks=6 Wochen
+8weeks=8 Wochen
+10weeks=10 Wochen
+12weeks=12 Wochen
+14weeks=14 Wochen
+16weeks=16 Wochen
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Berechtigungen
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-ReadEnedisTab = ENEDIS-Registerkarte in Projekten lesen
+ReadEnedisTab=ENEDIS-Register in Projekten lesen
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Dritte
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MAIN_ALL_TO_UPPER = Dolibarr setzt die Namen von Dritten, Kontakten oder Mitgliedern in Großbuchstaben, wenn dies nicht bereits erfolgt ist. Achtung, bei einigen Sprachen (bei denen die Großschreibung nicht identisch ist oder deren Seitenkode nicht immer großgeschrieben ist, wie z. B. Kyrillisch) kann diese Funktion Ihre Daten verändern.
-jpsunEncoursFourn = Lieferantenaußenstand
+MAIN_ALL_TO_UPPER=Dolibarr wandelt Namen von Dritten, Kontakten oder Mitgliedern in Großbuchstaben um. Achtung: Bei einigen Sprachen kann dies Daten verändern.
+jpsunEncoursFourn=Lieferantenrahmen
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// #Kundenangebote
+// #Angebote
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 JpsunCustomerProposal=Kundenangebot
-JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN = Mehrwertsteuer in JPSUN-PDF-Vorlagen ausblenden (nur Kundenangebote).
-PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT = Kundenangebote fügen automatisch den validierenden Benutzer als Kontakt hinzu.
-JpsunWithPicturesName = JPSUN mit Bildern
-DocModelJpsunWithPicturesDescription = Eine vollständige Angebotsvorlage von JPSUN, die Bilder anzeigt.
-JpsunWithoutPicturesName = JPSUN ohne Bilder
-DocModelJpsunWithPicturesDescription = Eine vollständige Angebotsvorlage von JPSUN, die Bilder ausblendet.
+JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN=MwSt. in JPSUN-PDF-Vorlagen ausblenden (nur Kundenangebote).
+PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT=Kundenangebote fügen den bestätigenden Benutzer automatisch als Kontakt hinzu.
+JpsunWithPicturesName=JPSUN mit Bildern
+DocModelJpsunWithPicturesDescription=Eine vollständige Angebotsvorlage, angepasst von JPSUN.
+JpsunWithoutPicturesName=JPSUN ohne Bilder
+DocModelJpsunWithPicturesDescription=Eine vollständige Angebotsvorlage, angepasst von JPSUN.
+JpsunPropalSignedProjectAlreadyLinked =Ein Projekt ist bereits mit dem Angebot %s (ID %s) verknüpft.
+JpsunPropalSignedProjectNoRef =Referenz für das Projekt kann für das Angebot %s (ID %s) nicht erstellt werden.
+JpsunPropalSignedProjectModelNotFound =Projekt-Nummerierungsmodell nicht gefunden (%s) für das Angebot %s (ID %s).
+JpsunPropalSignedProjectCreateError =Fehler beim Erstellen des Projekts für das Angebot %s (ID %s): %s.
+JpsunPropalSignedProjectLinkError =Projekt kann nicht mit dem Angebot %s (ID %s) verknüpft werden. Projekt %s.
+JpsunPropalSignedProjectOrderLinkError =Auftrag kann nicht mit dem Projekt für das Angebot %s (ID %s) verknüpft werden. Auftrag %s.
+JpsunPropalSignedProjectCreated =Projekt für das Angebot %s (ID %s) erstellt: Projekt %s (Ref %s).
+JpsunPropalSignedProjectCreatedDetails =Kopierte Extrafelder: %s - Verknüpfte Aufträge: %s.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Kundenaufträge
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER = Kundenangebotsreferenz in den Kundenauftrag übernehmen.
+MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER=Kundenreferenz vom Angebot in den Kundenauftrag übernehmen.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Lieferantenanfragen
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT = Lieferanten-Preisanfragen fügen automatisch den validierenden Benutzer als Kontakt hinzu.
-SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD = Externen Download erlauben (ohne Anmeldung, über einen geteilten Link)
+SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT=Lieferantenangebote fügen den bestätigenden Benutzer automatisch als Kontakt hinzu.
+SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD=Externen Download erlauben (ohne Anmeldung, mit Freigabelink)
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Lieferantenbestellungen
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SuppliersCommandModelJPSUN = Lieferantenbestellvorlage von JPSUN
-SUPPLIER_ORDER_AUTOADD_USER_CONTACT = Lieferantenbestellungen fügen automatisch den validierenden Benutzer als Kontakt hinzu.
-MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER = Benutzer darf den Lieferanten ändern, wenn die Bestellung im Entwurf ist.
+SuppliersCommandModelJPSUN=Lieferantenbestellvorlage von JPSUN
+SUPPLIER_ORDER_AUTOADD_USER_CONTACT=Lieferantenbestellungen fügen den bestätigenden Benutzer automatisch als Kontakt hinzu.
+MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER=Lieferant im Entwurfsstatus änderbar
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// #Mehrere
+// #Verschiedenes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_link = Link zu Dateien
-jpsun_link_help = Geben Sie hier den Download-Link der Elemente ein (Nextcloud-, Dropbox-, WeTransfer-Freigabelink usw.)
+jpsun_link=Link zu Dateien
+jpsun_link_help=Download-Link für Elemente eingeben (Nextcloud, Dropbox, WeTransfer usw.)
 
-jpsun_qualite_representant =  Vertreterfunktion
-jpsun_qualite_representant_help = Direktor, Geschäftsführer, Präsident usw.
+jpsun_qualite_representant=Funktion des Vertreters
+jpsun_qualite_representant_help=Direktor, Geschäftsführer, Präsident usw.
 
-jpsun_libelle = Bezeichnung
-jpsun_libelle_help = Kurzbeschreibung des Inhalts der Preisanfrage, damit sie in den Tabellen leichter wiederzufinden ist. Zum Beispiel: "Wechselrichter" oder "Verkabelung". (Maximal 50 Zeichen)
+jpsun_libelle=Bezeichnung
+jpsun_libelle_help=Kurze Beschreibung zur leichteren Auffindbarkeit, z. B. "Wechselrichter" oder "Verkabelung". (Max. 50 Zeichen)
 
 
-jpsun_n_devis_fourn = Lieferantenangebot-Nr.
-jpsun_n_devis_fourn_help = Nummer des Angebots, das Sie vom Lieferanten erhalten haben.
+jpsun_n_devis_fourn=Lieferantenangebot-Nr.
+jpsun_n_devis_fourn_help=Angebotsnummer vom Lieferanten.
 
-jpsun_date_devis_fourn = Datum des Lieferantenangebots
-jpsun_date_devis_fourn_help = Datum des Angebots, das Sie von diesem Lieferanten erhalten haben.
+jpsun_date_devis_fourn=Datum des Lieferantenangebots
+jpsun_date_devis_fourn_help=Datum des erhaltenen Angebots.
 
-jpsun_date_de_livraison_souhaitee = Gewünschtes Lieferdatum
-jpsun_DateDeliveryWanted = Gewünschtes Lieferdatum	   
-jpsun_date_de_livraison_souhaitee_help = Lieferdatum, an dem Ihre Bestellung ihr Ziel erreichen soll.
+jpsun_date_de_livraison_souhaitee=Gewünschtes Lieferdatum
+jpsun_DateDeliveryWanted=Gewünschtes Lieferdatum
+jpsun_date_de_livraison_souhaitee_help=Datum, an dem die Bestellung ankommen soll.
 
-jpsun_dontremise = Rabatt enthalten	   
-jpsun_dontremise_infobulle = Fester oder außergewöhnlicher Rabatt im obigen Einkaufspreis enthalten.
+jpsun_dontremise=Rabatt enthalten
+jpsun_dontremise_infobulle=Fester oder außergewöhnlicher Rabatt im Einkaufspreis enthalten.
 
-jpsun_dontremise = Rabatt enthalten
-jpsun_dontremise_infobulle = Fester oder außergewöhnlicher Rabatt im obigen Einkaufspreis enthalten.
-MAIN_DISABLE_TRUNC = Alle Kürzungen in der Auswahlliste deaktivieren.
+jpsun_dontremise=Rabatt enthalten
+jpsun_dontremise_infobulle=Fester oder außergewöhnlicher Rabatt im Einkaufspreis enthalten.
+MAIN_DISABLE_TRUNC =Deaktivieren Sie alle Kürzungen in der Auswahlliste.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Produkte
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_marque = Hersteller | Marke
-jpsun_marque_help = Geben Sie die Marke oder den Hersteller dieses Produkts ein.
+jpsun_marque=Hersteller | Marke
+jpsun_marque_help=Marke oder Hersteller des Produkts eingeben.
 
-jpsun_module_pv_pc = Spitzenleistung (Wp)
-jpsun_module_pv_pc_help = Spitzenleistung (Pp oder Pc) des Photovoltaikmoduls in Watt-Peak (Wp).
+jpsun_module_pv_pc=Spitzenleistung (Wp)
+jpsun_module_pv_pc_help=Spitzenleistung des PV-Moduls in Watt-Peak (Wp).
 
-JpsunProduitsCompatibles = Kompatible(s) Produkt(e)
-JpsunProduitsCompatibles_help = Wählen Sie kompatible Produkte mit diesem Produkt aus (keine Gegenseitigkeit).
-jpsun_ProductDet = Details
-jpsun_ProductDet_help = Verschiedene Merkmale, die nicht auf Angeboten/Bestellungen/Rechnungen erscheinen.
+JpsunProduitsCompatibles=Kompatible Produkte
+JpsunProduitsCompatibles_help=Kompatible Produkte auswählen (ohne Gegenseitigkeit).
+jpsun_ProductDet=Einzelheiten
+jpsun_ProductDet_help =Verschiedene Merkmale, die nicht in Angeboten/Bestellungen/Rechnungen erscheinen.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Projekte
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_project_pc = Spitzenleistung (kWp)
-jpsun_project_pc_help = Spitzenleistung (Pp oder Pc) der Anlage in Kilowatt-Peak (kWp).
-jpsun_project_n_ddr = DDR | Nr.
-jpsun_project_n_ddr_help = Von ENEDIS vergebene Anschlussantragsnummer nach Eingang.
-jpsun_project_type_racc = DDR | Typ
-jpsun_project_type_racc_help = Geben Sie den vom Kunden oder Begünstigten der Anlage gewünschten Anschlusstyp ein.
-jpsun_project_t0 = DDR | T0
-jpsun_project_t0_help = T0 der Anschlussanfrage, Datum, an dem der Rückkaufpreis der Produktion festgelegt wird.
-jpsun_project_type_racc_vt = Gesamtverkauf
-jpsun_project_type_racc_as = Eigenverbrauch mit Verkauf des Überschusses
-jpsun_project_type_racc_at = Eigenverbrauch
-jpsun_project_prix_rachat = Rückkaufpreis (€/kWh)
-jpsun_project_prix_rachat_help = Preis in Euro (€) pro Kilowattstunde (kWh) für den Rückkauf der Produktion oder des Überschusses, gültig bei T0.
-jpsun_project_mes_date = Inbetriebnahme
-jpsun_project_mes_date_help = Datum der Inbetriebnahme, von/mit ENEDIS genehmigt oder geplant.
-MAIN_SEARCH_PRODUCT_BY_FOURN_REF = Ermöglicht die Suche nach einem Produkt anhand der Lieferantenreferenz im Formular zum Hinzufügen einer Dokumentzeile.
+jpsun_project_pc=Spitzenleistung (kWp)
+jpsun_project_pc_help=Spitzenleistung der Anlage in Kilowatt-Peak (kWp).
+jpsun_project_n_ddr=DDR | Nr.
+jpsun_project_n_ddr_help=Anschlussantragsnummer von ENEDIS.
+jpsun_project_type_racc=DDR | Typ
+jpsun_project_type_racc_help=Gewünschten Anschlusstyp eingeben.
+jpsun_project_t0=DDR | T0
+jpsun_project_t0_help=T0 der Anschlussanfrage, Datum der Tariffixierung.
+jpsun_project_type_racc_vt=Vollständiger Verkauf
+jpsun_project_type_racc_as=Eigenverbrauch mit Überschussverkauf
+jpsun_project_type_racc_at=Eigenverbrauch
+jpsun_project_prix_rachat=Einspeisetarif (€/kWh)
+jpsun_project_prix_rachat_help=Preis in €/kWh für Produktion/Überschuss, gültig bei T0.
+jpsun_project_mes_date=Inbetriebnahme
+jpsun_project_mes_date_help=Inbetriebnahmedatum durch/mit ENEDIS.
+MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Produktsuche nach Lieferantenreferenz im Zeilenformular erlauben.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Verträge
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunContractSiteName = Standortname
-JpsunContractDistanceFromCompanyKm = Entfernung vom Unternehmen (km)
-JpsunContractInstalledPowerKwc = Installierte Leistung (kWp)
-JpsunContractRevaluationIndexSn = Anfangsaufwertungsindex (S0)
-JpsunContractPvModules = PV-Module
-JpsunContractPvModulesQty = Anzahl der PV-Module
-JpsunContractInverters = Wechselrichter
-JpsunContractInvertersQty = Anzahl der Wechselrichter
-JpsunContractInvertersInstallHeightM = Installationshöhe der Wechselrichter (m)
-JpsunContractDcBoxesQty = Anzahl der DC-Boxen
-JpsunContractDcBoxInstallHeightM = Installationshöhe der DC-Box (m)
-JpsunContractAcBoxesQty = Anzahl der AC-Boxen
-JpsunContractAcBoxInstallHeightM = Installationshöhe der AC-Box (m)
-JpsunContractAccessCode = Zugangscode (falls erforderlich)
-JpsunContractPdlNumber = PDL-Nr.:
-JpsunContractSiteAddress = Adresse des Standorts
-JpsunContractSiteRepresentative1 = Standortvertreter 1
-JpsunContractSiteRepresentative2 = Standortvertreter 2
+JpsunContractSiteName =Site-Name
+JpsunContractDistanceFromCompanyKm =Entfernung vom Unternehmen (km)
+JpsunContractInstalledPowerKwc=Installierte Leistung (kWp)
+JpsunContractRevaluationIndexSn =Erstbewertungsindex (S0)
+JpsunContractPvModules=PV-Module
+JpsunContractPvModulesQty =Name der PV-Module
+JpsunContractInverters =Wechselrichter
+JpsunContractInvertersQty =Anzahl der Wechselrichter
+JpsunContractInvertersInstallHeightM =Installationshöhe Wechselrichter (m)
+JpsunContractDcBoxesQty =Anzahl DC-Boxen
+JpsunContractDcBoxInstallHeightM =Installationshöhe DC-Box (m)
+JpsunContractAcBoxesQty =Anzahl der AC-Boxen
+JpsunContractAcBoxInstallHeightM =Installationshöhe AC-Box (m)
+JpsunContractAccessCode =Zugangscode (falls erforderlich)
+JpsunContractPdlNumber =PDL-Nummer:
+JpsunContractSiteAddress =Adresse der Anlage
+JpsunContractSiteRepresentative1 =Standortvertreter 1
+JpsunContractSiteRepresentative2 =Standortvertreter 2
 
-//#ENEDIS-Bereich
+//# ENEDIS-Bereich
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-projet_enedis = ENEDIS
+projet_enedis=ENEDIS
 
-JPSUN_DDR_SEND = DDR | JPSUN | Anschlussanfrage
-JPSUN_DDR_R_ENEDIS = DDR | ENEDIS | Unvollständige Akte
-JPSUN_DDR_R_JPSUN = DDR | JPSUN | Akte ergänzen
-JPSUN_DDR_R_CLIENT = DDR | Kunde | Rückmeldung von Informationen
-JPSUN_DDR_R_TIERS = DDR | Sonstiger | Antwort eines Dritten
-JPSUN_DDR_REL = DDR | JPSUN | Erinnerung
-JPSUN_DDR_COMP = DDR | T0 | Vollständigkeit erreicht
-JPSUN_DDR_INFO = DDR | JPSUN | Informationsanfrage
+JPSUN_DDR_SEND =DDR | JPSUN | Verbindungsanfrage
+JPSUN_DDR_R_ENEDIS =DDR | ENEDIS | Unvollständige Datei
+JPSUN_DDR_R_JPSUN =DDR | JPSUN | Zusätzliche Datei
+JPSUN_DDR_R_CLIENT =DDR | Kunde | Rückmeldung
+JPSUN_DDR_R_TIERS =DDR | Andere | Antwort Dritter
+JPSUN_DDR_REL =DDR | JPSUN | Erholung
+JPSUN_DDR_COMP =DDR | T0 | Vollständigkeit erlangen
+JPSUN_DDR_INFO =DDR | JPSUN | Bitte um Informationen
 
-ActionJPSUN_DDR_SEND = DDR | JPSUN | Anschlussanfrage
-ActionJPSUN_DDR_R_ENEDIS = DDR | ENEDIS | Unvollständige Akte
-ActionJPSUN_DDR_R_JPSUN = DDR | JPSUN | Akte ergänzen
-ActionJPSUN_DDR_R_CLIENT = DDR | Kunde | Rückmeldung von Informationen
-ActionJPSUN_DDR_R_TIERS = DDR | Sonstiger | Antwort eines Dritten
-ActionJPSUN_DDR_REL = DDR | JPSUN | Erinnerung
-ActionJPSUN_DDR_COMP = DDR | T0 | Vollständigkeit erreicht
-ActionJPSUN_DDR_INFO = DDR | JPSUN | Informationsanfrage
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//#Nummerierungsmodell der Kundenangebote
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-JPSUNNumRefModelDesc = Gibt die Nummer im Format YYYYPN000 zurück, wobei YYYY das Jahr ist, P der Vorname des validierenden Benutzers, N der Nachname des validierenden Benutzers und 0 ein fortlaufender Zähler ohne Unterbrechung mit Rücksetzung auf 0 jedes Jahr.
+ActionJPSUN_DDR_SEND =DDR | JPSUN | Verbindungsanfrage
+ActionJPSUN_DDR_R_ENEDIS =DDR | ENEDIS | Unvollständige Datei
+ActionJPSUN_DDR_R_JPSUN =DDR | JPSUN | Zusätzliche Datei
+ActionJPSUN_DDR_R_CLIENT =DDR | Kunde | Rückmeldung
+ActionJPSUN_DDR_R_TIERS =DDR | Andere | Antwort Dritter
+ActionJPSUN_DDR_REL =DDR | JPSUN | Erholung
+ActionJPSUN_DDR_COMP =DDR | T0 | Vollständigkeit erlangen
+ActionJPSUN_DDR_INFO =DDR | JPSUN | Bitte um Informationen
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// #Vorausschaubudget
+//# Nummerierungsmodell für Kundenangebote
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-jpsun_ForecastProfit = Prognostizierter Gewinn
-jpsun_RealProfit = Konsolidierter Gewinn
 
-SupplierProposalsExcludingRefused = Lieferantenangebote (Ohne Entwürfe, abgelehnte und bestellte)
-ProposalsExcludingRefused = Angebote (Ohne Entwürfe, abgelehnte oder bestellte)
-jpsun_ProposalsExcludingRefusedTooltip = Ohne Entwürfe, abgelehnte oder bestellte.
-jpsun_SupplierProposalsExcludingRefusedTooltip = Ohne Entwürfe, abgelehnte und bestellte.
+JPSUNNumRefModelDesc =Gibt die Zahl in der Form YYYYPN000 zurück, wobei YYYY das Jahr ist, P der Vorname des Benutzers, der validiert, N der Name des Benutzers, der validiert, und 0 ein fortlaufender Zähler ohne Unterbrechung, der jedes Jahr auf 0 zurückgesetzt wird.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Prognosebudget
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+jpsun_ForecastProfit=Prognostizierter Gewinn
+jpsun_RealProfit=Konsolidierter Gewinn
+
+SupplierProposalsExcludingRefused =Lieferantenangebote (ohne Entwürfe, abgelehnte und bestellte)
+ProposalsExcludingRefused=Kundenangebote (ohne Entwürfe, abgelehnte oder bestellte)
+jpsun_ProposalsExcludingRefusedTooltip=Ohne Entwürfe, abgelehnt oder bestellt.
+jpsun_SupplierProposalsExcludingRefusedTooltip =Ohne Entwürfe, abgelehnte und bestellte.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Tickets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-TICKET_ADD_AUTHOR_AS_CONTACT = Wenn der Wert auf 1 gesetzt ist: Der Autor wird automatisch als interner Kontakt hinzugefügt. Wenn der Wert auf 2 gesetzt ist: Der Autor wird automatisch als externer Kontakt hinzugefügt, wenn es sich um einen externen Benutzer handelt. (v20 und höher)
-TICKET_SHOW_MESSAGES_ON_CARD = Alle mit dem Ticket verknüpften Nachrichten auf der Hauptticketkarte anzeigen. (v10.0 und höher)
+TICKET_ADD_AUTHOR_AS_CONTACT =Bei Einstellung 1: Der Autor wird automatisch als interner Kontakt hinzugefügt. Bei Einstellung 2: Der Autor wird automatisch als externer Kontakt hinzugefügt, wenn es sich um einen externen Benutzer handelt. (v20 und höher)
+TICKET_SHOW_MESSAGES_ON_CARD =Zeigen Sie alle Ticket-bezogenen Nachrichten auf der Hauptticketkarte an. (v10.0 und höher)

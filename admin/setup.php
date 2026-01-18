@@ -135,8 +135,8 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     }
 **/
 
-    // CUSTOMER PROPAL
-    setup_print_title($langs->trans("JpsunCustomerProposal"));
+	// CUSTOMER PROPAL
+	setup_print_title($langs->trans("JpsunCustomerProposal"));
 
     if(floatval(DOL_VERSION) >= 20.0){
         setup_print_on_off('PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT');
@@ -145,7 +145,11 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
         setup_print_on_off('JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN');
         }
 
-    // CUSTOMER ORDER
+	// WORKFLOW
+	setup_print_title($langs->trans("Workflow"));
+	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+
+	// CUSTOMER ORDER
     
     setup_print_title($langs->trans("CustomerOrder"));
 

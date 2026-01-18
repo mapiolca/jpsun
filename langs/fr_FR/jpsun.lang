@@ -4,6 +4,7 @@ CHARSET=iso-8859-1
 Module999999Desc= Module rassemblant toutes les modifications développées pour JPSUN.
 Module999999Name=JPSUN
 jpsun=JPSUN
+JpsunTriggerAutoProjectOnPropalSignedDesc=Déclencheur JPSUN : création automatique d'un projet à la signature d'un devis.
 
 SetupG=Général 
 
@@ -47,6 +48,7 @@ jpsunTHR = Taux horaire réel
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 JpsunSetup = Réglages du module JPSUN
+JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Créer automatiquement un projet à la signature du devis
 PRODUCT_USE_UNITS = Les produits utilisent des unités
 SetupSituationTitle = Facture de situation
 INVOICE_USE_SITUATION = Prise en charge des factures de situation
@@ -56,6 +58,7 @@ JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel
 
 JpsunPdfDocuments= Documents PDF
+SupplierProposals = Devis fournisseur
 PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet
 PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.
 Thirdparty = Tiers
@@ -81,75 +84,76 @@ ReadEnedisTab = Lire l'onglet ENEDIS dans les projets
 
 MAIN_ALL_TO_UPPER = Dolibarr met en majuscules les noms des tiers, des contacts ou des membres si ce n'est pas fait. Attention, avec certaines langues (dont les mots en majuscules ne sont pas identiques, ou dont le code de page n'est pas toujours en majuscule, comme le cyrillique), cette fonctionnalité peut altérer vos données.
 jpsunEncoursFourn = Encours Fournisseur
-<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-// #Propositions commerciales<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-<br>
-JpsunCustomerProposal=Devis client<br>
-JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN = Masquer la TVA dans les modèles de PDF de JPSUN (Devis clients uniquement).<br>
-PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT = Les devis clients ajoutent automatiquement l'utilisateur qui valide en contact.<br>
-JpsunWithPicturesName = JPSUN avec images<br>
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.<br>
-JpsunWithoutPicturesName = JPSUN sans images<br>
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.<br>
-JpsunPropalSignedProjectAlreadyLinked = Un projet est déjà lié au devis %s (id %s).<br>
-JpsunPropalSignedProjectNoRef = Impossible de générer la référence du projet pour le devis %s (id %s).<br>
-JpsunPropalSignedProjectModelNotFound = Modèle de numérotation projet introuvable (%s) pour le devis %s (id %s).<br>
-JpsunPropalSignedProjectCreateError = Erreur de création du projet pour le devis %s (id %s) : %s.<br>
-JpsunPropalSignedProjectLinkError = Impossible de lier le projet au devis %s (id %s). Projet %s.<br>
-JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s) : projet %s (ref %s).<br>
-JpsunPropalSignedProjectCreatedDetails = Extrachamps copiés : %s - Commandes liées : %s.<br>
-<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-// #Commandes Clients<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-<br>
-MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER = Recopier la référence client du devis client vers la commande client.<br>
-<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-// #Demandes de prix fournisseurs<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT = Les demandes de prix fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.<br>
-SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD = Autoriser le téléchargement externe (sans connexion, en utilisant un lien partagé)<br>
-<br>
-<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-// #Commandes fournisseurs<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-<br>
-SuppliersCommandModelJPSUN = Modèle de commande fournisseur par JPSUN<br>
-SUPPLIER_ORDER_AUTOADD_USER_CONTACT = Les commandes fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.<br>
-MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER = Autoriser l'utilisateur à changer le Fournisseur lorsque la commande est à l'état de brouillon.<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-// #Multiples<br>
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-<br>
-jpsun_link = Lien vers les fichiers<br>
-jpsun_link_help = Entrez ici le lien de téléchargement des éléments (Lien de partage Nextcloud, Dropbox, weTransfer, etc.)<br>
-<br>
-jpsun_qualite_representant =  Qualité du Représentant<br>
-jpsun_qualite_representant_help = Directeur, Gérant, Président, etc.<br>
-<br>
-jpsun_libelle = Libellé<br>
-jpsun_libelle_help = Description succincte du contenu de la demande de prix afin de pouvoir la retrouver plus facilement dans les tableaux. Par exemple : "Onduleur" ou "Câblerie". (Maximum 50 caractères)<br>
-<br>
-<br>
-jpsun_n_devis_fourn = N° de Devis Fournisseur<br>
-jpsun_n_devis_fourn_help = Numéro du devis que vous avez reçu du fournisseur.<br>
-<br>
-jpsun_date_devis_fourn = Date du Devis Fournisseur<br>
-jpsun_date_devis_fourn_help = Date du devis que vous avez reçu de ce fournisseur.<br>
-<br>
-jpsun_date_de_livraison_souhaitee = Date de livraison souhaitée<br>
-jpsun_DateDeliveryWanted = Date de livraison souhaitée	   <br>
-jpsun_date_de_livraison_souhaitee_help = Date de livraison à laquelle vous souhaitez que votre commande arrive à sa destination.<br>
-<br>
-jpsun_dontremise = Remise comprise	   <br>
-jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.<br>
-<br>
-jpsun_dontremise = Remise comprise<br>
-jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.<br>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Propositions commerciales
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+JpsunCustomerProposal=Devis client
+JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN = Masquer la TVA dans les modèles de PDF de JPSUN (Devis clients uniquement).
+PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT = Les devis clients ajoutent automatiquement l'utilisateur qui valide en contact.
+JpsunWithPicturesName = JPSUN avec images
+DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.
+JpsunWithoutPicturesName = JPSUN sans images
+DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.
+JpsunPropalSignedProjectAlreadyLinked = Un projet est déjà lié au devis %s (id %s).
+JpsunPropalSignedProjectNoRef = Impossible de générer la référence du projet pour le devis %s (id %s).
+JpsunPropalSignedProjectModelNotFound = Modèle de numérotation projet introuvable (%s) pour le devis %s (id %s).
+JpsunPropalSignedProjectCreateError = Erreur de création du projet pour le devis %s (id %s) : %s.
+JpsunPropalSignedProjectLinkError = Impossible de lier le projet au devis %s (id %s). Projet %s.
+JpsunPropalSignedProjectOrderLinkError = Impossible de lier la commande au projet pour le devis %s (id %s). Commande %s.
+JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s) : projet %s (ref %s).
+JpsunPropalSignedProjectCreatedDetails = Extrachamps copiés : %s - Commandes liées : %s.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Commandes Clients
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER = Recopier la référence client du devis client vers la commande client.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Demandes de prix fournisseurs
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT = Les demandes de prix fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.
+SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD = Autoriser le téléchargement externe (sans connexion, en utilisant un lien partagé)
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Commandes fournisseurs
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SuppliersCommandModelJPSUN = Modèle de commande fournisseur par JPSUN
+SUPPLIER_ORDER_AUTOADD_USER_CONTACT = Les commandes fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.
+MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER = Autoriser l'utilisateur à changer le Fournisseur lorsque la commande est à l'état de brouillon.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// #Multiples
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+jpsun_link = Lien vers les fichiers
+jpsun_link_help = Entrez ici le lien de téléchargement des éléments (Lien de partage Nextcloud, Dropbox, weTransfer, etc.)
+
+jpsun_qualite_representant =  Qualité du Représentant
+jpsun_qualite_representant_help = Directeur, Gérant, Président, etc.
+
+jpsun_libelle = Libellé
+jpsun_libelle_help = Description succincte du contenu de la demande de prix afin de pouvoir la retrouver plus facilement dans les tableaux. Par exemple : "Onduleur" ou "Câblerie". (Maximum 50 caractères)
+
+
+jpsun_n_devis_fourn = N° de Devis Fournisseur
+jpsun_n_devis_fourn_help = Numéro du devis que vous avez reçu du fournisseur.
+
+jpsun_date_devis_fourn = Date du Devis Fournisseur
+jpsun_date_devis_fourn_help = Date du devis que vous avez reçu de ce fournisseur.
+
+jpsun_date_de_livraison_souhaitee = Date de livraison souhaitée
+jpsun_DateDeliveryWanted = Date de livraison souhaitée	   
+jpsun_date_de_livraison_souhaitee_help = Date de livraison à laquelle vous souhaitez que votre commande arrive à sa destination.
+
+jpsun_dontremise = Remise comprise	   
+jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.
+
+jpsun_dontremise = Remise comprise
+jpsun_dontremise_infobulle = Remise fixe ou exceptionnelle comprise dans le prix d'achat ci-dessus.
 MAIN_DISABLE_TRUNC = Désactiver toutes les troncatures dans la liste de sélection.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
