@@ -98,7 +98,9 @@ JpsunPropalSignedProjectAlreadyLinked = A project is already linked to proposal 
 JpsunPropalSignedProjectNoRef = Unable to generate project reference for proposal %s (id %s).<br>
 JpsunPropalSignedProjectModelNotFound = Project numbering model not found (%s) for proposal %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Error creating project for proposal %s (id %s): %s.<br>
-JpsunPropalSignedProjectCreated = Project created for proposal %s (id %s). Project id %s. Extrafields copied: %s. Linked orders: %s.<br>
+JpsunPropalSignedProjectLinkError = Unable to link project to proposal %s (id %s). Project %s.<br>
+JpsunPropalSignedProjectCreated = Project created for proposal %s (id %s): project %s (ref %s).<br>
+JpsunPropalSignedProjectCreatedDetails = Copied extrafields: %s - Linked orders: %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>
