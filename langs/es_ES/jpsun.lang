@@ -47,7 +47,7 @@ jpsunTHR = Taux horaire réel
 // #Divers
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunSetup = Réglages du module JPSUN
+JpsunSetup = Ajustes del módulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Crear automáticamente un proyecto al firmar el presupuesto
 PRODUCT_USE_UNITS = Les produits utilisent des unités
 SetupSituationTitle = Facture de situation
@@ -58,7 +58,7 @@ JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel
 
 JpsunPdfDocuments= Documents PDF
-SupplierProposals = Devis fournisseur
+SupplierProposals = Presupuestos de proveedor
 PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet
 PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.
 Thirdparty = Tiers
@@ -251,10 +251,10 @@ JPSUNNumRefModelDesc = Renvoie le numéro sous la forme YYYYPN000 où YYYY est l
 jpsun_ForecastProfit = Bénéfice prévisionnel
 jpsun_RealProfit = Bénéfice consolidé
 
-SupplierProposalsExcludingRefused = Proposition commerciales fournisseurs (Sans les brouillons, celles refusées et celles commandées)
+SupplierProposalsExcludingRefused = Presupuestos de proveedor (sin borradores, rechazados ni pedidos)
 ProposalsExcludingRefused = Proposition commerciales (Sans les brouillons, celles refusées ou celles commandées)
 jpsun_ProposalsExcludingRefusedTooltip = Sans les brouillons, celles refusées ou celles commandées.
-jpsun_SupplierProposalsExcludingRefusedTooltip = Sans les brouillons, celles refusées et celles commandées.
+jpsun_SupplierProposalsExcludingRefusedTooltip = Sin borradores, rechazados ni pedidos.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Tickets
