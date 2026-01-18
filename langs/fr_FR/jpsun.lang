@@ -4,6 +4,7 @@ CHARSET=iso-8859-1
 Module999999Desc= Module rassemblant toutes les modifications développées pour JPSUN.
 Module999999Name=JPSUN
 jpsun=JPSUN
+JpsunTriggerAutoProjectOnPropalSignedDesc=Déclencheur JPSUN : création automatique d'un projet à la signature d'un devis.
 
 SetupG=Général 
 
@@ -47,6 +48,7 @@ jpsunTHR = Taux horaire réel
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 JpsunSetup = Réglages du module JPSUN
+JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Créer automatiquement un projet à la signature du devis
 PRODUCT_USE_UNITS = Les produits utilisent des unités
 SetupSituationTitle = Facture de situation
 INVOICE_USE_SITUATION = Prise en charge des factures de situation
@@ -56,6 +58,7 @@ JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel
 
 JpsunPdfDocuments= Documents PDF
+SupplierProposals = Devis fournisseur
 PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet
 PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.
 Thirdparty = Tiers
@@ -93,6 +96,14 @@ JpsunWithPicturesName = JPSUN avec images
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.
 JpsunWithoutPicturesName = JPSUN sans images
 DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.
+JpsunPropalSignedProjectAlreadyLinked = Un projet est déjà lié au devis %s (id %s).
+JpsunPropalSignedProjectNoRef = Impossible de générer la référence du projet pour le devis %s (id %s).
+JpsunPropalSignedProjectModelNotFound = Modèle de numérotation projet introuvable (%s) pour le devis %s (id %s).
+JpsunPropalSignedProjectCreateError = Erreur de création du projet pour le devis %s (id %s) : %s.
+JpsunPropalSignedProjectLinkError = Impossible de lier le projet au devis %s (id %s). Projet %s.
+JpsunPropalSignedProjectOrderLinkError = Impossible de lier la commande au projet pour le devis %s (id %s). Commande %s.
+JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s) : projet %s (ref %s).
+JpsunPropalSignedProjectCreatedDetails = Extrachamps copiés : %s - Commandes liées : %s.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Commandes Clients
