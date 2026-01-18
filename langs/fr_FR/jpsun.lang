@@ -98,7 +98,10 @@ JpsunPropalSignedProjectAlreadyLinked = Un projet est déjà lié au devis %s (i
 JpsunPropalSignedProjectNoRef = Impossible de générer la référence du projet pour le devis %s (id %s).<br>
 JpsunPropalSignedProjectModelNotFound = Modèle de numérotation projet introuvable (%s) pour le devis %s (id %s).<br>
 JpsunPropalSignedProjectCreateError = Erreur de création du projet pour le devis %s (id %s) : %s.<br>
-JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s). Id projet %s. Extrachamps copiés : %s. Commandes liées : %s.<br>
+JpsunPropalSignedProjectLinkError = Impossible de lier le projet au devis %s (id %s). Projet %s.<br>
+JpsunPropalSignedProjectOrderLinkError = Impossible de lier la commande au projet pour le devis %s (id %s). Commande %s.<br>
+JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s) : projet %s (ref %s).<br>
+JpsunPropalSignedProjectCreatedDetails = Extrachamps copiés : %s - Commandes liées : %s.<br>
 <br>
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 // #Commandes Clients<br>

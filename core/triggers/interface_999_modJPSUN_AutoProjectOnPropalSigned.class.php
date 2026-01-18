@@ -73,6 +73,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			return 0;
 		}
 
+		// EN: Stop if proposal already has a native project link
+		// FR: Stopper si le devis a déjà un projet natif
+		if (!empty($object->fk_projet) && (int) $object->fk_projet > 0) {
+			return 0;
+		}
+
 		// EN: Stop if project module is disabled
 		// FR: Stopper si le module projet est désactivé
 		if (!isModEnabled('project')) {
@@ -110,69 +116,6 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		$project->status = Project::STATUS_VALIDATED;
 		$project->statut = Project::STATUS_VALIDATED;
 
-		// EN: Generate reference using the project numbering module
-		// FR: Générer la référence via le module de numérotation des projets
-		$defaultref = getDolGlobalString('PROJECT_ADDON');
-		if (empty($defaultref)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		$filefound = '';
-		if (!empty($conf->modules_parts['models'])) {
-			foreach ($conf->modules_parts['models'] as $reldir) {
-				$file = dol_buildpath($reldir.'project/'.$defaultref.'.php', 0);
-				if (file_exists($file)) {
-					$filefound = $file;
-					break;
-				}
-			}
-		}
-		if (empty($filefound)) {
-			$projectfile = DOL_DOCUMENT_ROOT.'/projet/core/modules/project/'.$defaultref.'.php';
-			if (file_exists($projectfile)) {
-				$filefound = $projectfile;
-			}
-		}
-		if (empty($filefound)) {
-			$corefile = DOL_DOCUMENT_ROOT.'/core/modules/project/'.$defaultref.'.php';
-			if (file_exists($corefile)) {
-				$filefound = $corefile;
-			}
-		}
-		if (empty($filefound)) {
-			// EN: Search in custom modules for the configured numbering model
-			// FR: Rechercher dans les modules personnalisés le modèle de numérotation configuré
-			dol_include_once('/core/lib/files.lib.php');
-			$files = dol_dir_list(DOL_DOCUMENT_ROOT.'/custom', 'files', 0, '/core\\/modules\\/project\\/'.preg_quote($defaultref, '/').'\\.php$/', '', 'name', SORT_ASC, 1);
-			if (!empty($files)) {
-				$filefound = $files[0]['fullname'];
-			}
-		}
-		if (!file_exists($filefound)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		dol_include_once($filefound);
-		$classname = $defaultref;
-		if (!class_exists($classname)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectModelNotFound', $defaultref, $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-		$modProject = new $classname($this->db);
-		$project->ref = $modProject->getNextValue($object->thirdparty, $project);
-		if (empty($project->ref)) {
-			$this->error = $langs->trans('JpsunPropalSignedProjectNoRef', $object->ref, $object->id);
-			$this->errors[] = $this->error;
-			dol_syslog($this->error, LOG_ERR);
-			return -1;
-		}
-
 		// EN: Copy extrafields with matching codes
 		// FR: Copier les extrachamps avec les mêmes codes
 		$extrafields = new ExtraFields($this->db);
@@ -193,26 +136,96 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
+		// EN: Build project reference using numbering module
+		// FR: Générer la référence projet via le module de numérotation
+		$obj = getDolGlobalString('PROJECT_ADDON', 'mod_project_simple');
+		$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
+		$defaultref = '';
+		$filefound = '';
+		foreach ($dirmodels as $reldir) {
+			$file = dol_buildpath($reldir.'core/modules/project/'.$obj.'.php', 0);
+			if (file_exists($file)) {
+				$filefound = $file;
+				dol_include_once($reldir.'core/modules/project/'.$obj.'.php');
+				$modProject = new $obj();
+				'@phan-var-force ModeleNumRefProjects $modProject';
+				$project->date_c = dol_now();
+				$defaultref = $modProject->getNextValue(is_object($object->thirdparty) ? $object->thirdparty : null, $project);
+				break;
+			}
+		}
+		dol_syslog('JPSUN AutoProject: numbering model='.$obj.' file='.$filefound.' ref='.$defaultref, LOG_DEBUG);
+		if (empty($defaultref) || (is_numeric($defaultref) && $defaultref <= 0)) {
+			// EN: Fallback to a unique provisional ref to avoid failure
+			// FR: Repli sur une référence provisoire unique pour éviter l'échec
+			$project->ref = '(PROV-'.$object->id.')';
+			dol_syslog('JPSUN AutoProject: numbering failed, fallback ref='.$project->ref, LOG_WARNING);
+		} else {
+			$project->ref = $defaultref;
+		}
+		dol_syslog(
+			'JPSUN AutoProject: creating project from propal id='.$object->id
+			.' using PROJECT_ADDON='.getDolGlobalString('PROJECT_ADDON')
+			.' ref='.$project->ref.' title='.$project->title.' socid='.$project->socid.' entity='.$project->entity,
+			LOG_DEBUG
+		);
 		$res = $project->create($user);
 		if ($res <= 0) {
 			$this->error = $project->error;
 			$this->errors = $project->errors;
+			dol_syslog('JPSUN AutoProject: project->create failed: '.$project->error.' ref='.$project->ref.' title='.$project->title.' socid='.$project->socid, LOG_ERR);
 			dol_syslog($langs->trans('JpsunPropalSignedProjectCreateError', $object->ref, $object->id, $this->error), LOG_ERR);
 			return -1;
 		}
 
-		$project->add_object_linked('propal', $object->id, $user);
+		$resLink = $project->update_element('propal', $object->id);
+		if ($resLink < 0) {
+			$this->error = $langs->trans('JpsunPropalSignedProjectLinkError', $object->ref, $object->id, $project->id);
+			$this->errors[] = $this->error;
+			dol_syslog('JPSUN AutoProject: failed to set fk_projet on propal id='.$object->id.' project id='.$project->id.' : '.$project->error.' '.$this->db->lasterror(), LOG_ERR);
+			return -1;
+		}
+		if ($resLink > 0) {
+			$object->fk_projet = $project->id;
+		}
+		dol_syslog('JPSUN AutoProject: linked propal id='.$object->id.' to project id='.$project->id.' (fk_projet updated)', LOG_INFO);
 
 		$linkedOrders = 0;
 		$object->fetchObjectLinked($object->id, $object->element, null, 'commande', 'OR', 0, 'sourcetype', 0);
+		$linkedOrderIds = array();
 		if (!empty($object->linkedObjectsIds['commande'])) {
-			foreach ($object->linkedObjectsIds['commande'] as $idcommande) {
+			$linkedOrderIds = $object->linkedObjectsIds['commande'];
+		}
+
+		// EN: Link auto-created order when workflow is enabled
+		// FR: Lier la commande auto-créée si le workflow est activé
+		if (getDolGlobalInt('WORKFLOW_PROPAL_AUTOCREATE_ORDER') && !empty($linkedOrderIds)) {
+			foreach ($linkedOrderIds as $idcommande) {
+				$resOrderLink = $project->update_element('commande', $idcommande);
+				if ($resOrderLink < 0) {
+					$this->error = $langs->trans('JpsunPropalSignedProjectOrderLinkError', $object->ref, $object->id, $idcommande);
+					$this->errors[] = $this->error;
+					dol_syslog('JPSUN AutoProject: failed to set fk_projet on order id='.$idcommande.' project id='.$project->id.' : '.$project->error.' '.$this->db->lasterror(), LOG_ERR);
+					return -1;
+				}
+			}
+			dol_syslog('JPSUN AutoProject: linked orders to project id='.$project->id.' via workflow', LOG_INFO);
+		}
+
+		$project->add_object_linked('propal', $object->id, $user);
+
+		if (!empty($linkedOrderIds)) {
+			foreach ($linkedOrderIds as $idcommande) {
 				$project->add_object_linked('commande', $idcommande, $user);
 				$linkedOrders++;
 			}
 		}
 
-		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $copiedExtraFields, $linkedOrders), LOG_INFO);
+		dol_syslog($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref), LOG_INFO);
+		dol_syslog($langs->trans('JpsunPropalSignedProjectCreatedDetails', $copiedExtraFields, $linkedOrders), LOG_INFO);
+		// EN: Notify user about project creation
+		// FR: Notifier l'utilisateur de la création du projet
+		setEventMessage($langs->trans('JpsunPropalSignedProjectCreated', $object->ref, $object->id, $project->id, $project->ref));
 
 		return 1;
 	}
