@@ -1,6 +1,6 @@
 # Dolibarr language file - de_DE - tos
 # Admin-Formular
-CHARSET=iso-8859-1
+CHARSET=ISO-8859-1
 Module999999Desc=Modul mit allen für JPSUN entwickelten Änderungen.
 Module999999Name=JPSUN
 jpsun=JPSUN
@@ -22,7 +22,7 @@ MobileShort=Mob.
 
 ref_project=Projektreferenz
 
-DocModelJPSUNName =JPSUN
+DocModelJPSUNName=JPSUN
 DocModelJPSUNDescription=Lieferantenangebot-Vorlage von JPSUN.
 
 DocModelJPSUNwithpricesName=JPSUN mit Preisen
@@ -154,7 +154,7 @@ jpsun_dontremise_infobulle=Fester oder außergewöhnlicher Rabatt im Einkaufspre
 
 jpsun_dontremise=Rabatt enthalten
 jpsun_dontremise_infobulle=Fester oder außergewöhnlicher Rabatt im Einkaufspreis enthalten.
-MAIN_DISABLE_TRUNC =Désactiver toutes les troncatures dans la liste de sélection.
+MAIN_DISABLE_TRUNC =Deaktivieren Sie alle Kürzungen in der Auswahlliste.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Produkte
@@ -168,7 +168,7 @@ jpsun_module_pv_pc_help=Spitzenleistung des PV-Moduls in Watt-Peak (Wp).
 
 JpsunProduitsCompatibles=Kompatible Produkte
 JpsunProduitsCompatibles_help=Kompatible Produkte auswählen (ohne Gegenseitigkeit).
-jpsun_ProductDet =Détails
+jpsun_ProductDet=Einzelheiten
 jpsun_ProductDet_help =Verschiedene Merkmale, die nicht in Angeboten/Bestellungen/Rechnungen erscheinen.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -197,12 +197,12 @@ MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Produktsuche nach Lieferantenreferenz im Zeilen
 // #Verträge
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunContractSiteName =Nom du site
-JpsunContractDistanceFromCompanyKm =Distance depuis la société (km)
-JpsunContractInstalledPowerKwc =Puissance installée (kWc)
-JpsunContractRevaluationIndexSn =Indice de valorisation initial (S0)
-JpsunContractPvModules =Modules PV
-JpsunContractPvModulesQty =Nombre de modules PV
+JpsunContractSiteName =Site-Name
+JpsunContractDistanceFromCompanyKm =Entfernung vom Unternehmen (km)
+JpsunContractInstalledPowerKwc=Installierte Leistung (kWp)
+JpsunContractRevaluationIndexSn =Erstbewertungsindex (S0)
+JpsunContractPvModules=PV-Module
+JpsunContractPvModulesQty =Name der PV-Module
 JpsunContractInverters =Wechselrichter
 JpsunContractInvertersQty =Anzahl der Wechselrichter
 JpsunContractInvertersInstallHeightM =Installationshöhe Wechselrichter (m)
@@ -219,7 +219,7 @@ JpsunContractSiteRepresentative2 =Standortvertreter 2
 //# ENEDIS-Bereich
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-projet_enedis =ENEDIS
+projet_enedis=ENEDIS
 
 JPSUN_DDR_SEND =DDR | JPSUN | Verbindungsanfrage
 JPSUN_DDR_R_ENEDIS =DDR | ENEDIS | Unvollständige Datei

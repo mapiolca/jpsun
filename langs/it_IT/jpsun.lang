@@ -22,7 +22,7 @@ MobileShort=Cell.
 
 ref_project=Riferimento progetto
 
-DocModelJPSUNName =JPSUN
+DocModelJPSUNName=JPSUN
 DocModelJPSUNDescription=Modello di preventivo fornitore di JPSUN.
 
 DocModelJPSUNwithpricesName=JPSUN con prezzi
@@ -154,7 +154,7 @@ jpsun_dontremise_infobulle=Sconto fisso o eccezionale incluso nel prezzo di acqu
 
 jpsun_dontremise=Sconto incluso
 jpsun_dontremise_infobulle=Sconto fisso o eccezionale incluso nel prezzo di acquisto.
-MAIN_DISABLE_TRUNC =Désactiver toutes les troncatures dans la liste de sélection.
+MAIN_DISABLE_TRUNC =Disabilita tutti i troncamenti nell'elenco di selezione.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Prodotti
@@ -168,7 +168,7 @@ jpsun_module_pv_pc_help=Potenza di picco del modulo fotovoltaico in watt-picco (
 
 JpsunProduitsCompatibles=Prodotto/i compatibile/i
 JpsunProduitsCompatibles_help=Selezionare i prodotti compatibili (senza reciprocità).
-jpsun_ProductDet =Détails
+jpsun_ProductDet=Dettagli
 jpsun_ProductDet_help =Caratteristiche varie che non appariranno su preventivi/ordini/fatture.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ jpsun_ProductDet_help =Caratteristiche varie che non appariranno su preventivi/o
 
 jpsun_project_pc=Potenza di picco (kWp)
 jpsun_project_pc_help=Potenza di picco dell’impianto in kilowatt-picco (kWp).
-jpsun_project_n_ddr=DDR | N°
+jpsun_project_n_ddr=DDR | NO.
 jpsun_project_n_ddr_help=Numero di richiesta connessione assegnato da ENEDIS.
 jpsun_project_type_racc=DDR | Tipo
 jpsun_project_type_racc_help=Inserire il tipo di connessione richiesto.
@@ -186,7 +186,7 @@ jpsun_project_t0_help=T0 della richiesta di connessione, data di fissazione tari
 jpsun_project_type_racc_vt=Vendita totale
 jpsun_project_type_racc_as=Autoconsumo con vendita surplus
 jpsun_project_type_racc_at=Autoconsumo
-jpsun_project_prix_rachat=Tariffa di acquisto (€/kWh)
+jpsun_project_prix_rachat=Prezzo di acquisto (€/kWh)
 jpsun_project_prix_rachat_help=Prezzo in €/kWh della produzione o surplus valido a T0.
 jpsun_project_mes_date=Messa in servizio
 jpsun_project_mes_date_help=Data di messa in servizio autorizzata o prevista da/con ENEDIS.
@@ -197,12 +197,12 @@ MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Consente di cercare un prodotto per riferimento
 // #Contratti
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunContractSiteName =Nom du site
-JpsunContractDistanceFromCompanyKm =Distance depuis la société (km)
-JpsunContractInstalledPowerKwc =Puissance installée (kWc)
-JpsunContractRevaluationIndexSn =Indice de valorisation initial (S0)
-JpsunContractPvModules =Modules PV
-JpsunContractPvModulesQty =Nombre de modules PV
+JpsunContractSiteName =Nome del sito
+JpsunContractDistanceFromCompanyKm =Distanza dall'azienda (km)
+JpsunContractInstalledPowerKwc=Potenza installata (kWp)
+JpsunContractRevaluationIndexSn =Indice di valutazione iniziale (S0)
+JpsunContractPvModules=Moduli fotovoltaici
+JpsunContractPvModulesQty =Nome dei moduli fotovoltaici
 JpsunContractInverters =Invertitori
 JpsunContractInvertersQty =Numero di inverter
 JpsunContractInvertersInstallHeightM =Altezza di installazione inverter (m)
@@ -219,7 +219,7 @@ JpsunContractSiteRepresentative2 =Rappresentante del sito 2
 //# Sezione ENEDIS
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-projet_enedis =ENEDIS
+projet_enedis=ENEDIS
 
 JPSUN_DDR_SEND =DDR | JPSUN | Richiesta di connessione
 JPSUN_DDR_R_ENEDIS =DDR | ENEDIS | Fascicolo incompleto

@@ -22,7 +22,7 @@ MobileShort=Mob.
 
 ref_project=Project reference
 
-DocModelJPSUNName =JPSUN
+DocModelJPSUNName=JPSUN
 DocModelJPSUNDescription=Supplier proposal template by JPSUN.
 
 DocModelJPSUNwithpricesName=JPSUN with prices
@@ -160,7 +160,7 @@ MAIN_DISABLE_TRUNC =Disable all truncations in the selection list.
 // #Products
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-jpsun_marque=Manufacturer | Brand
+jpsun_marque=Manufacturer | 
 jpsun_marque_help=Enter the brand or manufacturer of this product.
 
 jpsun_module_pv_pc=Peak power (Wp)
@@ -179,9 +179,9 @@ jpsun_project_pc=Peak power (kWp)
 jpsun_project_pc_help=Peak power (Pp or Pc) of the installation expressed in kilowatt-peak (kWp).
 jpsun_project_n_ddr=DDR | No.
 jpsun_project_n_ddr_help=Connection request number assigned by ENEDIS after receipt.
-jpsun_project_type_racc=DDR | Type
+jpsun_project_type_racc=DDR | 
 jpsun_project_type_racc_help=Enter the connection type requested by the customer or beneficiary of the installation.
-jpsun_project_t0=DDR | T0
+jpsun_project_t0=DDR | 
 jpsun_project_t0_help=T0 of the connection request, date when the purchase tariff is fixed.
 jpsun_project_type_racc_vt=Full sale
 jpsun_project_type_racc_as=Self-consumption with surplus sale
@@ -197,12 +197,12 @@ MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Allow searching for a product by supplier refer
 // #Contracts
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunContractSiteName =Nom du site
+JpsunContractSiteName =Site name
 JpsunContractDistanceFromCompanyKm =Distance from company (km)
 JpsunContractInstalledPowerKwc =Installed power (kWp)
-JpsunContractRevaluationIndexSn =Indice de valorisation initial (S0)
-JpsunContractPvModules =Modules PV
-JpsunContractPvModulesQty =Nombre de modules PV
+JpsunContractRevaluationIndexSn =Initial valuation index (S0)
+JpsunContractPvModules=PV modules
+JpsunContractPvModulesQty =Name of PV modules
 JpsunContractInverters =Inverters
 JpsunContractInvertersQty =Number of inverters
 JpsunContractInvertersInstallHeightM =Installation height Inverters (m)
@@ -219,7 +219,7 @@ JpsunContractSiteRepresentative2 =Representative site 2
 //# ENEDIS section
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-projet_enedis =ENEDIS
+projet_enedis=ENEDIS
 
 JPSUN_DDR_SEND =DDR | JPSUN | Connection request
 JPSUN_DDR_R_ENEDIS =DDR | ENEDIS | Incomplete file

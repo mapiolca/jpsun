@@ -22,7 +22,7 @@ MobileShort=Móvil
 
 ref_project=Referencia del proyecto
 
-DocModelJPSUNName =JPSUN
+DocModelJPSUNName=JPSUN
 DocModelJPSUNDescription=Plantilla de presupuesto proveedor por JPSUN.
 
 DocModelJPSUNwithpricesName=JPSUN con precios
@@ -54,7 +54,7 @@ SetupSituationTitle=Factura de situación
 INVOICE_USE_SITUATION=Habilitar facturas de situación
 SituationParamsAvailablesHere=Los parámetros de facturas de situación están disponibles aquí:
 
-JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tarifa horaria para previsiones
+JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tarifas horarias para previsiones
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=La vista de proyectos muestra el beneficio previsto
 
 JpsunPdfDocuments=Documentos PDF
@@ -154,7 +154,7 @@ jpsun_dontremise_infobulle=Descuento fijo o excepcional incluido en el precio de
 
 jpsun_dontremise=Descuento incluido
 jpsun_dontremise_infobulle=Descuento fijo o excepcional incluido en el precio de compra.
-MAIN_DISABLE_TRUNC =Désactiver toutes les troncatures dans la liste de sélection.
+MAIN_DISABLE_TRUNC =Deshabilite todos los truncamientos en la lista de selección.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Productos
@@ -168,7 +168,7 @@ jpsun_module_pv_pc_help=Potencia pico del módulo fotovoltaico en watt-pico (Wp)
 
 JpsunProduitsCompatibles=Producto(s) compatible(s)
 JpsunProduitsCompatibles_help=Seleccione los productos compatibles (sin reciprocidad).
-jpsun_ProductDet =Détails
+jpsun_ProductDet=Detalles
 jpsun_ProductDet_help =Características diversas que no aparecerán en cotizaciones/pedidos/facturas.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,12 +181,12 @@ jpsun_project_n_ddr=DDR | Nº
 jpsun_project_n_ddr_help=Número de solicitud de conexión asignado por ENEDIS.
 jpsun_project_type_racc=DDR | Tipo
 jpsun_project_type_racc_help=Indique el tipo de conexión solicitado.
-jpsun_project_t0=DDR | T0
-jpsun_project_t0_help=T0 de la solicitud de conexión, fecha de fijación de tarifa.
+jpsun_project_t0=RDA | T0
+jpsun_project_t0_help=T0 de la solicitud de conexión, solicitud de conexión de precio.
 jpsun_project_type_racc_vt=Venta total
 jpsun_project_type_racc_as=Autoconsumo con venta de excedente
 jpsun_project_type_racc_at=Autoconsumo
-jpsun_project_prix_rachat=Tarifa de compra (€/kWh)
+jpsun_project_prix_rachat=Precio de compra (€/kWh)
 jpsun_project_prix_rachat_help=Precio en €/kWh de la producción o excedente vigente en T0.
 jpsun_project_mes_date=Puesta en servicio
 jpsun_project_mes_date_help=Fecha de puesta en servicio autorizada o prevista por/ con ENEDIS.
@@ -197,12 +197,12 @@ MAIN_SEARCH_PRODUCT_BY_FOURN_REF=Permite buscar un producto por referencia de pr
 // #Contratos
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunContractSiteName =Nom du site
-JpsunContractDistanceFromCompanyKm =Distance depuis la société (km)
-JpsunContractInstalledPowerKwc =Puissance installée (kWc)
-JpsunContractRevaluationIndexSn =Indice de valorisation initial (S0)
-JpsunContractPvModules =Modules PV
-JpsunContractPvModulesQty =Nombre de modules PV
+JpsunContractSiteName =Nombre del sitio
+JpsunContractDistanceFromCompanyKm =Distancia a la empresa (km)
+JpsunContractInstalledPowerKwc=Potencia instalada (kWp)
+JpsunContractRevaluationIndexSn =Índice de valoración inicial (S0)
+JpsunContractPvModules=módulos fotovoltaicos
+JpsunContractPvModulesQty=Número de módulos fotovoltaicos
 JpsunContractInverters =Inversores
 JpsunContractInvertersQty =Número de inversores
 JpsunContractInvertersInstallHeightM =Altura de instalación Inversores (m)
