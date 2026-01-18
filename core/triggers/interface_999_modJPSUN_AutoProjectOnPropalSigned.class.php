@@ -205,6 +205,8 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 		dol_syslog('JPSUN AutoProject: linked propal id='.$object->id.' to project id='.$project->id.' (fk_projet updated)', LOG_INFO);
 
+		$project->add_object_linked('propal', $object->id, $user);
+
 		$linkedOrders = 0;
 		$object->fetchObjectLinked($object->id, $object->element, null, 'commande', 'OR', 0, 'sourcetype', 0);
 		$linkedOrderIds = array();
