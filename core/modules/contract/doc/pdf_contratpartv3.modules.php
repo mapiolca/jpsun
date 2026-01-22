@@ -606,6 +606,20 @@ class pdf_contratpartv3 extends ModelePDFContract
 
 				//Contenu
 
+			// Page 16
+				$pdf->AddPage();
+
+				$tplidx = $pdf->importPage(16);
+                if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+
+				//$pdf->Image($logo, 10, 10, "", 10);
+				
+				// Pied de page
+				$this->_pagefoot($pdf, $object, $outputlangs);
+				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+
+				//Contenu
+
 			// Fermture Formulaire
 				$pdf->Close();
 				$pdf->Output($file,'F');
