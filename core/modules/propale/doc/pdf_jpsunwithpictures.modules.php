@@ -1791,10 +1791,27 @@ class pdf_jpsunwithpictures extends ModelePDFPropales
 				$thirdparty = $object->thirdparty;
 			}
 
+			 $thirdparty = $object->thirdparty;
+            
+            require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+
+            $contact = new Contact($this->db);
+            
+            if ($contact->fetch((int) $object->contact) > 0) {
+            	$carac_contact = $object->contact->getFullName($langs, 1).' ('.pdfBuildThirdpartyName($object->contact, $outputlangs).')'; // ex: "DUPONT Jean" selon conf/format
+            	// ou si tu veux forcer un format :
+            	// $fullname = $contact->getFullName($langs, 1); // selon version: paramètres possibles (see class)
+            } else {
+            	$carac_contact = '';
+            }
+            
 			$carac_client_name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
 
 			$mode = 'target';
-			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, $mode, $object);
+			//$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, $mode, $object);
+			//$carac_contact = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, $mode, $object);
+
+			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), 0, $mode, $object);
 
 			// Show recipient
 			$widthrecbox = getDolGlobalString('MAIN_PDF_USE_ISO_LOCATION') ? 92 : 100;
@@ -1824,7 +1841,16 @@ class pdf_jpsunwithpictures extends ModelePDFPropales
 			$pdf->MultiCell($widthrecbox, 2, $carac_client_name, 0, $ltrdirection);
 
 			$posy = $pdf->getY();
-
+            
+			// Show Contact Name
+			if ($object->contact) {
+    			$pdf->SetFont('', '', $default_font_size - 1);
+    			$pdf->SetXY($posx + 2, $posy);
+    			// @phan-suppress-next-line PhanPluginSuspiciousParamOrder
+    			$pdf->MultiCell($widthrecbox, 4, $carac_contact, 0, $ltrdirection);
+    			
+    			$posy = $pdf->getY();
+			}
 			// Show recipient information
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->SetXY($posx + 2, $posy);
