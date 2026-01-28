@@ -25,21 +25,19 @@
 // Dolibarr environment
 $res = @include("../../main.inc.php"); // From htdocs directory
 if (! $res) {
-    $res = @include("../../../main.inc.php"); // From "custom" directory
+	$res = @include("../../../main.inc.php"); // From "custom" directory
 }
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/jpsun.lib.php';
-//dol_include_once('../../abricot/includes/lib/admin.lib.php');
-dol_include_once('../lib/admin.lib.php');
 
 // Translations
-$langs->load("jpsun@jpsun");
+$langs->loadLangs(array('admin', 'jpsun@jpsun'));
 
 // Access control
 if (! $user->admin) {
-    accessforbidden();
+	accessforbidden();
 }
 
 // Parameters
@@ -48,32 +46,24 @@ $action = GETPOST('action', 'alpha');
 /*
  * Actions
  */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
-    {
-        header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/set_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0) {
+		header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_del_const($db, $code, 0) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
+if (preg_match('/del_(.*)/', $action, $reg)) {
+	$code = $reg[1];
+	if (dolibarr_del_const($db, $code, 0) > 0) {
+		header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	} else {
+		dol_print_error($db);
+	}
 }
 
 /*
@@ -82,175 +72,104 @@ if (preg_match('/del_(.*)/',$action,$reg))
 $page_name = "JpsunSetup";
 llxHeader('', $langs->trans($page_name));
 
-// Subheader
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
-    . $langs->trans("BackToModuleList") . '</a>';
-    print_fiche_titre($langs->trans($page_name), $linkback, 'tools');
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
+print_fiche_titre($langs->trans($page_name), $linkback, 'tools');
 
-    // Configuration header
-    $head = jpsunAdminPrepareHead();
-    dol_fiche_head(
-        $head,
-        'setup',
-        $langs->trans("Module999999Desc"),
-        -1,
-        "jpsun@jpsun"
-        );
+$head = jpsunAdminPrepareHead();
+dol_fiche_head($head, 'setup', $langs->trans("Module999999Desc"), -1, "jpsun@jpsun");
 
+print '<table class="noborder" width="100%">';
 
+setup_print_title('JpsunPdfDocuments');
+setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
+setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
 
-    print '<table class="noborder" width="100%">';
-    
-    // Documents PDF
-    setup_print_title($langs->trans("JpsunPdfDocuments"));
-    setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
-    setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
+setup_print_title('Global');
+setup_print_on_off('MAIN_DISABLE_TRUNC');
 
+setup_print_title('Thirdparty');
+setup_print_on_off('MAIN_ALL_TO_UPPER');
 
-    // GLOBAL
-    setup_print_title($langs->trans("Global"));
-    
-    setup_print_on_off('MAIN_DISABLE_TRUNC');
-    
-    // THIRDPARTIES
-    setup_print_title($langs->trans("Thirdparty"));
-    
-    setup_print_on_off('MAIN_ALL_TO_UPPER');
-    
-    // PRODUCTS
-    setup_print_title($langs->trans("Products"));
+setup_print_title('Products');
+setup_print_on_off('PRODUCT_USE_UNITS');
+setup_print_on_off('MAIN_SEARCH_PRODUCT_BY_FOURN_REF');
 
-    setup_print_on_off('PRODUCT_USE_UNITS');
-    setup_print_on_off('MAIN_SEARCH_PRODUCT_BY_FOURN_REF');
+setup_print_title('JpsunCustomerProposal');
+if (floatval(DOL_VERSION) >= 20.0) {
+	setup_print_on_off('PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT');
+	setup_print_on_off('JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN');
+}
 
-    //setup_print_on_off('BTP_SIMPLE_DISPLAY'); // je ne sais pas a quoi sert cette conf j'ai fait une recherche, utilisé par workstation
-/**
-    if(floatval(DOL_VERSION) >= 8){
-        setup_print_on_off('MAIN_ENABLE_IMPORT_LINKED_OBJECT_LINES', false, '', 'MAIN_ENABLE_IMPORT_LINKED_OBJECT_LINES_HELP');
-    }
+setup_print_title('Workflow');
+setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
 
+setup_print_title('CustomerOrder');
+if (floatval(DOL_VERSION) >= 7.0) {
+	setup_print_on_off('MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER');
+}
 
-    if(floatval(DOL_VERSION) >= 10){
-        setup_print_on_off('INVOICE_KEEP_DISCOUNT_LINES_AS_IN_ORIGIN', false, '', 'INVOICE_KEEP_DISCOUNT_LINES_AS_IN_ORIGIN_HELP');
-    }
-**/
-
-	// CUSTOMER PROPAL
-	setup_print_title($langs->trans("JpsunCustomerProposal"));
-
-    if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT');
-        }
-    if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN');
-        }
-
-	// WORKFLOW
-	setup_print_title($langs->trans("Workflow"));
-	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
-
-	// CUSTOMER ORDER
-    
-    setup_print_title($langs->trans("CustomerOrder"));
-
-    if(floatval(DOL_VERSION) >= 7.0){
-        setup_print_on_off('MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER');
-        }
-
-    // INVOICE_USE_SITUATION
-    setup_print_title($langs->trans("SetupSituationTitle"));
-
-    // FORCE reload page
-    $ajaxConstantOnOffInput = array(
-        	'set' => array('INVOICE_USE_SITUATION' => 2)
-        );    
-    setup_print_on_off('INVOICE_USE_SITUATION', false, '', false, 300, true, $ajaxConstantOnOffInput);
-    $ajaxConstantOnOffInput = '';
-    if(getDolGlobalInt('INVOICE_USE_SITUATION')) {
-        if(intval(DOL_VERSION) >= 11
-            || file_exists(DOL_DOCUMENT_ROOT . '/admin/facture_situation.php') 
-		|| file_exists(DOL_DOCUMENT_ROOT . '/admin/invoice_situation.php') // For X.x_btp compatible branch
-        )
-        {
-		if(intval(DOL_VERSION) >= 20) $link = dol_buildpath('admin/invoice_situation.php',1);
-		else $link =dol_buildpath('admin/facture_situation.php',1);
-            print '<tr>';
-            print '<td colspan="3">'.$langs->trans('SituationParamsAvailablesHere').' <a href="'.$link.'" >'.$langs->trans("SetupSituationTitle").'</a></td>'."\n";
-            print '</tr>';
-        }
-        elseif(intval(DOL_VERSION) >= 8){
-            setup_print_on_off('INVOICE_USE_SITUATION_CREDIT_NOTE');
-        }
-    }
-
-        // SUPPLIER PROPOSAL
-        setup_print_title($langs->trans("SupplierProposals"));
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_ADD_BILLING_CONTACT');
-        }
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT');
-        }
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD');
-        }
-
-        // SUPPLIER ORDER
-        setup_print_title($langs->trans("SupplierOrder"));
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_ORDER_AUTOADD_USER_CONTACT');
-        }
-        
-        if(floatval(DOL_VERSION) >= 10.0){
-        setup_print_on_off('MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER');
-        }
-        
-         
-
-    //
-/**
-	if(floatval(DOL_VERSION) >= 9){
-		setup_print_on_off('INVOICE_USE_DEFAULT_DOCUMENT');
+setup_print_title('SetupSituationTitle');
+$ajaxConstantOnOffInput = array(
+	'set' => array('INVOICE_USE_SITUATION' => 2)
+);
+setup_print_on_off('INVOICE_USE_SITUATION', false, '', false, 300, true, $ajaxConstantOnOffInput);
+$ajaxConstantOnOffInput = '';
+if (getDolGlobalInt('INVOICE_USE_SITUATION')) {
+	if (intval(DOL_VERSION) >= 11
+		|| file_exists(DOL_DOCUMENT_ROOT . '/admin/facture_situation.php')
+		|| file_exists(DOL_DOCUMENT_ROOT . '/admin/invoice_situation.php')
+	) {
+		if (intval(DOL_VERSION) >= 20) {
+			$link = dol_buildpath('admin/invoice_situation.php', 1);
+		} else {
+			$link = dol_buildpath('admin/facture_situation.php', 1);
+		}
+		print '<tr>';
+		print '<td colspan="3">'.$langs->trans('SituationParamsAvailablesHere').' <a href="'.$link.'">'.$langs->trans("SetupSituationTitle").'</a></td>'."\n";
+		print '</tr>';
+	} elseif (intval(DOL_VERSION) >= 8) {
+		setup_print_on_off('INVOICE_USE_SITUATION_CREDIT_NOTE');
 	}
-**/
-/**
-	if(floatval(DOL_VERSION) >= 15.0){
-		setup_print_on_off('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS');
-	}
-**/
-	if(floatval(DOL_VERSION) >= 13.0){
-		setup_print_title($langs->trans("Project"));
-		setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
-		setup_print_input_form_part('JPSUN_PROJECT_FORECAST_DEFAULT_THM');
-	}
-	
-	// SUPPLIER ORDER
-        setup_print_title($langs->trans("Tickets"));
+}
 
-        if(floatval(DOL_VERSION) >= 20.0){
-            
-        $ajaxConstantOnOffInput = array(
-        	'set' => array('TICKET_ADD_AUTHOR_AS_CONTACT' => 2)
-        );    
-            
-        setup_print_on_off('TICKET_ADD_AUTHOR_AS_CONTACT', false, '', false, 300, false, $ajaxConstantOnOffInput);
-        $ajaxConstantOnOffInput = '';
-        }
-        
-        if(floatval(DOL_VERSION) >= 10.0){
-            
-        setup_print_on_off('TICKET_SHOW_MESSAGES_ON_CARD');
-        }
+setup_print_title('SupplierProposals');
+if (floatval(DOL_VERSION) >= 20.0) {
+	setup_print_on_off('SUPPLIER_PROPOSAL_ADD_BILLING_CONTACT');
+	setup_print_on_off('SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT');
+	setup_print_on_off('SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD');
+}
 
+setup_print_title('SupplierOrder');
+if (floatval(DOL_VERSION) >= 20.0) {
+	setup_print_on_off('SUPPLIER_ORDER_AUTOADD_USER_CONTACT');
+}
+if (floatval(DOL_VERSION) >= 10.0) {
+	setup_print_on_off('MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER');
+}
 
-    print '</table>';
+if (floatval(DOL_VERSION) >= 13.0) {
+	setup_print_title('Project');
+	setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
+	setup_print_input_form_part('JPSUN_PROJECT_FORECAST_DEFAULT_THM');
+}
 
-    llxFooter();
+setup_print_title('Tickets');
+if (floatval(DOL_VERSION) >= 20.0) {
+	$ajaxConstantOnOffInput = array(
+		'set' => array('TICKET_ADD_AUTHOR_AS_CONTACT' => 2)
+	);
+	setup_print_on_off('TICKET_ADD_AUTHOR_AS_CONTACT', false, '', false, 300, false, $ajaxConstantOnOffInput);
+	$ajaxConstantOnOffInput = '';
+}
+if (floatval(DOL_VERSION) >= 10.0) {
+	setup_print_on_off('TICKET_SHOW_MESSAGES_ON_CARD');
+}
 
-    $db->close();
+print '</table>';
+
+dol_fiche_end();
+llxFooter();
+
+$db->close();
 
 

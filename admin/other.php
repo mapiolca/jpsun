@@ -35,7 +35,24 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 if(!$user->admin or empty($conf->delegation->enabled)) accessforbidden();
 
 // Load translation files required by the page
-$langs->loadLangs(array('errors', 'admin'));
+$langs->loadLangs(array('admin', 'modulebuilder', 'errors', 'jpsun@jpsun'));
+
+if (!is_array($familyinfo ?? null)) {
+	$familyinfo = array(
+		'hr' => array('position' => '001', 'label' => $langs->trans("ModuleFamilyHr")),
+		'crm' => array('position' => '006', 'label' => $langs->trans("ModuleFamilyCrm")),
+		'srm' => array('position' => '007', 'label' => $langs->trans("ModuleFamilySrm")),
+		'financial' => array('position' => '009', 'label' => $langs->trans("ModuleFamilyFinancial")),
+		'products' => array('position' => '012', 'label' => $langs->trans("ModuleFamilyProducts")),
+		'projects' => array('position' => '015', 'label' => $langs->trans("ModuleFamilyProjects")),
+		'ecm' => array('position' => '018', 'label' => $langs->trans("ModuleFamilyECM")),
+		'technic' => array('position' => '021', 'label' => $langs->trans("ModuleFamilyTechnic")),
+		'portal' => array('position' => '040', 'label' => $langs->trans("ModuleFamilyPortal")),
+		'interface' => array('position' => '050', 'label' => $langs->trans("ModuleFamilyInterface")),
+		'base' => array('position' => '060', 'label' => $langs->trans("ModuleFamilyBase")),
+		'other' => array('position' => '100', 'label' => $langs->trans("ModuleFamilyOther")),
+	);
+}
 
 $mode=GETPOST('mode', 'alpha');
 $action=GETPOST('action', 'alpha');
@@ -44,7 +61,6 @@ $id = GETPOST('id', 'int');
 if (empty($mode)) $mode='desc';
 
 $langs->load("bank@delegation");
-$langs->load("admin");
 
 $mode = GETPOST('mode','alpha');
 
@@ -166,21 +182,25 @@ foreach ($modulesdir as $dir)
                           $filename[$i]= $modName;
 
                           // Gives the possibility to the module, to provide his own family info and position of this family
-                          if (is_array($objMod->familyinfo) && !empty($objMod->familyinfo)) {
-                            if (!is_array($familyinfo)) $familyinfo=array();
-                            $familyinfo = array_merge($familyinfo, $objMod->familyinfo);
-                            $familykey = key($objMod->familyinfo);
-                          } else {
-                            $familykey = $objMod->family;
-                          }
+							if (is_array($objMod->familyinfo) && !empty($objMod->familyinfo)) {
+								$familyinfo = array_merge($familyinfo, $objMod->familyinfo);
+								$familykey = key($objMod->familyinfo);
+							} else {
+								$familykey = $objMod->family;
+							}
 
-                          $moduleposition = ($objMod->module_position?$objMod->module_position:'50');
-                          if ($moduleposition == '50' && ($objMod->isCoreOrExternalModule() == 'external'))
-                          {
-                              $moduleposition = '80';   // External modules at end by default
-                          }
+							if (empty($familykey)) {
+								$familykey = 'other';
+							}
 
-                          $orders[$i]  = $familyinfo[$familykey]['position']."_".$familykey."_".$moduleposition."_".$j;   // Sort by family, then by module position then number
+							$moduleposition = ($objMod->module_position?$objMod->module_position:'50');
+							if ($moduleposition == '50' && ($objMod->isCoreOrExternalModule() == 'external'))
+							{
+								$moduleposition = '80';   // External modules at end by default
+							}
+
+							$familyposition = $familyinfo[$familykey]['position'] ?? $familyinfo['other']['position'];
+							$orders[$i]  = $familyposition."_".$familykey."_".$moduleposition."_".$j;   // Sort by family, then by module position then number
                     $dirmod[$i]  = $dir;
                     //print $i.'-'.$dirmod[$i].'<br>';
                           // Set categ[$i]
@@ -313,14 +333,7 @@ if ($mode == 'desc')
 
 if ($mode == 'feature')
 {
-    $text.='<br><strong>'.$langs->trans("DependsOn").':</strong> ';
-    if (count($objMod->depends)) $text.=join(',', $objMod->depends);
-  else $text.=$langs->trans("None");
-    $text.='<br><strong>'.$langs->trans("RequiredBy").':</strong> ';
-  if (count($objMod->requiredby)) $text.=join(',', $objMod->requiredby);
-  else $text.=$langs->trans("None");
-
-    $text.='<br><br>';
+    $text.='<br>';
 
     $text.='<br><strong>'.$langs->trans("AddDataTables").':</strong> ';
   $sqlfiles = dol_dir_list(dol_buildpath($moduledir.'/sql/'), 'files', 0, 'llx.*\.sql', array('\.key\.sql'));

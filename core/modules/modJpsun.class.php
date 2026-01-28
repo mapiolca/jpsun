@@ -102,7 +102,7 @@ class modJpsun extends DolibarrModules
 		$this->config_page_url = array('setup.php@jpsun');
 
 		// Dependencies
-		$this->depends = array('modProjet', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
+		$this->depends = array();		// List of modules id that must be enabled if this module is enabled
 		$this->conflictwith = array();
 		$this->phpmin = array(8,0);					// Minimum version of PHP required by module
 		$this->need_dolibarr_version = array(20,0);	// Minimum version of Dolibarr required by module
