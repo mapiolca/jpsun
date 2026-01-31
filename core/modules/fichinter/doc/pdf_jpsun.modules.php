@@ -27,9 +27,9 @@
  */
 
 /**
- *	\file       htdocs/core/modules/fichinter/doc/pdf_soleil.modules.php
+ *	\file       htdocs/core/modules/fichinter/doc/pdf_jpsun.modules.php
  *	\ingroup    ficheinter
- *	\brief      File of Class to build interventions documents with model Soleil
+ *	\brief      File of Class to build interventions documents with model jpsun
  */
 require_once DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
@@ -39,9 +39,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
 
 /**
- *	Class to build interventions documents with model Soleil
+ *	Class to build interventions documents with model jpsun
  */
-class pdf_soleil extends ModelePDFFicheinter
+class pdf_jpsun extends ModelePDFFicheinter
 {
 	/**
 	 * @var DoliDB Database handler
@@ -85,7 +85,7 @@ class pdf_soleil extends ModelePDFFicheinter
 		global $langs, $mysoc;
 
 		$this->db = $db;
-		$this->name = 'soleil';
+		$this->name = 'jpsun';
 		$this->description = $langs->trans("DocumentModelStandardPDF");
 		$this->update_main_doc_field = 1; // Save the name of generated file as the main doc when generating a doc with this template
 
