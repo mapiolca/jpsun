@@ -515,8 +515,7 @@ class pdf_jpsun extends ModelePDFFicheinter
 			$pdf->SetXY(20, 235);
 			$pdf->MultiCell(80, 25, $employee_name, 1, 'L');
 
-			$pdf->SetXY(110, 230);
-			$pdf->MultiCell(80, 5, $outputlangs->transnoentities("NameAndSignatureOfExternalContact"), 0, 'L', false);
+			$this->tabSignature($pdf, $object, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforfreetext - $heightforfooter, $outputlangs);
 
 			$pdf->SetXY(110, 235);
 			$pdf->MultiCell(80, 25, '', 1);
@@ -718,6 +717,31 @@ class pdf_jpsun extends ModelePDFFicheinter
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Show footer signature of page
+	 *
+	 * @param   TCPDF       $pdf            Object PDF
+	 * @param   CommonObject $object        Object to show
+	 * @param   int          $tab_top       tab height position
+	 * @param   int          $tab_height    tab height
+	 * @param   Translate    $outputlangs   Object language for output
+	 * @return void
+	 */
+	protected function tabSignature(&$pdf, $object, $tab_top, $tab_height, $outputlangs)
+	{
+		$object->fetch_thirdparty();
+		$pdf->SetDrawColor(128, 128, 128);
+		//$posmiddle = $this->marge_gauche + round(($this->page_largeur - $this->marge_gauche - $this->marge_droite) / 2);
+		//$posy = $tab_top + $tab_height + 3 + 3;
+
+		$pdf->SetFont('', 'B', 9);
+		$pdf->writeHTMLCell(100, 4, 25, 160, $outputlangs->transnoentities("ContactNameAndSignature", $this->recipient->name), 0, 1);
+
+		//$pdf->SetXY($posmiddle + 5, $posy + 5);
+		$pdf->RoundedRect(25, 165, 80, 30, $this->corner_radius, '1234', 'D');
+		
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
