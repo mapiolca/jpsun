@@ -233,7 +233,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		global $langs;
 	
 		$mode = GETPOST('mode', 'aZ09');
-		if ($mode !== 'contract') return 0;
+		if ($mode !== 'contract' || mode !== 'fichenter') return 0;
 	
 		$sourcefile     = $parameters['sourcefile'] ?? '';
 		$newpdffilename = $parameters['newpdffilename'] ?? '';
@@ -294,6 +294,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	}
 
 }
+
 
 
 
