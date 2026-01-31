@@ -233,6 +233,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		global $langs;
 	
 		$mode = GETPOST('mode', 'aZ09');
+		var_dump($mode);
 		if ($mode !== 'contract' || $mode !== 'fichinter') return 0;
 	
 		$sourcefile     = $parameters['sourcefile'] ?? '';
@@ -294,6 +295,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	}
 
 }
+
 
 
 
