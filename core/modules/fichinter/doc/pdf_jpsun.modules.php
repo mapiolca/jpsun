@@ -516,9 +516,6 @@ class pdf_jpsun extends ModelePDFFicheinter
 			$pdf->MultiCell(80, 25, $employee_name, 1, 'L');
 
 			$this->tabSignature($pdf, $object, $tab_top_newpage, $this->page_hauteur - $tab_top_newpage - $heightforinfotot - $heightforfreetext - $heightforfooter, $outputlangs);
-
-			$pdf->SetXY(110, 235);
-			$pdf->MultiCell(80, 25, '', 1);
 		}
 	}
 
