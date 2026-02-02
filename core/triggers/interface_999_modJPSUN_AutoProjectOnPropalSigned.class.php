@@ -122,7 +122,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
             
 		// EN: Ensure we only handle proposal signature event
 		// FR: S'assurer que l'on traite uniquement la signature du devis
-		if ($action !== 'PROPAL_CLOSE_SIGNED') {
+		if ($action == 'PROPAL_CLOSE_SIGNED') {
 		    
 		    // EN: Check expected object type // EN: Stop if proposal not already has a native project link // EN: Stop if project module is enabled
     		// FR: Vérifier le type d'objet attendu // FR: Stopper si le devis n'a pas déjà un projet natif // FR: Stopper si le module projet est sactivé
