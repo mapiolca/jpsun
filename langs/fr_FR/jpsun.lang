@@ -104,6 +104,10 @@ JpsunPropalSignedProjectLinkError = Impossible de lier le projet au devis %s (id
 JpsunPropalSignedProjectOrderLinkError = Impossible de lier la commande au projet pour le devis %s (id %s). Commande %s.
 JpsunPropalSignedProjectCreated = Projet créé pour le devis %s (id %s) : projet %s (ref %s).
 JpsunPropalSignedProjectCreatedDetails = Extrachamps copiés : %s - Commandes liées : %s.
+JpsunPcInstall = Puissance crète (kWc)
+JpsunPcInstall_tooltip = Ajouter ici la puissance crête de l'installation photovoltaïque. A actualiser manuellement (pour le moment)
+JpsunTagCategory =  Catégorie
+JpsunTagCategoryHelp = Attribuer une catégorie à ce devis (en attendant la v23 de Dolibarr)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Commandes Clients
