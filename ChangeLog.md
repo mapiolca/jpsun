@@ -1,5 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.9 (03/02/2026)
+- Ajout d'un TRIGGER pour actualiser automatiquement la puissance crête totale des devis en fonction de la puissance et de la quantité des modules qu'il contient.
+
 ## 1.8 (18/01/2026)
 
 - Création automatique d'un projet validé à la signature d'un devis, avec liens aux objets et copie des extrachamps.
