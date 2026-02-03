@@ -61,6 +61,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 	 */
 	public function runTrigger($action, $object, $user, $langs, $conf)
 	{
+		var_dump($action);
 	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
             if ($object->element == 'propal') {
                 global $db;
