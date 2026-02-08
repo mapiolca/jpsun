@@ -43,8 +43,6 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	public $update_main_doc_field;
 	public $type;
 	public $version = 'dolibarr';
-	public $posxdatestart;
-	public $posxdateend;
 
 	public function __construct($db)
 	{
@@ -76,8 +74,6 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$this->posxlabel = $this->marge_gauche + 25;
 		$this->posxworkload = $this->marge_gauche + 117;
 		$this->posxprogress = $this->marge_gauche + 137;
-		$this->posxdatestart = $this->marge_gauche + 147;
-		$this->posxdateend = $this->marge_gauche + 169;
 
 		$this->emetteur = $mysoc;
 		if (!$this->emetteur->country_code) {
@@ -497,7 +493,15 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$this->attachFileToPdf($pdf, $path, $label);
 		}
 
-		// B) Concat des PDF en pages (si TCPDI dispo)
+		// B) Optional PDF merge as pages (disabled by default to avoid TCPDI deprecations on PHP >= 8.2)
+		$enablepdfconcat = getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT', 0);
+		if (!$enablepdfconcat) {
+			$pdf->Ln(2);
+			$pdf->SetFont('', 'I', 9);
+			$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNPdfConcatDisabledByConfiguration'), 0, 'L', false, 1);
+			return;
+		}
+
 		if (!method_exists($pdf, 'setSourceFile')) {
 			$pdf->Ln(2);
 			$pdf->SetFont('', 'I', 9);
@@ -505,8 +509,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			return;
 		}
 
-		if (method_exists($pdf, 'setPrintHeader')) $pdf->setPrintHeader(false);
-		if (method_exists($pdf, 'setPrintFooter')) $pdf->setPrintFooter(false);
+		if (method_exists($pdf, 'setPrintHeader')) {
+			$pdf->setPrintHeader(false);
+		}
+		if (method_exists($pdf, 'setPrintFooter')) {
+			$pdf->setPrintFooter(false);
+		}
 
 		foreach ($filesIndex['pdf'] as $path => $label) {
 			$pdf->AddPage();

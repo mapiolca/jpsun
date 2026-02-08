@@ -273,3 +273,4 @@ JPSUNIntegratedFilesListTitle=Liste des fichiers intgrs
 JPSUNPdfConcatDisabledTcpdiUnavailable=Concatnation PDF dsactive (TCPDI indisponible). Les PDF sont quand mme intgrs en pices jointes.
 JPSUNPdfLabelWithName=PDF : %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=Impossible de concatner ce PDF (format/protection/compatibilit). Il reste disponible en pice jointe.
+JPSUNPdfConcatDisabledByConfiguration=La concatenation des PDF en pages est desactivee par configuration. Les PDF restent disponibles en pieces jointes.

@@ -269,3 +269,4 @@ JPSUNIntegratedFilesListTitle=Elenco dei file integrati
 JPSUNPdfConcatDisabledTcpdiUnavailable=Concatenazione PDF disattivata (TCPDI non disponibile). I PDF restano comunque inclusi come allegati.
 JPSUNPdfLabelWithName=PDF: %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=Impossibile concatenare questo PDF (formato/protezione/compatibilit). Rimane disponibile come allegato.
+JPSUNPdfConcatDisabledByConfiguration=La concatenazione PDF come pagine e disattivata dalla configurazione. I PDF restano disponibili come allegati.

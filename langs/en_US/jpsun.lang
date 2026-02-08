@@ -269,3 +269,4 @@ JPSUNIntegratedFilesListTitle=Integrated files list
 JPSUNPdfConcatDisabledTcpdiUnavailable=PDF merge disabled (TCPDI unavailable). PDF files are still included as attachments.
 JPSUNPdfLabelWithName=PDF: %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=Unable to merge this PDF (format/protection/compatibility). It is still available as an attachment.
+JPSUNPdfConcatDisabledByConfiguration=PDF merge as pages is disabled by configuration. PDF files remain available as attachments.
