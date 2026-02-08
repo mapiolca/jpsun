@@ -91,7 +91,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$outputlangs = $langs;
 		}
 
-		$outputlangs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun'));
+		$outputlangs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun', 'propal', 'orders', 'fichinter', 'stock'));
 
 		if (getDolGlobalString('MAIN_USE_FPDF')) {
 			$outputlangs->charset_output = 'ISO-8859-1';
@@ -166,7 +166,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		// Show public note
 		// Notes
-		$this->printSectionTitle($pdf, $outputlangs->trans('Notes'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('Notes'), $outputlangs);
 		$notetoshow = empty($object->note_public) ? '' : $object->note_public;
 		if ($notetoshow) {
 			$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, $object);
@@ -192,7 +192,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 
 		// Contacts
-		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'), $outputlangs);
 		$contacts = $this->getProjectContacts($object, $outputlangs);
 		$this->printSimpleTable($pdf, $outputlangs, array(
 			$outputlangs->trans('Type'),
@@ -205,7 +205,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->Ln(2);
 
 		// Objets liés (Devis / FI / Transfert de stock)
-		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'), $outputlangs);
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL')){
 		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'propal', $outputlangs->trans('Proposals'));
         }
@@ -588,11 +588,38 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	 *  PDF content helpers
 	 * ------------------------------------------------------------ */
 
-	private function printSectionTitle($pdf, $title)
+	private function printSectionTitle($pdf, $title, $outputlangs = null)
 	{
 		$pdf->SetFont('', 'B', 11);
-		$pdf->MultiCell(0, 7, $title, 0, 'L', false, 1);
+		$pdf->MultiCell(0, 7, $this->decodeHtmlForPdf($title, $outputlangs), 0, 'L', false, 1);
 		$pdf->SetFont('', '', 9);
+	}
+
+	private function decodeHtmlForPdf($text, $outputlangs = null)
+	{
+		$text = (string) $text;
+		$text = preg_replace('/<br\s*\/?\s*>/i', "\n", $text);
+		$text = strip_tags($text);
+		$text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$text = trim((string) $text);
+
+		if (is_object($outputlangs) && method_exists($outputlangs, 'convToOutputCharset')) {
+			$text = $outputlangs->convToOutputCharset($text);
+		}
+
+		return $text;
+	}
+
+	private function getPdfCellLineCount($pdf, $width, $text)
+	{
+		if (method_exists($pdf, 'getNumLines')) {
+			$nb = (int) $pdf->getNumLines((string) $text, (float) $width);
+			return ($nb > 0 ? $nb : 1);
+		}
+
+		$len = dol_strlen((string) $text);
+		$estimated = (int) ceil($len / 28);
+		return ($estimated > 0 ? $estimated : 1);
 	}
 
 	private function getProjectContacts($project, $outputlangs)
@@ -663,7 +690,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$rows[] = array($ref, $datec, $stat, (string) $nbfiles);
 		}
 
-		$this->printSectionTitle($pdf, $title);
+		$this->printSectionTitle($pdf, $title, $outputlangs);
 		$this->printSimpleTable($pdf, $outputlangs, array(
 			$outputlangs->trans('Ref'),
 			$outputlangs->trans('Date'),
@@ -676,19 +703,56 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 	private function printSimpleTable($pdf, $outputlangs, $headers, $rows, $widths)
 	{
+		$lineheight = 4;
+		$minrowheight = 6;
+		$startx = $pdf->GetX();
+
 		$pdf->SetFont('', 'B', 8);
+		$headertexts = array();
+		$headermaxlines = 1;
 		foreach ($headers as $i => $h) {
-			$pdf->MultiCell($widths[$i], 6, $h, 1, 'L', false, 0);
+			$headertexts[$i] = $this->decodeHtmlForPdf($h, $outputlangs);
+			$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $headertexts[$i]);
+			if ($lines > $headermaxlines) {
+				$headermaxlines = $lines;
+			}
 		}
-		$pdf->Ln();
+		$headerrowheight = max($minrowheight, $headermaxlines * $lineheight);
+
+		$x = $startx;
+		$y = $pdf->GetY();
+		foreach ($headers as $i => $h) {
+			$w = (float) $widths[$i];
+			$pdf->Rect($x, $y, $w, $headerrowheight);
+			$pdf->SetXY($x, $y);
+			$pdf->MultiCell($w, $lineheight, $headertexts[$i], 0, 'L', false, 1);
+			$x += $w;
+		}
+		$pdf->SetXY($startx, $y + $headerrowheight);
 
 		$pdf->SetFont('', '', 8);
 		foreach ($rows as $r) {
+			$rowtexts = array();
+			$maxlines = 1;
 			foreach ($headers as $i => $h) {
-				$txt = isset($r[$i]) ? (string) $r[$i] : '';
-				$pdf->MultiCell($widths[$i], 6, $txt, 1, 'L', false, 0);
+				$rowtexts[$i] = $this->decodeHtmlForPdf(isset($r[$i]) ? $r[$i] : '', $outputlangs);
+				$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $rowtexts[$i]);
+				if ($lines > $maxlines) {
+					$maxlines = $lines;
+				}
 			}
-			$pdf->Ln();
+			$rowheight = max($minrowheight, $maxlines * $lineheight);
+
+			$x = $startx;
+			$y = $pdf->GetY();
+			foreach ($headers as $i => $h) {
+				$w = (float) $widths[$i];
+				$pdf->Rect($x, $y, $w, $rowheight);
+				$pdf->SetXY($x, $y);
+				$pdf->MultiCell($w, $lineheight, $rowtexts[$i], 0, 'L', false, 1);
+				$x += $w;
+			}
+			$pdf->SetXY($startx, $y + $rowheight);
 		}
 
 		$pdf->SetFont('', '', 9);
