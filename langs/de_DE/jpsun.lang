@@ -274,3 +274,5 @@ JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Projektsynthese: Verknuepfte Kundenangebote
 JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Projektsynthese: Verknuepfte Kundenauftraege anzeigen
 JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Projektsynthese: Verknuepfte Einsaetze anzeigen
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Projektsynthese: Verknuepfte Lagertransfers anzeigen
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Projektsynthese: Verknuepfte PDF-Dateien als Seiten zusammenfuehren

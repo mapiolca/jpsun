@@ -278,3 +278,5 @@ JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Synthese projet : afficher les devis client
 JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Synthese projet : afficher les commandes clients liees
 JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthese projet : afficher les interventions liees
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthese projet : afficher les transferts de stock lies
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Synthese projet : concatener les PDF lies en pages

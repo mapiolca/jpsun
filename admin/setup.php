@@ -226,6 +226,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 		setup_print_title($langs->trans("Project"));
 		setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
 		setup_print_input_form_part('JPSUN_PROJECT_FORECAST_DEFAULT_THM');
+		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT');
 		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL');
 		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_ORDER');
 		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER');

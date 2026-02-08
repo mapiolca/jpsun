@@ -274,3 +274,5 @@ JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sintesis del proyecto: mostrar presupuestos
 JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sintesis del proyecto: mostrar pedidos de cliente vinculados
 JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesis del proyecto: mostrar intervenciones vinculadas
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesis del proyecto: mostrar transferencias de stock vinculadas
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sintesis del proyecto: concatenar PDF vinculados como paginas
