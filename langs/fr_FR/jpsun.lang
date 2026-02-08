@@ -273,10 +273,10 @@ JPSUNIntegratedFilesListTitle=Liste des fichiers intgrs
 JPSUNPdfConcatDisabledTcpdiUnavailable=Concatnation PDF dsactive (TCPDI indisponible). Les PDF sont quand mme intgrs en pices jointes.
 JPSUNPdfLabelWithName=PDF : %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=Impossible de concatner ce PDF (format/protection/compatibilit). Il reste disponible en pice jointe.
-JPSUNPdfConcatDisabledByConfiguration=La concatenation des PDF en pages est desactivee par configuration. Les PDF restent disponibles en pieces jointes.
-JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Synthese projet : afficher les devis clients lies
-JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Synthese projet : afficher les commandes clients liees
-JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthese projet : afficher les interventions liees
-JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthese projet : afficher les transferts de stock lies
+JPSUNPdfConcatDisabledByConfiguration=La concatnation des PDF en pages est dsactive par configuration. Les PDF restent disponibles en pices jointes.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Synthse projet : afficher les devis clients lis
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Synthse projet : afficher les commandes clients lies
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthse projet : afficher les interventions lies
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthse projet : afficher les transferts de stock lis
 
-JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Synthese projet : concatener les PDF lies en pages
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Synthse projet : concatner les PDF lis en pages

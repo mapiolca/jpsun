@@ -269,10 +269,10 @@ JPSUNIntegratedFilesListTitle=Lista de archivos integrados
 JPSUNPdfConcatDisabledTcpdiUnavailable=Concatenacin de PDF desactivada (TCPDI no disponible). Los PDF siguen incluidos como adjuntos.
 JPSUNPdfLabelWithName=PDF: %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=No se puede concatenar este PDF (formato/proteccin/compatibilidad). Sigue disponible como archivo adjunto.
-JPSUNPdfConcatDisabledByConfiguration=La concatenacion de PDF como paginas esta desactivada por configuracion. Los PDF siguen disponibles como adjuntos.
-JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sintesis del proyecto: mostrar presupuestos de cliente vinculados
-JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sintesis del proyecto: mostrar pedidos de cliente vinculados
-JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesis del proyecto: mostrar intervenciones vinculadas
-JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesis del proyecto: mostrar transferencias de stock vinculadas
+JPSUNPdfConcatDisabledByConfiguration=La concatenacin de PDF como pginas est desactivada por configuracin. Los PDF siguen disponibles como adjuntos.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sntesis del proyecto: mostrar presupuestos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sntesis del proyecto: mostrar pedidos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sntesis del proyecto: mostrar intervenciones vinculadas
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sntesis del proyecto: mostrar transferencias de stock vinculadas
 
-JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sintesis del proyecto: concatenar PDF vinculados como paginas
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sntesis del proyecto: concatenar PDF vinculados como pginas
