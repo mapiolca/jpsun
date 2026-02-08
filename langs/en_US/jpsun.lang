@@ -261,3 +261,11 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Excluding drafts, refused, and o
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =If set to 1: The author is automatically added as an internal contact. If set to 2: The author is automatically added as an external contact if they are an external user. (v20 and later)
 TICKET_SHOW_MESSAGES_ON_CARD =Show all ticket-related messages on the main ticket card. (v10.0 and later)
+
+JPSUNProjectPdfSynthesis=Project synthesis
+JPSUNIntegratedAttachedFilesCount=Integrated files (attachments): %s
+JPSUNIntegratedPdfPagesCount=PDF files added as pages (if TCPDI is available): %s
+JPSUNIntegratedFilesListTitle=Integrated files list
+JPSUNPdfConcatDisabledTcpdiUnavailable=PDF merge disabled (TCPDI unavailable). PDF files are still included as attachments.
+JPSUNPdfLabelWithName=PDF: %s
+JPSUNUnableToMergePdfAttachmentStillAvailable=Unable to merge this PDF (format/protection/compatibility). It is still available as an attachment.

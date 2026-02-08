@@ -261,3 +261,11 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Ohne Entwürfe, abgelehnte und b
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =Bei Einstellung 1: Der Autor wird automatisch als interner Kontakt hinzugefügt. Bei Einstellung 2: Der Autor wird automatisch als externer Kontakt hinzugefügt, wenn es sich um einen externen Benutzer handelt. (v20 und höher)
 TICKET_SHOW_MESSAGES_ON_CARD =Zeigen Sie alle Ticket-bezogenen Nachrichten auf der Hauptticketkarte an. (v10.0 und höher)
+
+JPSUNProjectPdfSynthesis=Projektsynthese
+JPSUNIntegratedAttachedFilesCount=Integrierte Dateien (Anhnge): %s
+JPSUNIntegratedPdfPagesCount=Als Seiten hinzugefgte PDF-Dateien (wenn TCPDI verfgbar ist): %s
+JPSUNIntegratedFilesListTitle=Liste der integrierten Dateien
+JPSUNPdfConcatDisabledTcpdiUnavailable=PDF-Zusammenfhrung deaktiviert (TCPDI nicht verfgbar). PDF-Dateien sind weiterhin als Anhnge enthalten.
+JPSUNPdfLabelWithName=PDF: %s
+JPSUNUnableToMergePdfAttachmentStillAvailable=Dieses PDF konnte nicht zusammengefhrt werden (Format/Schutz/Kompatibilitt). Es bleibt als Anhang verfgbar.

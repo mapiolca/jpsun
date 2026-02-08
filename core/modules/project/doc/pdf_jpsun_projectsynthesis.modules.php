@@ -43,6 +43,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	public $update_main_doc_field;
 	public $type;
 	public $version = 'dolibarr';
+	public $posxdatestart;
+	public $posxdateend;
 
 	public function __construct($db)
 	{
@@ -157,6 +159,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		$tab_top = 50;
 		$tab_top_newpage = (!getDolGlobalInt('MAIN_PDF_DONOTREPEAT_HEAD') ? 42 : 10);
+
+		$heightforfreetext = getDolGlobalInt('MAIN_PDF_FREETEXT_HEIGHT', 5);
+		$heightforfooter = $this->marge_basse + 8;
+		if (getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS')) {
+			$heightforfooter += 6;
+		}
 
 		$tab_height = $this->page_hauteur - $tab_top - $heightforfooter - $heightforfreetext;
 
@@ -472,12 +480,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			return;
 		}
 
-		$pdf->MultiCell(0, 5, 'Fichiers intégrés (pièces jointes) : '.$nbAttach, 0, 'L', false, 1);
-		$pdf->MultiCell(0, 5, 'PDF ajoutés en pages (si support TCPDI) : '.$nbPdf, 0, 'L', false, 1);
+		$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNIntegratedAttachedFilesCount', $nbAttach), 0, 'L', false, 1);
+		$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNIntegratedPdfPagesCount', $nbPdf), 0, 'L', false, 1);
 		$pdf->Ln(2);
 
 		$pdf->SetFont('', 'B', 10);
-		$pdf->MultiCell(0, 6, 'Liste des fichiers intégrés', 0, 'L', false, 1);
+		$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNIntegratedFilesListTitle'), 0, 'L', false, 1);
 		$pdf->SetFont('', '', 8);
 
 		foreach ($filesIndex['attach'] as $path => $label) {
@@ -493,7 +501,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		if (!method_exists($pdf, 'setSourceFile')) {
 			$pdf->Ln(2);
 			$pdf->SetFont('', 'I', 9);
-			$pdf->MultiCell(0, 5, 'Concat PDF désactivée (TCPDI indisponible). Les PDF sont tout de même intégrés en pièces jointes.', 0, 'L', false, 1);
+			$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNPdfConcatDisabledTcpdiUnavailable'), 0, 'L', false, 1);
 			return;
 		}
 
@@ -503,13 +511,13 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		foreach ($filesIndex['pdf'] as $path => $label) {
 			$pdf->AddPage();
 			$pdf->SetFont('', 'B', 10);
-			$pdf->MultiCell(0, 6, 'PDF : '.$label, 0, 'L', false, 1);
+			$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNPdfLabelWithName', $label), 0, 'L', false, 1);
 			$pdf->SetFont('', '', 9);
 
 			$res = $this->appendPdfFileAsPages($pdf, $path);
 			if ($res < 0) {
 				$pdf->SetFont('', 'I', 9);
-				$pdf->MultiCell(0, 5, 'Impossible de concaténer ce PDF (format/protection/compat). Il reste disponible en pièce jointe.', 0, 'L', false, 1);
+				$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNUnableToMergePdfAttachmentStillAvailable'), 0, 'L', false, 1);
 				$pdf->SetFont('', '', 9);
 			}
 		}
@@ -547,9 +555,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			for ($p = 1; $p <= $pagecount; $p++) {
 				$tpl = $pdf->importPage($p);
 				$size = $pdf->getTemplateSize($tpl);
+				$width = !empty($size['width']) ? (float) $size['width'] : (!empty($size[0]) ? (float) $size[0] : (float) $this->page_largeur);
+				$height = !empty($size['height']) ? (float) $size['height'] : (!empty($size[1]) ? (float) $size[1] : (float) $this->page_hauteur);
+				$orientation = !empty($size['orientation']) ? $size['orientation'] : (($width > $height) ? 'L' : 'P');
 
-				$pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
-				$pdf->useTemplate($tpl, 0, 0, $size['width'], $size['height'], true);
+				$pdf->AddPage($orientation, array($width, $height));
+				$pdf->useTemplate($tpl, 0, 0, $width, $height, true);
 			}
 			return (int) $pagecount;
 		} catch (Exception $e) {
@@ -641,7 +652,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$outputlangs->trans('Ref'),
 			$outputlangs->trans('Date'),
 			$outputlangs->trans('Status'),
-			'Fichiers',
+			$outputlangs->trans('Files'),
 		), (count($rows) ? $rows : array(array('-', '-', '-', '0'))), array(30, 25, 40, 87));
 
 		$pdf->Ln(2);
