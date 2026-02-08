@@ -415,6 +415,11 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return (preg_match('/_preview\.png$/i', basename($filepath)) ? true : false);
 	}
 
+	private function isSignaturePng($filepath)
+	{
+		return (preg_match('/_signature\.png$/i', basename($filepath)) ? true : false);
+	}
+
 	/**
 	 * Retourne :
 	 * - dedupKey : permet d'associer "xxx.ext" avec "xxx_signed-YYYYMMDDhhmmss.ext"
@@ -485,6 +490,9 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->SetFont('', '', 8);
 
 		foreach ($filesIndex['attach'] as $path => $label) {
+			if ($this->isSignaturePng($path)) {
+				continue;
+			}
 			$pdf->MultiCell(0, 4, '- '.$label, 0, 'L', false, 1);
 		}
 
