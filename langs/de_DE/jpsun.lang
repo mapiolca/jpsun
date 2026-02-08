@@ -276,3 +276,4 @@ JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Projektsynthese: Verknpfte Einstze anzeige
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Projektsynthese: Verknpfte Lagertransfers anzeigen
 
 JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Projektsynthese: Verknpfte PDF-Dateien als Seiten zusammenfhren
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Projektsynthese: Trennseiten zwischen zusammengefhrten PDF-Dateien hinzufgen

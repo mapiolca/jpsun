@@ -524,14 +524,20 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$pdf->setPrintFooter(false);
 		}
 
+		$addseparatorpage = getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE', 1);
 		foreach ($filesIndex['pdf'] as $path => $label) {
-			$pdf->AddPage();
-			$pdf->SetFont('', 'B', 10);
-			$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNPdfLabelWithName', $label), 0, 'L', false, 1);
-			$pdf->SetFont('', '', 9);
+			if ($addseparatorpage) {
+				$pdf->AddPage();
+				$pdf->SetFont('', 'B', 10);
+				$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNPdfLabelWithName', $label), 0, 'L', false, 1);
+				$pdf->SetFont('', '', 9);
+			}
 
 			$res = $this->appendPdfFileAsPages($pdf, $path);
 			if ($res < 0) {
+				if (!$addseparatorpage) {
+					$pdf->AddPage();
+				}
 				$pdf->SetFont('', 'I', 9);
 				$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNUnableToMergePdfAttachmentStillAvailable'), 0, 'L', false, 1);
 				$pdf->SetFont('', '', 9);

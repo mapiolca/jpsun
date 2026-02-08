@@ -276,3 +276,4 @@ JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesi progetto: mostrare gli interventi 
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesi progetto: mostrare i trasferimenti di magazzino collegati
 
 JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sintesi progetto: concatenare i PDF collegati come pagine
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Sintesi progetto: aggiungere separatori tra i PDF concatenati

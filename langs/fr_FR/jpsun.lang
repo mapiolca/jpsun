@@ -280,3 +280,4 @@ JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthse projet : afficher les intervention
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthse projet : afficher les transferts de stock lis
 
 JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Synthse projet : concatner les PDF lis en pages
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Synthse projet : ajouter des intercalaires entre les PDF concatns
