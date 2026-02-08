@@ -274,3 +274,7 @@ JPSUNPdfConcatDisabledTcpdiUnavailable=Concatnation PDF dsactive (TCPDI indispon
 JPSUNPdfLabelWithName=PDF : %s
 JPSUNUnableToMergePdfAttachmentStillAvailable=Impossible de concatner ce PDF (format/protection/compatibilit). Il reste disponible en pice jointe.
 JPSUNPdfConcatDisabledByConfiguration=La concatenation des PDF en pages est desactivee par configuration. Les PDF restent disponibles en pieces jointes.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Synthese projet : afficher les devis clients lies
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Synthese projet : afficher les commandes clients liees
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthese projet : afficher les interventions liees
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthese projet : afficher les transferts de stock lies
