@@ -2,6 +2,7 @@
 
 ## 1.10 (16/02/2026)
 - Ajout d'un nouveau modèle de PDF pour la génération de rapport de stock
+- Actualisation des modèles de devis pour la nouvelle gestion des CGV dans Dolibarr v22
 
 ## 1.9 (03/02/2026)
 - Ajout d'un TRIGGER pour actualiser automatiquement la puissance crête totale des devis en fonction de la puissance et de la quantité des modules qu'il contient.
