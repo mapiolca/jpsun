@@ -29,9 +29,9 @@ if (isModEnabled('intervention') && getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW
 	require_once DOL_DOCUMENT_ROOT.'/fichinter/class/fichinter.class.php';
 }
 if (isModEnabled('stocktransfer') && getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER')) {
-	//$stocktransferpath = DOL_DOCUMENT_ROOT.'/product/stock/stocktransfer/class/stocktransfer.class.php';
+	$stocktransferpath = DOL_DOCUMENT_ROOT.'/product/stock/stocktransfer/class/stocktransfer.class.php';
 	if (file_exists($stocktransferpath)) {
-		//require_once $stocktransferpath;
+		require_once $stocktransferpath;
 	}
 }
 
@@ -45,6 +45,16 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	public $version = 'dolibarr';
 	public $heightforfooter = 0;
 	public $heightforfreetext = 0;
+	public $style_color_accent = array(0, 0, 60);
+	public $style_color_text = array(0, 0, 0);
+	public $style_color_muted = array(90, 90, 90);
+	public $style_color_border = array(192, 192, 192);
+	public $style_color_header_bg = array(245, 245, 245);
+	public $style_color_note_bg = array(250, 250, 250);
+	public $style_font_title = 14;
+	public $style_font_section = 11;
+	public $style_font_body = 9;
+	public $style_font_small = 8;
 
 	public function __construct($db)
 	{
@@ -137,6 +147,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		);
 
 		$this->collectAllFilesFromLinkedObjects($linked, $filesIndex, $file);
+		$this->collectProjectFiles($object, $filesIndex, $dir, $file);
 
 		/*
 		 * 2) Générer le PDF (synthèse + annexes)
@@ -180,13 +191,15 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 			$tab_top -= 2;
 
-			$pdf->SetFont('', '', $default_font_size - 1);
-			$pdf->writeHTMLCell(190, 3, $this->posxref - 1, $tab_top - 2, dol_htmlentitiesbr($notetoshow), 0, 1);
+			$notewidth = $this->page_largeur - $this->marge_gauche - $this->marge_droite - 2;
+			$pdf->SetFont('', '', $this->style_font_body);
+			$pdf->SetFillColor($this->style_color_note_bg[0], $this->style_color_note_bg[1], $this->style_color_note_bg[2]);
+			$pdf->writeHTMLCell($notewidth, 3, $this->marge_gauche + 1, $tab_top - 2, dol_htmlentitiesbr($notetoshow), 0, 1, true);
 			$nexY = $pdf->GetY();
 			$height_note = $nexY - $tab_top;
 
 			// Rect takes a length in 3rd parameter
-			$pdf->SetDrawColor(192, 192, 192);
+			$pdf->SetDrawColor($this->style_color_border[0], $this->style_color_border[1], $this->style_color_border[2]);
 			$pdf->RoundedRect($this->marge_gauche, $tab_top - 2, $this->page_largeur - $this->marge_gauche - $this->marge_droite, $height_note + 2, $this->corner_radius, '1234', 'D');
 
 			$tab_height -= $height_note;
@@ -212,19 +225,18 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->Ln(2);
 
 		// Objets liés (Devis / FI / Transfert de stock)
-		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'), $outputlangs);
-        if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'propal', $outputlangs->trans('Proposals'), $tab_top_newpage);
-        }
-        if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_ORDER')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'commande', $outputlangs->trans('Orders'), $tab_top_newpage);
-        }
-        if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'fichinter', $outputlangs->trans('Interventions'), $tab_top_newpage);
-        }
-        if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFERT')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'stocktransfer', $outputlangs->trans('StockTransfers'), $tab_top_newpage);
-        }
+		$linkedsections = $this->getLinkedObjectsSectionsData($outputlangs, $linked, $filesIndex);
+		if (!empty($linkedsections)) {
+			$linkedtotalheight = $this->estimateLinkedObjectsTotalHeight($pdf, $outputlangs, $linkedsections);
+			$this->ensureContentBlockFitsPage($pdf, $object, $outputlangs, $tab_top_newpage, $linkedtotalheight);
+
+			$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'), $outputlangs);
+			foreach ($linkedsections as $section) {
+				$this->printSectionTitle($pdf, $section['title'], $outputlangs);
+				$this->printSimpleTable($pdf, $outputlangs, $section['headers'], $section['rows'], $section['widths']);
+				$pdf->Ln(2);
+			}
+		}
         $this->_pagefoot($pdf, $object, $outputlangs, 1);
         
 		/*
@@ -299,9 +311,49 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 	}
 
+	private function collectProjectFiles($project, &$filesIndex, $projectdir, $excludeFileFullPath = '')
+	{
+		if (!is_object($project)) {
+			return;
+		}
+
+		$files = $this->getAllFilesForDir($projectdir, $excludeFileFullPath);
+		if (empty($files)) {
+			return;
+		}
+
+		$objkey = $this->buildObjectKey('project', $project);
+		$filesIndex['files_by_object'][$objkey] = array();
+
+		foreach ($files as $fullpath) {
+			if ($this->isProjectSynthesisFile($fullpath)) {
+				continue;
+			}
+
+			$filesIndex['files_by_object'][$objkey][] = $fullpath;
+			$label = 'project - '.$project->ref.' - '.basename($fullpath);
+			$filesIndex['attach'][$fullpath] = $label;
+
+			if ($this->isPdfFile($fullpath)) {
+				$filesIndex['pdf'][$fullpath] = $label;
+			}
+		}
+
+		$filesIndex['files_by_object'][$objkey] = array_values(array_unique($filesIndex['files_by_object'][$objkey]));
+	}
+
 	private function getAllFilesForObject($obj, $excludeFileFullPath = '')
 	{
 		$dir = $this->getObjectDocumentsDir($obj);
+		if (empty($dir) || !dol_is_dir($dir)) {
+			return array();
+		}
+
+		return $this->getAllFilesForDir($dir, $excludeFileFullPath);
+	}
+
+	private function getAllFilesForDir($dir, $excludeFileFullPath = '')
+	{
 		if (empty($dir) || !dol_is_dir($dir)) {
 			return array();
 		}
@@ -374,8 +426,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$res[] = $v['path'];
 		}
 
-		$res = array_values(array_unique($res));
-		return $res;
+		return array_values(array_unique($res));
 	}
 
 	/**
@@ -427,6 +478,11 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return (preg_match('/_signature\.png$/i', basename($filepath)) ? true : false);
 	}
 
+	private function isProjectSynthesisFile($filepath)
+	{
+		return (preg_match('/_SYNTHESIS\.pdf$/i', basename($filepath)) ? true : false);
+	}
+
 	/**
 	 * Retourne :
 	 * - dedupKey : permet d'associer "xxx.ext" avec "xxx_signed-YYYYMMDDhhmmss.ext"
@@ -475,10 +531,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	{
 		$pdf->AddPage();
 
-		$pdf->SetFont('', 'B', 12);
+		$pdf->SetTextColor($this->style_color_accent[0], $this->style_color_accent[1], $this->style_color_accent[2]);
+		$pdf->SetFont('', 'B', $this->style_font_title);
 		$pdf->MultiCell(0, 6, $outputlangs->trans('Annexes'), 0, 'L', false, 1);
 
-		$pdf->SetFont('', '', 9);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
+		$pdf->SetFont('', '', $this->style_font_body);
 
 		$nbAttach = is_array($filesIndex['attach']) ? count($filesIndex['attach']) : 0;
 		$nbPdf = is_array($filesIndex['pdf']) ? count($filesIndex['pdf']) : 0;
@@ -492,9 +550,11 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNIntegratedPdfPagesCount', $nbPdf), 0, 'L', false, 1);
 		$pdf->Ln(2);
 
-		$pdf->SetFont('', 'B', 10);
+		$pdf->SetTextColor($this->style_color_accent[0], $this->style_color_accent[1], $this->style_color_accent[2]);
+		$pdf->SetFont('', 'B', $this->style_font_section);
 		$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNIntegratedFilesListTitle'), 0, 'L', false, 1);
-		$pdf->SetFont('', '', 8);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
+		$pdf->SetFont('', '', $this->style_font_small);
 
 		foreach ($filesIndex['attach'] as $path => $label) {
 			if ($this->isSignaturePng($path)) {
@@ -606,9 +666,11 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 	private function printSectionTitle($pdf, $title, $outputlangs = null)
 	{
-		$pdf->SetFont('', 'B', 11);
+		$pdf->SetTextColor($this->style_color_accent[0], $this->style_color_accent[1], $this->style_color_accent[2]);
+		$pdf->SetFont('', 'B', $this->style_font_section);
 		$pdf->MultiCell(0, 7, $this->decodeHtmlForPdf($title, $outputlangs), 0, 'L', false, 1);
-		$pdf->SetFont('', '', 9);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
+		$pdf->SetFont('', '', $this->style_font_body);
 	}
 
 	private function decodeHtmlForPdf($text, $outputlangs = null)
@@ -687,6 +749,71 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return $totalheight;
 	}
 
+	private function getLinkedObjectsSectionsData($outputlangs, $linked, $filesIndex)
+	{
+		$definitions = array(
+			array('key' => 'propal', 'const' => 'JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL', 'title' => $outputlangs->trans('Proposals')),
+			array('key' => 'commande', 'const' => 'JPSUN_PROJECTSYNTHESIS_SHOW_ORDER', 'title' => $outputlangs->trans('Orders')),
+			array('key' => 'fichinter', 'const' => 'JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER', 'title' => $outputlangs->trans('Interventions')),
+			array('key' => 'stocktransfer', 'const' => 'JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER', 'title' => $outputlangs->trans('StockTransfers')),
+		);
+
+		$sections = array();
+		foreach ($definitions as $def) {
+			$key = $def['key'];
+			if (!getDolGlobalInt($def['const'])) {
+				continue;
+			}
+			if (empty($linked[$key]) || !is_array($linked[$key]['objects']) || empty($linked[$key]['objects'])) {
+				continue;
+			}
+
+			$rows = array();
+			foreach ($linked[$key]['objects'] as $o) {
+				$ref = (string) $o->ref;
+				$datec = dol_print_date($o->datec ?? $o->date_creation ?? null, 'day');
+				$stat = method_exists($o, 'getLibStatut') ? $o->getLibStatut(0) : '';
+
+				$objkey = $this->buildObjectKey($key, $o);
+				$files = !empty($filesIndex['files_by_object'][$objkey]) ? $filesIndex['files_by_object'][$objkey] : array();
+				$nbfiles = is_array($files) ? count($files) : 0;
+
+				$rows[] = array($ref, $datec, $stat, (string) $nbfiles);
+			}
+
+			$sections[] = array(
+				'key' => $key,
+				'title' => $def['title'],
+				'headers' => array(
+					$outputlangs->trans('Ref'),
+					$outputlangs->trans('Date'),
+					$outputlangs->trans('Status'),
+					$outputlangs->trans('Files'),
+				),
+				'rows' => (count($rows) ? $rows : array(array('-', '-', '-', '0'))),
+				'widths' => array(30, 25, 40, 87),
+			);
+		}
+
+		return $sections;
+	}
+
+	private function estimateLinkedObjectsTotalHeight($pdf, $outputlangs, $sections)
+	{
+		if (empty($sections)) {
+			return 0;
+		}
+
+		$total = 7; // Parent title height
+		foreach ($sections as $section) {
+			$total += 7; // Subsection title height
+			$total += $this->estimateSimpleTableHeight($pdf, $outputlangs, $section['headers'], $section['rows'], $section['widths']);
+			$total += 2; // Ln(2)
+		}
+
+		return $total;
+	}
+
 	private function getProjectContacts($project, $outputlangs)
 	{
 		global $mysoc;
@@ -735,50 +862,15 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return $rows;
 	}
 
-	private function printLinkedObjectsSectionFromObjects($pdf, $project, $outputlangs, $linked, $filesIndex, $key, $title, $tab_top_newpage = 10)
-	{
-		if (empty($linked[$key]) || !is_array($linked[$key]['objects'])) {
-			return;
-		}
-
-		$rows = array();
-
-		foreach ($linked[$key]['objects'] as $o) {
-			$ref = (string) $o->ref;
-			$datec = dol_print_date($o->datec ?? $o->date_creation ?? null, 'day');
-			$stat = method_exists($o, 'getLibStatut') ? $o->getLibStatut(0) : '';
-
-			$objkey = $this->buildObjectKey($key, $o);
-			$files = !empty($filesIndex['files_by_object'][$objkey]) ? $filesIndex['files_by_object'][$objkey] : array();
-			$nbfiles = is_array($files) ? count($files) : 0;
-
-			$rows[] = array($ref, $datec, $stat, (string) $nbfiles);
-		}
-
-		$headers = array(
-			$outputlangs->trans('Ref'),
-			$outputlangs->trans('Date'),
-			$outputlangs->trans('Status'),
-			$outputlangs->trans('Files'),
-		);
-		$preparedrows = (count($rows) ? $rows : array(array('-', '-', '-', '0')));
-		$widths = array(30, 25, 40, 87);
-		$blockheight = 7 + $this->estimateSimpleTableHeight($pdf, $outputlangs, $headers, $preparedrows, $widths) + 2;
-		$this->ensureContentBlockFitsPage($pdf, $project, $outputlangs, $tab_top_newpage, $blockheight);
-
-		$this->printSectionTitle($pdf, $title, $outputlangs);
-		$this->printSimpleTable($pdf, $outputlangs, $headers, $preparedrows, $widths);
-
-		$pdf->Ln(2);
-	}
-
 	private function printSimpleTable($pdf, $outputlangs, $headers, $rows, $widths)
 	{
 		$lineheight = 4;
 		$minrowheight = 6;
 		$startx = $pdf->GetX();
 
-		$pdf->SetFont('', 'B', 8);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
+		$pdf->SetDrawColor($this->style_color_border[0], $this->style_color_border[1], $this->style_color_border[2]);
+		$pdf->SetFont('', 'B', $this->style_font_small);
 		$headertexts = array();
 		$headermaxlines = 1;
 		foreach ($headers as $i => $h) {
@@ -794,6 +886,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$y = $pdf->GetY();
 		foreach ($headers as $i => $h) {
 			$w = (float) $widths[$i];
+			$pdf->SetFillColor($this->style_color_header_bg[0], $this->style_color_header_bg[1], $this->style_color_header_bg[2]);
+			$pdf->Rect($x, $y, $w, $headerrowheight, 'F');
 			$pdf->Rect($x, $y, $w, $headerrowheight);
 			$pdf->SetXY($x, $y);
 			$pdf->MultiCell($w, $lineheight, $headertexts[$i], 0, 'L', false, 1);
@@ -801,7 +895,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 		$pdf->SetXY($startx, $y + $headerrowheight);
 
-		$pdf->SetFont('', '', 8);
+		$pdf->SetFont('', '', $this->style_font_small);
+		$rownum = 0;
 		foreach ($rows as $r) {
 			$rowtexts = array();
 			$maxlines = 1;
@@ -816,17 +911,22 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 			$x = $startx;
 			$y = $pdf->GetY();
+			$fillbg = (($rownum % 2) ? 252 : 255);
 			foreach ($headers as $i => $h) {
 				$w = (float) $widths[$i];
+				$pdf->SetFillColor($fillbg, $fillbg, $fillbg);
+				$pdf->Rect($x, $y, $w, $rowheight, 'F');
 				$pdf->Rect($x, $y, $w, $rowheight);
 				$pdf->SetXY($x, $y);
 				$pdf->MultiCell($w, $lineheight, $rowtexts[$i], 0, 'L', false, 1);
 				$x += $w;
 			}
 			$pdf->SetXY($startx, $y + $rowheight);
+			$rownum++;
 		}
 
-		$pdf->SetFont('', '', 9);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
+		$pdf->SetFont('', '', $this->style_font_body);
 	}
 	
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
@@ -847,8 +947,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		pdf_pagehead($pdf, $outputlangs, $this->page_hauteur);
 
-		$pdf->SetTextColor(0, 0, 60);
-		$pdf->SetFont('', 'B', $default_font_size + 3);
+		$pdf->SetTextColor($this->style_color_accent[0], $this->style_color_accent[1], $this->style_color_accent[2]);
+		$pdf->SetFont('', 'B', $this->style_font_title);
 
 		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$posy = $this->marge_haute;
@@ -876,16 +976,16 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$bottomleft = max($bottomleft, $pdf->GetY());
 		}
 
-		$pdf->SetFont('', 'B', $default_font_size + 3);
+		$pdf->SetFont('', 'B', $this->style_font_title);
 		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
+		$pdf->SetTextColor($this->style_color_accent[0], $this->style_color_accent[1], $this->style_color_accent[2]);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("Project")." ".$outputlangs->convToOutputCharset($object->ref), '', 'R');
 		$bottomright = max($bottomright, $pdf->GetY());
-		$pdf->SetFont('', '', $default_font_size + 2);
+		$pdf->SetFont('', '', $this->style_font_body + 1);
 
 		$posy += 6;
 		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("DateStart")." : ".dol_print_date($object->date_start, 'day', false, $outputlangs, true), '', 'R');
 		$bottomright = max($bottomright, $pdf->GetY());
 
@@ -903,7 +1003,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$bottomright = max($bottomright, $pdf->GetY());
 		}
 
-		$pdf->SetTextColor(0, 0, 60);
+		$pdf->SetTextColor($this->style_color_text[0], $this->style_color_text[1], $this->style_color_text[2]);
 
 		// Add list of linked objects
 		/* Removed: A project can have more than thousands linked objects (orders, invoices, proposals, etc....
