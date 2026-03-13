@@ -261,3 +261,19 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Sin borradores, rechazados ni pe
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =Si se establece en 1: el autor se agrega automáticamente como contacto interno. Si se establece en 2: el autor se agrega automáticamente como contacto externo si es un usuario externo. (v20 y posteriores)
 TICKET_SHOW_MESSAGES_ON_CARD =Muestra todos los mensajes relacionados con el ticket en la tarjeta del ticket principal. (v10.0 y posteriores)
+
+JPSUNProjectPdfSynthesis=Sntesis del proyecto
+JPSUNIntegratedAttachedFilesCount=Archivos integrados (adjuntos): %s
+JPSUNIntegratedPdfPagesCount=PDF aadidos como pginas (si TCPDI est disponible): %s
+JPSUNIntegratedFilesListTitle=Lista de archivos integrados
+JPSUNPdfConcatDisabledTcpdiUnavailable=Concatenacin de PDF desactivada (TCPDI no disponible). Los PDF siguen incluidos como adjuntos.
+JPSUNPdfLabelWithName=PDF: %s
+JPSUNUnableToMergePdfAttachmentStillAvailable=No se puede concatenar este PDF (formato/proteccin/compatibilidad). Sigue disponible como archivo adjunto.
+JPSUNPdfConcatDisabledByConfiguration=La concatenacin de PDF como pginas est desactivada por configuracin. Los PDF siguen disponibles como adjuntos.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sntesis del proyecto: mostrar presupuestos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sntesis del proyecto: mostrar pedidos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sntesis del proyecto: mostrar intervenciones vinculadas
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sntesis del proyecto: mostrar transferencias de stock vinculadas
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sntesis del proyecto: concatenar PDF vinculados como pginas
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Sntesis del proyecto: aadir separadores entre los PDF concatenados

@@ -265,3 +265,19 @@ jpsun_SupplierProposalsExcludingRefusedTooltip = Sans les brouillons, celles ref
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT = Si la valeur est définie sur 1 : l'auteur est automatiquement ajouté comme contact interne. Si la valeur est définie sur 2 : l'auteur est automatiquement ajouté comme contact externe s'il s'agit d'un utilisateur externe. (v20 et ultérieures)
 TICKET_SHOW_MESSAGES_ON_CARD = Afficher tous les messages liés au ticket sur la carte du ticket principal.(v10.0 et ultérieures)
+
+JPSUNProjectPdfSynthesis=Synthse du projet
+JPSUNIntegratedAttachedFilesCount=Fichiers intgrs (pices jointes) : %s
+JPSUNIntegratedPdfPagesCount=PDF ajouts en pages (si TCPDI est disponible) : %s
+JPSUNIntegratedFilesListTitle=Liste des fichiers intgrs
+JPSUNPdfConcatDisabledTcpdiUnavailable=Concatnation PDF dsactive (TCPDI indisponible). Les PDF sont quand mme intgrs en pices jointes.
+JPSUNPdfLabelWithName=PDF : %s
+JPSUNUnableToMergePdfAttachmentStillAvailable=Impossible de concatner ce PDF (format/protection/compatibilit). Il reste disponible en pice jointe.
+JPSUNPdfConcatDisabledByConfiguration=La concatnation des PDF en pages est dsactive par configuration. Les PDF restent disponibles en pices jointes.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Synthse projet : afficher les devis clients lis
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Synthse projet : afficher les commandes clients lies
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Synthse projet : afficher les interventions lies
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Synthse projet : afficher les transferts de stock lis
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Synthse projet : concatner les PDF lis en pages
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Synthse projet : ajouter des intercalaires entre les PDF concatns
