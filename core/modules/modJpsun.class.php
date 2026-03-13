@@ -305,6 +305,77 @@ class modJpsun extends DolibarrModules
 	    
 	        $ext->addExtraField('jpsun_user_monogramme', 'jpsun_user_monogramme', 'varchar', 100, '2', 'user', 0, 0, '', '', 1, '', '-4', 'jpsun_user_monogramme_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 
+		// Invoice
+		$ext->fetch_name_optionals_label('facture');
+		$invoiceVatField = array(
+			'label' => 'JpsunTauxTvaFacture',
+			'type' => 'varchar',
+			'pos' => 200,
+			'size' => 20,
+			'elementtype' => 'facture',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => 2,
+			'help' => 'JpsunTauxTvaFactureHelp',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 0,
+			'printable' => 0,
+		);
+		if (empty($ext->attributes['facture']['label']['jpsun_taux_tva'])) {
+			$ext->addExtraField(
+				'jpsun_taux_tva',
+				$invoiceVatField['label'],
+				$invoiceVatField['type'],
+				$invoiceVatField['pos'],
+				$invoiceVatField['size'],
+				$invoiceVatField['elementtype'],
+				$invoiceVatField['unique'],
+				$invoiceVatField['required'],
+				$invoiceVatField['default_value'],
+				$invoiceVatField['param'],
+				$invoiceVatField['alwayseditable'],
+				$invoiceVatField['perms'],
+				$invoiceVatField['list'],
+				$invoiceVatField['help'],
+				$invoiceVatField['computed'],
+				$invoiceVatField['entity'],
+				$invoiceVatField['langfile'],
+				$invoiceVatField['enabled'],
+				$invoiceVatField['totalizable'],
+				$invoiceVatField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_taux_tva',
+				$invoiceVatField['label'],
+				$invoiceVatField['type'],
+				$invoiceVatField['pos'],
+				$invoiceVatField['size'],
+				$invoiceVatField['elementtype'],
+				$invoiceVatField['unique'],
+				$invoiceVatField['required'],
+				$invoiceVatField['default_value'],
+				$invoiceVatField['param'],
+				$invoiceVatField['alwayseditable'],
+				$invoiceVatField['perms'],
+				$invoiceVatField['list'],
+				$invoiceVatField['help'],
+				$invoiceVatField['computed'],
+				$invoiceVatField['entity'],
+				$invoiceVatField['langfile'],
+				$invoiceVatField['enabled'],
+				$invoiceVatField['totalizable'],
+				$invoiceVatField['printable']
+			);
+		}
+
 		// EN: Load contract extrafields and ensure idempotent setup.
 		// FR: Charger les extrafields contrats et assurer une installation idempotente.
 		$ext->fetch_name_optionals_label('contrat');
