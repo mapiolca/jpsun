@@ -74,8 +74,6 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$this->posxlabel = $this->marge_gauche + 25;
 		$this->posxworkload = $this->marge_gauche + 117;
 		$this->posxprogress = $this->marge_gauche + 137;
-		$this->posxdatestart = $this->marge_gauche + 147;
-		$this->posxdateend = $this->marge_gauche + 169;
 
 		$this->emetteur = $mysoc;
 		if (!$this->emetteur->country_code) {
@@ -84,7 +82,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
-	public function write_file($object, $outputlangs, $srctemplatepath = '')
+	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
 		global $conf, $langs;
@@ -93,7 +91,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$outputlangs = $langs;
 		}
 
-		$outputlangs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun'));
+		$outputlangs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun', 'propal', 'orders', 'fichinter', 'stock'));
 
 		if (getDolGlobalString('MAIN_USE_FPDF')) {
 			$outputlangs->charset_output = 'ISO-8859-1';
@@ -158,11 +156,17 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$tab_top = 50;
 		$tab_top_newpage = (!getDolGlobalInt('MAIN_PDF_DONOTREPEAT_HEAD') ? 42 : 10);
 
+		$heightforfreetext = getDolGlobalInt('MAIN_PDF_FREETEXT_HEIGHT', 5);
+		$heightforfooter = $this->marge_basse + 8;
+		if (getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS')) {
+			$heightforfooter += 6;
+		}
+
 		$tab_height = $this->page_hauteur - $tab_top - $heightforfooter - $heightforfreetext;
 
 		// Show public note
 		// Notes
-		$this->printSectionTitle($pdf, $outputlangs->trans('Notes'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('Notes'), $outputlangs);
 		$notetoshow = empty($object->note_public) ? '' : $object->note_public;
 		if ($notetoshow) {
 			$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, $object);
@@ -188,7 +192,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 
 		// Contacts
-		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'), $outputlangs);
 		$contacts = $this->getProjectContacts($object, $outputlangs);
 		$this->printSimpleTable($pdf, $outputlangs, array(
 			$outputlangs->trans('Type'),
@@ -201,7 +205,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->Ln(2);
 
 		// Objets liés (Devis / FI / Transfert de stock)
-		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'));
+		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'), $outputlangs);
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL')){
 		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'propal', $outputlangs->trans('Proposals'));
         }
@@ -411,6 +415,11 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return (preg_match('/_preview\.png$/i', basename($filepath)) ? true : false);
 	}
 
+	private function isSignaturePng($filepath)
+	{
+		return (preg_match('/_signature\.png$/i', basename($filepath)) ? true : false);
+	}
+
 	/**
 	 * Retourne :
 	 * - dedupKey : permet d'associer "xxx.ext" avec "xxx_signed-YYYYMMDDhhmmss.ext"
@@ -472,15 +481,18 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			return;
 		}
 
-		$pdf->MultiCell(0, 5, 'Fichiers intégrés (pièces jointes) : '.$nbAttach, 0, 'L', false, 1);
-		$pdf->MultiCell(0, 5, 'PDF ajoutés en pages (si support TCPDI) : '.$nbPdf, 0, 'L', false, 1);
+		$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNIntegratedAttachedFilesCount', $nbAttach), 0, 'L', false, 1);
+		$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNIntegratedPdfPagesCount', $nbPdf), 0, 'L', false, 1);
 		$pdf->Ln(2);
 
 		$pdf->SetFont('', 'B', 10);
-		$pdf->MultiCell(0, 6, 'Liste des fichiers intégrés', 0, 'L', false, 1);
+		$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNIntegratedFilesListTitle'), 0, 'L', false, 1);
 		$pdf->SetFont('', '', 8);
 
 		foreach ($filesIndex['attach'] as $path => $label) {
+			if ($this->isSignaturePng($path)) {
+				continue;
+			}
 			$pdf->MultiCell(0, 4, '- '.$label, 0, 'L', false, 1);
 		}
 
@@ -489,29 +501,50 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$this->attachFileToPdf($pdf, $path, $label);
 		}
 
-		// B) Concat des PDF en pages (si TCPDI dispo)
-		if (!method_exists($pdf, 'setSourceFile')) {
+		// B) Optional PDF merge as pages (disabled by default to avoid TCPDI deprecations on PHP >= 8.2)
+		$enablepdfconcat = getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT', 0);
+		if (!$enablepdfconcat) {
 			$pdf->Ln(2);
 			$pdf->SetFont('', 'I', 9);
-			$pdf->MultiCell(0, 5, 'Concat PDF désactivée (TCPDI indisponible). Les PDF sont tout de même intégrés en pièces jointes.', 0, 'L', false, 1);
+			$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNPdfConcatDisabledByConfiguration'), 0, 'L', false, 1);
 			return;
 		}
 
-		if (method_exists($pdf, 'setPrintHeader')) $pdf->setPrintHeader(false);
-		if (method_exists($pdf, 'setPrintFooter')) $pdf->setPrintFooter(false);
+		if (!method_exists($pdf, 'setSourceFile')) {
+			$pdf->Ln(2);
+			$pdf->SetFont('', 'I', 9);
+			$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNPdfConcatDisabledTcpdiUnavailable'), 0, 'L', false, 1);
+			return;
+		}
 
+		if (method_exists($pdf, 'setPrintHeader')) {
+			$pdf->setPrintHeader(false);
+		}
+		if (method_exists($pdf, 'setPrintFooter')) {
+			$pdf->setPrintFooter(false);
+		}
+
+		$addseparatorpage = getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE', 1);
+		$pdfindex = 0;
 		foreach ($filesIndex['pdf'] as $path => $label) {
-			$pdf->AddPage();
-			$pdf->SetFont('', 'B', 10);
-			$pdf->MultiCell(0, 6, 'PDF : '.$label, 0, 'L', false, 1);
-			$pdf->SetFont('', '', 9);
+			if ($addseparatorpage && $pdfindex > 0) {
+				$pdf->AddPage();
+				$pdf->SetFont('', 'B', 10);
+				$pdf->MultiCell(0, 6, $outputlangs->trans('JPSUNPdfLabelWithName', $label), 0, 'L', false, 1);
+				$pdf->SetFont('', '', 9);
+			}
 
 			$res = $this->appendPdfFileAsPages($pdf, $path);
 			if ($res < 0) {
+				if (!$addseparatorpage) {
+					$pdf->AddPage();
+				}
 				$pdf->SetFont('', 'I', 9);
-				$pdf->MultiCell(0, 5, 'Impossible de concaténer ce PDF (format/protection/compat). Il reste disponible en pièce jointe.', 0, 'L', false, 1);
+				$pdf->MultiCell(0, 5, $outputlangs->trans('JPSUNUnableToMergePdfAttachmentStillAvailable'), 0, 'L', false, 1);
 				$pdf->SetFont('', '', 9);
 			}
+
+			$pdfindex++;
 		}
 	}
 
@@ -547,9 +580,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			for ($p = 1; $p <= $pagecount; $p++) {
 				$tpl = $pdf->importPage($p);
 				$size = $pdf->getTemplateSize($tpl);
+				$width = !empty($size['width']) ? (float) $size['width'] : (!empty($size[0]) ? (float) $size[0] : (float) $this->page_largeur);
+				$height = !empty($size['height']) ? (float) $size['height'] : (!empty($size[1]) ? (float) $size[1] : (float) $this->page_hauteur);
+				$orientation = !empty($size['orientation']) ? $size['orientation'] : (($width > $height) ? 'L' : 'P');
 
-				$pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
-				$pdf->useTemplate($tpl, 0, 0, $size['width'], $size['height'], true);
+				$pdf->AddPage($orientation, array($width, $height));
+				$pdf->useTemplate($tpl, 0, 0, $width, $height, true);
 			}
 			return (int) $pagecount;
 		} catch (Exception $e) {
@@ -561,11 +597,38 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	 *  PDF content helpers
 	 * ------------------------------------------------------------ */
 
-	private function printSectionTitle($pdf, $title)
+	private function printSectionTitle($pdf, $title, $outputlangs = null)
 	{
 		$pdf->SetFont('', 'B', 11);
-		$pdf->MultiCell(0, 7, $title, 0, 'L', false, 1);
+		$pdf->MultiCell(0, 7, $this->decodeHtmlForPdf($title, $outputlangs), 0, 'L', false, 1);
 		$pdf->SetFont('', '', 9);
+	}
+
+	private function decodeHtmlForPdf($text, $outputlangs = null)
+	{
+		$text = (string) $text;
+		$text = preg_replace('/<br\s*\/?\s*>/i', "\n", $text);
+		$text = strip_tags($text);
+		$text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$text = trim((string) $text);
+
+		if (is_object($outputlangs) && method_exists($outputlangs, 'convToOutputCharset')) {
+			$text = $outputlangs->convToOutputCharset($text);
+		}
+
+		return $text;
+	}
+
+	private function getPdfCellLineCount($pdf, $width, $text)
+	{
+		if (method_exists($pdf, 'getNumLines')) {
+			$nb = (int) $pdf->getNumLines((string) $text, (float) $width);
+			return ($nb > 0 ? $nb : 1);
+		}
+
+		$len = dol_strlen((string) $text);
+		$estimated = (int) ceil($len / 28);
+		return ($estimated > 0 ? $estimated : 1);
 	}
 
 	private function getProjectContacts($project, $outputlangs)
@@ -636,12 +699,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$rows[] = array($ref, $datec, $stat, (string) $nbfiles);
 		}
 
-		$this->printSectionTitle($pdf, $title);
+		$this->printSectionTitle($pdf, $title, $outputlangs);
 		$this->printSimpleTable($pdf, $outputlangs, array(
 			$outputlangs->trans('Ref'),
 			$outputlangs->trans('Date'),
 			$outputlangs->trans('Status'),
-			'Fichiers',
+			$outputlangs->trans('Files'),
 		), (count($rows) ? $rows : array(array('-', '-', '-', '0'))), array(30, 25, 40, 87));
 
 		$pdf->Ln(2);
@@ -649,19 +712,56 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 	private function printSimpleTable($pdf, $outputlangs, $headers, $rows, $widths)
 	{
+		$lineheight = 4;
+		$minrowheight = 6;
+		$startx = $pdf->GetX();
+
 		$pdf->SetFont('', 'B', 8);
+		$headertexts = array();
+		$headermaxlines = 1;
 		foreach ($headers as $i => $h) {
-			$pdf->MultiCell($widths[$i], 6, $h, 1, 'L', false, 0);
+			$headertexts[$i] = $this->decodeHtmlForPdf($h, $outputlangs);
+			$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $headertexts[$i]);
+			if ($lines > $headermaxlines) {
+				$headermaxlines = $lines;
+			}
 		}
-		$pdf->Ln();
+		$headerrowheight = max($minrowheight, $headermaxlines * $lineheight);
+
+		$x = $startx;
+		$y = $pdf->GetY();
+		foreach ($headers as $i => $h) {
+			$w = (float) $widths[$i];
+			$pdf->Rect($x, $y, $w, $headerrowheight);
+			$pdf->SetXY($x, $y);
+			$pdf->MultiCell($w, $lineheight, $headertexts[$i], 0, 'L', false, 1);
+			$x += $w;
+		}
+		$pdf->SetXY($startx, $y + $headerrowheight);
 
 		$pdf->SetFont('', '', 8);
 		foreach ($rows as $r) {
+			$rowtexts = array();
+			$maxlines = 1;
 			foreach ($headers as $i => $h) {
-				$txt = isset($r[$i]) ? (string) $r[$i] : '';
-				$pdf->MultiCell($widths[$i], 6, $txt, 1, 'L', false, 0);
+				$rowtexts[$i] = $this->decodeHtmlForPdf(isset($r[$i]) ? $r[$i] : '', $outputlangs);
+				$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $rowtexts[$i]);
+				if ($lines > $maxlines) {
+					$maxlines = $lines;
+				}
 			}
-			$pdf->Ln();
+			$rowheight = max($minrowheight, $maxlines * $lineheight);
+
+			$x = $startx;
+			$y = $pdf->GetY();
+			foreach ($headers as $i => $h) {
+				$w = (float) $widths[$i];
+				$pdf->Rect($x, $y, $w, $rowheight);
+				$pdf->SetXY($x, $y);
+				$pdf->MultiCell($w, $lineheight, $rowtexts[$i], 0, 'L', false, 1);
+				$x += $w;
+			}
+			$pdf->SetXY($startx, $y + $rowheight);
 		}
 
 		$pdf->SetFont('', '', 9);

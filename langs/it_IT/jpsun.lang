@@ -261,3 +261,19 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Si prega di notare, controllare 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =Se impostato su 1: l'autore viene aggiunto automaticamente come contatto interno. Se impostato su 2: l'autore viene aggiunto automaticamente come contatto esterno se è un utente esterno. (v20 e successive)
 TICKET_SHOW_MESSAGES_ON_CARD =Mostra tutti i messaggi relativi al biglietto sulla scheda del biglietto principale. (v10.0 e successive)
+
+JPSUNProjectPdfSynthesis=Sintesi del progetto
+JPSUNIntegratedAttachedFilesCount=File integrati (allegati): %s
+JPSUNIntegratedPdfPagesCount=PDF aggiunti come pagine (se TCPDI  disponibile): %s
+JPSUNIntegratedFilesListTitle=Elenco dei file integrati
+JPSUNPdfConcatDisabledTcpdiUnavailable=Concatenazione PDF disattivata (TCPDI non disponibile). I PDF restano comunque inclusi come allegati.
+JPSUNPdfLabelWithName=PDF: %s
+JPSUNUnableToMergePdfAttachmentStillAvailable=Impossibile concatenare questo PDF (formato/protezione/compatibilit). Rimane disponibile come allegato.
+JPSUNPdfConcatDisabledByConfiguration=La concatenazione PDF come pagine  disattivata dalla configurazione. I PDF restano disponibili come allegati.
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sintesi progetto: mostrare i preventivi cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sintesi progetto: mostrare gli ordini cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesi progetto: mostrare gli interventi collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesi progetto: mostrare i trasferimenti di magazzino collegati
+
+JPSUN_PROJECTSYNTHESIS_ENABLE_PDF_CONCAT=Sintesi progetto: concatenare i PDF collegati come pagine
+JPSUN_PROJECTSYNTHESIS_ADD_SEPARATOR_PAGE=Sintesi progetto: aggiungere separatori tra i PDF concatenati
