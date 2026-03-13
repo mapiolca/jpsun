@@ -148,12 +148,12 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		$pdf->AddPage();
 		
 		$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
-		$this->_pagehead($pdf, $object, 0, $outputlangs);
+		$tab_top_header = (float) $this->_pagehead($pdf, $object, 0, $outputlangs);
         $pdf->SetFont('', '', $default_font_size - 1);
 		//$pdf->MultiCell(0, 3, ''); // Set interline to 3
 		$pdf->SetTextColor(0, 0, 0);
 
-		$tab_top = 50;
+		$tab_top = max(50, (int) ceil($tab_top_header + 2));
 		$tab_top_newpage = (!getDolGlobalInt('MAIN_PDF_DONOTREPEAT_HEAD') ? 42 : 10);
 
 		$heightforfreetext = getDolGlobalInt('MAIN_PDF_FREETEXT_HEIGHT', 5);
@@ -790,6 +790,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$posy = $this->marge_haute;
+		$bottomleft = $posy;
+		$bottomright = $posy + 4;
 
 		$pdf->SetXY($this->marge_gauche, $posy);
 
@@ -799,37 +801,44 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			if (is_readable($logo)) {
 				$height = pdf_getHeightForLogo($logo);
 				$pdf->Image($logo, $this->marge_gauche, $posy, 0, $height); // width=0 (auto)
+				$bottomleft = max($bottomleft, $posy + $height);
 			} else {
 				$pdf->SetTextColor(200, 0, 0);
 				$pdf->SetFont('', 'B', $default_font_size - 2);
 				$pdf->MultiCell(100, 3, $langs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
 				$pdf->MultiCell(100, 3, $langs->transnoentities("ErrorGoToModuleSetup"), 0, 'L');
+				$bottomleft = max($bottomleft, $pdf->GetY());
 			}
 		} else {
 			$pdf->MultiCell(100, 4, $outputlangs->transnoentities($this->emetteur->name), 0, 'L');
+			$bottomleft = max($bottomleft, $pdf->GetY());
 		}
 
 		$pdf->SetFont('', 'B', $default_font_size + 3);
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("Project")." ".$outputlangs->convToOutputCharset($object->ref), '', 'R');
+		$bottomright = max($bottomright, $pdf->GetY());
 		$pdf->SetFont('', '', $default_font_size + 2);
 
 		$posy += 6;
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("DateStart")." : ".dol_print_date($object->date_start, 'day', false, $outputlangs, true), '', 'R');
+		$bottomright = max($bottomright, $pdf->GetY());
 
 		if ($object->date_end) {
 			$posy += 6;
 			$pdf->SetXY($posx, $posy);
 			$pdf->MultiCell(100, 4, $outputlangs->transnoentities("DateEnd")." : ".dol_print_date($object->date_end, 'day', false, $outputlangs, true), '', 'R');
+			$bottomright = max($bottomright, $pdf->GetY());
 		}
 
 		if (is_object($object->thirdparty)) {
 			$posy += 6;
 			$pdf->SetXY($posx, $posy);
 			$pdf->MultiCell(100, 4, $outputlangs->transnoentities("ThirdParty")." : ".$object->thirdparty->getFullName($outputlangs), '', 'R');
+			$bottomright = max($bottomright, $pdf->GetY());
 		}
 
 		$pdf->SetTextColor(0, 0, 60);
@@ -858,7 +867,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 		*/
 
-		return 0;
+		return max($bottomleft, $bottomright);
 	}
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore
