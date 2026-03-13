@@ -43,6 +43,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 	public $update_main_doc_field;
 	public $type;
 	public $version = 'dolibarr';
+	public $heightforfooter = 0;
+	public $heightforfreetext = 0;
 
 	public function __construct($db)
 	{
@@ -161,6 +163,8 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		if (getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS')) {
 			$heightforfooter += 6;
 		}
+		$this->heightforfreetext = $heightforfreetext;
+		$this->heightforfooter = $heightforfooter;
 
 		$tab_height = $this->page_hauteur - $tab_top - $heightforfooter - $heightforfreetext;
 
@@ -192,31 +196,34 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		}
 
 		// Contacts
-		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'), $outputlangs);
-		$contacts = $this->getProjectContacts($object, $outputlangs);
-		$this->printSimpleTable($pdf, $outputlangs, array(
+		$contactsheaders = array(
 			$outputlangs->trans('Type'),
 			$outputlangs->trans('Role'),
 			$outputlangs->trans('Name'),
 			$outputlangs->trans('Company'),
 			$outputlangs->trans('Email'),
-		), $contacts, array(18, 35, 45, 45, 47));
-		
+		);
+		$contacts = $this->getProjectContacts($object, $outputlangs);
+		$contactswidths = array(18, 35, 45, 45, 47);
+		$contactsblockheight = 7 + $this->estimateSimpleTableHeight($pdf, $outputlangs, $contactsheaders, $contacts, $contactswidths) + 2;
+		$this->ensureContentBlockFitsPage($pdf, $object, $outputlangs, $tab_top_newpage, $contactsblockheight);
+		$this->printSectionTitle($pdf, $outputlangs->trans('Contacts'), $outputlangs);
+		$this->printSimpleTable($pdf, $outputlangs, $contactsheaders, $contacts, $contactswidths);
 		$pdf->Ln(2);
 
 		// Objets liés (Devis / FI / Transfert de stock)
 		$this->printSectionTitle($pdf, $outputlangs->trans('LinkedObjects'), $outputlangs);
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'propal', $outputlangs->trans('Proposals'));
+		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'propal', $outputlangs->trans('Proposals'), $tab_top_newpage);
         }
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_ORDER')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'commande', $outputlangs->trans('Orders'));
+		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'commande', $outputlangs->trans('Orders'), $tab_top_newpage);
         }
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'fichinter', $outputlangs->trans('Interventions'));
+		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'fichinter', $outputlangs->trans('Interventions'), $tab_top_newpage);
         }
         if (getDolGlobalInt('JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFERT')){
-		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'stocktransfer', $outputlangs->trans('StockTransfers'));
+		$this->printLinkedObjectsSectionFromObjects($pdf, $object, $outputlangs, $linked, $filesIndex, 'stocktransfer', $outputlangs->trans('StockTransfers'), $tab_top_newpage);
         }
         $this->_pagefoot($pdf, $object, $outputlangs, 1);
         
@@ -631,6 +638,55 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return ($estimated > 0 ? $estimated : 1);
 	}
 
+	private function getPdfUsableBottomY()
+	{
+		return $this->page_hauteur - $this->heightforfooter - $this->heightforfreetext;
+	}
+
+	private function ensureContentBlockFitsPage($pdf, $object, $outputlangs, $tab_top_newpage, $blockheight)
+	{
+		$usablebottom = $this->getPdfUsableBottomY();
+		if (($pdf->GetY() + $blockheight) <= $usablebottom) {
+			return;
+		}
+
+		$pdf->AddPage();
+		if (!getDolGlobalInt('MAIN_PDF_DONOTREPEAT_HEAD')) {
+			$this->_pagehead($pdf, $object, 0, $outputlangs);
+		}
+		$pdf->SetY($tab_top_newpage);
+	}
+
+	private function estimateSimpleTableHeight($pdf, $outputlangs, $headers, $rows, $widths)
+	{
+		$lineheight = 4;
+		$minrowheight = 6;
+
+		$headermaxlines = 1;
+		foreach ($headers as $i => $h) {
+			$txt = $this->decodeHtmlForPdf($h, $outputlangs);
+			$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $txt);
+			if ($lines > $headermaxlines) {
+				$headermaxlines = $lines;
+			}
+		}
+		$totalheight = max($minrowheight, $headermaxlines * $lineheight);
+
+		foreach ($rows as $r) {
+			$maxlines = 1;
+			foreach ($headers as $i => $h) {
+				$txt = $this->decodeHtmlForPdf(isset($r[$i]) ? $r[$i] : '', $outputlangs);
+				$lines = $this->getPdfCellLineCount($pdf, $widths[$i], $txt);
+				if ($lines > $maxlines) {
+					$maxlines = $lines;
+				}
+			}
+			$totalheight += max($minrowheight, $maxlines * $lineheight);
+		}
+
+		return $totalheight;
+	}
+
 	private function getProjectContacts($project, $outputlangs)
 	{
 		global $mysoc;
@@ -679,7 +735,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 		return $rows;
 	}
 
-	private function printLinkedObjectsSectionFromObjects($pdf, $project, $outputlangs, $linked, $filesIndex, $key, $title)
+	private function printLinkedObjectsSectionFromObjects($pdf, $project, $outputlangs, $linked, $filesIndex, $key, $title, $tab_top_newpage = 10)
 	{
 		if (empty($linked[$key]) || !is_array($linked[$key]['objects'])) {
 			return;
@@ -699,13 +755,19 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 			$rows[] = array($ref, $datec, $stat, (string) $nbfiles);
 		}
 
-		$this->printSectionTitle($pdf, $title, $outputlangs);
-		$this->printSimpleTable($pdf, $outputlangs, array(
+		$headers = array(
 			$outputlangs->trans('Ref'),
 			$outputlangs->trans('Date'),
 			$outputlangs->trans('Status'),
 			$outputlangs->trans('Files'),
-		), (count($rows) ? $rows : array(array('-', '-', '-', '0'))), array(30, 25, 40, 87));
+		);
+		$preparedrows = (count($rows) ? $rows : array(array('-', '-', '-', '0')));
+		$widths = array(30, 25, 40, 87);
+		$blockheight = 7 + $this->estimateSimpleTableHeight($pdf, $outputlangs, $headers, $preparedrows, $widths) + 2;
+		$this->ensureContentBlockFitsPage($pdf, $project, $outputlangs, $tab_top_newpage, $blockheight);
+
+		$this->printSectionTitle($pdf, $title, $outputlangs);
+		$this->printSimpleTable($pdf, $outputlangs, $headers, $preparedrows, $widths);
 
 		$pdf->Ln(2);
 	}
