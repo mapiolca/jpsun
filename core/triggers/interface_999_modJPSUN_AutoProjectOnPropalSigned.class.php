@@ -61,12 +61,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 	 */
 	public function runTrigger($action, $object, $user, $langs, $conf)
 	{
-		if (in_array($action, array('BILL_CREATE', 'BILL_MODIFY'), true)) {
+		if (in_array($action, array('LINEBILL_INSERT', 'LINEBILL_UPDATE', 'LINEBILL_DELETE', 'BILL_CREATE', 'BILL_MODIFY'), true)) {
 			$invoiceId = 0;
-			if (!empty($object->element) && $object->element === 'facture') {
-				$invoiceId = (int) $object->id;
-			} elseif (!empty($object->element) && $object->element === 'facturedet') {
+			if (!empty($object->element) && $object->element === 'facturedet') {
 				$invoiceId = (int) $object->fk_facture;
+			} elseif (!empty($object->element) && $object->element === 'facture') {
+				$invoiceId = (int) $object->id;
 			}
 
 			if ($invoiceId > 0) {

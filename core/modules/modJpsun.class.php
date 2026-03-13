@@ -319,7 +319,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '',
-			'list' => 2,
+			'list' => -2,
 			'help' => 'JpsunTauxTvaFactureHelp',
 			'computed' => '',
 			'entity' => 0,
