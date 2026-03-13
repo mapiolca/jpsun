@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.11 (13/03/2026)
+- Ajout de l'extrafield facture "Taux de TVA" (`jpsun_taux_tva`) configuré pour être disponible en liste et masqué par défaut.
+- Mise à jour automatique de la valeur de l'extrafield à chaque ajout, modification ou suppression de ligne de facture via les triggers `LINEBILL_INSERT`, `LINEBILL_UPDATE` et `LINEBILL_DELETE`.
+- Calcul de la valeur selon les lignes de facture : un taux unique (`20%`, `5.5%`, etc.) ou la valeur "Multiples" quand plusieurs taux de TVA sont présents.
+- Ajout des traductions associées (`JpsunTauxTvaFacture`, `JpsunTauxTvaFactureHelp`, `JpsunMultiples`) en `fr_FR`, `en_US`, `de_DE`, `es_ES` et `it_IT`.
+
 ## 1.10 (16/02/2026)
 - Ajout d'un nouveau modèle de PDF pour la génération de rapport de stock
 - Actualisation des modèles de devis pour la nouvelle gestion des CGV dans Dolibarr v22
