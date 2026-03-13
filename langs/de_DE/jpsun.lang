@@ -261,3 +261,6 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Ohne Entwürfe, abgelehnte und b
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =Bei Einstellung 1: Der Autor wird automatisch als interner Kontakt hinzugefügt. Bei Einstellung 2: Der Autor wird automatisch als externer Kontakt hinzugefügt, wenn es sich um einen externen Benutzer handelt. (v20 und höher)
 TICKET_SHOW_MESSAGES_ON_CARD =Zeigen Sie alle Ticket-bezogenen Nachrichten auf der Hauptticketkarte an. (v10.0 und höher)
+JpsunTauxTvaFacture=Mehrwertsteuersatz
+JpsunTauxTvaFactureHelp=Mehrwertsteuersatz der Rechnung (automatischer Wert basierend auf den Zeilen).
+JpsunMultiples=Mehrere

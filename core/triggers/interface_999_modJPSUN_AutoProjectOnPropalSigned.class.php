@@ -61,6 +61,18 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 	 */
 	public function runTrigger($action, $object, $user, $langs, $conf)
 	{
+		if (in_array($action, array('LINEBILL_INSERT', 'LINEBILL_UPDATE', 'LINEBILL_DELETE', 'BILL_CREATE', 'BILL_MODIFY'), true)) {
+			$invoiceId = 0;
+			if (!empty($object->element) && $object->element === 'facturedet') {
+				$invoiceId = (int) $object->fk_facture;
+			} elseif (!empty($object->element) && $object->element === 'facture') {
+				$invoiceId = (int) $object->id;
+			}
+
+			if ($invoiceId > 0) {
+				$this->updateInvoiceVatExtrafield($invoiceId, $user, $langs);
+			}
+		}
 	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
             if ($object->element == 'propal') {
                 global $db;
@@ -290,4 +302,70 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		return 1;
 	}
+	/**
+	 * Update invoice VAT rate extrafield from invoice lines.
+	 *
+	 * @param int		$invoiceId Invoice id
+	 * @param User		$user		 Current user
+	 * @param Translate	$langs	 Current langs
+	 * @return int							 1 if updated or ignored, <0 on error
+	 */
+	private function updateInvoiceVatExtrafield($invoiceId, $user, $langs)
+	{
+		if ($invoiceId <= 0) {
+			return 0;
+		}
+
+		dol_include_once('/compta/facture/class/facture.class.php');
+		dol_include_once('/core/class/extrafields.class.php');
+
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label('facture');
+		if (empty($extrafields->attributes['facture']['label']['jpsun_taux_tva'])) {
+			return 0;
+		}
+
+		$vatRates = array();
+		$sql = "SELECT DISTINCT fd.tva_tx";
+		$sql .= " FROM ".MAIN_DB_PREFIX."facturedet as fd";
+		$sql .= " WHERE fd.fk_facture = ".((int) $invoiceId);
+		$sql .= " AND (fd.product_type IS NULL OR fd.product_type IN (0,1))";
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__." sql error: ".$this->db->lasterror(), LOG_ERR);
+			return -1;
+		}
+
+		while ($obj = $this->db->fetch_object($resql)) {
+			$vatRates[] = price2num($obj->tva_tx, 'MU');
+		}
+
+		$vatRates = array_values(array_unique($vatRates, SORT_REGULAR));
+		sort($vatRates);
+
+		$vatLabel = '';
+		if (count($vatRates) === 1) {
+			$vatLabel = rtrim(rtrim(sprintf('%.6F', (float) $vatRates[0]), '0'), '.').'%';
+		} elseif (count($vatRates) > 1) {
+			$vatLabel = $langs->trans('JpsunMultiples');
+		}
+
+		$invoice = new Facture($this->db);
+		if ($invoice->fetch($invoiceId) <= 0) {
+			return 0;
+		}
+
+		$invoice->fetch_optionals();
+		$invoice->array_options['options_jpsun_taux_tva'] = $vatLabel;
+
+		$res = $invoice->insertExtraFields();
+		if ($res < 0) {
+			dol_syslog(__METHOD__." insertExtraFields error: ".$invoice->error, LOG_ERR);
+			return -1;
+		}
+
+		return 1;
+	}
+
 }

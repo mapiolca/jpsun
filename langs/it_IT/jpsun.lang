@@ -261,3 +261,6 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Si prega di notare, controllare 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =Se impostato su 1: l'autore viene aggiunto automaticamente come contatto interno. Se impostato su 2: l'autore viene aggiunto automaticamente come contatto esterno se è un utente esterno. (v20 e successive)
 TICKET_SHOW_MESSAGES_ON_CARD =Mostra tutti i messaggi relativi al biglietto sulla scheda del biglietto principale. (v10.0 e successive)
+JpsunTauxTvaFacture=Aliquota IVA
+JpsunTauxTvaFactureHelp=Aliquota IVA della fattura (valore automatico in base alle righe).
+JpsunMultiples=Multipli

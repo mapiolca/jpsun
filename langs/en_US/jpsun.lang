@@ -261,3 +261,6 @@ jpsun_SupplierProposalsExcludingRefusedTooltip =Excluding drafts, refused, and o
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 TICKET_ADD_AUTHOR_AS_CONTACT =If set to 1: The author is automatically added as an internal contact. If set to 2: The author is automatically added as an external contact if they are an external user. (v20 and later)
 TICKET_SHOW_MESSAGES_ON_CARD =Show all ticket-related messages on the main ticket card. (v10.0 and later)
+JpsunTauxTvaFacture=VAT rate
+JpsunTauxTvaFactureHelp=Invoice VAT rate (automatic value based on lines).
+JpsunMultiples=Multiple

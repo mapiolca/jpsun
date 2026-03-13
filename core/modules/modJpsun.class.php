@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.10';
+		$this->version = '1.11';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -304,6 +304,77 @@ class modJpsun extends DolibarrModules
 	    //Utilisateurs
 	    
 	        $ext->addExtraField('jpsun_user_monogramme', 'jpsun_user_monogramme', 'varchar', 100, '2', 'user', 0, 0, '', '', 1, '', '-4', 'jpsun_user_monogramme_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+
+		// Invoice
+		$ext->fetch_name_optionals_label('facture');
+		$invoiceVatField = array(
+			'label' => 'JpsunTauxTvaFacture',
+			'type' => 'varchar',
+			'pos' => 200,
+			'size' => 20,
+			'elementtype' => 'facture',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'JpsunTauxTvaFactureHelp',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 0,
+			'printable' => 0,
+		);
+		if (empty($ext->attributes['facture']['label']['jpsun_taux_tva'])) {
+			$ext->addExtraField(
+				'jpsun_taux_tva',
+				$invoiceVatField['label'],
+				$invoiceVatField['type'],
+				$invoiceVatField['pos'],
+				$invoiceVatField['size'],
+				$invoiceVatField['elementtype'],
+				$invoiceVatField['unique'],
+				$invoiceVatField['required'],
+				$invoiceVatField['default_value'],
+				$invoiceVatField['param'],
+				$invoiceVatField['alwayseditable'],
+				$invoiceVatField['perms'],
+				$invoiceVatField['list'],
+				$invoiceVatField['help'],
+				$invoiceVatField['computed'],
+				$invoiceVatField['entity'],
+				$invoiceVatField['langfile'],
+				$invoiceVatField['enabled'],
+				$invoiceVatField['totalizable'],
+				$invoiceVatField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_taux_tva',
+				$invoiceVatField['label'],
+				$invoiceVatField['type'],
+				$invoiceVatField['pos'],
+				$invoiceVatField['size'],
+				$invoiceVatField['elementtype'],
+				$invoiceVatField['unique'],
+				$invoiceVatField['required'],
+				$invoiceVatField['default_value'],
+				$invoiceVatField['param'],
+				$invoiceVatField['alwayseditable'],
+				$invoiceVatField['perms'],
+				$invoiceVatField['list'],
+				$invoiceVatField['help'],
+				$invoiceVatField['computed'],
+				$invoiceVatField['entity'],
+				$invoiceVatField['langfile'],
+				$invoiceVatField['enabled'],
+				$invoiceVatField['totalizable'],
+				$invoiceVatField['printable']
+			);
+		}
 
 		// EN: Load contract extrafields and ensure idempotent setup.
 		// FR: Charger les extrafields contrats et assurer une installation idempotente.
