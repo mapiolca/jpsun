@@ -50,6 +50,7 @@ jpsunTHR=Tatsächlicher Stundensatz
 JpsunSetup =JPSUN-Modul-Einstellungen
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Projekt automatisch bei Angebotsunterzeichnung erstellen
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Wenn ein Projekt geschlossen wird, Enddatum bei Aufgaben ohne Enddatum auf das Projektschlussdatum setzen
+JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =Wenn ein Projekt geschlossen wird, alle Projektaufgaben schließen (Fortschritt auf 100 % und Status Geschlossen)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Wenn ein Projekt geschlossen wird, sein Enddatum mit dem Projektschlussdatum erzwingen
 PRODUCT_USE_UNITS=Produkte verwenden Einheiten
 SetupSituationTitle=Abschlagsrechnung

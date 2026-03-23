@@ -4,6 +4,8 @@
 - Ajout de deux réglages workflow liés à la clôture des projets :
 	- `JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE` pour renseigner la date de fin des tâches liées sans date de fin.
 	- `JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE` pour forcer la date de fin du projet avec la date de clôture.
+- Ajout du réglage workflow `JPSUN_PROJECT_CLOSE_COMPLETE_TASKS` pour clôturer automatiquement les tâches d'un projet à sa clôture.
+- Quand ce réglage est actif, les tâches du projet sont mises à `100%` et au statut `3` (`fk_statut = 3`, Clôturée).
 - Ajout du traitement du trigger `PROJECT_CLOSE` pour appliquer ces comportements selon les réglages activés.
 - Correction de compatibilité Dolibarr 21+ sur le modèle PDF de synthèse projet (`write_file`) en alignant la signature de méthode avec `ModelePDFProjects`.
 - Ajout des traductions manquantes pour :
