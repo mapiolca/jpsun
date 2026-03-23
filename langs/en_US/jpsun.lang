@@ -49,6 +49,8 @@ jpsunTHR=Actual hourly rate
 
 JpsunSetup =JPSUN module settings
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Automatically create a project on proposal signature
+JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =When a project is closed, set end date on tasks without end date to the project closing date
+JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =When a project is closed, force its end date with the project closing date
 PRODUCT_USE_UNITS=Products use units
 SetupSituationTitle=Progress invoice
 INVOICE_USE_SITUATION=Enable progress invoices
@@ -56,6 +58,10 @@ SituationParamsAvailablesHere=Progress invoice parameters are available here:
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM=Hourly labor rate to use for forecasts
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=Project overview shows forecast profit
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Project synthesis: show linked customer proposals
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Project synthesis: show linked customer orders
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Project synthesis: show linked interventions
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Project synthesis: show linked stock transfers
 
 JpsunPdfDocuments=PDF documents
 SupplierProposals =Supplier proposals
