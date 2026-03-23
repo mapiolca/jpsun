@@ -50,6 +50,7 @@ jpsunTHR = Taux horaire réel
 JpsunSetup = Réglages du module JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED = Créer automatiquement un projet à la signature du devis
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE = Quand un projet est clôturé, renseigner la date de fin des tâches sans date de fin avec la date de clôture du projet
+JPSUN_PROJECT_CLOSE_COMPLETE_TASKS = Quand un projet est clôturé, clôturer toutes les tâches du projet (avancement à 100% et état Clôturée)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE = Quand un projet est clôturé, forcer sa date de fin avec la date de clôture
 PRODUCT_USE_UNITS = Les produits utilisent des unités
 SetupSituationTitle = Facture de situation

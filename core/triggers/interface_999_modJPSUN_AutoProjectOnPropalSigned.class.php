@@ -80,6 +80,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 				return -1;
 			}
 		}
+		if ($action === 'PROJECT_CLOSE' && !empty($object->element) && $object->element === 'project' && getDolGlobalInt('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS')) {
+			$result = $this->completeProjectTasksOnProjectClose($object);
+			if ($result < 0) {
+				return -1;
+			}
+		}
 		if ($action === 'PROJECT_CLOSE' && !empty($object->element) && $object->element === 'project' && getDolGlobalInt('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE')) {
 			$result = $this->forceProjectEndDateOnClose($object);
 			if ($result < 0) {
@@ -349,6 +355,39 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		dol_syslog(__METHOD__.' tasks updated for project id='.$projectId.' rows='.$this->db->affected_rows($resql), LOG_INFO);
+		return 1;
+	}
+
+	/**
+	 * Complete project tasks when project is closed.
+	 *
+	 * @param Object $project Project object
+	 * @return int				1 if OK, <0 if KO
+	 */
+	private function completeProjectTasksOnProjectClose($project)
+	{
+		$projectId = (int) $project->id;
+		if ($projectId <= 0) {
+			return 0;
+		}
+
+		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS pt";
+		$sql .= " SET pt.progress = 100, pt.status = 2";
+		$sql .= " WHERE pt.fk_projet = ".$projectId;
+		$sql .= " AND (COALESCE(pt.progress, 0) < 100 OR COALESCE(pt.status, 0) <> 2)";
+		if (isset($project->entity)) {
+			$sql .= " AND pt.entity = ".((int) $project->entity);
+		}
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			dol_syslog(__METHOD__.' SQL error: '.$this->error, LOG_ERR);
+			return -1;
+		}
+
+		dol_syslog(__METHOD__.' tasks completed for project id='.$projectId.' rows='.$this->db->affected_rows($resql), LOG_INFO);
 		return 1;
 	}
 

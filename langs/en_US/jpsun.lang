@@ -50,6 +50,7 @@ jpsunTHR=Actual hourly rate
 JpsunSetup =JPSUN module settings
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Automatically create a project on proposal signature
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =When a project is closed, set end date on tasks without end date to the project closing date
+JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =When a project is closed, close all project tasks (progress to 100% and status Closed)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =When a project is closed, force its end date with the project closing date
 PRODUCT_USE_UNITS=Products use units
 SetupSituationTitle=Progress invoice
