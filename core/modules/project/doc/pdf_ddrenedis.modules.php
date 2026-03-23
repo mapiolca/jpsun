@@ -171,7 +171,7 @@ class pdf_ddrenedis extends ModelePDFProjects
 	 *	@param	Translate	$outputlangs	Lang output object
 	 *	@return	int         				1 if OK, <=0 if KO
 	 */
-	public function write_file($object, $outputlangs)
+	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
 		global $conf, $hookmanager, $langs, $user;
