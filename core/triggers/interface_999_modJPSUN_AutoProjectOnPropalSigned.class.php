@@ -372,9 +372,9 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS pt";
-		$sql .= " SET pt.progress = 100, pt.status = 3";
+		$sql .= " SET pt.progress = 100, pt.fk_statut = 3";
 		$sql .= " WHERE pt.fk_projet = ".$projectId;
-		$sql .= " AND (COALESCE(pt.progress, 0) < 100 OR COALESCE(pt.status, 0) <> 3)";
+		$sql .= " AND (COALESCE(pt.progress, 0) < 100 OR COALESCE(pt.fk_statut, 0) <> 3)";
 		$sql .= " AND pt.entity IN (".getEntity('project').")";
 
 		$resql = $this->db->query($sql);
