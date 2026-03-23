@@ -58,6 +58,10 @@ SituationParamsAvailablesHere=I parametri delle fatture di stato avanzamento son
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tariffa oraria per previsioni
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=La vista progetto mostra il profitto previsto
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sintesi progetto: mostrare i preventivi cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sintesi progetto: mostrare gli ordini cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesi progetto: mostrare gli interventi collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesi progetto: mostrare i trasferimenti di magazzino collegati
 
 JpsunPdfDocuments=Documenti PDF
 SupplierProposals =Preventivi fornitore

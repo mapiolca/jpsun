@@ -58,6 +58,10 @@ SituationParamsAvailablesHere = Les paramêtres des factures de situations sont 
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM = Taux horaire de main d'oeuvre à prendre en compte dans le prévisionnel
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD = La vue d'ensemble des projets montre le bénéfice prévisionel
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL = Synthèse projet : afficher les devis clients liés
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER = Synthèse projet : afficher les commandes clients liées
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER = Synthèse projet : afficher les interventions liées
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER = Synthèse projet : afficher les transferts de stock liés
 
 JpsunPdfDocuments= Documents PDF
 SupplierProposals = Devis fournisseur

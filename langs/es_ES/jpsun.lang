@@ -58,6 +58,10 @@ SituationParamsAvailablesHere=Los parámetros de facturas de situación están d
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tarifas horarias para previsiones
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=La vista de proyectos muestra el beneficio previsto
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Síntesis de proyecto: mostrar presupuestos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Síntesis de proyecto: mostrar pedidos de cliente vinculados
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Síntesis de proyecto: mostrar intervenciones vinculadas
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Síntesis de proyecto: mostrar transferencias de stock vinculadas
 
 JpsunPdfDocuments=Documentos PDF
 SupplierProposals =Presupuestos de proveedor

@@ -58,6 +58,10 @@ SituationParamsAvailablesHere=Parameter f체r Abschlagsrechnungen sind hier verf�
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM=Stundensatz f체r Prognosen
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=Projekt체bersicht zeigt prognostizierten Gewinn
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Projektsynthese: verkn체pfte Kundenangebote anzeigen
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Projektsynthese: verkn체pfte Kundenauftr채ge anzeigen
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Projektsynthese: verkn체pfte Eins채tze anzeigen
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Projektsynthese: verkn체pfte Lagertransfers anzeigen
 
 JpsunPdfDocuments=PDF-Dokumente
 SupplierProposals =Lieferantenangebote
