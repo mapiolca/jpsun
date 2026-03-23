@@ -50,6 +50,7 @@ jpsunTHR=Tarifa horaria real
 JpsunSetup =Ajustes del módulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Crear automáticamente un proyecto al firmar el presupuesto
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Cuando un proyecto se cierre, establecer la fecha de fin de las tareas sin fecha de fin con la fecha de cierre del proyecto
+JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Cuando un proyecto se cierre, forzar su fecha de fin con la fecha de cierre del proyecto
 PRODUCT_USE_UNITS=Los productos usan unidades
 SetupSituationTitle=Factura de situación
 INVOICE_USE_SITUATION=Habilitar facturas de situación

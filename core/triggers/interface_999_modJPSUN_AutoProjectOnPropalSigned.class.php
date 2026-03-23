@@ -80,6 +80,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 				return -1;
 			}
 		}
+		if ($action === 'PROJECT_CLOSE' && !empty($object->element) && $object->element === 'project' && getDolGlobalInt('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE')) {
+			$result = $this->forceProjectEndDateOnClose($object);
+			if ($result < 0) {
+				return -1;
+			}
+		}
 
 	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
             if ($object->element == 'propal') {
@@ -343,6 +349,39 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		dol_syslog(__METHOD__.' tasks updated for project id='.$projectId.' rows='.$this->db->affected_rows($resql), LOG_INFO);
+		return 1;
+	}
+
+	/**
+	 * Force project end date with project close date when project is closed.
+	 *
+	 * @param Object $project Project object
+	 * @return int				1 if OK, <0 if KO
+	 */
+	private function forceProjectEndDateOnClose($project)
+	{
+		$projectId = (int) $project->id;
+		if ($projectId <= 0) {
+			return 0;
+		}
+
+		$sql = "UPDATE ".MAIN_DB_PREFIX."projet";
+		$sql .= " SET datee = date_close";
+		$sql .= " WHERE rowid = ".$projectId;
+		$sql .= " AND date_close IS NOT NULL";
+		if (isset($project->entity)) {
+			$sql .= " AND entity = ".((int) $project->entity);
+		}
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			dol_syslog(__METHOD__.' SQL error: '.$this->error, LOG_ERR);
+			return -1;
+		}
+
+		dol_syslog(__METHOD__.' project end date forced for project id='.$projectId.' rows='.$this->db->affected_rows($resql), LOG_INFO);
 		return 1;
 	}
 
