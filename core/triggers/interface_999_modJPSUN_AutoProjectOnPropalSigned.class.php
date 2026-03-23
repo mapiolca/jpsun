@@ -375,8 +375,9 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		$sql .= " SET pt.progress = 100, pt.status = 2";
 		$sql .= " WHERE pt.fk_projet = ".$projectId;
 		$sql .= " AND (COALESCE(pt.progress, 0) < 100 OR COALESCE(pt.status, 0) <> 2)";
-		if (isset($project->entity)) {
-			$sql .= " AND pt.entity = ".((int) $project->entity);
+		$entityList = getEntity('project', 1, $project);
+		if (!empty($entityList)) {
+			$sql .= " AND pt.entity IN (".$entityList.")";
 		}
 
 		$resql = $this->db->query($sql);
