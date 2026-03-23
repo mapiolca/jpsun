@@ -148,6 +148,8 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 	// WORKFLOW
 	setup_print_title($langs->trans("Workflow"));
 	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+	setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
+	setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
 
 	// CUSTOMER ORDER
     

@@ -49,6 +49,8 @@ jpsunTHR=Tariffa oraria reale
 
 JpsunSetup =Impostazioni del modulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Creare automaticamente un progetto alla firma del preventivo
+JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Quando un progetto viene chiuso, impostare la data di fine delle attività senza data di fine con la data di chiusura del progetto
+JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Quando un progetto viene chiuso, forzare la sua data di fine con la data di chiusura del progetto
 PRODUCT_USE_UNITS=I prodotti usano unità
 SetupSituationTitle=Fattura di stato avanzamento
 INVOICE_USE_SITUATION=Abilitare fatture di stato avanzamento
@@ -56,6 +58,10 @@ SituationParamsAvailablesHere=I parametri delle fatture di stato avanzamento son
 
 JPSUN_PROJECT_FORECAST_DEFAULT_THM=Tariffa oraria per previsioni
 JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD=La vista progetto mostra il profitto previsto
+JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Sintesi progetto: mostrare i preventivi cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Sintesi progetto: mostrare gli ordini cliente collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Sintesi progetto: mostrare gli interventi collegati
+JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Sintesi progetto: mostrare i trasferimenti di magazzino collegati
 
 JpsunPdfDocuments=Documenti PDF
 SupplierProposals =Preventivi fornitore
