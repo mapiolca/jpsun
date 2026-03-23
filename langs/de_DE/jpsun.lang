@@ -49,6 +49,7 @@ jpsunTHR=Tatsächlicher Stundensatz
 
 JpsunSetup =JPSUN-Modul-Einstellungen
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Projekt automatisch bei Angebotsunterzeichnung erstellen
+JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Wenn ein Projekt geschlossen wird, Enddatum bei Aufgaben ohne Enddatum auf das Projektschlussdatum setzen
 PRODUCT_USE_UNITS=Produkte verwenden Einheiten
 SetupSituationTitle=Abschlagsrechnung
 INVOICE_USE_SITUATION=Abschlagsrechnungen aktivieren

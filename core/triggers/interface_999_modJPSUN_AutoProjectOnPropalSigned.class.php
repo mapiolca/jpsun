@@ -73,6 +73,14 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 				$this->updateInvoiceVatExtrafield($invoiceId, $user, $langs);
 			}
 		}
+
+		if ($action === 'PROJECT_CLOSE' && !empty($object->element) && $object->element === 'project' && getDolGlobalInt('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE')) {
+			$result = $this->closeOpenTasksOnProjectClose($object);
+			if ($result < 0) {
+				return -1;
+			}
+		}
+
 	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
             if ($object->element == 'propal') {
                 global $db;
@@ -302,6 +310,42 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 
 		return 1;
 	}
+
+	/**
+	 * Set end date on project tasks without end date when project is closed.
+	 *
+	 * @param Object $project Project object
+	 * @return int				1 if OK, <0 if KO
+	 */
+	private function closeOpenTasksOnProjectClose($project)
+	{
+		$projectId = (int) $project->id;
+		if ($projectId <= 0) {
+			return 0;
+		}
+
+		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS pt";
+		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = pt.fk_projet";
+		$sql .= " SET pt.datee = p.date_close";
+		$sql .= " WHERE p.rowid = ".$projectId;
+		$sql .= " AND p.date_close IS NOT NULL";
+		$sql .= " AND pt.datee IS NULL";
+		if (isset($project->entity)) {
+			$sql .= " AND pt.entity = ".((int) $project->entity);
+		}
+
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			$this->error = $this->db->lasterror();
+			$this->errors[] = $this->error;
+			dol_syslog(__METHOD__.' SQL error: '.$this->error, LOG_ERR);
+			return -1;
+		}
+
+		dol_syslog(__METHOD__.' tasks updated for project id='.$projectId.' rows='.$this->db->affected_rows($resql), LOG_INFO);
+		return 1;
+	}
+
 	/**
 	 * Update invoice VAT rate extrafield from invoice lines.
 	 *
