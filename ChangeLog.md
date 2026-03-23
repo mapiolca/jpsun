@@ -1,5 +1,19 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.12 (23/03/2026)
+- Ajout de deux réglages workflow liés à la clôture des projets :
+	- `JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE` pour renseigner la date de fin des tâches liées sans date de fin.
+	- `JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE` pour forcer la date de fin du projet avec la date de clôture.
+- Ajout du traitement du trigger `PROJECT_CLOSE` pour appliquer ces comportements selon les réglages activés.
+- Correction de compatibilité Dolibarr 21+ sur le modèle PDF de synthèse projet (`write_file`) en alignant la signature de méthode avec `ModelePDFProjects`.
+- Ajout des traductions manquantes pour :
+	- `JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE`
+	- `JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE`
+	- `JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL`
+	- `JPSUN_PROJECTSYNTHESIS_SHOW_ORDER`
+	- `JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER`
+	- `JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER`
+
 ## 1.11 (13/03/2026)
 - Ajout de l'extrafield facture "Taux de TVA" (`jpsun_taux_tva`) configuré pour être disponible en liste et masqué par défaut.
 - Mise à jour automatique de la valeur de l'extrafield à chaque ajout, modification ou suppression de ligne de facture via les triggers `LINEBILL_INSERT`, `LINEBILL_UPDATE` et `LINEBILL_DELETE`.
