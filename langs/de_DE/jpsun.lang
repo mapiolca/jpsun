@@ -63,6 +63,16 @@ JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL=Projektsynthese: verknüpfte Kundenangebote
 JPSUN_PROJECTSYNTHESIS_SHOW_ORDER=Projektsynthese: verknüpfte Kundenaufträge anzeigen
 JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER=Projektsynthese: verknüpfte Einsätze anzeigen
 JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER=Projektsynthese: verknüpfte Lagertransfers anzeigen
+JpsunMassActionModifierAvancementTachesProjet=Fortschritt bearbeiten
+JpsunMassActionProjectTasksProgressUpdated=%s Aufgabe(n) aktualisiert (Fortschritt).
+JpsunMassActionModifierDateDebutTachesProjet=Startdatum bearbeiten
+JpsunMassActionProjectTasksStartDateUpdated=%s Aufgabe(n) aktualisiert (Startdatum).
+JpsunMassActionModifierEcheanceTachesProjet=Fälligkeit bearbeiten
+JpsunMassActionProjectTasksDeadlineUpdated=%s Aufgabe(n) aktualisiert (Fälligkeit).
+JpsunMassActionKeepDuration=Dauer beibehalten
+JpsunMassActionPopupDescription=Werte eingeben und bestätigen, um die Massenaktion auszuführen.
+JpsunMassActionNouvelleDateDebut=Neues Startdatum
+JpsunMassActionNouvelleEcheance=Neue Fälligkeit
 
 JpsunPdfDocuments=PDF-Dokumente
 SupplierProposals =Lieferantenangebote

@@ -154,7 +154,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
      */
     public function doMassActions($parameters, &$object, &$action, $hookmanager)
     {
-        global $conf, $user, $langs, $db;
+        global $conf, $user, $langs, $db, $form, $formconfirm;
 
 		$error = 0;
 		$done = 0;
@@ -162,12 +162,31 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
 		$massaction = GETPOST('massaction', 'aZ09');
 		$toselect = GETPOST('toselect', 'array:int');
+		$allowedMassActions = array(
+			'jpsun_cloturer_taches_projet',
+			'jpsun_modifier_avancement_taches_projet',
+			'jpsun_modifier_date_debut_taches_projet',
+			'jpsun_modifier_echeance_taches_projet'
+		);
+		$popupMassActions = array(
+			'jpsun_modifier_avancement_taches_projet',
+			'jpsun_modifier_date_debut_taches_projet',
+			'jpsun_modifier_echeance_taches_projet'
+		);
+		$confirmAction = GETPOST('confirm', 'alpha');
+		if (strpos($massaction, 'confirm_') === 0) {
+			$massActionFromConfirm = preg_replace('/^confirm_/', '', $massaction);
+			if ($confirmAction !== 'yes' || !in_array($massActionFromConfirm, $allowedMassActions, true)) {
+				return 0;
+			}
+			$massaction = $massActionFromConfirm;
+		}
 
 		if (!$isCompatibleVersion || !in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts)) {
 			return 0;
 		}
 
-		if ($massaction !== 'jpsun_cloturer_taches_projet') {
+		if (!in_array($massaction, $allowedMassActions, true)) {
 			return 0;
 		}
 		$langs->load('jpsun@jpsun');
@@ -185,26 +204,174 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		dol_include_once('/projet/class/project.class.php');
 		$projectStatic = new Project($db);
-
-		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS t";
-		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
-		$sql .= " SET t.progress = 100, t.fk_statut = 3";
-		$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
-		$sql .= " AND p.entity IN (".getEntity('project').")";
-
+		$projectListFilter = '';
 		if (!$user->hasRight('projet', 'all', 'lire')) {
 			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
-			$sql .= " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
+			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
 		}
 
+		if ($massaction === 'jpsun_cloturer_taches_projet') {
+			$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS t";
+			$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
+			$sql .= " SET t.progress = 100, t.fk_statut = 3";
+			$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
+			$sql .= " AND p.entity IN (".getEntity('project').")";
+			$sql .= $projectListFilter;
+
+			$resql = $db->query($sql);
+			if (!$resql) {
+				setEventMessages($db->lasterror(), null, 'errors');
+				return 0;
+			}
+
+			$done = (int) $db->affected_rows($resql);
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksClosed', $done), null, 'mesgs');
+			$action = 'list';
+			return $error < 0 ? -1 : 0;
+		}
+
+		$sql = "SELECT t.rowid, t.label, t.progress, t.dateo, t.datee";
+		$sql .= " FROM ".MAIN_DB_PREFIX."projet_task AS t";
+		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
+		$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
+		$sql .= " AND p.entity IN (".getEntity('project').")";
+		$sql .= $projectListFilter;
 		$resql = $db->query($sql);
 		if (!$resql) {
 			setEventMessages($db->lasterror(), null, 'errors');
 			return 0;
 		}
 
-		$done = (int) $db->affected_rows($resql);
-		setEventMessages($langs->trans('JpsunMassActionProjectTasksClosed', $done), null, 'mesgs');
+		$tasksById = array();
+		while ($obj = $db->fetch_object($resql)) {
+			$tasksById[(int) $obj->rowid] = $obj;
+		}
+		if (empty($tasksById)) {
+			setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
+			return 0;
+		}
+
+		if (in_array($massaction, $popupMassActions, true) && $confirmAction !== 'yes') {
+			if (!is_object($form)) {
+				require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+				$form = new Form($db);
+			}
+			$formquestion = array();
+			if ($massaction === 'jpsun_modifier_avancement_taches_projet') {
+				foreach ($tasksById as $taskId => $taskObject) {
+					$formquestion[] = array(
+						'type' => 'text',
+						'name' => 'jpsun_task_progress_'.$taskId,
+						'label' => $taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId,
+						'value' => (string) min(100, max(0, (int) $taskObject->progress))
+					);
+				}
+			} else {
+				$formquestion[] = array(
+					'type' => 'date',
+					'name' => 'jpsun_global_date',
+					'label' => ($massaction === 'jpsun_modifier_date_debut_taches_projet' ? $langs->trans('JpsunMassActionNouvelleDateDebut') : $langs->trans('JpsunMassActionNouvelleEcheance'))
+				);
+				foreach ($tasksById as $taskId => $taskObject) {
+					$formquestion[] = array(
+						'type' => 'checkbox',
+						'name' => 'jpsun_keep_duration_'.$taskId,
+						'label' => ($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).' - '.$langs->trans('JpsunMassActionKeepDuration'),
+						'value' => 1
+					);
+				}
+			}
+
+			$formconfirm = $form->formconfirm(
+				$_SERVER['PHP_SELF'],
+				($massaction === 'jpsun_modifier_avancement_taches_projet' ? $langs->trans('JpsunMassActionModifierAvancementTachesProjet') : ($massaction === 'jpsun_modifier_date_debut_taches_projet' ? $langs->trans('JpsunMassActionModifierDateDebutTachesProjet') : $langs->trans('JpsunMassActionModifierEcheanceTachesProjet'))),
+				$langs->trans('JpsunMassActionPopupDescription'),
+				'confirm_'.$massaction,
+				$formquestion,
+				'yes',
+				1,
+				650
+			);
+			return 0;
+		}
+
+		if ($massaction === 'jpsun_modifier_avancement_taches_projet') {
+			foreach ($tasksById as $taskId => $taskObject) {
+				$progress = GETPOSTINT('jpsun_task_progress_'.$taskId);
+				$progress = max(0, min(100, (int) $progress));
+				$taskStatus = ($progress >= 100 ? 3 : 1);
+				$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
+				$updateSql .= " SET progress = ".((int) $progress).", fk_statut = ".((int) $taskStatus);
+				$updateSql .= " WHERE rowid = ".((int) $taskId);
+				$updateRes = $db->query($updateSql);
+				if (!$updateRes) {
+					$error++;
+					$this->errors[] = $db->lasterror();
+				} else {
+					$done++;
+				}
+			}
+
+			if ($error) {
+				setEventMessages($langs->trans('Error'), $this->errors, 'errors');
+			} else {
+				setEventMessages($langs->trans('JpsunMassActionProjectTasksProgressUpdated', $done), null, 'mesgs');
+			}
+			$action = 'list';
+			return $error < 0 ? -1 : 0;
+		}
+
+		$globalDateDay = GETPOSTINT('jpsun_global_dateday');
+		$globalDateMonth = GETPOSTINT('jpsun_global_datemonth');
+		$globalDateYear = GETPOSTINT('jpsun_global_dateyear');
+		$globalTimestamp = dol_mktime(0, 0, 0, $globalDateMonth, $globalDateDay, $globalDateYear);
+		if ($globalTimestamp <= 0) {
+			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
+			return 0;
+		}
+
+		foreach ($tasksById as $taskId => $taskObject) {
+			$setValues = array();
+			$keepDuration = (GETPOSTINT('jpsun_keep_duration_'.$taskId) ? true : false);
+			$oldStartTimestamp = !empty($taskObject->dateo) ? (int) $db->jdate($taskObject->dateo) : 0;
+			$oldEndTimestamp = !empty($taskObject->datee) ? (int) $db->jdate($taskObject->datee) : 0;
+			$durationSeconds = ($oldStartTimestamp > 0 && $oldEndTimestamp > 0 ? ($oldEndTimestamp - $oldStartTimestamp) : null);
+
+			if ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
+				$setValues[] = "dateo = '".$db->idate($globalTimestamp)."'";
+				if ($keepDuration && $durationSeconds !== null) {
+					$setValues[] = "datee = '".$db->idate($globalTimestamp + $durationSeconds)."'";
+				}
+			} elseif ($massaction === 'jpsun_modifier_echeance_taches_projet') {
+				$setValues[] = "datee = '".$db->idate($globalTimestamp)."'";
+				if ($keepDuration && $durationSeconds !== null) {
+					$setValues[] = "dateo = '".$db->idate($globalTimestamp - $durationSeconds)."'";
+				}
+			}
+
+			if (empty($setValues)) {
+				continue;
+			}
+
+			$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
+			$updateSql .= " SET ".implode(', ', $setValues);
+			$updateSql .= " WHERE rowid = ".((int) $taskId);
+			$updateRes = $db->query($updateSql);
+			if (!$updateRes) {
+				$error++;
+				$this->errors[] = $db->lasterror();
+			} else {
+				$done++;
+			}
+		}
+
+		if ($error) {
+			setEventMessages($langs->trans('Error'), $this->errors, 'errors');
+		} elseif ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksStartDateUpdated', $done), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksDeadlineUpdated', $done), null, 'mesgs');
+		}
 		$action = 'list';
 
 		return $error < 0 ? -1 : 0;
@@ -234,6 +401,15 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
 			$html = img_picto('', 'tick', '', false, 0, 0, '', 'pictofixedwidth').' '.$label;
 			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
+			$progressLabel = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
+			$progressHtml = img_picto('', 'projecttask', '', false, 0, 0, '', 'pictofixedwidth').' '.$progressLabel;
+			$this->resprints .= '<option value="jpsun_modifier_avancement_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($progressHtml).'">'.$progressHtml.'</option>';
+			$startDateLabel = $langs->trans('JpsunMassActionModifierDateDebutTachesProjet');
+			$startDateHtml = img_picto('', 'calendar', '', false, 0, 0, '', 'pictofixedwidth').' '.$startDateLabel;
+			$this->resprints .= '<option value="jpsun_modifier_date_debut_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($startDateHtml).'">'.$startDateHtml.'</option>';
+			$deadlineLabel = $langs->trans('JpsunMassActionModifierEcheanceTachesProjet');
+			$deadlineHtml = img_picto('', 'calendar', '', false, 0, 0, '', 'pictofixedwidth').' '.$deadlineLabel;
+			$this->resprints .= '<option value="jpsun_modifier_echeance_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($deadlineHtml).'">'.$deadlineHtml.'</option>';
 		}
 
 		return $error < 0 ? -1 : 0;
