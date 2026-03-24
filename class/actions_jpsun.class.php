@@ -154,19 +154,60 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
      */
     public function doMassActions($parameters, &$object, &$action, $hookmanager)
     {
-        global $conf, $user, $langs;
+        global $conf, $user, $langs, $db;
 
-        $error = 0; // Error counter
+		$error = 0;
+		$done = 0;
+		$contexts = explode(':', $parameters['context']);
+		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
+		$massaction = GETPOST('massaction', 'aZ09');
+		$toselect = GETPOST('toselect', 'array:int');
 
-        if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2'))) {  // do something only for the context 'somecontext1' or 'somecontext2'
+		if (!$isCompatibleVersion || !in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts)) {
+			return 0;
+		}
 
-            foreach($parameters['toselect'] as $objectid)
-            {
-                // Do action on each object id
+		if ($massaction !== 'jpsun_cloturer_taches_projet') {
+			return 0;
+		}
+		$langs->load('jpsun@jpsun');
 
-            }
-        }
+		if (!$user->hasRight('projet', 'creer')) {
+			setEventMessages($langs->trans('ErrorNotEnoughPermissions'), null, 'errors');
+			return 0;
+		}
 
+		$toselect = array_unique(array_filter(array_map('intval', (array) $toselect)));
+		if (empty($toselect)) {
+			setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
+			return 0;
+		}
+
+		dol_include_once('/projet/class/project.class.php');
+		$projectStatic = new Project($db);
+
+		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS t";
+		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
+		$sql .= " SET t.progress = 100, t.fk_statut = 3";
+		$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
+		$sql .= " AND p.entity IN (".getEntity('project').")";
+
+		if (!$user->hasRight('projet', 'all', 'lire')) {
+			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
+			$sql .= " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
+		}
+
+		$resql = $db->query($sql);
+		if (!$resql) {
+			setEventMessages($db->lasterror(), null, 'errors');
+			return 0;
+		}
+
+		$done = (int) $db->affected_rows($resql);
+		setEventMessages($langs->trans('JpsunMassActionProjectTasksClosed', $done), null, 'mesgs');
+		$action = 'list';
+
+		return $error < 0 ? -1 : 0;
     }
 
 
@@ -183,13 +224,19 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
     {
         global $conf, $user, $langs;
 
-        $error = 0; // Error counter
+		$error = 0;
+		$contexts = explode(':', $parameters['context']);
+		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
+		$canCloseTasks = $user->hasRight('projet', 'creer');
+		$langs->load('jpsun@jpsun');
 
-        if (in_array($parameters['currentcontext'], array('somecontext1','somecontext2')))  // do something only for the context 'somecontext'
-        {
-            $this->resprints = '<option value="0"'.($disabled?' disabled="disabled"':'').'>'.$langs->trans("MyModuleMassAction").'</option>';
-        }
+		if ($isCompatibleVersion && (in_array('tasklist', $contexts) || in_array('projecttaskscard', $contexts))) {
+			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
+			$html = img_picto('', 'tick', '', false, 0, 0, '', 'pictofixedwidth').' '.$label;
+			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
+		}
 
+		return $error < 0 ? -1 : 0;
     }
 
 	public function completeListOfReferent($parameters, &$object, &$action, $hookmanager)

@@ -271,3 +271,5 @@ TICKET_SHOW_MESSAGES_ON_CARD =Muestra todos los mensajes relacionados con el tic
 JpsunTauxTvaFacture=Tasa de IVA
 JpsunTauxTvaFactureHelp=Tasa de IVA de la factura (valor automático según las líneas).
 JpsunMultiples=Múltiples
+JpsunMassActionCloturerTachesProjet=Cerrar tareas de proyecto
+JpsunMassActionProjectTasksClosed=%s tarea(s) cerrada(s) (progreso al 100%%, estado Cerrada)

@@ -271,3 +271,5 @@ TICKET_SHOW_MESSAGES_ON_CARD =Mostra tutti i messaggi relativi al biglietto sull
 JpsunTauxTvaFacture=Aliquota IVA
 JpsunTauxTvaFactureHelp=Aliquota IVA della fattura (valore automatico in base alle righe).
 JpsunMultiples=Multipli
+JpsunMassActionCloturerTachesProjet=Chiudere le attività del progetto
+JpsunMassActionProjectTasksClosed=%s attività chiusa/e (avanzamento al 100%%, stato Chiusa)
