@@ -232,7 +232,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($isCompatibleVersion && (in_array('tasklist', $contexts) || in_array('projecttaskscard', $contexts))) {
 			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
-			$html = '<span class="far fa-check-circle pictofixedwidth" style=""></span>'.$label;
+			$html = img_picto('', 'tick', '', false, 0, 0, '', 'pictofixedwidth').' '.$label;
 			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
 		}
 
