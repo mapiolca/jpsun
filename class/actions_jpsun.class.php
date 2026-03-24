@@ -162,12 +162,18 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
 		$massaction = GETPOST('massaction', 'aZ09');
 		$toselect = GETPOST('toselect', 'array:int');
+		$allowedMassActions = array(
+			'jpsun_cloturer_taches_projet',
+			'jpsun_modifier_avancement_taches_projet',
+			'jpsun_modifier_date_debut_taches_projet',
+			'jpsun_modifier_echeance_taches_projet'
+		);
 
 		if (!$isCompatibleVersion || !in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts)) {
 			return 0;
 		}
 
-		if ($massaction !== 'jpsun_cloturer_taches_projet') {
+		if (!in_array($massaction, $allowedMassActions, true)) {
 			return 0;
 		}
 		$langs->load('jpsun@jpsun');
@@ -185,26 +191,143 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		dol_include_once('/projet/class/project.class.php');
 		$projectStatic = new Project($db);
-
-		$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS t";
-		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
-		$sql .= " SET t.progress = 100, t.fk_statut = 3";
-		$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
-		$sql .= " AND p.entity IN (".getEntity('project').")";
-
+		$projectListFilter = '';
 		if (!$user->hasRight('projet', 'all', 'lire')) {
 			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
-			$sql .= " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
+			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
 		}
 
+		if ($massaction === 'jpsun_cloturer_taches_projet') {
+			$sql = "UPDATE ".MAIN_DB_PREFIX."projet_task AS t";
+			$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
+			$sql .= " SET t.progress = 100, t.fk_statut = 3";
+			$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
+			$sql .= " AND p.entity IN (".getEntity('project').")";
+			$sql .= $projectListFilter;
+
+			$resql = $db->query($sql);
+			if (!$resql) {
+				setEventMessages($db->lasterror(), null, 'errors');
+				return 0;
+			}
+
+			$done = (int) $db->affected_rows($resql);
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksClosed', $done), null, 'mesgs');
+			$action = 'list';
+			return $error < 0 ? -1 : 0;
+		}
+
+		$isConfirmedByPopup = GETPOST('jpsun_massaction_confirmed', 'int');
+		if (!$isConfirmedByPopup) {
+			return 0;
+		}
+
+		$sql = "SELECT t.rowid, t.label, t.dateo, t.datee";
+		$sql .= " FROM ".MAIN_DB_PREFIX."projet_task AS t";
+		$sql .= " INNER JOIN ".MAIN_DB_PREFIX."projet AS p ON p.rowid = t.fk_projet";
+		$sql .= " WHERE t.rowid IN (".implode(',', $toselect).")";
+		$sql .= " AND p.entity IN (".getEntity('project').")";
+		$sql .= $projectListFilter;
 		$resql = $db->query($sql);
 		if (!$resql) {
 			setEventMessages($db->lasterror(), null, 'errors');
 			return 0;
 		}
 
-		$done = (int) $db->affected_rows($resql);
-		setEventMessages($langs->trans('JpsunMassActionProjectTasksClosed', $done), null, 'mesgs');
+		$tasksById = array();
+		while ($obj = $db->fetch_object($resql)) {
+			$tasksById[(int) $obj->rowid] = $obj;
+		}
+		if (empty($tasksById)) {
+			setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
+			return 0;
+		}
+
+		if ($massaction === 'jpsun_modifier_avancement_taches_projet') {
+			$progressValues = GETPOST('jpsun_task_progress', 'array');
+			foreach ($tasksById as $taskId => $taskObject) {
+				if (!isset($progressValues[$taskId])) {
+					continue;
+				}
+				$progress = max(0, min(100, (int) $progressValues[$taskId]));
+				$taskStatus = ($progress >= 100 ? 3 : 1);
+				$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
+				$updateSql .= " SET progress = ".((int) $progress).", fk_statut = ".((int) $taskStatus);
+				$updateSql .= " WHERE rowid = ".((int) $taskId);
+				$updateRes = $db->query($updateSql);
+				if (!$updateRes) {
+					$error++;
+					$this->errors[] = $db->lasterror();
+				} else {
+					$done++;
+				}
+			}
+
+			if ($error) {
+				setEventMessages($langs->trans('Error'), $this->errors, 'errors');
+			} else {
+				setEventMessages($langs->trans('JpsunMassActionProjectTasksProgressUpdated', $done), null, 'mesgs');
+			}
+			$action = 'list';
+			return $error < 0 ? -1 : 0;
+		}
+
+		$globalDate = GETPOST('jpsun_global_date', 'alphanohtml');
+		$keepDurationRows = GETPOST('jpsun_keep_duration', 'array:int');
+		$keepDurationMap = array_fill_keys(array_map('intval', (array) $keepDurationRows), true);
+		$dateParts = explode('-', $globalDate);
+		if (count($dateParts) !== 3) {
+			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
+			return 0;
+		}
+		$globalTimestamp = dol_mktime(0, 0, 0, (int) $dateParts[1], (int) $dateParts[2], (int) $dateParts[0]);
+		if ($globalTimestamp <= 0) {
+			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
+			return 0;
+		}
+
+		foreach ($tasksById as $taskId => $taskObject) {
+			$setValues = array();
+			$keepDuration = isset($keepDurationMap[$taskId]);
+			$oldStartTimestamp = !empty($taskObject->dateo) ? (int) $db->jdate($taskObject->dateo) : 0;
+			$oldEndTimestamp = !empty($taskObject->datee) ? (int) $db->jdate($taskObject->datee) : 0;
+			$durationSeconds = ($oldStartTimestamp > 0 && $oldEndTimestamp > 0 ? ($oldEndTimestamp - $oldStartTimestamp) : null);
+
+			if ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
+				$setValues[] = "dateo = '".$db->idate($globalTimestamp)."'";
+				if ($keepDuration && $durationSeconds !== null) {
+					$setValues[] = "datee = '".$db->idate($globalTimestamp + $durationSeconds)."'";
+				}
+			} elseif ($massaction === 'jpsun_modifier_echeance_taches_projet') {
+				$setValues[] = "datee = '".$db->idate($globalTimestamp)."'";
+				if ($keepDuration && $durationSeconds !== null) {
+					$setValues[] = "dateo = '".$db->idate($globalTimestamp - $durationSeconds)."'";
+				}
+			}
+
+			if (empty($setValues)) {
+				continue;
+			}
+
+			$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
+			$updateSql .= " SET ".implode(', ', $setValues);
+			$updateSql .= " WHERE rowid = ".((int) $taskId);
+			$updateRes = $db->query($updateSql);
+			if (!$updateRes) {
+				$error++;
+				$this->errors[] = $db->lasterror();
+			} else {
+				$done++;
+			}
+		}
+
+		if ($error) {
+			setEventMessages($langs->trans('Error'), $this->errors, 'errors');
+		} elseif ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksStartDateUpdated', $done), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans('JpsunMassActionProjectTasksDeadlineUpdated', $done), null, 'mesgs');
+		}
 		$action = 'list';
 
 		return $error < 0 ? -1 : 0;
@@ -234,6 +357,143 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
 			$html = img_picto('', 'tick', '', false, 0, 0, '', 'pictofixedwidth').' '.$label;
 			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
+			$progressLabel = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
+			$progressHtml = img_picto('', 'projecttask', '', false, 0, 0, '', 'pictofixedwidth').' '.$progressLabel;
+			$this->resprints .= '<option value="jpsun_modifier_avancement_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($progressHtml).'">'.$progressHtml.'</option>';
+			$startDateLabel = $langs->trans('JpsunMassActionModifierDateDebutTachesProjet');
+			$startDateHtml = img_picto('', 'calendar', '', false, 0, 0, '', 'pictofixedwidth').' '.$startDateLabel;
+			$this->resprints .= '<option value="jpsun_modifier_date_debut_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($startDateHtml).'">'.$startDateHtml.'</option>';
+			$deadlineLabel = $langs->trans('JpsunMassActionModifierEcheanceTachesProjet');
+			$deadlineHtml = img_picto('', 'calendar', '', false, 0, 0, '', 'pictofixedwidth').' '.$deadlineLabel;
+			$this->resprints .= '<option value="jpsun_modifier_echeance_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($deadlineHtml).'">'.$deadlineHtml.'</option>';
+			$this->resprints .= '<script type="text/javascript">
+			jQuery(document).ready(function() {
+				var bindMassActionPopup = function() {
+					var massActionSelectors = ["select[name=\'massaction\']", "select.flat.massaction"];
+					var taskMassActions = {
+						"jpsun_modifier_avancement_taches_projet": true,
+						"jpsun_modifier_date_debut_taches_projet": true,
+						"jpsun_modifier_echeance_taches_projet": true
+					};
+
+					var findMassActionSelect = function(form) {
+						for (var i = 0; i < massActionSelectors.length; i++) {
+							var candidate = jQuery(form).find(massActionSelectors[i]).first();
+							if (candidate.length) return candidate;
+						}
+						return jQuery();
+					};
+
+					var collectSelectedTasks = function(form) {
+						var rows = [];
+						jQuery(form).find("input[name=\'toselect[]\']:checked").each(function() {
+							var id = parseInt(jQuery(this).val(), 10);
+							if (!id) return;
+							var row = jQuery(this).closest("tr");
+							var label = jQuery.trim(row.find("a").first().text()) || ("Task #" + id);
+							rows.push({id: id, label: label});
+						});
+						return rows;
+					};
+
+					var appendHidden = function(form, name, value) {
+						jQuery(form).append("<input type=\'hidden\' name=\'" + name + "\' value=\'" + jQuery("<div>").text(value).html() + "\'>");
+					};
+
+					var submitProgressPopup = function(form, tasks) {
+						var content = "<div class=\'jpsun-massaction-popup\'>";
+						content += "<table class=\'noborder centpercent\'><tr class=\'liste_titre\'><th>'.$langs->transnoentities('Task').'</th><th>'.$langs->transnoentities('Progress').'</th></tr>";
+						for (var i = 0; i < tasks.length; i++) {
+							content += "<tr><td>" + tasks[i].label + "</td><td><input type=\'number\' min=\'0\' max=\'100\' value=\'100\' class=\'flat maxwidth75\' data-task-id=\'" + tasks[i].id + "\'> %</td></tr>";
+						}
+						content += "</table></div>";
+						jQuery(content).dialog({
+							modal: true,
+							width: 700,
+							title: "'.$langs->transnoentities('JpsunMassActionModifierAvancementTachesProjet').'",
+							buttons: {
+								"'.$langs->transnoentities('Validate').'" : function() {
+									var dialog = jQuery(this);
+									dialog.find("input[data-task-id]").each(function() {
+										var taskId = parseInt(jQuery(this).attr("data-task-id"), 10);
+										var value = parseInt(jQuery(this).val(), 10);
+										if (isNaN(value)) value = 0;
+										value = Math.max(0, Math.min(100, value));
+										appendHidden(form, "jpsun_task_progress[" + taskId + "]", value);
+									});
+									appendHidden(form, "jpsun_massaction_confirmed", 1);
+									dialog.dialog("destroy").remove();
+									form.submit();
+								},
+								"'.$langs->transnoentities('Cancel').'" : function() {
+									jQuery(this).dialog("destroy").remove();
+								}
+							}
+						});
+					};
+
+					var submitDatePopup = function(form, tasks, massAction, title) {
+						var content = "<div class=\'jpsun-massaction-popup\'>";
+						content += "<div class=\'marginbottom\'><label for=\'jpsun_global_date\'>" + title + "</label> <input type=\'date\' id=\'jpsun_global_date\' class=\'flat\'></div>";
+						content += "<table class=\'noborder centpercent\'><tr class=\'liste_titre\'><th>'.$langs->transnoentities('Task').'</th><th>'.$langs->transnoentities('JpsunMassActionKeepDuration').'</th></tr>";
+						for (var i = 0; i < tasks.length; i++) {
+							content += "<tr><td>" + tasks[i].label + "</td><td><input type=\'checkbox\' checked=\'checked\' data-task-id=\'" + tasks[i].id + "\'></td></tr>";
+						}
+						content += "</table></div>";
+						jQuery(content).dialog({
+							modal: true,
+							width: 700,
+							title: title,
+							buttons: {
+								"'.$langs->transnoentities('Validate').'" : function() {
+									var dialog = jQuery(this);
+									var globalDate = dialog.find("#jpsun_global_date").val();
+									if (!globalDate) {
+										alert("'.$langs->transnoentities('ErrorFieldRequired').'");
+										return;
+									}
+									appendHidden(form, "jpsun_global_date", globalDate);
+									dialog.find("input[type=\'checkbox\'][data-task-id]:checked").each(function() {
+										appendHidden(form, "jpsun_keep_duration[]", parseInt(jQuery(this).attr("data-task-id"), 10));
+									});
+									appendHidden(form, "jpsun_massaction_confirmed", 1);
+									jQuery(form).find("select[name=\'massaction\']").val(massAction);
+									dialog.dialog("destroy").remove();
+									form.submit();
+								},
+								"'.$langs->transnoentities('Cancel').'" : function() {
+									jQuery(this).dialog("destroy").remove();
+								}
+							}
+						});
+					};
+
+					jQuery("form[name=\'formfilter\'], form[name=\'listform\']").each(function() {
+						var form = this;
+						if (jQuery(form).data("jpsun-massaction-bound")) return;
+						jQuery(form).data("jpsun-massaction-bound", true);
+						jQuery(form).on("submit", function(e) {
+							var massActionSelect = findMassActionSelect(form);
+							var currentMassAction = massActionSelect.length ? massActionSelect.val() : "";
+							if (!taskMassActions[currentMassAction]) return true;
+							if (jQuery(form).find("input[name=\'jpsun_massaction_confirmed\']").length) return true;
+							var tasks = collectSelectedTasks(form);
+							if (!tasks.length) return true;
+							e.preventDefault();
+							if (currentMassAction === "jpsun_modifier_avancement_taches_projet") {
+								submitProgressPopup(form, tasks);
+							} else if (currentMassAction === "jpsun_modifier_date_debut_taches_projet") {
+								submitDatePopup(form, tasks, currentMassAction, "'.$langs->transnoentities('JpsunMassActionModifierDateDebutTachesProjet').'");
+							} else if (currentMassAction === "jpsun_modifier_echeance_taches_projet") {
+								submitDatePopup(form, tasks, currentMassAction, "'.$langs->transnoentities('JpsunMassActionModifierEcheanceTachesProjet').'");
+							}
+							return false;
+						});
+					});
+				};
+				bindMassActionPopup();
+			});
+			</script>';
 		}
 
 		return $error < 0 ? -1 : 0;
