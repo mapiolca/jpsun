@@ -1,5 +1,13 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.13 (24/03/2026)
+- Ajout d'une action de masse "Clôturer les tâches des projets" dans les écrans `/projet/tasks/list.php` et `/projet/tasks.php`.
+- Action réservée à Dolibarr v23 et antérieures (`DOL_VERSION < 24.0`).
+- L'action clôture les tâches sélectionnées en mettant `progress = 100` et `fk_statut = 3`.
+- Vérification des permissions au moment de l'affichage et de l'exécution de l'action (`projet->creer`).
+- Prise en compte du périmètre de sécurité (entité + projets autorisés à l'utilisateur).
+- Ajout des traductions associées en `fr_FR`, `en_US`, `de_DE`, `es_ES` et `it_IT`.
+
 ## 1.12 (23/03/2026)
 - Ajout de deux réglages workflow liés à la clôture des projets :
 	- `JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE` pour renseigner la date de fin des tâches liées sans date de fin.
