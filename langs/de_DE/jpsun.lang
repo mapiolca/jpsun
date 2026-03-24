@@ -271,3 +271,5 @@ TICKET_SHOW_MESSAGES_ON_CARD =Zeigen Sie alle Ticket-bezogenen Nachrichten auf d
 JpsunTauxTvaFacture=Mehrwertsteuersatz
 JpsunTauxTvaFactureHelp=Mehrwertsteuersatz der Rechnung (automatischer Wert basierend auf den Zeilen).
 JpsunMultiples=Mehrere
+JpsunMassActionCloturerTachesProjet=Projektaufgaben abschließen
+JpsunMassActionProjectTasksClosed=%s Aufgabe(n) abgeschlossen (Fortschritt auf 100%%, Status Abgeschlossen)

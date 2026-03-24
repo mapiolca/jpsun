@@ -271,3 +271,5 @@ TICKET_SHOW_MESSAGES_ON_CARD =Show all ticket-related messages on the main ticke
 JpsunTauxTvaFacture=VAT rate
 JpsunTauxTvaFactureHelp=Invoice VAT rate (automatic value based on lines).
 JpsunMultiples=Multiple
+JpsunMassActionCloturerTachesProjet=Close project tasks
+JpsunMassActionProjectTasksClosed=%s task(s) closed (progress set to 100%%, status Closed)
