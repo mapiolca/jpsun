@@ -231,7 +231,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$langs->load('jpsun@jpsun');
 
 		if ($isCompatibleVersion && (in_array('tasklist', $contexts) || in_array('projecttaskscard', $contexts))) {
-			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').'><span class="far fa-check-circle"></span> '.$langs->trans('JpsunMassActionCloturerTachesProjet').'</option>';
+			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
+			$html = '<span class="far fa-check-circle pictofixedwidth" style=""></span>'.$label;
+			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
 		}
 
 		return $error < 0 ? -1 : 0;
