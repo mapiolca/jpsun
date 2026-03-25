@@ -225,6 +225,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		}
 
 		if ($massaction === 'jpsun_modifier_avancement_taches_projet') {
+			$this->errors = array();
 			foreach ($tasksById as $taskId => $taskObject) {
 				$progressRaw = GETPOST('jpsun_task_progress_'.$taskId, 'alphanohtml');
 				if ($progressRaw === '' || !is_numeric($progressRaw)) {
@@ -247,7 +248,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			}
 
 			if ($error) {
-				setEventMessages($langs->trans('Error'), $this->errors, 'errors');
+				setEventMessages('', $this->errors, 'errors');
 			}
 			if ($done > 0) {
 				setEventMessages($langs->trans('JpsunMassActionProjectTasksProgressUpdated', $done), null, 'mesgs');
