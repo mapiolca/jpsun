@@ -164,19 +164,11 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$massactionFromHook = (isset($parameters['massaction']) && $parameters['massaction'] !== '' ? $parameters['massaction'] : '');
 		$massactionFromRequest = GETPOST('massaction', 'aZ09');
 		$toselect = GETPOST('toselect', 'array:int');
-		if (empty($toselect) && !empty($parameters['toselect']) && is_array($parameters['toselect'])) {
-			$toselect = array_map('intval', $parameters['toselect']);
-		}
 		$allowedMassActions = array(
 			'jpsun_cloturer_taches_projet',
 			'jpsun_modifier_avancement_taches_projet',
 			'jpsun_modifier_date_debut_taches_projet',
 			'jpsun_modifier_echeance_taches_projet'
-		);
-		$preToFinalAction = array(
-			'prejpsun_modifier_avancement_taches_projet' => 'jpsun_modifier_avancement_taches_projet',
-			'prejpsun_modifier_date_debut_taches_projet' => 'jpsun_modifier_date_debut_taches_projet',
-			'prejpsun_modifier_echeance_taches_projet' => 'jpsun_modifier_echeance_taches_projet'
 		);
 		$massaction = '';
 		if (in_array($requestedAction, $allowedMassActions, true)) {
@@ -185,10 +177,6 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$massaction = $massactionFromHook;
 		} elseif (in_array($massactionFromRequest, $allowedMassActions, true)) {
 			$massaction = $massactionFromRequest;
-		} elseif (isset($preToFinalAction[$massactionFromHook])) {
-			$massaction = $preToFinalAction[$massactionFromHook];
-		} elseif (isset($preToFinalAction[$massactionFromRequest])) {
-			$massaction = $preToFinalAction[$massactionFromRequest];
 		}
 
 		if (!$isCompatibleVersion || !in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts)) {
