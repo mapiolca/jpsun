@@ -382,6 +382,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$formquestion = array();
 		$finalAction = $allowedPreMassActions[$massaction];
+		$modalheight = 300;
+		$modalwidth = 700;
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
 		if (!empty($contextpage)) {
@@ -391,7 +393,10 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			$progressInputNames = array();
-			$tableHtml = '<div id="jpsun_massaction_progress_wrapper"><table class="noborder centpercent">';
+			$progressRowCount = count($tasksById) + 1;
+			$progressBodyHeight = min(560, max(180, 48 + ($progressRowCount * 32)));
+			$modalheight = min(760, $progressBodyHeight + 170);
+			$tableHtml = '<div id="jpsun_massaction_progress_wrapper" data-row-count="'.$progressRowCount.'" data-body-height="'.$progressBodyHeight.'"><table class="noborder centpercent">';
 			$tableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="right">'.$langs->trans('Progress').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
 				$inputName = 'jpsun_task_progress_'.$taskId;
@@ -429,28 +434,43 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if ($projectId > 0) {
 			$pageUrl .= (strpos($pageUrl, '?') === false ? '?' : '&').'id='.$projectId;
 		}
-		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0, 'Validate', 'Cancel');
+		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, $modalheight, $modalwidth, 0, 'Validate', 'Cancel');
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			$this->resprints .= '<script nonce="'.getNonce().'">
 				(function() {
-					function jpsunAdjustProgressDialogHeight() {
+					function jpsunAdjustProgressDialogSize() {
 						var wrapper = document.getElementById("jpsun_massaction_progress_wrapper");
 						if (!wrapper) return;
 						var content = wrapper.closest(".ui-dialog-content");
 						if (!content) return;
 						var dialog = content.closest(".ui-dialog");
 						if (!dialog) return;
-						var maxModalHeight = Math.max(240, window.innerHeight - 100);
-						dialog.style.maxHeight = maxModalHeight + "px";
+						var rowCount = parseInt(wrapper.getAttribute("data-row-count"), 10) || 1;
+						var expectedBodyHeight = parseInt(wrapper.getAttribute("data-body-height"), 10) || Math.max(180, 48 + (rowCount * 32));
+						content.style.height = "auto";
 						dialog.style.height = "auto";
-						var nonContentHeight = dialog.offsetHeight - content.offsetHeight;
-						var maxContentHeight = Math.max(140, maxModalHeight - nonContentHeight);
-						content.style.maxHeight = maxContentHeight + "px";
+						var nonContentHeight = Math.max(120, dialog.offsetHeight - content.offsetHeight);
+						var requestedModalHeight = expectedBodyHeight + nonContentHeight;
+						var maxModalHeight = Math.max(240, window.innerHeight - 100);
+						var finalModalHeight = Math.min(requestedModalHeight, maxModalHeight);
+						var finalBodyHeight = Math.max(140, finalModalHeight - nonContentHeight);
+						content.style.height = finalBodyHeight + "px";
+						content.style.maxHeight = finalBodyHeight + "px";
 						content.style.overflowY = "auto";
+						dialog.style.height = finalModalHeight + "px";
+						dialog.style.maxHeight = finalModalHeight + "px";
+						var viewportTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+						dialog.style.top = (viewportTop + Math.max(50, Math.floor((window.innerHeight - finalModalHeight) / 2))) + "px";
+						if (window.jQuery) {
+							var jqContent = window.jQuery(content);
+							if (jqContent && jqContent.dialog) {
+								jqContent.dialog("option", "position", { my: "center", at: "center", of: window });
+							}
+						}
 					}
-					jpsunAdjustProgressDialogHeight();
-					window.addEventListener("resize", jpsunAdjustProgressDialogHeight);
-					setTimeout(jpsunAdjustProgressDialogHeight, 0);
+					jpsunAdjustProgressDialogSize();
+					window.addEventListener("resize", jpsunAdjustProgressDialogSize);
+					setTimeout(jpsunAdjustProgressDialogSize, 0);
 				})();
 			</script>';
 		}
