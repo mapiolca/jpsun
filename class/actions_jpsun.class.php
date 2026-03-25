@@ -392,6 +392,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$finalAction = $allowedPreMassActions[$massaction];
 		$modalheight = 300;
 		$modalwidth = 700;
+		$modalWrapperId = '';
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
 		if (!empty($contextpage)) {
@@ -404,7 +405,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$progressRowCount = count($tasksById) + 1;
 			$progressBodyHeight = min(560, max(180, 48 + ($progressRowCount * 32)));
 			$modalheight = min(760, $progressBodyHeight + 170);
-			$tableHtml = '<div id="jpsun_massaction_progress_wrapper" data-row-count="'.$progressRowCount.'" data-body-height="'.$progressBodyHeight.'"><table class="noborder centpercent">';
+			$modalWrapperId = 'jpsun_massaction_progress_wrapper';
+			$tableHtml = '<div id="'.$modalWrapperId.'" data-row-count="'.$progressRowCount.'" data-body-height="'.$progressBodyHeight.'"><table class="noborder centpercent">';
 			$tableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="right">'.$langs->trans('Progress').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
 				$inputName = 'jpsun_task_progress_'.$taskId;
@@ -423,7 +425,11 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		} else {
 			$dateInputNames = array();
 			$keepDurationNames = array();
-			$dateTableHtml = '<table class="noborder centpercent">';
+			$dateRowCount = count($tasksById) + 1;
+			$dateBodyHeight = min(560, max(180, 48 + ($dateRowCount * 32)));
+			$modalheight = min(760, $dateBodyHeight + 170);
+			$modalWrapperId = 'jpsun_massaction_date_wrapper';
+			$dateTableHtml = '<div id="'.$modalWrapperId.'" data-row-count="'.$dateRowCount.'" data-body-height="'.$dateBodyHeight.'"><table class="noborder centpercent">';
 			$dateTableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="center">'.$langs->trans('DateHour').'</th><th class="center">'.$langs->trans('JpsunMassActionKeepDuration').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
 				$datetimeName = 'jpsun_task_datetime_'.$taskId;
@@ -444,7 +450,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 				$dateTableHtml .= '<td class="center"><input type="datetime-local" class="flat" id="'.dol_escape_htmltag($datetimeName).'" name="'.dol_escape_htmltag($datetimeName).'" value="'.dol_escape_htmltag($datetimeValue).'"></td>';
 				$dateTableHtml .= '<td class="center"><input type="checkbox" class="flat" id="'.dol_escape_htmltag($keepDurationName).'" name="'.dol_escape_htmltag($keepDurationName).'" value="1"></td></tr>';
 			}
-			$dateTableHtml .= '</table>';
+			$dateTableHtml .= '</table></div>';
 			$formquestion[] = array(
 				'type' => 'other',
 				'name' => implode(',', array_merge($dateInputNames, $keepDurationNames)),
@@ -460,11 +466,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$pageUrl .= (strpos($pageUrl, '?') === false ? '?' : '&').'id='.$projectId;
 		}
 		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, $modalheight, $modalwidth, 0, 'Validate', 'Cancel');
-		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
+		if (!empty($modalWrapperId)) {
 			$this->resprints .= '<script nonce="'.getNonce().'">
 				(function() {
+					var wrapperId = "'.dol_escape_js($modalWrapperId).'";
 					function jpsunAdjustProgressDialogSize() {
-						var wrapper = document.getElementById("jpsun_massaction_progress_wrapper");
+						var wrapper = document.getElementById(wrapperId);
 						if (!wrapper) return;
 						var content = wrapper.closest(".ui-dialog-content");
 						if (!content) return;
