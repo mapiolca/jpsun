@@ -389,7 +389,6 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$finalAction = $allowedPreMassActions[$massaction];
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
-		$formquestion[] = array('type' => 'hidden', 'name' => 'token', 'value' => newToken());
 		if (!empty($contextpage)) {
 			$formquestion[] = array('type' => 'hidden', 'name' => 'contextpage', 'value' => $contextpage);
 		}
