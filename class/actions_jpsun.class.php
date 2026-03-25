@@ -418,7 +418,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$title = ($finalAction === 'jpsun_modifier_date_debut_taches_projet' ? $langs->trans('JpsunMassActionModifierDateDebutTachesProjet') : $langs->trans('JpsunMassActionModifierEcheanceTachesProjet'));
 		}
 
-		$this->resprints = $form->formconfirm($_SERVER['PHP_SELF'], $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0);
+		$this->resprints = $form->formconfirm($_SERVER['PHP_SELF'], $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 1);
 		return 1;
 	}
 
