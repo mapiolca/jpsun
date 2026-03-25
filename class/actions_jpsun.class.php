@@ -422,19 +422,6 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$pageUrl .= (strpos($pageUrl, '?') === false ? '?' : '&').'id='.$projectId;
 		}
 		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0, 'Validate', 'Cancel');
-		$this->resprints .= '<script nonce="'.getNonce().'" type="text/javascript">
-		jQuery(document).ready(function() {
-			var dialogSelector = "#dialog-confirm-'.dol_escape_js($finalAction).'";
-			jQuery(dialogSelector).on("dialogopen", function() {
-				var dialog = jQuery(this);
-				var message = dialog.find(".confirmmessage");
-				var buttonPane = dialog.parent().find(".ui-dialog-buttonpane .ui-dialog-buttonset");
-				if (!message.length || !buttonPane.length || buttonPane.find(".jpsun-massaction-footer").length) return;
-				buttonPane.prepend("<div class=\"jpsun-massaction-footer\" style=\"float:left;max-width:70%;padding-top:8px;\">"+message.html()+"</div>");
-				message.hide();
-			});
-		});
-		</script>';
 		return 1;
 	}
 
