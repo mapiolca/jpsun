@@ -355,7 +355,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if (empty($toselect) && !empty($parameters['toselect']) && is_array($parameters['toselect'])) {
 			$toselect = array_map('intval', $parameters['toselect']);
 		}
-		$preToFinalAction = array(
+		$allowedPreMassActions = array(
 			'prejpsun_modifier_avancement_taches_projet' => 'jpsun_modifier_avancement_taches_projet',
 			'prejpsun_modifier_date_debut_taches_projet' => 'jpsun_modifier_date_debut_taches_projet',
 			'prejpsun_modifier_echeance_taches_projet' => 'jpsun_modifier_echeance_taches_projet'
@@ -364,7 +364,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if (!$isCompatibleVersion || (!in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts))) {
 			return 0;
 		}
-		if (!isset($preToFinalAction[$massaction])) {
+		if (!isset($allowedPreMassActions[$massaction])) {
 			return 0;
 		}
 		if (!is_object($form)) {
@@ -386,7 +386,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		}
 
 		$formquestion = array();
-		$finalAction = $preToFinalAction[$massaction];
+		$finalAction = $allowedPreMassActions[$massaction];
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
 		$formquestion[] = array('type' => 'hidden', 'name' => 'token', 'value' => newToken());
