@@ -70,6 +70,7 @@ JpsunMassActionProjectTasksStartDateUpdated=%s attività aggiornata/e (data iniz
 JpsunMassActionModifierEcheanceTachesProjet=Modificare scadenza
 JpsunMassActionProjectTasksDeadlineUpdated=%s attività aggiornata/e (scadenza).
 JpsunMassActionKeepDuration=Mantenere durata
+DateHour=Data e ora
 JpsunMassActionPopupDescription=Compilare i valori e confermare per applicare l'azione massiva.
 JpsunMassActionNouvelleDateDebut=Nuova data di inizio
 JpsunMassActionNouvelleEcheance=Nuova scadenza

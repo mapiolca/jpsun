@@ -70,6 +70,7 @@ JpsunMassActionProjectTasksStartDateUpdated=%s task(s) updated (start date).
 JpsunMassActionModifierEcheanceTachesProjet=Edit deadline
 JpsunMassActionProjectTasksDeadlineUpdated=%s task(s) updated (deadline).
 JpsunMassActionKeepDuration=Keep duration
+DateHour=Date and time
 JpsunMassActionPopupDescription=Fill in values then validate to apply the bulk action.
 JpsunMassActionNouvelleDateDebut=New start date
 JpsunMassActionNouvelleEcheance=New deadline

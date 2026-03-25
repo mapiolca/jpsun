@@ -70,6 +70,7 @@ JpsunMassActionProjectTasksStartDateUpdated=%s tâche(s) mise(s) à jour (date d
 JpsunMassActionModifierEcheanceTachesProjet=Modifier l'Échéance
 JpsunMassActionProjectTasksDeadlineUpdated=%s tâche(s) mise(s) à jour (échéance).
 JpsunMassActionKeepDuration=Conserver la durée
+DateHour=Date et heure
 JpsunMassActionPopupDescription=Renseignez les valeurs puis validez pour appliquer l'action de masse.
 JpsunMassActionNouvelleDateDebut=Nouvelle date de début
 JpsunMassActionNouvelleEcheance=Nouvelle échéance
