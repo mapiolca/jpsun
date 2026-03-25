@@ -402,7 +402,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			$progressInputNames = array();
-			$progressRowCount = count($tasksById) + 1;
+			$progressRowCount = count($tasksById) + 2;
 			$progressBodyHeight = min(560, max(180, 48 + ($progressRowCount * 32)));
 			$modalheight = min(760, $progressBodyHeight + 170);
 			$modalWrapperId = 'jpsun_massaction_progress_wrapper';
@@ -425,7 +425,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		} else {
 			$dateInputNames = array();
 			$keepDurationNames = array();
-			$dateRowCount = count($tasksById) + 1;
+			$dateRowCount = count($tasksById) + 2;
 			$dateBodyHeight = min(560, max(180, 48 + ($dateRowCount * 32)));
 			$modalheight = min(760, $dateBodyHeight + 170);
 			$modalWrapperId = 'jpsun_massaction_date_wrapper';
