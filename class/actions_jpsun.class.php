@@ -393,6 +393,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$modalheight = 300;
 		$modalwidth = 700;
 		$modalWrapperId = '';
+		$extraBodyHeight = 40;
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
 		if (!empty($contextpage)) {
@@ -403,7 +404,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			$progressInputNames = array();
 			$progressRowCount = count($tasksById) + 2;
-			$progressBodyHeight = min(560, max(180, 48 + ($progressRowCount * 32)));
+			$progressBodyHeight = min(600, max(220, 48 + ($progressRowCount * 32) + $extraBodyHeight));
 			$modalheight = min(760, $progressBodyHeight + 170);
 			$modalWrapperId = 'jpsun_massaction_progress_wrapper';
 			$tableHtml = '<div id="'.$modalWrapperId.'" data-row-count="'.$progressRowCount.'" data-body-height="'.$progressBodyHeight.'"><table class="noborder centpercent">';
@@ -426,7 +427,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$dateInputNames = array();
 			$keepDurationNames = array();
 			$dateRowCount = count($tasksById) + 2;
-			$dateBodyHeight = min(560, max(180, 48 + ($dateRowCount * 32)));
+			$dateBodyHeight = min(600, max(220, 48 + ($dateRowCount * 32) + $extraBodyHeight));
 			$modalheight = min(760, $dateBodyHeight + 170);
 			$modalWrapperId = 'jpsun_massaction_date_wrapper';
 			$dateTableHtml = '<div id="'.$modalWrapperId.'" data-row-count="'.$dateRowCount.'" data-body-height="'.$dateBodyHeight.'"><table class="noborder centpercent">';
@@ -477,8 +478,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 						if (!content) return;
 						var dialog = content.closest(".ui-dialog");
 						if (!dialog) return;
-						var rowCount = parseInt(wrapper.getAttribute("data-row-count"), 10) || 1;
-						var expectedBodyHeight = parseInt(wrapper.getAttribute("data-body-height"), 10) || Math.max(180, 48 + (rowCount * 32));
+							var rowCount = parseInt(wrapper.getAttribute("data-row-count"), 10) || 1;
+							var expectedBodyHeight = parseInt(wrapper.getAttribute("data-body-height"), 10) || Math.max(220, 48 + (rowCount * 32) + 40);
 						content.style.height = "auto";
 						dialog.style.height = "auto";
 						var nonContentHeight = Math.max(120, dialog.offsetHeight - content.offsetHeight);
