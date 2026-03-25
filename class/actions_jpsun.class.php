@@ -185,7 +185,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$massaction = $massactionFromRequest;
 		}
 
-		if (!$isCompatibleVersion || !in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts)) {
+		if (!$isCompatibleVersion || (!in_array('tasklist', $contexts) && !in_array('projecttasklist', $contexts) && !in_array('projecttaskscard', $contexts))) {
 			return 0;
 		}
 
@@ -356,7 +356,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			'prejpsun_modifier_echeance_taches_projet' => 'jpsun_modifier_echeance_taches_projet'
 		);
 
-		if (!$isCompatibleVersion || (!in_array('tasklist', $contexts) && !in_array('projecttaskscard', $contexts))) {
+		if (!$isCompatibleVersion || (!in_array('tasklist', $contexts) && !in_array('projecttasklist', $contexts) && !in_array('projecttaskscard', $contexts))) {
 			return 0;
 		}
 		if (!isset($allowedPreMassActions[$massaction])) {
@@ -445,7 +445,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$canCloseTasks = $user->hasRight('projet', 'creer');
 		$langs->load('jpsun@jpsun');
 
-		if ($isCompatibleVersion && (in_array('tasklist', $contexts) || in_array('projecttaskscard', $contexts))) {
+		if ($isCompatibleVersion && (in_array('tasklist', $contexts) || in_array('projecttasklist', $contexts) || in_array('projecttaskscard', $contexts))) {
 			$label = $langs->trans('JpsunMassActionCloturerTachesProjet');
 			$html = img_picto('', 'tick', '', false, 0, 0, '', 'pictofixedwidth').' '.$label;
 			$this->resprints .= '<option value="jpsun_cloturer_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($html).'">'.$html.'</option>';
