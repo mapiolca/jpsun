@@ -391,7 +391,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			$progressInputNames = array();
-			$tableHtml = '<table class="noborder centpercent">';
+			$tableHtml = '<div id="jpsun_massaction_progress_wrapper"><table class="noborder centpercent">';
 			$tableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="right">'.$langs->trans('Progress').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
 				$inputName = 'jpsun_task_progress_'.$taskId;
@@ -399,7 +399,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 				$tableHtml .= '<tr><td>'.dol_escape_htmltag($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).'</td>';
 				$tableHtml .= '<td class="right"><input type="text" class="flat right width75" maxlength="6" id="'.dol_escape_htmltag($inputName).'" name="'.dol_escape_htmltag($inputName).'" value="'.((string) min(100, max(0, (int) $taskObject->progress))).'"> %</td></tr>';
 			}
-			$tableHtml .= '</table>';
+			$tableHtml .= '</table></div>';
 			$formquestion[] = array(
 				'type' => 'other',
 				'name' => implode(',', $progressInputNames),
@@ -430,6 +430,30 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$pageUrl .= (strpos($pageUrl, '?') === false ? '?' : '&').'id='.$projectId;
 		}
 		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0, 'Validate', 'Cancel');
+		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
+			$this->resprints .= '<script nonce="'.getNonce().'">
+				(function() {
+					function jpsunAdjustProgressDialogHeight() {
+						var wrapper = document.getElementById("jpsun_massaction_progress_wrapper");
+						if (!wrapper) return;
+						var content = wrapper.closest(".ui-dialog-content");
+						if (!content) return;
+						var dialog = content.closest(".ui-dialog");
+						if (!dialog) return;
+						var maxModalHeight = Math.max(240, window.innerHeight - 100);
+						dialog.style.maxHeight = maxModalHeight + "px";
+						dialog.style.height = "auto";
+						var nonContentHeight = dialog.offsetHeight - content.offsetHeight;
+						var maxContentHeight = Math.max(140, maxModalHeight - nonContentHeight);
+						content.style.maxHeight = maxContentHeight + "px";
+						content.style.overflowY = "auto";
+					}
+					jpsunAdjustProgressDialogHeight();
+					window.addEventListener("resize", jpsunAdjustProgressDialogHeight);
+					setTimeout(jpsunAdjustProgressDialogHeight, 0);
+				})();
+			</script>';
+		}
 		return 1;
 	}
 
