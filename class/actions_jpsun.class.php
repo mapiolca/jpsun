@@ -393,7 +393,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$modalheight = 300;
 		$modalwidth = 700;
 		$modalWrapperId = '';
-		$extraBodyHeight = 40;
+		$extraBodyHeight = 35;
 		$contextpage = GETPOST('contextpage', 'aZ09');
 		$formquestion[] = array('type' => 'hidden', 'name' => 'massaction', 'value' => $finalAction);
 		if (!empty($contextpage)) {
@@ -479,7 +479,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 						var dialog = content.closest(".ui-dialog");
 						if (!dialog) return;
 							var rowCount = parseInt(wrapper.getAttribute("data-row-count"), 10) || 1;
-							var expectedBodyHeight = parseInt(wrapper.getAttribute("data-body-height"), 10) || Math.max(220, 48 + (rowCount * 32) + 40);
+							var expectedBodyHeight = parseInt(wrapper.getAttribute("data-body-height"), 10) || Math.max(220, 48 + (rowCount * 32) + 35);
 						content.style.height = "auto";
 						dialog.style.height = "auto";
 						var nonContentHeight = Math.max(120, dialog.offsetHeight - content.offsetHeight);
