@@ -390,14 +390,22 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$formquestion[] = array('type' => 'hidden', 'name' => 'toselect', 'value' => implode(',', array_keys($tasksById)));
 
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
+			$progressInputNames = array();
+			$tableHtml = '<table class="noborder centpercent">';
+			$tableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="right">'.$langs->trans('Progress').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
-				$formquestion[] = array(
-					'type' => 'text',
-					'name' => 'jpsun_task_progress_'.$taskId,
-					'label' => ($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId),
-					'value' => (string) min(100, max(0, (int) $taskObject->progress))
-				);
+				$inputName = 'jpsun_task_progress_'.$taskId;
+				$progressInputNames[] = $inputName;
+				$tableHtml .= '<tr><td>'.dol_escape_htmltag($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).'</td>';
+				$tableHtml .= '<td class="right"><input type="text" class="flat right width75" maxlength="6" id="'.dol_escape_htmltag($inputName).'" name="'.dol_escape_htmltag($inputName).'" value="'.((string) min(100, max(0, (int) $taskObject->progress))).'"> %</td></tr>';
 			}
+			$tableHtml .= '</table>';
+			$formquestion[] = array(
+				'type' => 'other',
+				'name' => implode(',', $progressInputNames),
+				'label' => '',
+				'value' => $tableHtml
+			);
 			$title = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
 		} else {
 			$formquestion[] = array(
