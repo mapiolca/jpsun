@@ -73,6 +73,7 @@ JpsunMassActionKeepDuration=Conservar duración
 JpsunMassActionPopupDescription=Complete los valores y valide para aplicar la acción masiva.
 JpsunMassActionNouvelleDateDebut=Nueva fecha de inicio
 JpsunMassActionNouvelleEcheance=Nuevo vencimiento
+JpsunMassActionInvalidProgressValue=Valor de avance no válido para la tarea ID %s.
 
 JpsunPdfDocuments=Documentos PDF
 SupplierProposals =Presupuestos de proveedor

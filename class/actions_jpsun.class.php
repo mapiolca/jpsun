@@ -235,8 +235,13 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($massaction === 'jpsun_modifier_avancement_taches_projet') {
 			foreach ($tasksById as $taskId => $taskObject) {
-				$progress = GETPOSTINT('jpsun_task_progress_'.$taskId);
-				$progress = max(0, min(100, (int) $progress));
+				$progressRaw = GETPOST('jpsun_task_progress_'.$taskId, 'alphanohtml');
+				if ($progressRaw === '' || !is_numeric($progressRaw)) {
+					$error++;
+					$this->errors[] = $langs->trans('JpsunMassActionInvalidProgressValue', $taskId);
+					continue;
+				}
+				$progress = max(0, min(100, (int) $progressRaw));
 				$taskStatus = ($progress >= 100 ? 3 : 1);
 				$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
 				$updateSql .= " SET progress = ".((int) $progress).", fk_statut = ".((int) $taskStatus);
@@ -252,8 +257,11 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 			if ($error) {
 				setEventMessages($langs->trans('Error'), $this->errors, 'errors');
-			} else {
+			}
+			if ($done > 0) {
 				setEventMessages($langs->trans('JpsunMassActionProjectTasksProgressUpdated', $done), null, 'mesgs');
+			} elseif (!$error) {
+				setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
 			}
 			$action = 'list';
 			return $error < 0 ? -1 : 0;
@@ -262,6 +270,10 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$globalDateDay = GETPOSTINT('jpsun_global_dateday');
 		$globalDateMonth = GETPOSTINT('jpsun_global_datemonth');
 		$globalDateYear = GETPOSTINT('jpsun_global_dateyear');
+		if ($globalDateDay <= 0 || $globalDateMonth <= 0 || $globalDateYear <= 0) {
+			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
+			return 0;
+		}
 		$globalTimestamp = dol_mktime(0, 0, 0, $globalDateMonth, $globalDateDay, $globalDateYear);
 		if ($globalTimestamp <= 0) {
 			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
@@ -305,10 +317,15 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		if ($error) {
 			setEventMessages($langs->trans('Error'), $this->errors, 'errors');
-		} elseif ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
-			setEventMessages($langs->trans('JpsunMassActionProjectTasksStartDateUpdated', $done), null, 'mesgs');
-		} else {
-			setEventMessages($langs->trans('JpsunMassActionProjectTasksDeadlineUpdated', $done), null, 'mesgs');
+		}
+		if ($done > 0) {
+			if ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
+				setEventMessages($langs->trans('JpsunMassActionProjectTasksStartDateUpdated', $done), null, 'mesgs');
+			} else {
+				setEventMessages($langs->trans('JpsunMassActionProjectTasksDeadlineUpdated', $done), null, 'mesgs');
+			}
+		} elseif (!$error) {
+			setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
 		}
 		$action = 'list';
 

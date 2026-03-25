@@ -73,6 +73,7 @@ JpsunMassActionKeepDuration=Keep duration
 JpsunMassActionPopupDescription=Fill in values then validate to apply the mass action.
 JpsunMassActionNouvelleDateDebut=New start date
 JpsunMassActionNouvelleEcheance=New deadline
+JpsunMassActionInvalidProgressValue=Invalid progress value for task ID %s.
 
 JpsunPdfDocuments=PDF documents
 SupplierProposals =Supplier proposals

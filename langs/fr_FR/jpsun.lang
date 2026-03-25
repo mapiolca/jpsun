@@ -73,6 +73,7 @@ JpsunMassActionKeepDuration=Conserver la durée
 JpsunMassActionPopupDescription=Renseignez les valeurs puis validez pour appliquer la massaction.
 JpsunMassActionNouvelleDateDebut=Nouvelle date de début
 JpsunMassActionNouvelleEcheance=Nouvelle échéance
+JpsunMassActionInvalidProgressValue=Valeur d'avancement invalide pour la tâche ID %s.
 
 JpsunPdfDocuments= Documents PDF
 SupplierProposals = Devis fournisseur
