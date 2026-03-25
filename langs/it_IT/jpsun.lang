@@ -74,6 +74,7 @@ JpsunMassActionPopupDescription=Compilare i valori e confermare per applicare l'
 JpsunMassActionNouvelleDateDebut=Nuova data di inizio
 JpsunMassActionNouvelleEcheance=Nuova scadenza
 JpsunMassActionInvalidProgressValue=Valore avanzamento non valido per attività ID %s.
+JpsunMassActionInvalidDateValue=Valore data e ora non valido per attività ID %s.
 
 JpsunPdfDocuments=Documenti PDF
 SupplierProposals =Preventivi fornitore

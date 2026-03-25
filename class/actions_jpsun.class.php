@@ -265,35 +265,43 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return $error < 0 ? -1 : 0;
 		}
 
+		$globalTimestamp = 0;
 		$globalDateDay = GETPOSTINT('jpsun_global_dateday');
 		$globalDateMonth = GETPOSTINT('jpsun_global_datemonth');
 		$globalDateYear = GETPOSTINT('jpsun_global_dateyear');
-		if ($globalDateDay <= 0 || $globalDateMonth <= 0 || $globalDateYear <= 0) {
-			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
-			return 0;
-		}
-		$globalTimestamp = dol_mktime(0, 0, 0, $globalDateMonth, $globalDateDay, $globalDateYear);
-		if ($globalTimestamp <= 0) {
-			setEventMessages($langs->trans('BadValueForParameter'), null, 'errors');
-			return 0;
+		if ($globalDateDay > 0 && $globalDateMonth > 0 && $globalDateYear > 0) {
+			$globalTimestamp = dol_mktime(0, 0, 0, $globalDateMonth, $globalDateDay, $globalDateYear);
 		}
 
 		foreach ($tasksById as $taskId => $taskObject) {
 			$setValues = array();
 			$keepDuration = (GETPOSTINT('jpsun_keep_duration_'.$taskId) ? true : false);
+			$taskTimestamp = 0;
+			$taskDatetimeRaw = GETPOST('jpsun_task_datetime_'.$taskId, 'alphanohtml');
+			if (!empty($taskDatetimeRaw)) {
+				$taskTimestamp = (int) strtotime(str_replace('T', ' ', $taskDatetimeRaw));
+			}
+			if ($taskTimestamp <= 0 && $globalTimestamp > 0) {
+				$taskTimestamp = $globalTimestamp;
+			}
+			if ($taskTimestamp <= 0) {
+				$error++;
+				$this->errors[] = $langs->trans('JpsunMassActionInvalidDateValue', $taskId);
+				continue;
+			}
 			$oldStartTimestamp = !empty($taskObject->dateo) ? (int) $db->jdate($taskObject->dateo) : 0;
 			$oldEndTimestamp = !empty($taskObject->datee) ? (int) $db->jdate($taskObject->datee) : 0;
 			$durationSeconds = ($oldStartTimestamp > 0 && $oldEndTimestamp > 0 ? ($oldEndTimestamp - $oldStartTimestamp) : null);
 
 			if ($massaction === 'jpsun_modifier_date_debut_taches_projet') {
-				$setValues[] = "dateo = '".$db->idate($globalTimestamp)."'";
+				$setValues[] = "dateo = '".$db->idate($taskTimestamp)."'";
 				if ($keepDuration && $durationSeconds !== null) {
-					$setValues[] = "datee = '".$db->idate($globalTimestamp + $durationSeconds)."'";
+					$setValues[] = "datee = '".$db->idate($taskTimestamp + $durationSeconds)."'";
 				}
 			} elseif ($massaction === 'jpsun_modifier_echeance_taches_projet') {
-				$setValues[] = "datee = '".$db->idate($globalTimestamp)."'";
+				$setValues[] = "datee = '".$db->idate($taskTimestamp)."'";
 				if ($keepDuration && $durationSeconds !== null) {
-					$setValues[] = "dateo = '".$db->idate($globalTimestamp - $durationSeconds)."'";
+					$setValues[] = "dateo = '".$db->idate($taskTimestamp - $durationSeconds)."'";
 				}
 			}
 
@@ -413,19 +421,36 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			);
 			$title = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
 		} else {
-			$formquestion[] = array(
-				'type' => 'date',
-				'name' => 'jpsun_global_date',
-				'label' => ($finalAction === 'jpsun_modifier_date_debut_taches_projet' ? $langs->trans('JpsunMassActionNouvelleDateDebut') : $langs->trans('JpsunMassActionNouvelleEcheance'))
-			);
+			$dateInputNames = array();
+			$keepDurationNames = array();
+			$dateTableHtml = '<table class="noborder centpercent">';
+			$dateTableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="center">'.$langs->trans('DateHour').'</th><th class="center">'.$langs->trans('JpsunMassActionKeepDuration').'</th></tr>';
 			foreach ($tasksById as $taskId => $taskObject) {
-				$formquestion[] = array(
-					'type' => 'checkbox',
-					'name' => 'jpsun_keep_duration_'.$taskId,
-					'label' => ($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).' - '.$langs->trans('JpsunMassActionKeepDuration'),
-					'value' => 1
-				);
+				$datetimeName = 'jpsun_task_datetime_'.$taskId;
+				$keepDurationName = 'jpsun_keep_duration_'.$taskId;
+				$dateInputNames[] = $datetimeName;
+				$keepDurationNames[] = $keepDurationName;
+				$currentTimestamp = 0;
+				if ($finalAction === 'jpsun_modifier_date_debut_taches_projet') {
+					$currentTimestamp = (!empty($taskObject->dateo) ? (int) $db->jdate($taskObject->dateo) : 0);
+				} else {
+					$currentTimestamp = (!empty($taskObject->datee) ? (int) $db->jdate($taskObject->datee) : 0);
+				}
+				if ($currentTimestamp <= 0) {
+					$currentTimestamp = dol_now();
+				}
+				$datetimeValue = dol_print_date($currentTimestamp, '%Y-%m-%dT%H:%M');
+				$dateTableHtml .= '<tr><td>'.dol_escape_htmltag($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).'</td>';
+				$dateTableHtml .= '<td class="center"><input type="datetime-local" class="flat" id="'.dol_escape_htmltag($datetimeName).'" name="'.dol_escape_htmltag($datetimeName).'" value="'.dol_escape_htmltag($datetimeValue).'"></td>';
+				$dateTableHtml .= '<td class="center"><input type="checkbox" class="flat" id="'.dol_escape_htmltag($keepDurationName).'" name="'.dol_escape_htmltag($keepDurationName).'" value="1"></td></tr>';
 			}
+			$dateTableHtml .= '</table>';
+			$formquestion[] = array(
+				'type' => 'other',
+				'name' => implode(',', array_merge($dateInputNames, $keepDurationNames)),
+				'label' => '',
+				'value' => $dateTableHtml
+			);
 			$title = ($finalAction === 'jpsun_modifier_date_debut_taches_projet' ? $langs->trans('JpsunMassActionModifierDateDebutTachesProjet') : $langs->trans('JpsunMassActionModifierEcheanceTachesProjet'));
 		}
 

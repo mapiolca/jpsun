@@ -74,6 +74,7 @@ JpsunMassActionPopupDescription=Werte eingeben und bestätigen, um die Sammelakt
 JpsunMassActionNouvelleDateDebut=Neues Startdatum
 JpsunMassActionNouvelleEcheance=Neue Fälligkeit
 JpsunMassActionInvalidProgressValue=Ungültiger Fortschrittswert für Aufgabe-ID %s.
+JpsunMassActionInvalidDateValue=Ungültiger Datums- und Uhrzeitwert für Aufgabe-ID %s.
 
 JpsunPdfDocuments=PDF-Dokumente
 SupplierProposals =Lieferantenangebote
