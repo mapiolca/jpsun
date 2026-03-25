@@ -164,6 +164,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$massactionFromHook = (isset($parameters['massaction']) && $parameters['massaction'] !== '' ? $parameters['massaction'] : '');
 		$massactionFromRequest = GETPOST('massaction', 'aZ09');
 		$toselect = GETPOST('toselect', 'array:int');
+		if (empty($toselect)) {
+			$toselectCsv = GETPOST('toselect', 'alphanohtml');
+			if ($toselectCsv !== '') {
+				$toselect = array_map('intval', explode(',', $toselectCsv));
+			}
+		}
 		$allowedMassActions = array(
 			'jpsun_cloturer_taches_projet',
 			'jpsun_modifier_avancement_taches_projet',
@@ -381,9 +387,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if (!empty($contextpage)) {
 			$formquestion[] = array('type' => 'hidden', 'name' => 'contextpage', 'value' => $contextpage);
 		}
-		foreach ($tasksById as $taskId => $taskObject) {
-			$formquestion[] = array('type' => 'hidden', 'name' => 'toselect[]', 'value' => $taskId);
-		}
+		$formquestion[] = array('type' => 'hidden', 'name' => 'toselect', 'value' => implode(',', array_keys($tasksById)));
 
 		if ($finalAction === 'jpsun_modifier_avancement_taches_projet') {
 			foreach ($tasksById as $taskId => $taskObject) {
