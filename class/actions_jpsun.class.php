@@ -421,7 +421,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if ($projectId > 0) {
 			$pageUrl .= (strpos($pageUrl, '?') === false ? '?' : '&').'id='.$projectId;
 		}
-		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0);
+		$this->resprints = $form->formconfirm($pageUrl, $title, $langs->trans('JpsunMassActionPopupDescription'), $finalAction, $formquestion, '', 1, 300, 700, 0, 'Validate', 'Cancel');
 		return 1;
 	}
 
