@@ -13,7 +13,7 @@
 
 - Version : 1.14
 - PHP : 8.2
-- Compatibilité : Dolibarr 21.0.0
+- Compatibilité : Dolibarr 21+
 
 ## Liens
 
