@@ -1,5 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.14 (01/04/2026)
+- Ajout de la massaction "Modifier la Charge de travail prévue" (Dolibarr `< 24.0`) avec popup de saisie `hh:mm` par tâche, conversion en secondes dans `planned_workload`, contrôles de droits/sécurité et traductions `fr_FR`, `en_US`, `de_DE`, `es_ES`, `it_IT`.
+
 ## 1.13 (24/03/2026)
 - Ajout d'une action de masse "Clôturer les tâches des projets" sur `/projet/tasks/list.php` et `/projet/tasks.php` (Dolibarr `< 24.0`) qui met les tâches sélectionnées à `progress = 100` et `fk_statut = 3`, avec contrôle des droits (`projet->creer`), périmètre de sécurité (entité + projets autorisés) et traductions `fr_FR`, `en_US`, `de_DE`, `es_ES`, `it_IT`.
 - Ajout de trois nouvelles actions de masse sur les tâches projet : "Modifier l'Avancement", "Modifier la Date début" et "Modifier l'Échéance", avec popup natif de pré-action pour saisir les valeurs, prise en charge des contextes `/projet/tasks/list.php` et `/projet/tasks.php` (Dolibarr `< 24.0`), contrôles de droits et filtrage des tâches autorisées.
