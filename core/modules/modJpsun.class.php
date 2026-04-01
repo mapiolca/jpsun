@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2024-2025	Pierre Ardoin		<mapoiolca@me.com>
+/* Copyright (C) 2024-2025	Pierre Ardoin		<developpeur@lesmetiersdubatiment.fr>
 
  *
  * This program is free software; you can redistribute it and/or modify
