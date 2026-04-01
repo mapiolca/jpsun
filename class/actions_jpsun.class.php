@@ -270,18 +270,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$this->errors = array();
 			foreach ($tasksById as $taskId => $taskObject) {
 				$workloadRaw = GETPOST('jpsun_task_planned_workload_'.$taskId, 'alphanohtml');
-				if ($workloadRaw === '' || !is_numeric($workloadRaw)) {
+				$workloadSeconds = $this->parsePlannedWorkloadToSeconds($workloadRaw);
+				if ($workloadSeconds === null) {
 					$error++;
 					$this->errors[] = $langs->trans('JpsunMassActionInvalidPlannedWorkloadValue', $taskId);
 					continue;
 				}
-				$workloadHours = price2num($workloadRaw, 'MS');
-				if ($workloadHours < 0) {
-					$error++;
-					$this->errors[] = $langs->trans('JpsunMassActionInvalidPlannedWorkloadValue', $taskId);
-					continue;
-				}
-				$workloadSeconds = (int) round($workloadHours * 3600);
 				$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
 				$updateSql .= " SET planned_workload = ".((int) $workloadSeconds);
 				$updateSql .= " WHERE rowid = ".((int) $taskId);
@@ -476,9 +470,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			foreach ($tasksById as $taskId => $taskObject) {
 				$inputName = 'jpsun_task_planned_workload_'.$taskId;
 				$workloadInputNames[] = $inputName;
-				$currentWorkloadHours = (!empty($taskObject->planned_workload) ? price2num(((float) $taskObject->planned_workload / 3600), 'MS') : 0);
+				$currentWorkload = $this->formatPlannedWorkloadToHourMinute((int) $taskObject->planned_workload);
 				$tableHtml .= '<tr><td>'.dol_escape_htmltag($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).'</td>';
-				$tableHtml .= '<td class="right"><input type="text" class="flat right width75" maxlength="12" id="'.dol_escape_htmltag($inputName).'" name="'.dol_escape_htmltag($inputName).'" value="'.dol_escape_htmltag((string) $currentWorkloadHours).'"> '.$langs->trans('HourShort').'</td></tr>';
+				$tableHtml .= '<td class="right"><input type="text" class="flat right width75" maxlength="6" placeholder="00:00" id="'.dol_escape_htmltag($inputName).'" name="'.dol_escape_htmltag($inputName).'" value="'.dol_escape_htmltag($currentWorkload).'"></td></tr>';
 			}
 			$tableHtml .= '</table></div>';
 			$formquestion[] = array(
@@ -662,6 +656,43 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		}
 
 		return $tasksById;
+	}
+
+	/**
+	 * Convert planned workload input (hh:mm) to seconds.
+	 *
+	 * @param	string	$value	Raw input value
+	 * @return	int|null	Seconds or null if value is invalid
+	 */
+	private function parsePlannedWorkloadToSeconds($value)
+	{
+		$value = trim((string) $value);
+		if ($value === '') {
+			return null;
+		}
+		if (!preg_match('/^([0-9]{1,4}):([0-5][0-9])$/', $value, $matches)) {
+			return null;
+		}
+
+		$hours = (int) $matches[1];
+		$minutes = (int) $matches[2];
+
+		return ($hours * 3600) + ($minutes * 60);
+	}
+
+	/**
+	 * Convert planned workload in seconds to hh:mm string.
+	 *
+	 * @param	int	$seconds	Planned workload in seconds
+	 * @return	string			Formatted string
+	 */
+	private function formatPlannedWorkloadToHourMinute($seconds)
+	{
+		$seconds = max(0, (int) $seconds);
+		$hours = (int) floor($seconds / 3600);
+		$minutes = (int) floor(($seconds % 3600) / 60);
+
+		return sprintf('%02d:%02d', $hours, $minutes);
 	}
 
 	public function completeListOfReferent($parameters, &$object, &$action, $hookmanager)

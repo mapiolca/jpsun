@@ -78,7 +78,7 @@ JpsunMassActionInvalidProgressValue=Valore avanzamento non valido per attività 
 JpsunMassActionInvalidDateValue=Valore data e ora non valido per attività ID %s.
 JpsunMassActionModifierChargeTravailPrevueTachesProjet=Modificare carico di lavoro previsto
 JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s attività aggiornata/e (carico di lavoro previsto).
-JpsunMassActionInvalidPlannedWorkloadValue=Valore carico di lavoro previsto non valido per attività ID %s.
+JpsunMassActionInvalidPlannedWorkloadValue=Valore carico di lavoro previsto non valido per attività ID %s (formato previsto hh:mm).
 
 JpsunPdfDocuments=Documenti PDF
 SupplierProposals =Preventivi fornitore
