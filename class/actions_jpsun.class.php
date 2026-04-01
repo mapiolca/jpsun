@@ -174,7 +174,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			'jpsun_cloturer_taches_projet',
 			'jpsun_modifier_avancement_taches_projet',
 			'jpsun_modifier_date_debut_taches_projet',
-			'jpsun_modifier_echeance_taches_projet'
+			'jpsun_modifier_echeance_taches_projet',
+			'jpsun_modifier_charge_travail_prevue_taches_projet'
 		);
 		$massaction = '';
 		if (in_array($requestedAction, $allowedMassActions, true)) {
@@ -258,6 +259,46 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			}
 			if ($done > 0) {
 				setEventMessages($langs->trans('JpsunMassActionProjectTasksProgressUpdated', $done), null, 'mesgs');
+			} elseif (!$error) {
+				setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
+			}
+			$action = 'list';
+			return $error < 0 ? -1 : 0;
+		}
+
+		if ($massaction === 'jpsun_modifier_charge_travail_prevue_taches_projet') {
+			$this->errors = array();
+			foreach ($tasksById as $taskId => $taskObject) {
+				$workloadRaw = GETPOST('jpsun_task_planned_workload_'.$taskId, 'alphanohtml');
+				if ($workloadRaw === '' || !is_numeric($workloadRaw)) {
+					$error++;
+					$this->errors[] = $langs->trans('JpsunMassActionInvalidPlannedWorkloadValue', $taskId);
+					continue;
+				}
+				$workloadHours = price2num($workloadRaw, 'MS');
+				if ($workloadHours < 0) {
+					$error++;
+					$this->errors[] = $langs->trans('JpsunMassActionInvalidPlannedWorkloadValue', $taskId);
+					continue;
+				}
+				$workloadSeconds = (int) round($workloadHours * 3600);
+				$updateSql = "UPDATE ".MAIN_DB_PREFIX."projet_task";
+				$updateSql .= " SET planned_workload = ".((int) $workloadSeconds);
+				$updateSql .= " WHERE rowid = ".((int) $taskId);
+				$updateRes = $db->query($updateSql);
+				if (!$updateRes) {
+					$error++;
+					$this->errors[] = $db->lasterror();
+				} else {
+					$done++;
+				}
+			}
+
+			if ($error) {
+				setEventMessages('', $this->errors, 'errors');
+			}
+			if ($done > 0) {
+				setEventMessages($langs->trans('JpsunMassActionProjectTasksPlannedWorkloadUpdated', $done), null, 'mesgs');
 			} elseif (!$error) {
 				setEventMessages($langs->trans('NoRecordSelected'), null, 'warnings');
 			}
@@ -361,7 +402,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$allowedPreMassActions = array(
 			'prejpsun_modifier_avancement_taches_projet' => 'jpsun_modifier_avancement_taches_projet',
 			'prejpsun_modifier_date_debut_taches_projet' => 'jpsun_modifier_date_debut_taches_projet',
-			'prejpsun_modifier_echeance_taches_projet' => 'jpsun_modifier_echeance_taches_projet'
+			'prejpsun_modifier_echeance_taches_projet' => 'jpsun_modifier_echeance_taches_projet',
+			'prejpsun_modifier_charge_travail_prevue_taches_projet' => 'jpsun_modifier_charge_travail_prevue_taches_projet'
 		);
 
 		if (!$isCompatibleVersion || (!in_array('tasklist', $contexts) && !in_array('projecttasklist', $contexts) && !in_array('projecttaskscard', $contexts))) {
@@ -423,6 +465,29 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 				'value' => $tableHtml
 			);
 			$title = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
+		} elseif ($finalAction === 'jpsun_modifier_charge_travail_prevue_taches_projet') {
+			$workloadInputNames = array();
+			$workloadRowCount = count($tasksById) + 2;
+			$workloadBodyHeight = min(600, max(220, 48 + ($workloadRowCount * 32) + $extraBodyHeight));
+			$modalheight = min(760, $workloadBodyHeight + 170);
+			$modalWrapperId = 'jpsun_massaction_workload_wrapper';
+			$tableHtml = '<div id="'.$modalWrapperId.'" data-row-count="'.$workloadRowCount.'" data-body-height="'.$workloadBodyHeight.'"><table class="noborder centpercent">';
+			$tableHtml .= '<tr class="liste_titre"><th>'.$langs->trans('Task').'</th><th class="right">'.$langs->trans('PlannedWorkload').'</th></tr>';
+			foreach ($tasksById as $taskId => $taskObject) {
+				$inputName = 'jpsun_task_planned_workload_'.$taskId;
+				$workloadInputNames[] = $inputName;
+				$currentWorkloadHours = (!empty($taskObject->planned_workload) ? price2num(((float) $taskObject->planned_workload / 3600), 'MS') : 0);
+				$tableHtml .= '<tr><td>'.dol_escape_htmltag($taskObject->label ? $taskObject->label : $langs->trans('Task').' #'.$taskId).'</td>';
+				$tableHtml .= '<td class="right"><input type="text" class="flat right width75" maxlength="12" id="'.dol_escape_htmltag($inputName).'" name="'.dol_escape_htmltag($inputName).'" value="'.dol_escape_htmltag((string) $currentWorkloadHours).'"> '.$langs->trans('HourShort').'</td></tr>';
+			}
+			$tableHtml .= '</table></div>';
+			$formquestion[] = array(
+				'type' => 'other',
+				'name' => implode(',', $workloadInputNames),
+				'label' => '',
+				'value' => $tableHtml
+			);
+			$title = $langs->trans('JpsunMassActionModifierChargeTravailPrevueTachesProjet');
 		} else {
 			$dateInputNames = array();
 			$keepDurationNames = array();
@@ -537,6 +602,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$progressLabel = $langs->trans('JpsunMassActionModifierAvancementTachesProjet');
 			$progressHtml = img_picto('', 'projecttask', '', false, 0, 0, '', 'pictofixedwidth').' '.$progressLabel;
 			$this->resprints .= '<option value="prejpsun_modifier_avancement_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($progressHtml).'">'.$progressHtml.'</option>';
+			$plannedWorkloadLabel = $langs->trans('JpsunMassActionModifierChargeTravailPrevueTachesProjet');
+			$plannedWorkloadHtml = img_picto('', 'cron', '', false, 0, 0, '', 'pictofixedwidth').' '.$plannedWorkloadLabel;
+			$this->resprints .= '<option value="prejpsun_modifier_charge_travail_prevue_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($plannedWorkloadHtml).'">'.$plannedWorkloadHtml.'</option>';
 			$startDateLabel = $langs->trans('JpsunMassActionModifierDateDebutTachesProjet');
 			$startDateHtml = img_picto('', 'calendar', '', false, 0, 0, '', 'pictofixedwidth').' '.$startDateLabel;
 			$this->resprints .= '<option value="prejpsun_modifier_date_debut_taches_projet"'.($canCloseTasks ? '' : ' disabled="disabled"').' data-html="'.dol_escape_htmltag($startDateHtml).'">'.$startDateHtml.'</option>';
@@ -573,7 +641,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId ? $projectsListId : '0').")";
 		}
 
-		$sql = "SELECT t.rowid, t.label, t.dateo, t.datee";
+		$sql = "SELECT t.rowid, t.label, t.dateo, t.datee, t.planned_workload";
 		if ($loadProgress) {
 			$sql .= ", t.progress";
 		}

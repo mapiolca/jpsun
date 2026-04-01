@@ -76,6 +76,9 @@ JpsunMassActionNouvelleDateDebut=New start date
 JpsunMassActionNouvelleEcheance=New deadline
 JpsunMassActionInvalidProgressValue=Invalid progress value for task ID %s.
 JpsunMassActionInvalidDateValue=Invalid date and time value for task ID %s.
+JpsunMassActionModifierChargeTravailPrevueTachesProjet=Edit planned workload
+JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s task(s) updated (planned workload).
+JpsunMassActionInvalidPlannedWorkloadValue=Invalid planned workload value for task ID %s.
 
 JpsunPdfDocuments=PDF documents
 SupplierProposals =Supplier proposals
