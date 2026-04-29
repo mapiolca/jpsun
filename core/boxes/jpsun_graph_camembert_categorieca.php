@@ -2,7 +2,6 @@
 /* Copyright (C) 2026	Pierre Ardoin	<developpeur@lesmetiersdubatiment.fr> */
 
 require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
-require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
 
 class jpsun_graph_camembert_categorieca extends ModeleBoxes
 {
@@ -11,6 +10,7 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 	public $boxlabel = 'JpsunWidgetCamembertCategorieCaTitle';
 	public $depends = array('invoice');
 	public $lang = 'jpsun@jpsun';
+	public $widgettype = 'graph';
 
 	public function __construct($db, $param = '')
 	{
@@ -23,39 +23,49 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 	{
 		global $conf, $langs;
 		$langs->loadLangs(array('jpsun@jpsun', 'bills'));
-		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetCamembertCategorieCaTitle'), 'limit' => 0);
+
+		$text = $langs->trans('JpsunWidgetCamembertCategorieCaTitle');
+		$this->info_box_head = array('text' => $text, 'limit' => dol_strlen($text));
 
 		$data = $this->fetchRevenueByCategory($this->db);
 		$total = 0.0;
-		$graphData = array();
+		$dataseries = array();
 		foreach ($data as $label => $amount) {
 			$total += (float) $amount;
-			$graphData[] = array($label, (float) $amount);
+			$dataseries[] = array('label' => $label, 'data' => (float) $amount);
 		}
 
-		$contentHtml = '';
-		if ($total <= 0) {
-			$contentHtml = '<div class="center opacitymedium">'.$langs->trans('JpsunWidgetNoData').'</div>';
-		} else {
-			$graph = new DolGraph();
-			$graph->SetData($graphData);
-			$graph->SetType(array('pie'));
-			$legend = array();
-			foreach ($data as $label => $amount) {
-				$legend[] = $label.' ('.price((float) $amount).')';
-			}
-			$graph->SetLegend($legend);
-			$graph->setHeight(!empty($conf->dol_optimize_smallscreen) ? '220' : '260');
-			$graph->setWidth(!empty($conf->dol_optimize_smallscreen) ? '420' : '760');
-			$graph->setShowLegend(1);
-			$graphId = 'jpsuncacatpie_e'.((int) $conf->entity);
-			$graph->draw($graphId);
-			$contentHtml .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total).'</div>';
-			$contentHtml .= '<div class="center">'.$graph->show(0).'</div>';
+		$stringtoprint = '<div class="div-table-responsive-no-min">';
+		if ($total <= 0 || empty($dataseries)) {
+			$this->info_box_contents[0][0] = array('td' => 'class="center opacitymedium"', 'text' => '<span class="opacitymedium">'.$langs->trans('JpsunWidgetNoData').'</span>');
+			return;
 		}
+
+		include_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
+		$px1 = new DolGraph();
+		$mesg = $px1->isGraphKo();
+		if (!$mesg) {
+			$graphdata = array();
+			$legend = array();
+			foreach ($dataseries as $value) {
+				$graphdata[] = array($value['label'], $value['data']);
+				$legend[] = $value['label'].' ('.price($value['data']).')';
+			}
+			$px1->SetData($graphdata);
+			$px1->SetType(array('pie'));
+			$px1->SetLegend($legend);
+			$px1->setShowLegend(2);
+			if (!empty($conf->dol_optimize_smallscreen)) $px1->SetWidth(320);
+			$px1->SetCssPrefix('cssboxes');
+			$px1->mode = 'depth';
+			$px1->draw('idgraphjpsuncacatpie');
+			$stringtoprint .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total).'</div>';
+			$stringtoprint .= $px1->show($total ? 0 : 1);
+		}
+		$stringtoprint .= '</div>';
 
 		$this->info_box_contents = array();
-		$this->info_box_contents[] = array(0 => array('td' => 'class="center"', 'asis' => 1, 'text' => $contentHtml));
+		$this->info_box_contents[][] = array('td' => 'class="center"', 'text' => $stringtoprint, 'asis' => 1);
 	}
 
 	public function showBox($head = null, $contents = null, $nooutput = 0)
@@ -88,21 +98,15 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 	private function getCategoryLabels($db)
 	{
 		global $langs;
-
 		$labels = array();
-		$sql = "SELECT param FROM ".MAIN_DB_PREFIX."extrafields";
-		$sql .= " WHERE name = 'jpsuntagcategory' AND elementtype = 'facture'";
-		$sql .= " ORDER BY rowid DESC";
-		$sql .= " LIMIT 1";
+		$sql = "SELECT param FROM ".MAIN_DB_PREFIX."extrafields WHERE name = 'jpsuntagcategory' AND elementtype = 'facture' ORDER BY rowid DESC LIMIT 1";
 		$resql = $db->query($sql);
 		if (!$resql) return $labels;
 		$obj = $db->fetch_object($resql);
 		if (empty($obj->param)) return $labels;
 		$params = @unserialize($obj->param);
 		if (empty($params['options']) || !is_array($params['options'])) return $labels;
-		foreach ($params['options'] as $key => $value) {
-			$labels[(string) $key] = $langs->trans((string) $value);
-		}
+		foreach ($params['options'] as $key => $value) $labels[(string) $key] = $langs->trans((string) $value);
 		return $labels;
 	}
 
