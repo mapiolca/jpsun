@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2026	Pierre Ardoin	<developpeur@lesmetiersdubatiment.fr> */
 include_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
-class box_jpsun_pc_weekly extends ModeleBoxes
+class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 {
 	public $boxcode = 'jpsun_pc_weekly';
 	public $boximg = 'object_project';

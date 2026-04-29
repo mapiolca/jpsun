@@ -9,7 +9,7 @@
 
 include_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
 
-class box_jpsun_pc_total_year extends ModeleBoxes
+class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 {
 	public $boxcode = 'jpsun_pc_total_year';
 	public $boximg = 'object_project';
