@@ -296,3 +296,6 @@ JpsunWidgetMensuel=Curva mensile
 JpsunWidgetHebdomadaire=Curva settimanale
 jpsun_pc_install=Potenza di picco installata
 jpsun_pc_install_help=Potenza di picco installata (kWp).
+JpsunWidgetPuissanceCreteTotalTitle=Puissance crête totale année N
+JpsunWidgetPuissanceCreteMensuelTitle=Puissance crête mensuelle N / N-1
+JpsunWidgetPuissanceCreteHebdoTitle=Puissance crête hebdomadaire N / N-1

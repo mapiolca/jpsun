@@ -128,8 +128,18 @@ class modJpsun extends DolibarrModules
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
 		$this->boxes = array(
 			array(
-				'file' => 'box_jpsun_pc_install.php@jpsun',
-				'note' => 'BoxPuissanceCrete',
+				'file' => 'box_jpsun_pc_total_year.php@jpsun',
+				'note' => 'BoxPuissanceCreteTotal',
+				'enabledbydefaulton' => 'Home'
+			),
+			array(
+				'file' => 'box_jpsun_pc_monthly.php@jpsun',
+				'note' => 'BoxPuissanceCreteMensuel',
+				'enabledbydefaulton' => 'Home'
+			),
+			array(
+				'file' => 'box_jpsun_pc_weekly.php@jpsun',
+				'note' => 'BoxPuissanceCreteHebdo',
 				'enabledbydefaulton' => 'Home'
 			)
 		);			// List of boxes
@@ -926,6 +936,7 @@ class modJpsun extends DolibarrModules
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file = 'p.php' AND boxcode = 'p'";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file = 'box_jpsun_pc_install.php' OR boxcode = 'jpsun_pc_install'";
 
 		return $this->_init($sql);
 	}
