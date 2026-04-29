@@ -48,9 +48,8 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 			$graphdata = array();
 			$legend = array();
 			foreach ($dataseries as $value) {
-				$labelWithAmount = $value['label'].' ('.price($value['data']).')';
-				$graphdata[] = array($labelWithAmount, $value['data']);
-				$legend[] = $labelWithAmount;
+				$graphdata[] = array($value['label'], $value['data']);
+				$legend[] = $value['label'];
 			}
 			$px1->SetData($graphdata);
 			$px1->SetType(array('pie'));
