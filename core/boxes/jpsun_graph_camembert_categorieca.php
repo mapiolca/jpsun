@@ -61,6 +61,7 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 	{
 		$result = array();
 		if (!$this->hasCategoryColumn($db)) return $result;
+		$categoryLabels = $this->getCategoryLabels($db);
 		$sql = "SELECT COALESCE(NULLIF(fe.jpsuntagcategory, ''), 'Sans catégorie') as category, SUM(f.total_ht) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."facture as f";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields as fe ON fe.fk_object = f.rowid";
@@ -70,10 +71,33 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 		$resql = $db->query($sql);
 		if ($resql) {
 			while ($obj = $db->fetch_object($resql)) {
-				$result[(string) $obj->category] = (float) $obj->total;
+				$categoryKey = (string) $obj->category;
+				$categoryLabel = isset($categoryLabels[$categoryKey]) ? $categoryLabels[$categoryKey] : $categoryKey;
+				$result[$categoryLabel] = (float) $obj->total;
 			}
 		}
 		return $result;
+	}
+
+	private function getCategoryLabels($db)
+	{
+		global $langs;
+
+		$labels = array();
+		$sql = "SELECT param FROM ".MAIN_DB_PREFIX."extrafields";
+		$sql .= " WHERE name = 'jpsuntagcategory' AND elementtype = 'facture'";
+		$sql .= " ORDER BY rowid DESC";
+		$sql .= " LIMIT 1";
+		$resql = $db->query($sql);
+		if (!$resql) return $labels;
+		$obj = $db->fetch_object($resql);
+		if (empty($obj->param)) return $labels;
+		$params = @unserialize($obj->param);
+		if (empty($params['options']) || !is_array($params['options'])) return $labels;
+		foreach ($params['options'] as $key => $value) {
+			$labels[(string) $key] = $langs->trans((string) $value);
+		}
+		return $labels;
 	}
 
 	private function hasCategoryColumn($db)
