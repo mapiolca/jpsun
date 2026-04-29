@@ -55,7 +55,7 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 			$px1->SetType(array('pie'));
 				$px1->SetLegend($legend);
 				$px1->setShowLegend(2);
-				$px1->SetHeight(250);
+				$px1->SetHeight(!empty($conf->dol_optimize_smallscreen) ? 200 : 240);
 				if (!empty($conf->dol_optimize_smallscreen)) $px1->SetWidth(320);
 			$px1->SetCssPrefix('cssboxes');
 			$px1->mode = 'depth';
