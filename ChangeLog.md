@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.15 (29/04/2026)
+- Ajout des widgets puissance crête (annuel, mensuel, hebdomadaire) et du widget camembert CA par catégorie facture.
+- Ajout/mise à jour idempotente de l'extrafield `jpsun_pc_install` sur devis, factures et commandes.
+- Améliorations d'affichage des graphs (unités, légendes, hauteurs harmonisées).
+
 ## 1.14 (01/04/2026)
 - Ajout de la massaction "Modifier la Charge de travail prévue" (Dolibarr `< 24.0`) avec popup de saisie `hh:mm` par tâche, conversion en secondes dans `planned_workload`, contrôles de droits/sécurité et traductions `fr_FR`, `en_US`, `de_DE`, `es_ES`, `it_IT`.
 

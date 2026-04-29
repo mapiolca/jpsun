@@ -21,11 +21,19 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 
 	public function loadBox($max = 20)
 	{
-		global $conf, $langs;
+		global $conf, $langs, $user;
 		$langs->loadLangs(array('jpsun@jpsun', 'bills'));
 
 		$text = $langs->trans('JpsunWidgetCamembertCategorieCaTitle');
 		$this->info_box_head = array('text' => $text, 'limit' => dol_strlen($text));
+		if (empty($user) || !$user->hasRight('facture', 'lire')) {
+			$this->info_box_contents = array();
+			$this->info_box_contents[0][0] = array(
+				'td' => 'class="center opacitymedium"',
+				'text' => '<span class="opacitymedium">'.$langs->trans('NotEnoughPermissions').'</span>'
+			);
+			return;
+		}
 
 		$data = $this->fetchRevenueByCategory($this->db);
 		$total = 0.0;
@@ -48,19 +56,19 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 			$graphdata = array();
 			$legend = array();
 			foreach ($dataseries as $value) {
-				$labelWithAmount = $value['label'].' ('.price($value['data']).')';
-				$graphdata[] = array($labelWithAmount, $value['data']);
-				$legend[] = $labelWithAmount;
+				$graphdata[] = array($value['label'], $value['data']);
+				$legend[] = $value['label'];
 			}
 			$px1->SetData($graphdata);
 			$px1->SetType(array('pie'));
-			$px1->SetLegend($legend);
-			$px1->setShowLegend(2);
-			if (!empty($conf->dol_optimize_smallscreen)) $px1->SetWidth(320);
+				$px1->SetLegend($legend);
+				$px1->setShowLegend(2);
+				$px1->SetHeight(!empty($conf->dol_optimize_smallscreen) ? 190 : 230);
+				if (!empty($conf->dol_optimize_smallscreen)) $px1->SetWidth(400);
 			$px1->SetCssPrefix('cssboxes');
 			$px1->mode = 'depth';
 			$px1->draw('idgraphjpsuncacatpie');
-			$stringtoprint .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total).'</div>';
+			$stringtoprint .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total, 1).'</div>';
 			$stringtoprint .= $px1->show($total ? 0 : 1);
 		}
 		$stringtoprint .= '</div>';

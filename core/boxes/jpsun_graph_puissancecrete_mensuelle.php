@@ -45,7 +45,7 @@ class jpsun_graph_puissancecrete_mensuelle extends ModeleBoxes
 			$graph->SetLegend(array((string) $y.' (kWc)', (string) ($y - 1).' (kWc)'));
 			$graph->SetDataColor(array('#2e78c2', '#a3a3a3'));
 			$graph->SetType(array('lines'));
-			$graph->setHeight(!empty($conf->dol_optimize_smallscreen) ? '220' : '280');
+			$graph->setHeight(!empty($conf->dol_optimize_smallscreen) ? '220' : '260');
 			$graph->setWidth(!empty($conf->dol_optimize_smallscreen) ? '320' : '680');
 			$graph->setShowLegend(1);
 			$graph->setMinValue(0);
