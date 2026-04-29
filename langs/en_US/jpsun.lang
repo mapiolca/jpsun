@@ -294,3 +294,5 @@ JpsunWidgetPuissanceCreteTitle=Installed peak power
 JpsunWidgetPuissanceCreteYearTotal=Total invoiced %s: %s kWp
 JpsunWidgetMensuel=Monthly curve
 JpsunWidgetHebdomadaire=Weekly curve
+jpsun_pc_install=Installed peak power
+jpsun_pc_install_help=Installed peak power (kWp).

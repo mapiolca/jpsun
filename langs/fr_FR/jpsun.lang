@@ -298,3 +298,5 @@ JpsunWidgetPuissanceCreteTitle=Puissance crête posée
 JpsunWidgetPuissanceCreteYearTotal=Total %s facturé : %s kWc
 JpsunWidgetMensuel=Courbe mensuelle
 JpsunWidgetHebdomadaire=Courbe hebdomadaire
+jpsun_pc_install=Puissance crête installée
+jpsun_pc_install_help=Puissance crête installée (kWc).

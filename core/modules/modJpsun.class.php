@@ -307,6 +307,75 @@ class modJpsun extends DolibarrModules
 
 		// Invoice
 		$ext->fetch_name_optionals_label('facture');
+		$invoicePcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'facture',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['facture']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField(
+				'jpsun_pc_install',
+				$invoicePcInstallField['label'],
+				$invoicePcInstallField['type'],
+				$invoicePcInstallField['pos'],
+				$invoicePcInstallField['size'],
+				$invoicePcInstallField['elementtype'],
+				$invoicePcInstallField['unique'],
+				$invoicePcInstallField['required'],
+				$invoicePcInstallField['default_value'],
+				$invoicePcInstallField['param'],
+				$invoicePcInstallField['alwayseditable'],
+				$invoicePcInstallField['perms'],
+				$invoicePcInstallField['list'],
+				$invoicePcInstallField['help'],
+				$invoicePcInstallField['computed'],
+				$invoicePcInstallField['entity'],
+				$invoicePcInstallField['langfile'],
+				$invoicePcInstallField['enabled'],
+				$invoicePcInstallField['totalizable'],
+				$invoicePcInstallField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_pc_install',
+				$invoicePcInstallField['label'],
+				$invoicePcInstallField['type'],
+				$invoicePcInstallField['size'],
+				$invoicePcInstallField['elementtype'],
+				$invoicePcInstallField['unique'],
+				$invoicePcInstallField['required'],
+				$invoicePcInstallField['pos'],
+				$invoicePcInstallField['param'],
+				$invoicePcInstallField['alwayseditable'],
+				$invoicePcInstallField['perms'],
+				$invoicePcInstallField['list'],
+				$invoicePcInstallField['help'],
+				$invoicePcInstallField['default_value'],
+				$invoicePcInstallField['computed'],
+				$invoicePcInstallField['entity'],
+				$invoicePcInstallField['langfile'],
+				$invoicePcInstallField['enabled'],
+				$invoicePcInstallField['totalizable'],
+				$invoicePcInstallField['printable']
+			);
+		}
+
 		$invoiceVatField = array(
 			'label' => 'JpsunTauxTvaFacture',
 			'type' => 'varchar',
@@ -373,6 +442,77 @@ class modJpsun extends DolibarrModules
 				$invoiceVatField['enabled'],
 				$invoiceVatField['totalizable'],
 				$invoiceVatField['printable']
+			);
+		}
+
+		// Customer orders
+		$ext->fetch_name_optionals_label('commande');
+		$orderPcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'commande',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['commande']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField(
+				'jpsun_pc_install',
+				$orderPcInstallField['label'],
+				$orderPcInstallField['type'],
+				$orderPcInstallField['pos'],
+				$orderPcInstallField['size'],
+				$orderPcInstallField['elementtype'],
+				$orderPcInstallField['unique'],
+				$orderPcInstallField['required'],
+				$orderPcInstallField['default_value'],
+				$orderPcInstallField['param'],
+				$orderPcInstallField['alwayseditable'],
+				$orderPcInstallField['perms'],
+				$orderPcInstallField['list'],
+				$orderPcInstallField['help'],
+				$orderPcInstallField['computed'],
+				$orderPcInstallField['entity'],
+				$orderPcInstallField['langfile'],
+				$orderPcInstallField['enabled'],
+				$orderPcInstallField['totalizable'],
+				$orderPcInstallField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_pc_install',
+				$orderPcInstallField['label'],
+				$orderPcInstallField['type'],
+				$orderPcInstallField['size'],
+				$orderPcInstallField['elementtype'],
+				$orderPcInstallField['unique'],
+				$orderPcInstallField['required'],
+				$orderPcInstallField['pos'],
+				$orderPcInstallField['param'],
+				$orderPcInstallField['alwayseditable'],
+				$orderPcInstallField['perms'],
+				$orderPcInstallField['list'],
+				$orderPcInstallField['help'],
+				$orderPcInstallField['default_value'],
+				$orderPcInstallField['computed'],
+				$orderPcInstallField['entity'],
+				$orderPcInstallField['langfile'],
+				$orderPcInstallField['enabled'],
+				$orderPcInstallField['totalizable'],
+				$orderPcInstallField['printable']
 			);
 		}
 
