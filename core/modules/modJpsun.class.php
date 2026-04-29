@@ -126,7 +126,7 @@ class modJpsun extends DolibarrModules
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
-        $this->boxes = array();			// List of boxes
+		$this->boxes = array('jpsun_pc_install.php@jpsun');			// List of boxes
 
         // Permissions provided by this module
 		$this->rights = array();
