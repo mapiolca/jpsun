@@ -141,6 +141,11 @@ class modJpsun extends DolibarrModules
 					'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
 				'note' => 'BoxPuissanceCreteHebdo',
 				'enabledbydefaulton' => 'Home'
+			),
+			array(
+					'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
+				'note' => 'BoxCamembertCategorieCa',
+				'enabledbydefaulton' => 'Home'
 			)
 		);			// List of boxes
 
