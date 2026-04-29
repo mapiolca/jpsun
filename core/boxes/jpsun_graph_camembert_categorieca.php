@@ -60,7 +60,7 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 			$px1->SetCssPrefix('cssboxes');
 			$px1->mode = 'depth';
 			$px1->draw('idgraphjpsuncacatpie');
-			$stringtoprint .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total).'</div>';
+			$stringtoprint .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total, 1).'</div>';
 			$stringtoprint .= $px1->show($total ? 0 : 1);
 		}
 		$stringtoprint .= '</div>';
