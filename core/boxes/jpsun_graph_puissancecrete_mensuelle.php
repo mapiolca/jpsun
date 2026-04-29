@@ -33,7 +33,8 @@ class jpsun_graph_puissancecrete_mensuelle extends ModeleBoxes
 			$v1 = isset($dataCurrent[$m]) ? (float) $dataCurrent[$m] : 0.0;
 			$v0 = isset($dataPrevious[$m]) ? (float) $dataPrevious[$m] : 0.0;
 			$total += $v1 + $v0;
-			$graphData[] = array((string) $m, $v1, $v0);
+			$monthLabel = dol_print_date(dol_mktime(0, 0, 0, $m, 1, 2000), '%b');
+			$graphData[] = array($monthLabel, $v1, $v0);
 		}
 		$contentHtml = '';
 		if ($total <= 0) {
