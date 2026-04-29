@@ -303,3 +303,4 @@ jpsun_pc_install_help=Puissance crête installée (kWc).
 JpsunWidgetPuissanceCreteTotalTitle=Puissance crête totale année N
 JpsunWidgetPuissanceCreteMensuelTitle=Puissance crête mensuelle N / N-1
 JpsunWidgetPuissanceCreteHebdoTitle=Puissance crête hebdomadaire N / N-1
+JpsunWidgetNoData=Aucune donnée
