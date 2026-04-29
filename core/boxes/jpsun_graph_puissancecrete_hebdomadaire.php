@@ -9,7 +9,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	public $boxcode = 'jpsun_pc_weekly';
 	public $boximg = 'chart';
 	public $boxlabel = 'JpsunWidgetPuissanceCreteHebdoTitle';
-	public $depends = array('propal');
+	public $depends = array('commande');
 	public $lang = 'jpsun@jpsun';
 
 	public function __construct($db, $param = '')
@@ -70,7 +70,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	{
 		$result = array_fill(1, 53, 0.0);
 		if (!$this->hasPowerColumn($db)) return $result;
-		$sql = "SELECT WEEK(p.date_cloture, 3) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."propal p LEFT JOIN ".MAIN_DB_PREFIX."propal_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut=4 AND p.entity IN (".getEntity('propal').") AND p.date_cloture IS NOT NULL AND p.date_cloture >= '".$db->idate(dol_get_first_day($year,1,false))."' AND p.date_cloture <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
+		$sql = "SELECT WEEK(p.date_livraison, 3) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."commande p LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut>0 AND p.entity IN (".getEntity('commande').") AND p.date_livraison IS NOT NULL AND p.date_livraison >= '".$db->idate(dol_get_first_day($year,1,false))."' AND p.date_livraison <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
 		$resql = $db->query($sql);
 		if ($resql) while ($o = $db->fetch_object($resql)) { $i=(int)$o->idx; if($i===0)$i=53; $result[$i]=(float)$o->total; }
 		return $result;
@@ -80,7 +80,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	{
 		static $hasColumn = null;
 		if ($hasColumn !== null) return $hasColumn;
-		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."propal_extrafields LIKE 'jpsun_pc_install'";
+		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."commande_extrafields LIKE 'jpsun_pc_install'";
 		$resql = $db->query($sql);
 		$hasColumn = ($resql && $db->num_rows($resql) > 0);
 		return $hasColumn;

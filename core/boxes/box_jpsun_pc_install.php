@@ -22,7 +22,7 @@ class box_jpsun_pc_install extends ModeleBoxes
 	public $boxcode = 'jpsun_pc_install';
 	public $boximg = 'object_project';
 	public $boxlabel = 'JpsunWidgetPuissanceCrete';
-	public $depends = array('propal');
+	public $depends = array('commande');
 	public $version = 'dolibarr';
 	public $hidden = false;
 
@@ -65,17 +65,17 @@ class box_jpsun_pc_install extends ModeleBoxes
 			$result[$i] = 0.0;
 		}
 
-		$entitySql = getEntity('propal');
-		$indexExpression = ($period === 'month') ? "MONTH(p.date_cloture)" : "WEEK(p.date_cloture, 3)";
+		$entitySql = getEntity('commande');
+		$indexExpression = ($period === 'month') ? "MONTH(p.date_livraison)" : "WEEK(p.date_livraison, 3)";
 
 		$sql = "SELECT ".$indexExpression." as idx, SUM(COALESCE(pef.jpsun_pc_install, 0)) as total";
-		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
-		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."propal_extrafields as pef ON pef.fk_object = p.rowid";
-		$sql .= " WHERE p.fk_statut = 4";
+		$sql .= " FROM ".MAIN_DB_PREFIX."commande as p";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields as pef ON pef.fk_object = p.rowid";
+		$sql .= " WHERE p.fk_statut > 0";
 		$sql .= " AND p.entity IN (".$entitySql.")";
-		$sql .= " AND p.date_cloture IS NOT NULL";
-		$sql .= " AND p.date_cloture >= '".$db->idate(dol_get_first_day($year, 1, false))."'";
-		$sql .= " AND p.date_cloture <= '".$db->idate(dol_get_last_day($year, 12, false))."'";
+		$sql .= " AND p.date_livraison IS NOT NULL";
+		$sql .= " AND p.date_livraison >= '".$db->idate(dol_get_first_day($year, 1, false))."'";
+		$sql .= " AND p.date_livraison <= '".$db->idate(dol_get_last_day($year, 12, false))."'";
 		$sql .= " GROUP BY idx";
 
 		$resql = $db->query($sql);
