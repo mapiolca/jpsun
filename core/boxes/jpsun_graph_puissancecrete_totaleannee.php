@@ -36,7 +36,7 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 		}
 
 		$entitySql = getEntity('propal');
-		$sql = "SELECT SUM(COALESCE(pef.options_jpsun_pc_install, 0)) as total";
+		$sql = "SELECT SUM(COALESCE(pef.jpsun_pc_install, 0)) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."propal_extrafields as pef ON pef.fk_object = p.rowid";
 		$sql .= " WHERE p.fk_statut = 4";
@@ -60,7 +60,7 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 			return $hasColumn;
 		}
 
-		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."propal_extrafields LIKE 'options_jpsun_pc_install'";
+		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."propal_extrafields LIKE 'jpsun_pc_install'";
 		$resql = $db->query($sql);
 		$hasColumn = ($resql && $db->num_rows($resql) > 0);
 

@@ -68,7 +68,7 @@ class box_jpsun_pc_install extends ModeleBoxes
 		$entitySql = getEntity('propal');
 		$indexExpression = ($period === 'month') ? "MONTH(p.date_cloture)" : "WEEK(p.date_cloture, 3)";
 
-		$sql = "SELECT ".$indexExpression." as idx, SUM(COALESCE(pef.options_jpsun_pc_install, 0)) as total";
+		$sql = "SELECT ".$indexExpression." as idx, SUM(COALESCE(pef.jpsun_pc_install, 0)) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."propal_extrafields as pef ON pef.fk_object = p.rowid";
 		$sql .= " WHERE p.fk_statut = 4";
