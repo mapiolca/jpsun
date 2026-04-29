@@ -311,6 +311,35 @@ class modJpsun extends DolibarrModules
 	    
 	        $ext->addExtraField('jpsun_user_monogramme', 'jpsun_user_monogramme', 'varchar', 100, '2', 'user', 0, 0, '', '', 1, '', '-4', 'jpsun_user_monogramme_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 
+		// Customer proposals
+		$ext->fetch_name_optionals_label('propal');
+		$proposalPcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'propal',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['propal']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['pos'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['default_value'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
+		} else {
+			$ext->update('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['pos'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['default_value'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
+		}
+
 		// Invoice
 		$ext->fetch_name_optionals_label('facture');
 		$invoicePcInstallField = array(
@@ -896,6 +925,8 @@ class modJpsun extends DolibarrModules
 		}
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file = 'p.php' AND boxcode = 'p'";
+
 		return $this->_init($sql);
 	}
 
