@@ -76,6 +76,15 @@ if (preg_match('/del_(.*)/',$action,$reg))
     }
 }
 
+if ($action === 'jpsun_recompute_peak_power') {
+	$result = jpsunRecomputeInstalledPeakPowerFromProductLines($db);
+	if ($result['result'] > 0) {
+		setEventMessages($langs->trans('JpsunPeakPowerRecomputeSuccess', $result['updated']), null, 'mesgs');
+	} else {
+		setEventMessages($langs->trans('JpsunPeakPowerRecomputeError'), array($result['error']), 'errors');
+	}
+}
+
 /*
  * View
  */
@@ -151,6 +160,17 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
+	print '<tr>';
+	print '<td>'.$langs->trans('JpsunRecomputePeakPowerLabel').'<br><small>'.$langs->trans('JpsunRecomputePeakPowerDesc').'</small></td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="300">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="jpsun_recompute_peak_power">';
+	print '<input type="submit" class="button button-edit" value="'.$langs->trans('JpsunRecomputePeakPowerButton').'">';
+	print '</form>';
+	print '</td>';
+	print '</tr>';
 
 	// CUSTOMER ORDER
     
