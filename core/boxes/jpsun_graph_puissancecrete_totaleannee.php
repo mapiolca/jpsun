@@ -31,6 +31,10 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 
 	private function fetchTotalYear($db, $year)
 	{
+		if (!$this->hasPowerColumn($db)) {
+			return 0.0;
+		}
+
 		$entitySql = getEntity('propal');
 		$sql = "SELECT SUM(COALESCE(pef.options_jpsun_pc_install, 0)) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."propal as p";
@@ -47,5 +51,19 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 			return (float) ($obj->total ?? 0);
 		}
 		return 0.0;
+	}
+
+	private function hasPowerColumn($db)
+	{
+		static $hasColumn = null;
+		if ($hasColumn !== null) {
+			return $hasColumn;
+		}
+
+		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."propal_extrafields LIKE 'options_jpsun_pc_install'";
+		$resql = $db->query($sql);
+		$hasColumn = ($resql && $db->num_rows($resql) > 0);
+
+		return $hasColumn;
 	}
 }
