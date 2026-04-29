@@ -1,3 +1,8 @@
+## 1.15
+- Ajout des widgets puissance crête (annuel, mensuel, hebdomadaire) et du widget camembert CA par catégorie facture.
+- Ajout/mise à jour idempotente de l'extrafield `jpsun_pc_install` sur devis, factures et commandes.
+- Améliorations d'affichage des graphs (unités, légendes, hauteurs harmonisées).
+
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.14 (01/04/2026)
