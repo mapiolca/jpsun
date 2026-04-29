@@ -21,11 +21,19 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 
 	public function loadBox($max = 20)
 	{
-		global $conf, $langs;
+		global $conf, $langs, $user;
 		$langs->loadLangs(array('jpsun@jpsun', 'bills'));
 
 		$text = $langs->trans('JpsunWidgetCamembertCategorieCaTitle');
 		$this->info_box_head = array('text' => $text, 'limit' => dol_strlen($text));
+		if (empty($user) || !$user->hasRight('facture', 'lire')) {
+			$this->info_box_contents = array();
+			$this->info_box_contents[0][0] = array(
+				'td' => 'class="center opacitymedium"',
+				'text' => '<span class="opacitymedium">'.$langs->trans('NotEnoughPermissions').'</span>'
+			);
+			return;
+		}
 
 		$data = $this->fetchRevenueByCategory($this->db);
 		$total = 0.0;
