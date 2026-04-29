@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.14';
+		$this->version = '1.15';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -126,7 +126,28 @@ class modJpsun extends DolibarrModules
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
-        $this->boxes = array();			// List of boxes
+		$this->boxes = array(
+			array(
+					'file' => 'jpsun_graph_puissancecrete_totaleannee.php@jpsun',
+				'note' => 'BoxPuissanceCreteTotal',
+				'enabledbydefaulton' => 'Home'
+			),
+			array(
+					'file' => 'jpsun_graph_puissancecrete_mensuelle.php@jpsun',
+				'note' => 'BoxPuissanceCreteMensuel',
+				'enabledbydefaulton' => 'Home'
+			),
+			array(
+					'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
+				'note' => 'BoxPuissanceCreteHebdo',
+				'enabledbydefaulton' => 'Home'
+			),
+			array(
+					'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
+				'note' => 'BoxCamembertCategorieCa',
+				'enabledbydefaulton' => 'Home'
+			)
+		);			// List of boxes
 
         // Permissions provided by this module
 		$this->rights = array();
@@ -305,8 +326,106 @@ class modJpsun extends DolibarrModules
 	    
 	        $ext->addExtraField('jpsun_user_monogramme', 'jpsun_user_monogramme', 'varchar', 100, '2', 'user', 0, 0, '', '', 1, '', '-4', 'jpsun_user_monogramme_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 
+		// Customer proposals
+		$ext->fetch_name_optionals_label('propal');
+		$proposalPcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'propal',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['propal']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['pos'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['default_value'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
+		} else {
+			$ext->update('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['pos'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['default_value'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
+		}
+
 		// Invoice
 		$ext->fetch_name_optionals_label('facture');
+		$invoicePcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'facture',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['facture']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField(
+				'jpsun_pc_install',
+				$invoicePcInstallField['label'],
+				$invoicePcInstallField['type'],
+				$invoicePcInstallField['pos'],
+				$invoicePcInstallField['size'],
+				$invoicePcInstallField['elementtype'],
+				$invoicePcInstallField['unique'],
+				$invoicePcInstallField['required'],
+				$invoicePcInstallField['default_value'],
+				$invoicePcInstallField['param'],
+				$invoicePcInstallField['alwayseditable'],
+				$invoicePcInstallField['perms'],
+				$invoicePcInstallField['list'],
+				$invoicePcInstallField['help'],
+				$invoicePcInstallField['computed'],
+				$invoicePcInstallField['entity'],
+				$invoicePcInstallField['langfile'],
+				$invoicePcInstallField['enabled'],
+				$invoicePcInstallField['totalizable'],
+				$invoicePcInstallField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_pc_install',
+				$invoicePcInstallField['label'],
+				$invoicePcInstallField['type'],
+				$invoicePcInstallField['size'],
+				$invoicePcInstallField['elementtype'],
+				$invoicePcInstallField['unique'],
+				$invoicePcInstallField['required'],
+				$invoicePcInstallField['pos'],
+				$invoicePcInstallField['param'],
+				$invoicePcInstallField['alwayseditable'],
+				$invoicePcInstallField['perms'],
+				$invoicePcInstallField['list'],
+				$invoicePcInstallField['help'],
+				$invoicePcInstallField['default_value'],
+				$invoicePcInstallField['computed'],
+				$invoicePcInstallField['entity'],
+				$invoicePcInstallField['langfile'],
+				$invoicePcInstallField['enabled'],
+				$invoicePcInstallField['totalizable'],
+				$invoicePcInstallField['printable']
+			);
+		}
+
 		$invoiceVatField = array(
 			'label' => 'JpsunTauxTvaFacture',
 			'type' => 'varchar',
@@ -373,6 +492,77 @@ class modJpsun extends DolibarrModules
 				$invoiceVatField['enabled'],
 				$invoiceVatField['totalizable'],
 				$invoiceVatField['printable']
+			);
+		}
+
+		// Customer orders
+		$ext->fetch_name_optionals_label('commande');
+		$orderPcInstallField = array(
+			'label' => 'jpsun_pc_install',
+			'type' => 'double',
+			'pos' => 190,
+			'size' => '24,8',
+			'elementtype' => 'commande',
+			'unique' => 0,
+			'required' => 0,
+			'default_value' => '',
+			'param' => '',
+			'alwayseditable' => 1,
+			'perms' => '',
+			'list' => -2,
+			'help' => 'jpsun_pc_install_help',
+			'computed' => '',
+			'entity' => 0,
+			'langfile' => 'jpsun@jpsun',
+			'enabled' => '$conf->jpsun->enabled',
+			'totalizable' => 1,
+			'printable' => 1,
+		);
+		if (empty($ext->attributes['commande']['label']['jpsun_pc_install'])) {
+			$ext->addExtraField(
+				'jpsun_pc_install',
+				$orderPcInstallField['label'],
+				$orderPcInstallField['type'],
+				$orderPcInstallField['pos'],
+				$orderPcInstallField['size'],
+				$orderPcInstallField['elementtype'],
+				$orderPcInstallField['unique'],
+				$orderPcInstallField['required'],
+				$orderPcInstallField['default_value'],
+				$orderPcInstallField['param'],
+				$orderPcInstallField['alwayseditable'],
+				$orderPcInstallField['perms'],
+				$orderPcInstallField['list'],
+				$orderPcInstallField['help'],
+				$orderPcInstallField['computed'],
+				$orderPcInstallField['entity'],
+				$orderPcInstallField['langfile'],
+				$orderPcInstallField['enabled'],
+				$orderPcInstallField['totalizable'],
+				$orderPcInstallField['printable']
+			);
+		} else {
+			$ext->update(
+				'jpsun_pc_install',
+				$orderPcInstallField['label'],
+				$orderPcInstallField['type'],
+				$orderPcInstallField['size'],
+				$orderPcInstallField['elementtype'],
+				$orderPcInstallField['unique'],
+				$orderPcInstallField['required'],
+				$orderPcInstallField['pos'],
+				$orderPcInstallField['param'],
+				$orderPcInstallField['alwayseditable'],
+				$orderPcInstallField['perms'],
+				$orderPcInstallField['list'],
+				$orderPcInstallField['help'],
+				$orderPcInstallField['default_value'],
+				$orderPcInstallField['computed'],
+				$orderPcInstallField['entity'],
+				$orderPcInstallField['langfile'],
+				$orderPcInstallField['enabled'],
+				$orderPcInstallField['totalizable'],
+				$orderPcInstallField['printable']
 			);
 		}
 
@@ -750,6 +940,9 @@ class modJpsun extends DolibarrModules
 		}
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
+		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
+
 		return $this->_init($sql);
 	}
 
