@@ -935,9 +935,9 @@ class modJpsun extends DolibarrModules
 		}
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
-		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file = 'p.php' OR file LIKE 'p.php%'";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('p','p.php') OR file LIKE 'p.php%'";
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
-		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b LEFT JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.rowid IS NULL OR d.file = 'p.php' OR d.file LIKE 'p.php%'";
+		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b LEFT JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.rowid IS NULL OR d.file IN ('p','p.php') OR d.file LIKE 'p.php%'";
 
 		return $this->_init($sql);
 	}
