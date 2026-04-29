@@ -31,7 +31,7 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 			0 => array(
 				'td' => 'class="center"',
 				'asis' => 1,
-				'text' => '<div style="height:200px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:700;">'.$valueText.' kWc</div>'
+				'text' => '<div style="height:100px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:700;">'.$valueText.' kWc</div>'
 			)
 		);
 	}
