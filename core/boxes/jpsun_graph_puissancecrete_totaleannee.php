@@ -26,7 +26,14 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 		$totalCurrentYear = $this->fetchTotalYear($this->db, $yearCurrent);
 		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteTotalTitle'), 'limit' => 0);
 		$this->info_box_contents = array();
-		$this->info_box_contents[] = array(0 => array('td' => 'class="center"', 'asis' => 1, 'text' => '<span class="amount">'.price($totalCurrentYear, 0, '', 1, -1, -1, 'auto').'</span> kWc'));
+		$valueText = dol_escape_htmltag(rtrim(rtrim(sprintf('%.2f', $totalCurrentYear), '0'), '.'));
+		$this->info_box_contents[] = array(
+			0 => array(
+				'td' => 'class="center"',
+				'asis' => 1,
+				'text' => '<div style="height:200px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:700;">'.$valueText.' kWc</div>'
+			)
+		);
 	}
 
 	public function showBox($head = null, $contents = null, $nooutput = 0)
