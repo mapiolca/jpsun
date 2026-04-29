@@ -40,31 +40,18 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 			$graph = new DolGraph();
 			$graph->SetData($graphData);
 			$graph->SetType(array('pie'));
+			$legend = array();
+			foreach ($data as $label => $amount) {
+				$legend[] = $label.' ('.price((float) $amount).')';
+			}
+			$graph->SetLegend($legend);
 			$graph->setHeight(!empty($conf->dol_optimize_smallscreen) ? '220' : '260');
-			$graph->setWidth(!empty($conf->dol_optimize_smallscreen) ? '260' : '360');
-			$graph->setShowLegend(0);
+			$graph->setWidth(!empty($conf->dol_optimize_smallscreen) ? '420' : '760');
+			$graph->setShowLegend(1);
 			$graphId = 'jpsuncacatpie_e'.((int) $conf->entity);
 			$graph->draw($graphId);
-
-			$colors = array('#2e78c2', '#a3a3a3', '#d8a200', '#58a55c', '#b25db3', '#e27d60', '#4b7bec', '#26a69a');
-			$legendHtml = '<table class="noborder" style="width:100%;">';
-			$index = 0;
-			foreach ($data as $label => $amount) {
-				$color = $colors[$index % count($colors)];
-				$legendHtml .= '<tr>';
-				$legendHtml .= '<td style="width:14px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'.$color.';"></span></td>';
-				$legendHtml .= '<td>'.dol_escape_htmltag($label).'</td>';
-				$legendHtml .= '<td class="right">'.price((float) $amount).'</td>';
-				$legendHtml .= '</tr>';
-				$index++;
-			}
-			$legendHtml .= '</table>';
-
 			$contentHtml .= '<div class="center" style="font-size:20px;font-weight:700;margin-bottom:8px;">'.$langs->trans('AmountHT').': '.price($total).'</div>';
-			$contentHtml .= '<div style="display:flex;gap:12px;align-items:flex-start;">';
-			$contentHtml .= '<div style="flex:0 0 auto;">'.$graph->show(0).'</div>';
-			$contentHtml .= '<div style="flex:1 1 auto;">'.$legendHtml.'</div>';
-			$contentHtml .= '</div>';
+			$contentHtml .= '<div class="center">'.$graph->show(0).'</div>';
 		}
 
 		$this->info_box_contents = array();
