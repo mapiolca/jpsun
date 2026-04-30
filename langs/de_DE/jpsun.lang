@@ -312,3 +312,4 @@ JpsunPeakPowerRecomputeSuccess=Neuberechnung der Spitzenleistung abgeschlossen (
 JpsunPeakPowerRecomputeError=Fehler bei der Neuberechnung der Spitzenleistung.
 
 JpsunWidgetPuissanceCreteInfo=Berechnungsregel: Spitzenleistung (jpsun_pc_install) für validierte Aufträge, gruppiert nach date_cloture.
+EditerPuissancesCretesManuellement=Spitzenleistungen manuell bearbeiten.

@@ -320,3 +320,4 @@ JpsunRecomputePeakPowerButton=Recalculer la puissance crête
 JpsunPeakPowerRecomputeSuccess=Recalcul de la puissance crête terminé (%s enregistrements mis à jour).
 JpsunPeakPowerRecomputeError=Erreur lors du recalcul de la puissance crête.
 JpsunWidgetPuissanceCreteInfo=Règle de calcul : puissance crête (jpsun_pc_install) sur les commandes validées, groupée par date_cloture.
+EditerPuissancesCretesManuellement=Éditer les puissances crêtes manuellement.
