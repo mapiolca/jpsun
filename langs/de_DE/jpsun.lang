@@ -310,3 +310,5 @@ JpsunRecomputePeakPowerDesc=Erzwingt die Neuberechnung der Spitzenleistung von A
 JpsunRecomputePeakPowerButton=Spitzenleistung neu berechnen
 JpsunPeakPowerRecomputeSuccess=Neuberechnung der Spitzenleistung abgeschlossen (%s Datensätze aktualisiert).
 JpsunPeakPowerRecomputeError=Fehler bei der Neuberechnung der Spitzenleistung.
+
+JpsunWidgetPuissanceCreteInfo=Berechnungsregel: Spitzenleistung (jpsun_pc_install) für validierte Aufträge, gruppiert nach date_cloture.
