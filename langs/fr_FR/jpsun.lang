@@ -293,6 +293,11 @@ TICKET_SHOW_MESSAGES_ON_CARD = Afficher tous les messages liés au ticket sur la
 JpsunTauxTvaFacture = Taux de TVA
 JpsunTauxTvaFactureHelp = Taux de TVA de la facture (valeur automatique selon les lignes).
 JpsunMultiples = Multiples
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// # Widgets
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 JpsunWidgetPuissanceCrete=Puissance crête installée
 JpsunWidgetPuissanceCreteTitle=Puissance crête posée
 JpsunWidgetPuissanceCreteYearTotal=Total %s facturé : %s kWc
@@ -300,15 +305,15 @@ JpsunWidgetMensuel=Courbe mensuelle
 JpsunWidgetHebdomadaire=Courbe hebdomadaire
 jpsun_pc_install=Puissance crête installée
 jpsun_pc_install_help=Puissance crête installée (kWc).
-JpsunWidgetPuissanceCreteTotalTitle=kWc installs total anne N
-JpsunWidgetPuissanceCreteMensuelTitle=kWc installs mensuel N / N-1
-JpsunWidgetPuissanceCreteHebdoTitle=kWc installs hebdo. N / N-1
+JpsunWidgetPuissanceCreteTotalTitle=kWc installés total année en cours
+JpsunWidgetPuissanceCreteMensuelTitle=kWc installés mensuel N / N-1
+JpsunWidgetPuissanceCreteHebdoTitle=kWc installés hebdo. N / N-1
 JpsunWidgetNoData=Aucune donnée
-JpsunWidgetCamembertCategorieCaTitle=CA par catgorie
-BoxCamembertCategorieCa=Graphique CA par catgorie
-BoxPuissanceCreteHebdo=Graphique kWc installs hebdomadaire
-BoxPuissanceCreteTotal=Graphique kWc installs total annuel
-BoxPuissanceCreteMensuel=Graphique kWc installs mensuel
+JpsunWidgetCamembertCategorieCaTitle=CA par catégorie
+BoxCamembertCategorieCa=Graphique CA par catégorie
+BoxPuissanceCreteHebdo=Graphique kWc installés hebdomadaire
+BoxPuissanceCreteTotal=Graphique kWc installés total annuel
+BoxPuissanceCreteMensuel=Graphique kWc installés mensuel
 JpsunRecomputePeakPowerLabel=Recalcul de la puissance crête installée (kWc)
 JpsunRecomputePeakPowerDesc=Force le recalcul des puissances crête des devis, commandes et factures depuis les lignes de modules photovoltaïques.
 JpsunRecomputePeakPowerButton=Recalculer la puissance crête
