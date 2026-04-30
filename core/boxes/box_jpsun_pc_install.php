@@ -43,7 +43,7 @@ class box_jpsun_pc_install extends ModeleBoxes
 		$totalCurrentYear = array_sum($monthlyCurrent);
 
 		$this->info_box_head = array(
-			'text' => $langs->trans('JpsunWidgetPuissanceCreteTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'info', 'class="opacitymedium"'),
+			'text' => $langs->trans('JpsunWidgetPuissanceCreteTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'help', 'class="opacitymedium"'),
 			'limit' => 0
 		);
 

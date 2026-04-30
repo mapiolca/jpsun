@@ -24,7 +24,7 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 		$langs->loadLangs(array('jpsun@jpsun'));
 		$yearCurrent = (int) dol_print_date(dol_now(), '%Y');
 		$totalCurrentYear = $this->fetchTotalYear($this->db, $yearCurrent);
-		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteTotalTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'info', 'class="opacitymedium"'), 'limit' => 0);
+		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteTotalTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'help', 'class="opacitymedium"'), 'limit' => 0);
 		$this->info_box_contents = array();
 		$valueText = dol_escape_htmltag(rtrim(rtrim(sprintf('%.2f', $totalCurrentYear), '0'), '.'));
 		$this->info_box_contents[] = array(

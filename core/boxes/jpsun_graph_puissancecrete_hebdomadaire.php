@@ -28,7 +28,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 		$dataCurrent = $this->fetchByWeek($this->db, $y);
 		$dataPrevious = $this->fetchByWeek($this->db, $y - 1);
 
-		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteHebdoTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'info', 'class="opacitymedium"'), 'limit' => 0);
+		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteHebdoTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'help', 'class="opacitymedium"'), 'limit' => 0);
 
 		$graphData = array();
 		$total = 0.0;
