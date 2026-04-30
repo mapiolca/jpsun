@@ -90,8 +90,12 @@ class jpsun_graph_camembert_categorieca extends ModeleBoxes
 		$sql = "SELECT COALESCE(NULLIF(fe.jpsuntagcategory, ''), 'Sans catégorie') as category, SUM(f.total_ht) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."facture as f";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields as fe ON fe.fk_object = f.rowid";
+		$currentYearStart = dol_mktime(0, 0, 0, 1, 1, (int) dol_print_date(dol_now(), '%Y'));
+		$nextYearStart = dol_mktime(0, 0, 0, 1, 1, ((int) dol_print_date(dol_now(), '%Y')) + 1);
 		$sql .= " WHERE f.entity IN (".getEntity('invoice').")";
 		$sql .= " AND f.fk_statut > 0";
+		$sql .= " AND f.datef >= '".$db->idate($currentYearStart)."'";
+		$sql .= " AND f.datef < '".$db->idate($nextYearStart)."'";
 		$sql .= " GROUP BY category";
 		$resql = $db->query($sql);
 		if ($resql) {
