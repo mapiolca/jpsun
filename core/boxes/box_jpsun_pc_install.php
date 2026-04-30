@@ -66,16 +66,16 @@ class box_jpsun_pc_install extends ModeleBoxes
 		}
 
 		$entitySql = getEntity('commande');
-		$indexExpression = ($period === 'month') ? "MONTH(COALESCE(p.date_livraison, p.date_cloture))" : "WEEK(COALESCE(p.date_livraison, p.date_cloture), 3)";
+		$indexExpression = ($period === 'month') ? "MONTH(p.date_cloture)" : "WEEK(p.date_cloture, 3)";
 
 		$sql = "SELECT ".$indexExpression." as idx, SUM(COALESCE(pef.jpsun_pc_install, 0)) as total";
 		$sql .= " FROM ".MAIN_DB_PREFIX."commande as p";
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields as pef ON pef.fk_object = p.rowid";
 		$sql .= " WHERE p.fk_statut > 0";
 		$sql .= " AND p.entity IN (".$entitySql.")";
-		$sql .= " AND COALESCE(p.date_livraison, p.date_cloture) IS NOT NULL";
-		$sql .= " AND COALESCE(p.date_livraison, p.date_cloture) >= '".$db->idate(dol_get_first_day($year, 1, false))."'";
-		$sql .= " AND COALESCE(p.date_livraison, p.date_cloture) <= '".$db->idate(dol_get_last_day($year, 12, false))."'";
+		$sql .= " AND p.date_cloture IS NOT NULL";
+		$sql .= " AND p.date_cloture >= '".$db->idate(dol_get_first_day($year, 1, false))."'";
+		$sql .= " AND p.date_cloture <= '".$db->idate(dol_get_last_day($year, 12, false))."'";
 		$sql .= " GROUP BY idx";
 
 		$resql = $db->query($sql);

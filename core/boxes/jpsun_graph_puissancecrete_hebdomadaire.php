@@ -70,7 +70,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	{
 		$result = array_fill(1, 53, 0.0);
 		if (!$this->hasPowerColumn($db)) return $result;
-		$sql = "SELECT WEEK(COALESCE(p.date_livraison, p.date_cloture), 3) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."commande p LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut>0 AND p.entity IN (".getEntity('commande').") AND COALESCE(p.date_livraison, p.date_cloture) IS NOT NULL AND COALESCE(p.date_livraison, p.date_cloture) >= '".$db->idate(dol_get_first_day($year,1,false))."' AND COALESCE(p.date_livraison, p.date_cloture) <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
+		$sql = "SELECT WEEK(p.date_cloture, 3) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."commande p LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut>0 AND p.entity IN (".getEntity('commande').") AND p.date_cloture IS NOT NULL AND p.date_cloture >= '".$db->idate(dol_get_first_day($year,1,false))."' AND p.date_cloture <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
 		$resql = $db->query($sql);
 		if ($resql) while ($o = $db->fetch_object($resql)) { $i=(int)$o->idx; if($i===0)$i=53; $result[$i]=(float)$o->total; }
 		return $result;
