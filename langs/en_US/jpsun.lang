@@ -310,3 +310,5 @@ JpsunRecomputePeakPowerDesc=Force recalculation of proposal, order and invoice p
 JpsunRecomputePeakPowerButton=Recompute peak power
 JpsunPeakPowerRecomputeSuccess=Peak power recalculation completed (%s records updated).
 JpsunPeakPowerRecomputeError=Error during peak power recalculation.
+
+JpsunWidgetPuissanceCreteInfo=Calculation rule: peak power (jpsun_pc_install) on validated orders, grouped by date_livraison; if empty, date_cloture.

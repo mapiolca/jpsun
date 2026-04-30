@@ -26,7 +26,7 @@ class jpsun_graph_puissancecrete_mensuelle extends ModeleBoxes
 		$y = (int) dol_print_date(dol_now(), '%Y');
 		$dataCurrent = $this->fetchByMonth($this->db, $y);
 		$dataPrevious = $this->fetchByMonth($this->db, $y - 1);
-		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteMensuelTitle'), 'limit' => 0);
+		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteMensuelTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'info', 'class="opacitymedium"'), 'limit' => 0);
 		$graphData = array();
 		$total = 0.0;
 		for ($m = 1; $m <= 12; $m++) {
@@ -66,7 +66,7 @@ class jpsun_graph_puissancecrete_mensuelle extends ModeleBoxes
 	{
 		$result = array_fill(1, 12, 0.0);
 		if (!$this->hasPowerColumn($db)) return $result;
-		$sql = "SELECT MONTH(p.date_cloture) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."commande p LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut>0 AND p.entity IN (".getEntity('commande').") AND p.date_cloture IS NOT NULL AND p.date_cloture >= '".$db->idate(dol_get_first_day($year,1,false))."' AND p.date_cloture <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
+		$sql = "SELECT MONTH(COALESCE(p.date_livraison, p.date_cloture)) as idx, SUM(COALESCE(pef.jpsun_pc_install,0)) as total FROM ".MAIN_DB_PREFIX."commande p LEFT JOIN ".MAIN_DB_PREFIX."commande_extrafields pef ON pef.fk_object=p.rowid WHERE p.fk_statut>0 AND p.entity IN (".getEntity('commande').") AND COALESCE(p.date_livraison, p.date_cloture) IS NOT NULL AND COALESCE(p.date_livraison, p.date_cloture) >= '".$db->idate(dol_get_first_day($year,1,false))."' AND COALESCE(p.date_livraison, p.date_cloture) <= '".$db->idate(dol_get_last_day($year,12,false))."' GROUP BY idx";
 		$resql = $db->query($sql);
 		if ($resql) while ($o = $db->fetch_object($resql)) $result[(int) $o->idx] = (float) $o->total;
 		return $result;

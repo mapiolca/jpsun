@@ -310,3 +310,5 @@ JpsunRecomputePeakPowerDesc=Forza il ricalcolo della potenza di picco di prevent
 JpsunRecomputePeakPowerButton=Ricalcola potenza di picco
 JpsunPeakPowerRecomputeSuccess=Ricalcolo della potenza di picco completato (%s record aggiornati).
 JpsunPeakPowerRecomputeError=Errore durante il ricalcolo della potenza di picco.
+
+JpsunWidgetPuissanceCreteInfo=Regola di calcolo: potenza di picco (jpsun_pc_install) sugli ordini convalidati, raggruppata per date_livraison; se vuota, date_cloture.
