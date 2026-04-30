@@ -312,3 +312,4 @@ JpsunPeakPowerRecomputeSuccess=Recálculo de potencia pico completado (%s regist
 JpsunPeakPowerRecomputeError=Error durante el recálculo de potencia pico.
 
 JpsunWidgetPuissanceCreteInfo=Regla de cálculo: potencia pico (jpsun_pc_install) en pedidos validados, agrupada por date_cloture.
+EditerPuissancesCretesManuellement=Editar las potencias pico manualmente.

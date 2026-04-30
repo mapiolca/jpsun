@@ -26,7 +26,13 @@ class jpsun_graph_puissancecrete_mensuelle extends ModeleBoxes
 		$y = (int) dol_print_date(dol_now(), '%Y');
 		$dataCurrent = $this->fetchByMonth($this->db, $y);
 		$dataPrevious = $this->fetchByMonth($this->db, $y - 1);
-		$this->info_box_head = array('text' => $langs->trans('JpsunWidgetPuissanceCreteMensuelTitle').' '.img_picto($langs->trans('JpsunWidgetPuissanceCreteInfo'), 'info', 'class="opacitymedium"'), 'limit' => 0);
+		$this->info_box_head = array(
+			'text' => $langs->trans('JpsunWidgetPuissanceCreteMensuelTitle'),
+			'limit' => 0,
+			'subpicto' => 'help',
+			'subtext' => dol_escape_htmltag($langs->transnoentitiesnoconv('JpsunWidgetPuissanceCreteInfo')),
+			'subclass' => 'classfortooltip',
+		);
 		$graphData = array();
 		$total = 0.0;
 		for ($m = 1; $m <= 12; $m++) {

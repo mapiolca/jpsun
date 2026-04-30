@@ -161,6 +161,11 @@ class modJpsun extends DolibarrModules
 		$this->rights[$r][5] = 'read';
 		$r++;
 
+		$this->rights[$r][0] = $this->numero . sprintf('%02d', ($o * 10) + 2);
+		$this->rights[$r][1] = 'EditerPuissancesCretesManuellement';
+		$this->rights[$r][4] = 'pcinstall';
+		$this->rights[$r][5] = 'write';
+		$r++;
 		/*
 		
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
@@ -339,7 +344,7 @@ class modJpsun extends DolibarrModules
 			'default_value' => '',
 			'param' => '',
 			'alwayseditable' => 1,
-			'perms' => '',
+			'perms' => '$user->rights->jpsun->pcinstall->write',
 			'list' => -2,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
@@ -368,7 +373,7 @@ class modJpsun extends DolibarrModules
 			'default_value' => '',
 			'param' => '',
 			'alwayseditable' => 1,
-			'perms' => '',
+			'perms' => '$user->rights->jpsun->pcinstall->write',
 			'list' => -2,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
@@ -508,7 +513,7 @@ class modJpsun extends DolibarrModules
 			'default_value' => '',
 			'param' => '',
 			'alwayseditable' => 1,
-			'perms' => '',
+			'perms' => '$user->rights->jpsun->pcinstall->write',
 			'list' => -2,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',

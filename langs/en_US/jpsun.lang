@@ -312,3 +312,4 @@ JpsunPeakPowerRecomputeSuccess=Peak power recalculation completed (%s records up
 JpsunPeakPowerRecomputeError=Error during peak power recalculation.
 
 JpsunWidgetPuissanceCreteInfo=Calculation rule: peak power (jpsun_pc_install) on validated orders, grouped by date_cloture.
+EditerPuissancesCretesManuellement=Edit peak powers manually.
