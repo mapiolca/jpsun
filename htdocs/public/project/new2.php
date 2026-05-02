@@ -572,51 +572,7 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 				</div>
 		<div class="elementor-element elementor-element-c1cbb02 e-con-full e-flex e-con e-child" data-id="c1cbb02" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
 				<div class="elementor-element elementor-element-50ec840 elementor-button-align-stretch elementor-widget elementor-widget-form" data-id="50ec840" data-element_type="widget" data-e-type="widget" data-settings="{&quot;step_next_label&quot;:&quot;Suivant&quot;,&quot;step_previous_label&quot;:&quot;Pr\u00e9c\u00e9dent&quot;,&quot;button_width&quot;:&quot;100&quot;,&quot;step_type&quot;:&quot;number_text&quot;,&quot;step_icon_shape&quot;:&quot;circle&quot;}" data-widget_type="form.default">
-							<form class="elementor-form" method="post" name="Recevez votre étude personnalisée" aria-label="Recevez votre étude personnalisée">
-			<input type="hidden" name="post_id" value="11"/>
-			<input type="hidden" name="form_id" value="50ec840"/>
-			<input type="hidden" name="referer_title" value="Contact - Soleil Aquitain" />
-
-							<input type="hidden" name="queried_id" value="11"/>
-			
-			<div class="elementor-form-fields-wrapper elementor-labels-above">
-								<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-name elementor-col-100">
-												<label for="form-field-name" class="elementor-field-label">
-								Nom complet *							</label>
-														<input size="1" type="text" name="form_fields[name]" id="form-field-name" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean Dupont">
-											</div>
-								<div class="elementor-field-type-tel elementor-field-group elementor-column elementor-field-group-field_717fa75 elementor-col-100">
-												<label for="form-field-field_717fa75" class="elementor-field-label">
-								Téléphone *							</label>
-								<input size="1" type="tel" name="form_fields[field_717fa75]" id="form-field-field_717fa75" class="elementor-field elementor-size-xs  elementor-field-textual" pattern="[0-9()#&amp;+*-=.]+" title="Seuls les caractères de numéros de téléphone (#, -, *, etc.) sont acceptés.">
-
-						</div>
-								<div class="elementor-field-type-email elementor-field-group elementor-column elementor-field-group-email elementor-col-100 elementor-field-required">
-												<label for="form-field-email" class="elementor-field-label">
-								E-mail							</label>
-														<input size="1" type="email" name="form_fields[email]" id="form-field-email" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean@email.com" required="required">
-											</div>
-								<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-field_97e98c6 elementor-col-100 elementor-field-required">
-												<label for="form-field-field_97e98c6" class="elementor-field-label">
-								Ville / Code postal							</label>
-														<input size="1" type="text" name="form_fields[field_97e98c6]" id="form-field-field_97e98c6" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Bordeaux 33000" required="required">
-											</div>
-								<div class="elementor-field-type-textarea elementor-field-group elementor-column elementor-field-group-message elementor-col-100">
-												<label for="form-field-message" class="elementor-field-label">
-								Votre projet (optionnel)							</label>
-						<textarea class="elementor-field-textual elementor-field  elementor-size-xs" name="form_fields[message]" id="form-field-message" rows="4" placeholder="Décrivez brièvement votre projet : type de maison, surface de toiture, consommation actuelle..."></textarea>				</div>
-								<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100 e-form__buttons">
-					<button class="elementor-button elementor-size-sm" type="submit">
-						<span class="elementor-button-content-wrapper">
-															<span class="elementor-button-icon">
-									<svg aria-hidden="true" class="e-font-icon-svg e-far-paper-plane" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M440 6.5L24 246.4c-34.4 19.9-31.1 70.8 5.7 85.9L144 379.6V464c0 46.4 59.2 65.5 86.6 28.6l43.8-59.1 111.9 46.2c5.9 2.4 12.1 3.6 18.3 3.6 8.2 0 16.3-2.1 23.6-6.2 12.8-7.2 21.6-20 23.9-34.5l59.4-387.2c6.1-40.1-36.9-68.8-71.5-48.9zM192 464v-64.6l36.6 15.1L192 464zm212.6-28.7l-153.8-63.5L391 169.5c10.7-15.5-9.5-33.5-23.7-21.2L155.8 332.6 48 288 464 48l-59.4 387.3z"></path></svg>																	</span>
-																						<span class="elementor-button-text">Envoyer ma demande</span>
-													</span>
-					</button>
-				</div>
-			</div>
-		</form>
-		<?php
+<?php
 			if (!empty($successMessage)) echo '<div class="sa-msg sa-ok">'.dol_escape_htmltag($successMessage).'</div>';
 			if (!empty($publicError)) echo '<div class="sa-msg sa-ko">'.dol_escape_htmltag($publicError).'</div>';
 			echo '<form method="POST" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
@@ -629,8 +585,45 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 				echo '<input type="hidden" name="'.$utmKey.'" value="'.dol_escape_htmltag($utmVal).'">';
 			}
 			echo '<input class="sa-hid" type="text" name="website_url" value="">';
-			echo '<label>Nom complet *<input type="text" name="fullname" required value="'.dol_escape_htmltag($fullname).'"></label>';
-			echo '<label>Téléphone *<input type="text" name="phone" required value="'.dol_escape_htmltag($phone).'"></label>';
+?>
+			<div class="elementor-form-fields-wrapper elementor-labels-above">
+				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-name elementor-col-100">
+					<label for="form-field-name" class="elementor-field-label">Nom complet *</label>
+					<input size="1" type="text" name="fullname" id="form-field-name" required class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean Dupont" value="<?php print dol_escape_htmltag($fullname); ?>">
+				</div>
+				<div class="elementor-field-type-tel elementor-field-group elementor-column elementor-field-group-field_717fa75 elementor-col-100">
+					<label for="form-field-phone" class="elementor-field-label">Téléphone *</label>
+					<input size="1" type="tel" name="phone" id="form-field-phone" class="elementor-field elementor-size-xs  elementor-field-textual" pattern="[0-9()#&amp;+*-=.]+" title="Seuls les caractères de numéros de téléphone (#, -, *, etc.) sont acceptés." value="<?php print dol_escape_htmltag($phone); ?>">
+				</div>
+				<div class="elementor-field-type-email elementor-field-group elementor-column elementor-field-group-email elementor-col-100 elementor-field-required">
+					<label for="form-field-email" class="elementor-field-label">E-mail </label>
+					<input size="1" type="email" name="email" id="form-field-email" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean@email.com" required="required"  value="<?php print dol_escape_htmltag($email); ?>">
+				</div>
+				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-town elementor-col-100 elementor-field-required">
+					<label for="form-field-town" class="elementor-field-label">Ville </label>
+					<input size="1" type="text" name="town" id="form-field-town" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Bordeaux" required="required"  value="<?php print dol_escape_htmltag(town); ?>">
+				</div>
+				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-zip elementor-col-100 elementor-field-required">
+					<label for="form-field-zip" class="elementor-field-label">Code postal	</label>
+					<input size="1" type="text" name="zip" id="form-field-zip" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="33000" required="required"  value="<?php print dol_escape_htmltag(zip); ?>">
+				</div>
+				<div class="elementor-field-type-textarea elementor-field-group elementor-column elementor-field-group-message elementor-col-100">
+					<label for="form-field-message" class="elementor-field-label">Votre projet (optionnel)</label>
+					<textarea class="elementor-field-textual elementor-field  elementor-size-xs" name="form_fields[message]" id="form-field-message" rows="4" placeholder="Décrivez brièvement votre projet : type de maison, surface de toiture, consommation actuelle..." value="<?php print dol_escape_htmltag($description);?>"></textarea>
+				</div>
+				<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100 e-form__buttons">
+					<button class="elementor-button elementor-size-sm" type="submit">
+						<span class="elementor-button-content-wrapper">
+							<span class="elementor-button-icon">
+								<svg aria-hidden="true" class="e-font-icon-svg e-far-paper-plane" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M440 6.5L24 246.4c-34.4 19.9-31.1 70.8 5.7 85.9L144 379.6V464c0 46.4 59.2 65.5 86.6 28.6l43.8-59.1 111.9 46.2c5.9 2.4 12.1 3.6 18.3 3.6 8.2 0 16.3-2.1 23.6-6.2 12.8-7.2 21.6-20 23.9-34.5l59.4-387.2c6.1-40.1-36.9-68.8-71.5-48.9zM192 464v-64.6l36.6 15.1L192 464zm212.6-28.7l-153.8-63.5L391 169.5c10.7-15.5-9.5-33.5-23.7-21.2L155.8 332.6 48 288 464 48l-59.4 387.3z"></path></svg>																	</span>
+							<span class="elementor-button-text">Envoyer ma demande</span>
+						</span>
+					</button>
+				</div>
+			</div>
+		<?php
+			
+			
 			echo '<label>E-mail *<input type="email" name="email" required value="'.dol_escape_htmltag($email).'"></label>';
 			echo '<label>Ville<input type="text" name="town" required value="'.dol_escape_htmltag($town).'"></label>';
 			echo '<label>Code postal<input type="text" name="zip" required value="'.dol_escape_htmltag($zip).'"></label>';
