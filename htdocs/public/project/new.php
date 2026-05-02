@@ -294,5 +294,28 @@ echo '<label style="font-weight:400"><input type="checkbox" name="rgpd_consent" 
 echo '<button type="submit" class="sa-btn">Envoyer ma demande</button>';
 echo '</form>';
 echo '</div></div></div>';
+$saBodyEnd = <<<'HTML'
+<script id="ht_ctc_app_js-js-extra">
+var ht_ctc_chat_var = {"number":"33645454299","pre_filled":"Hello !","dis_m":"show","dis_d":"show","css":"cursor: pointer; z-index: 99999999;","pos_d":"position: fixed; bottom: 15px; right: 15px;","pos_m":"position: fixed; bottom: 15px; right: 15px;","side_d":"right","side_m":"right","schedule":"no","se":"150","ani":"no-animation","page_id":"11","url_target_d":"_blank","ga":"yes","gtm":"1","fb":"yes","webhook_format":"json","g_init":"default","g_an_event_name":"click to chat","gtm_event_name":"Click to Chat","pixel_event_name":"Click to Chat by HoliThemes"};
+var ht_ctc_variables = {"g_an_event_name":"click to chat","gtm_event_name":"Click to Chat","pixel_event_type":"trackCustom","pixel_event_name":"Click to Chat by HoliThemes"};
+</script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/click-to-chat-for-whatsapp/new/inc/assets/js/app.js?ver=4.39" id="ht_ctc_app_js-js" defer data-wp-strategy="defer"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/honeypot/includes/js/wpa.js?ver=2.3.04" id="wpascript-js"></script>
+<script id="wpascript-js-after">wpa_field_info = {"wpa_field_name":"xtboij4894","wpa_field_value":788214,"wpa_add_test":"no"}</script>
+<script id="kadence-navigation-js-extra">var kadenceConfig = {"screenReader":{"expand":"Menu enfant","expandOf":"Menu enfant de","collapse":"Menu enfant","collapseOf":"Menu enfant de"},"breakPoints":{"desktop":"1024","tablet":768},"scrollOffset":"0"};</script>
+<script src="https://soleilaquitain.fr/wp-content/themes/kadence/assets/js/navigation.min.js?ver=1.4.5" id="kadence-navigation-js" async></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=4.0.1" id="elementor-webpack-runtime-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=4.0.1" id="elementor-frontend-modules-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/ui/core.min.js?ver=1.13.3" id="jquery-ui-core-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=4.0.1" id="elementor-frontend-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=4.0.1" id="elementor-pro-webpack-runtime-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/dist/hooks.min.js?ver=dd5603f07f9220ed27f1" id="wp-hooks-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/dist/i18n.min.js?ver=c26c3dc7bed366793375" id="wp-i18n-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=4.0.1" id="elementor-pro-frontend-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/elements-handlers.min.js?ver=4.0.1" id="pro-elements-handlers-js"></script>
+<div id="search-drawer" aria-modal="true" role="dialog" aria-label="Rechercher" class="popup-drawer popup-drawer-layout-fullwidth" data-drawer-target-string="#search-drawer"></div>
+<div id="cookie-notice" role="dialog" class="cookie-notice-hidden cookie-revoke-hidden cn-position-bottom" aria-label="Cookie Notice" style="background-color: rgba(168,196,192,0.8);"><div class="cookie-notice-container" style="color: #fff"><span id="cn-notice-text" class="cn-text-container">Nous utilisons des cookies pour vous garantir la meilleure expérience sur notre site web. Si vous continuez à utiliser ce site, nous supposerons que vous en êtes satisfait.</span><span id="cn-notice-buttons" class="cn-buttons-container"><button id="cn-accept-cookie" data-cookie-set="accept" class="cn-set-cookie cn-button" aria-label="OK" style="background-color: #020000">OK</button></span><button type="button" id="cn-close-notice" data-cookie-set="accept" class="cn-close-icon" aria-label="Non"></button></div></div>
+HTML;
+echo $saBodyEnd;
 printCommonFooter('public');
 echo '</body></html>';
