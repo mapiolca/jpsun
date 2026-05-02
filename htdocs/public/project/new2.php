@@ -601,11 +601,11 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 				</div>
 				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-town elementor-col-100 elementor-field-required">
 					<label for="form-field-town" class="elementor-field-label">Ville </label>
-					<input size="1" type="text" name="town" id="form-field-town" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Bordeaux" required="required"  value="<?php print dol_escape_htmltag(town); ?>">
+					<input size="1" type="text" name="town" id="form-field-town" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Bordeaux" required="required"  value="<?php print dol_escape_htmltag($town); ?>">
 				</div>
 				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-zip elementor-col-100 elementor-field-required">
 					<label for="form-field-zip" class="elementor-field-label">Code postal	</label>
-					<input size="1" type="text" name="zip" id="form-field-zip" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="33000" required="required"  value="<?php print dol_escape_htmltag(zip); ?>">
+					<input size="1" type="text" name="zip" id="form-field-zip" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="33000" required="required"  value="<?php print dol_escape_htmltag($zip); ?>">
 				</div>
 				<div class="elementor-field-type-textarea elementor-field-group elementor-column elementor-field-group-message elementor-col-100">
 					<label for="form-field-message" class="elementor-field-label">Votre projet (optionnel)</label>
