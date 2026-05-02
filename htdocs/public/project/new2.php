@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="fr-FR" prefix="og: https://ogp.me/ns#" class="no-js" itemtype="https://schema.org/WebPage" itemscope>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+	
+<!-- Optimisation des moteurs de recherche par Rank Math - https://rankmath.com/ -->
+<title>Contact - Soleil Aquitain</title>
+<meta name="description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée."/>
+<meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"/>
+<link rel="canonical" href="https://soleilaquitain.fr/contact/" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Contact - Soleil Aquitain" />
+<meta property="og:description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée." />
+<meta property="og:url" content="https://soleilaquitain.fr/contact/" />
+<meta property="og:site_name" content="Soleil Aquitain" />
+<meta property="og:updated_time" content="2026-03-22T20:34:37+00:00" />
+<meta property="og:image" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg" />
+<meta property="og:image:secure_url" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg" />
+<meta property="og:image:width" content="400" />
+<meta property="og:image:height" content="380" />
+<meta property="og:image:alt" content="Contact" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="article:published_time" content="2026-01-08T11:11:09+00:00" />
+<meta property="article:modified_time" content="2026-03-22T20:34:37+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Contact - Soleil Aquitain" />
+<meta name="twitter:description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée." />
+<meta name="twitter:image" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg" />
+<meta name="twitter:label1" content="Temps de lecture" />
+<meta name="twitter:data1" content="Moins d’une minute" />
+<script type="application/ld+json" class="rank-math-schema">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://soleilaquitain.fr/#organization","name":"Soleil Aquitain","url":"https://soleilaquitain.fr","logo":{"@type":"ImageObject","@id":"https://soleilaquitain.fr/#logo","url":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png","contentUrl":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png","caption":"Soleil Aquitain","inLanguage":"fr-FR","width":"863","height":"462"}},{"@type":"WebSite","@id":"https://soleilaquitain.fr/#website","url":"https://soleilaquitain.fr","name":"Soleil Aquitain","publisher":{"@id":"https://soleilaquitain.fr/#organization"},"inLanguage":"fr-FR"},{"@type":"ImageObject","@id":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg","url":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg","width":"400","height":"380","inLanguage":"fr-FR"},{"@type":"WebPage","@id":"https://soleilaquitain.fr/contact/#webpage","url":"https://soleilaquitain.fr/contact/","name":"Contact - Soleil Aquitain","datePublished":"2026-01-08T11:11:09+00:00","dateModified":"2026-03-22T20:34:37+00:00","isPartOf":{"@id":"https://soleilaquitain.fr/#website"},"primaryImageOfPage":{"@id":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg"},"inLanguage":"fr-FR"},{"@type":"Person","@id":"https://soleilaquitain.fr/author/a-charrecomptoirdigital-com/","name":"a.charre@comptoirdigital.com","url":"https://soleilaquitain.fr/author/a-charrecomptoirdigital-com/","image":{"@type":"ImageObject","@id":"https://secure.gravatar.com/avatar/932bc6cef8e767de1c03bfd3ffc94f7cdab0c8ce8e7110e7f196128e55d76e26?s=96&amp;d=mm&amp;r=g","url":"https://secure.gravatar.com/avatar/932bc6cef8e767de1c03bfd3ffc94f7cdab0c8ce8e7110e7f196128e55d76e26?s=96&amp;d=mm&amp;r=g","caption":"a.charre@comptoirdigital.com","inLanguage":"fr-FR"},"worksFor":{"@id":"https://soleilaquitain.fr/#organization"}},{"@type":"Article","headline":"Contact - Soleil Aquitain","datePublished":"2026-01-08T11:11:09+00:00","dateModified":"2026-03-22T20:34:37+00:00","author":{"@id":"https://soleilaquitain.fr/author/a-charrecomptoirdigital-com/","name":"a.charre@comptoirdigital.com"},"publisher":{"@id":"https://soleilaquitain.fr/#organization"},"description":"Remplissez le formulaire ou contactez-nous directement. Nous vous r\u00e9pondons sous 24h avec une \u00e9tude personnalis\u00e9e.","name":"Contact - Soleil Aquitain","@id":"https://soleilaquitain.fr/contact/#richSnippet","isPartOf":{"@id":"https://soleilaquitain.fr/contact/#webpage"},"image":{"@id":"https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg"},"inLanguage":"fr-FR","mainEntityOfPage":{"@id":"https://soleilaquitain.fr/contact/#webpage"}}]}</script>
+<!-- /Extension Rank Math WordPress SEO -->
+
+<link rel="alternate" type="application/rss+xml" title="Soleil Aquitain &raquo; Flux" href="https://soleilaquitain.fr/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Soleil Aquitain &raquo; Flux des commentaires" href="https://soleilaquitain.fr/comments/feed/" />
+			<script>document.documentElement.classList.remove( 'no-js' );</script>
+			<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://soleilaquitain.fr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsoleilaquitain.fr%2Fcontact%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://soleilaquitain.fr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsoleilaquitain.fr%2Fcontact%2F&#038;format=xml" />
+<style id='wp-img-auto-sizes-contain-inline-css'>
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+
+<link rel='stylesheet' id='ht_ctc_main_css-css' href='https://soleilaquitain.fr/wp-content/plugins/click-to-chat-for-whatsapp/new/inc/assets/css/main.css?ver=4.39' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--theme-palette-1: var(--global-palette1);--wp--preset--color--theme-palette-2: var(--global-palette2);--wp--preset--color--theme-palette-3: var(--global-palette3);--wp--preset--color--theme-palette-4: var(--global-palette4);--wp--preset--color--theme-palette-5: var(--global-palette5);--wp--preset--color--theme-palette-6: var(--global-palette6);--wp--preset--color--theme-palette-7: var(--global-palette7);--wp--preset--color--theme-palette-8: var(--global-palette8);--wp--preset--color--theme-palette-9: var(--global-palette9);--wp--preset--color--theme-palette-10: var(--global-palette10);--wp--preset--color--theme-palette-11: var(--global-palette11);--wp--preset--color--theme-palette-12: var(--global-palette12);--wp--preset--color--theme-palette-13: var(--global-palette13);--wp--preset--color--theme-palette-14: var(--global-palette14);--wp--preset--color--theme-palette-15: var(--global-palette15);--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: var(--global-font-size-small);--wp--preset--font-size--medium: var(--global-font-size-medium);--wp--preset--font-size--large: var(--global-font-size-large);--wp--preset--font-size--x-large: 42px;--wp--preset--font-size--larger: var(--global-font-size-larger);--wp--preset--font-size--xxlarge: var(--global-font-size-xxlarge);--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-term-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-term-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<link rel='stylesheet' id='cookie-notice-front-css' href='https://soleilaquitain.fr/wp-content/plugins/cookie-notice/css/front.min.css?ver=2.5.16' media='all' />
+<link rel='stylesheet' id='wpa-css-css' href='https://soleilaquitain.fr/wp-content/plugins/honeypot/includes/css/wpa.css?ver=2.3.04' media='all' />
+<link rel='stylesheet' id='kadence-global-css' href='https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/global.min.css?ver=1.4.5' media='all' />
+<style id='kadence-global-inline-css'>
+/* Kadence Base CSS */
+:root{--global-palette1:#2B6CB0;--global-palette2:#215387;--global-palette3:#1A202C;--global-palette4:#2D3748;--global-palette5:#4A5568;--global-palette6:#718096;--global-palette7:#EDF2F7;--global-palette8:#F7FAFC;--global-palette9:#ffffff;--global-palette10:oklch(from var(--global-palette1) calc(l + 0.10 * (1 - l)) calc(c * 1.00) calc(h + 180) / 100%);--global-palette11:#13612e;--global-palette12:#1159af;--global-palette13:#b82105;--global-palette14:#f7630c;--global-palette15:#f5a524;--global-palette9rgb:255, 255, 255;--global-palette-highlight:var(--global-palette1);--global-palette-highlight-alt:var(--global-palette2);--global-palette-highlight-alt2:var(--global-palette9);--global-palette-btn-bg:var(--global-palette1);--global-palette-btn-bg-hover:var(--global-palette2);--global-palette-btn:var(--global-palette9);--global-palette-btn-hover:var(--global-palette9);--global-palette-btn-sec-bg:var(--global-palette7);--global-palette-btn-sec-bg-hover:var(--global-palette2);--global-palette-btn-sec:var(--global-palette3);--global-palette-btn-sec-hover:var(--global-palette9);--global-body-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";--global-heading-font-family:inherit;--global-primary-nav-font-family:Roboto, sans-serif;--global-fallback-font:sans-serif;--global-display-fallback-font:sans-serif;--global-content-width:1290px;--global-content-wide-width:calc(1290px + 230px);--global-content-narrow-width:842px;--global-content-edge-padding:1.5rem;--global-content-boxed-padding:2rem;--global-calc-content-width:calc(1290px - var(--global-content-edge-padding) - var(--global-content-edge-padding) );--wp--style--global--content-size:var(--global-calc-content-width);}.wp-site-blocks{--global-vw:calc( 100vw - ( 0.5 * var(--scrollbar-offset)));}:root body.kadence-elementor-colors{--e-global-color-kadence1:var(--global-palette1);--e-global-color-kadence2:var(--global-palette2);--e-global-color-kadence3:var(--global-palette3);--e-global-color-kadence4:var(--global-palette4);--e-global-color-kadence5:var(--global-palette5);--e-global-color-kadence6:var(--global-palette6);--e-global-color-kadence7:var(--global-palette7);--e-global-color-kadence8:var(--global-palette8);--e-global-color-kadence9:var(--global-palette9);--e-global-color-kadence10:var(--global-palette10);--e-global-color-kadence11:var(--global-palette11);--e-global-color-kadence12:var(--global-palette12);--e-global-color-kadence13:var(--global-palette13);--e-global-color-kadence14:var(--global-palette14);--e-global-color-kadence15:var(--global-palette15);}body{background:var(--global-palette8);}body, input, select, optgroup, textarea{font-style:normal;font-weight:400;font-size:16px;line-height:1.6;font-family:var(--global-body-font-family);color:var(--global-palette4);}.content-bg, body.content-style-unboxed .site{background:var(--global-palette9);}h1,h2,h3,h4,h5,h6{font-family:var(--global-heading-font-family);}h1{font-weight:700;font-size:32px;line-height:1.5;color:var(--global-palette3);}h2{font-weight:700;font-size:28px;line-height:1.5;color:var(--global-palette3);}h3{font-weight:700;font-size:24px;line-height:1.5;color:var(--global-palette3);}h4{font-weight:700;font-size:22px;line-height:1.5;color:var(--global-palette4);}h5{font-weight:700;font-size:20px;line-height:1.5;color:var(--global-palette4);}h6{font-weight:700;font-size:18px;line-height:1.5;color:var(--global-palette5);}.entry-hero .kadence-breadcrumbs{max-width:1290px;}.site-container, .site-header-row-layout-contained, .site-footer-row-layout-contained, .entry-hero-layout-contained, .comments-area, .alignfull > .wp-block-cover__inner-container, .alignwide > .wp-block-cover__inner-container{max-width:var(--global-content-width);}.content-width-narrow .content-container.site-container, .content-width-narrow .hero-container.site-container{max-width:var(--global-content-narrow-width);}@media all and (min-width: 1520px){.wp-site-blocks .content-container  .alignwide{margin-left:-115px;margin-right:-115px;width:unset;max-width:unset;}}@media all and (min-width: 1102px){.content-width-narrow .wp-site-blocks .content-container .alignwide{margin-left:-130px;margin-right:-130px;width:unset;max-width:unset;}}.content-style-boxed .wp-site-blocks .entry-content .alignwide{margin-left:calc( -1 * var( --global-content-boxed-padding ) );margin-right:calc( -1 * var( --global-content-boxed-padding ) );}.content-area{margin-top:5rem;margin-bottom:5rem;}@media all and (max-width: 1024px){.content-area{margin-top:3rem;margin-bottom:3rem;}}@media all and (max-width: 767px){.content-area{margin-top:2rem;margin-bottom:2rem;}}@media all and (max-width: 1024px){:root{--global-content-boxed-padding:2rem;}}@media all and (max-width: 767px){:root{--global-content-boxed-padding:1.5rem;}}.entry-content-wrap{padding:2rem;}@media all and (max-width: 1024px){.entry-content-wrap{padding:2rem;}}@media all and (max-width: 767px){.entry-content-wrap{padding:1.5rem;}}.entry.single-entry{box-shadow:0px 15px 15px -10px rgba(0,0,0,0.05);}.entry.loop-entry{box-shadow:0px 15px 15px -10px rgba(0,0,0,0.05);}.loop-entry .entry-content-wrap{padding:2rem;}@media all and (max-width: 1024px){.loop-entry .entry-content-wrap{padding:2rem;}}@media all and (max-width: 767px){.loop-entry .entry-content-wrap{padding:1.5rem;}}button, .button, .wp-block-button__link, input[type="button"], input[type="reset"], input[type="submit"], .fl-button, .elementor-button-wrapper .elementor-button, .wc-block-components-checkout-place-order-button, .wc-block-cart__submit{box-shadow:0px 0px 0px -7px rgba(0,0,0,0);}button:hover, button:focus, button:active, .button:hover, .button:focus, .button:active, .wp-block-button__link:hover, .wp-block-button__link:focus, .wp-block-button__link:active, input[type="button"]:hover, input[type="button"]:focus, input[type="button"]:active, input[type="reset"]:hover, input[type="reset"]:focus, input[type="reset"]:active, input[type="submit"]:hover, input[type="submit"]:focus, input[type="submit"]:active, .elementor-button-wrapper .elementor-button:hover, .elementor-button-wrapper .elementor-button:focus, .elementor-button-wrapper .elementor-button:active, .wc-block-cart__submit:hover{box-shadow:0px 15px 25px -7px rgba(0,0,0,0.1);}.kb-button.kb-btn-global-outline.kb-btn-global-inherit{padding-top:calc(px - 2px);padding-right:calc(px - 2px);padding-bottom:calc(px - 2px);padding-left:calc(px - 2px);}@media all and (min-width: 1025px){.transparent-header .entry-hero .entry-hero-container-inner{padding-top:80px;}}@media all and (max-width: 1024px){.mobile-transparent-header .entry-hero .entry-hero-container-inner{padding-top:80px;}}@media all and (max-width: 767px){.mobile-transparent-header .entry-hero .entry-hero-container-inner{padding-top:80px;}}.entry-hero.page-hero-section .entry-header{min-height:200px;}
+/* Kadence Header CSS */
+@media all and (max-width: 1024px){.mobile-transparent-header #masthead{position:absolute;left:0px;right:0px;z-index:100;}.kadence-scrollbar-fixer.mobile-transparent-header #masthead{right:var(--scrollbar-offset,0);}.mobile-transparent-header #masthead, .mobile-transparent-header .site-top-header-wrap .site-header-row-container-inner, .mobile-transparent-header .site-main-header-wrap .site-header-row-container-inner, .mobile-transparent-header .site-bottom-header-wrap .site-header-row-container-inner{background:transparent;}.site-header-row-tablet-layout-fullwidth, .site-header-row-tablet-layout-standard{padding:0px;}}@media all and (min-width: 1025px){.transparent-header #masthead{position:absolute;left:0px;right:0px;z-index:100;}.transparent-header.kadence-scrollbar-fixer #masthead{right:var(--scrollbar-offset,0);}.transparent-header #masthead, .transparent-header .site-top-header-wrap .site-header-row-container-inner, .transparent-header .site-main-header-wrap .site-header-row-container-inner, .transparent-header .site-bottom-header-wrap .site-header-row-container-inner{background:transparent;}}.site-branding a.brand img{max-width:150px;}.site-branding a.brand img.svg-logo-image{width:150px;}.site-branding{padding:0px 0px 0px 0px;}#masthead, #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start):not(.site-header-row-container):not(.site-main-header-wrap), #masthead .kadence-sticky-header.item-is-fixed:not(.item-at-start) > .site-header-row-container-inner{background:#ffffff;}.site-main-header-inner-wrap{min-height:80px;}.site-main-header-wrap.site-header-row-container.site-header-focus-item.site-header-row-layout-standard.kadence-sticky-header.item-is-fixed.item-is-stuck, .site-header-upper-inner-wrap.kadence-sticky-header.item-is-fixed.item-is-stuck, .site-header-inner-wrap.kadence-sticky-header.item-is-fixed.item-is-stuck, .site-top-header-wrap.site-header-row-container.site-header-focus-item.site-header-row-layout-standard.kadence-sticky-header.item-is-fixed.item-is-stuck, .site-bottom-header-wrap.site-header-row-container.site-header-focus-item.site-header-row-layout-standard.kadence-sticky-header.item-is-fixed.item-is-stuck{box-shadow:0px 0px 0px 0px rgba(0,0,0,0);}.header-navigation[class*="header-navigation-style-underline"] .header-menu-container.primary-menu-container>ul>li>a:after{width:calc( 100% - 1.2em);}.main-navigation .primary-menu-container > ul > li.menu-item > a{padding-left:calc(1.2em / 2);padding-right:calc(1.2em / 2);padding-top:0.6em;padding-bottom:0.6em;color:#000000;}.main-navigation .primary-menu-container > ul > li.menu-item .dropdown-nav-special-toggle{right:calc(1.2em / 2);}.main-navigation .primary-menu-container > ul li.menu-item > a{font-style:normal;font-weight:normal;font-size:16px;font-family:var(--global-primary-nav-font-family);}.main-navigation .primary-menu-container > ul > li.menu-item > a:hover{color:#8fcd32;}.main-navigation .primary-menu-container > ul > li.menu-item.current-menu-item > a{color:#70a814;}.header-navigation .header-menu-container ul ul.sub-menu, .header-navigation .header-menu-container ul ul.submenu{background:#8fcd32;box-shadow:0px 2px 13px 0px rgba(0,0,0,0.1);}.header-navigation .header-menu-container ul ul li.menu-item, .header-menu-container ul.menu > li.kadence-menu-mega-enabled > ul > li.menu-item > a{border-bottom:1px solid rgba(255,255,255,0.1);border-radius:0px 0px 0px 0px;}.header-navigation .header-menu-container ul ul li.menu-item > a{width:200px;padding-top:1em;padding-bottom:1em;color:var(--global-palette8);font-size:12px;}.header-navigation .header-menu-container ul ul li.menu-item > a:hover{color:var(--global-palette9);background:var(--global-palette4);border-radius:0px 0px 0px 0px;}.header-navigation .header-menu-container ul ul li.menu-item.current-menu-item > a{color:var(--global-palette9);background:var(--global-palette4);border-radius:0px 0px 0px 0px;}.mobile-toggle-open-container .menu-toggle-open, .mobile-toggle-open-container .menu-toggle-open:focus{color:var(--global-palette5);padding:0.4em 0.6em 0.4em 0.6em;font-size:14px;}.mobile-toggle-open-container .menu-toggle-open.menu-toggle-style-bordered{border:1px solid currentColor;}.mobile-toggle-open-container .menu-toggle-open .menu-toggle-icon{font-size:20px;}.mobile-toggle-open-container .menu-toggle-open:hover, .mobile-toggle-open-container .menu-toggle-open:focus-visible{color:var(--global-palette-highlight);}.mobile-navigation ul li{font-size:14px;}.mobile-navigation ul li a{padding-top:1em;padding-bottom:1em;}.mobile-navigation ul li > a, .mobile-navigation ul li.menu-item-has-children > .drawer-nav-drop-wrap{color:var(--global-palette8);}.mobile-navigation ul li.current-menu-item > a, .mobile-navigation ul li.current-menu-item.menu-item-has-children > .drawer-nav-drop-wrap{color:#000000;}.mobile-navigation ul li.menu-item-has-children .drawer-nav-drop-wrap, .mobile-navigation ul li:not(.menu-item-has-children) a{border-bottom:1px solid rgba(255,255,255,0.1);}.mobile-navigation:not(.drawer-navigation-parent-toggle-true) ul li.menu-item-has-children .drawer-nav-drop-wrap button{border-left:1px solid rgba(255,255,255,0.1);}#mobile-drawer .drawer-inner, #mobile-drawer.popup-drawer-layout-fullwidth.popup-drawer-animation-slice .pop-portion-bg, #mobile-drawer.popup-drawer-layout-fullwidth.popup-drawer-animation-slice.pop-animated.show-drawer .drawer-inner{background:#8fcd32;}#mobile-drawer .drawer-header .drawer-toggle{padding:0.6em 0.15em 0.6em 0.15em;font-size:24px;}#main-header .header-button{font-style:normal;font-weight:normal;font-size:15px;font-family:Roboto, sans-serif;color:#000000;background:#8fcd32;box-shadow:0px 0px 0px -7px rgba(0,0,0,0);}#main-header .header-button:hover{color:#ffffff;box-shadow:0px 15px 25px -7px rgba(0,0,0,0.1);}.search-toggle-open-container .search-toggle-open{color:#ffffff;}.search-toggle-open-container .search-toggle-open.search-toggle-style-bordered{border:1px solid currentColor;}.search-toggle-open-container .search-toggle-open .search-toggle-icon{font-size:1em;}.search-toggle-open-container .search-toggle-open:hover, .search-toggle-open-container .search-toggle-open:focus{color:var(--global-palette-highlight);}#search-drawer .drawer-inner{background:rgba(9, 12, 16, 0.97);}.mobile-header-button-wrap .mobile-header-button-inner-wrap .mobile-header-button{background:#000000;border:2px none transparent;box-shadow:0px 0px 0px -7px rgba(0,0,0,0);}.mobile-header-button-wrap .mobile-header-button-inner-wrap .mobile-header-button:hover{color:#ffffff;background:#1e3f5c;box-shadow:0px 15px 25px -7px rgba(0,0,0,0.1);}
+/* Kadence Footer CSS */
+#colophon{background:#8fcd32;}.site-middle-footer-wrap .site-footer-row-container-inner{font-style:normal;color:#ffffff;}.site-middle-footer-inner-wrap{padding-top:30px;padding-bottom:30px;grid-column-gap:30px;grid-row-gap:30px;}.site-middle-footer-inner-wrap .widget{margin-bottom:30px;}.site-middle-footer-inner-wrap .site-footer-section:not(:last-child):after{right:calc(-30px / 2);}.site-bottom-footer-inner-wrap{padding-top:30px;padding-bottom:30px;grid-column-gap:30px;}.site-bottom-footer-inner-wrap .widget{margin-bottom:30px;}.site-bottom-footer-inner-wrap .site-footer-section:not(:last-child):after{right:calc(-30px / 2);}#colophon .footer-html{font-style:normal;color:#ffffff;}
+/*# sourceURL=kadence-global-inline-css */
+</style>
+<link rel='stylesheet' id='kadence-header-css' href='https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/header.min.css?ver=1.4.5' media='all' />
+<link rel='stylesheet' id='kadence-content-css' href='https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/content.min.css?ver=1.4.5' media='all' />
+<link rel='stylesheet' id='kadence-footer-css' href='https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/footer.min.css?ver=1.4.5' media='all' />
+<link rel='stylesheet' id='elementor-frontend-css' href='https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=4.0.1' media='all' />
+<link rel='stylesheet' id='widget-heading-css' href='https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-heading.min.css?ver=4.0.1' media='all' />
+<link rel='stylesheet' id='widget-icon-list-css' href='https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-icon-list.min.css?ver=4.0.1' media='all' />
+<link rel='stylesheet' id='elementor-post-9-css' href='https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-9.css?ver=1777551887' media='all' />
+<link rel='stylesheet' id='widget-spacer-css' href='https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-spacer.min.css?ver=4.0.1' media='all' />
+<link rel='stylesheet' id='widget-form-css' href='https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/css/widget-form.min.css?ver=4.0.1' media='all' />
+<link rel='stylesheet' id='elementor-post-11-css' href='https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-11.css?ver=1777553729' media='all' />
+<link rel='stylesheet' id='elementor-post-1452-css' href='https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-1452.css?ver=1777551888' media='all' />
+<link rel='stylesheet' id='kadence-rankmath-css' href='https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/rankmath.min.css?ver=1.4.5' media='all' />
+<link rel='stylesheet' id='elementor-gf-poppins-css' href='https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&#038;display=swap' media='all' />
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<script id="cookie-notice-front-js-before">
+var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php","nonce":"b9d324340b","hideEffect":"fade","position":"bottom","onScroll":false,"onScrollOffset":100,"onClick":false,"cookieName":"cookie_notice_accepted","cookieTime":2592000,"cookieTimeRejected":2592000,"globalCookie":false,"redirection":false,"cache":true,"revokeCookies":false,"revokeCookiesOpt":"automatic"};
+
+//# sourceURL=cookie-notice-front-js-before
+</script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/cookie-notice/js/front.min.js?ver=2.5.16" id="cookie-notice-front-js"></script>
+<link rel="https://api.w.org/" href="https://soleilaquitain.fr/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://soleilaquitain.fr/wp-json/wp/v2/pages/11" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://soleilaquitain.fr/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress 6.9.4" />
+<link rel='shortlink' href='https://soleilaquitain.fr/?p=11' />
+<meta name="ti-site-data" content="eyJyIjoiMTowITc6MCEzMDowIiwibyI6Imh0dHBzOlwvXC9zb2xlaWxhcXVpdGFpbi5mcj90aS1vbmxpbmUtdXNlcnMtZ29vZ2xlPTEmYW1wO3A9JTJGY29udGFjdCUyRiZhbXA7X3dwbm9uY2U9Nzk2NGM1YzgzMyJ9" /><meta name="generator" content="Elementor 4.0.1; features: e_font_icon_svg, additional_custom_breakpoints; settings: css_print_method-external, google_font-enabled, font_display-swap">
+			<style>
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload),
+				.e-con.e-parent:nth-of-type(n+4):not(.e-lazyloaded):not(.e-no-lazyload) * {
+					background-image: none !important;
+				}
+				@media screen and (max-height: 1024px) {
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+3):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+				@media screen and (max-height: 640px) {
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload),
+					.e-con.e-parent:nth-of-type(n+2):not(.e-lazyloaded):not(.e-no-lazyload) * {
+						background-image: none !important;
+					}
+				}
+			</style>
+			<link rel='stylesheet' id='kadence-fonts-gfonts-css' href='https://fonts.googleapis.com/css?family=Roboto:regular&#038;display=swap' media='all' />
+<link rel="icon" href="https://soleilaquitain.fr/wp-content/uploads/2026/01/favicon-150x150.png" sizes="32x32" />
+<link rel="icon" href="https://soleilaquitain.fr/wp-content/uploads/2026/01/favicon.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://soleilaquitain.fr/wp-content/uploads/2026/01/favicon.png" />
+<meta name="msapplication-TileImage" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/favicon.png" />
+</head>
+
+<body class="wp-singular page-template page-template-elementor_header_footer page page-id-11 wp-custom-logo wp-embed-responsive wp-theme-kadence cookies-set cookies-accepted footer-on-bottom hide-focus-outline link-style-standard content-title-style-above content-width-normal content-style-boxed content-vertical-padding-show non-transparent-header mobile-non-transparent-header kadence-elementor-colors elementor-default elementor-template-full-width elementor-kit-9 elementor-page elementor-page-11">
+<div id="wrapper" class="site wp-site-blocks">
+			<a class="skip-link screen-reader-text scroll-ignore" href="#main">Aller au contenu</a>
+		<header id="masthead" class="site-header" role="banner" itemtype="https://schema.org/WPHeader" itemscope>
+	<div id="main-header" class="site-header-wrap">
+		<div class="site-header-inner-wrap">
+			<div class="site-header-upper-wrap">
+				<div class="site-header-upper-inner-wrap">
+					<div class="site-main-header-wrap site-header-row-container site-header-focus-item site-header-row-layout-standard kadence-sticky-header" data-section="kadence_customizer_header_main" data-shrink="true" data-shrink-height="60" data-reveal-scroll-up="false">
+	<div class="site-header-row-container-inner">
+				<div class="site-container">
+			<div class="site-main-header-inner-wrap site-header-row site-header-row-has-sides site-header-row-no-center">
+									<div class="site-header-main-section-left site-header-section site-header-section-left">
+						<div class="site-header-item site-header-focus-item" data-section="title_tagline">
+	<div class="site-branding branding-layout-standard site-brand-logo-only"><a class="brand has-logo-image" href="https://soleilaquitain.fr/" rel="home"><img fetchpriority="high" width="863" height="462" src="https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png" class="custom-logo" alt="Soleil Aquitain" decoding="async" srcset="https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png 863w, https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1-300x161.png 300w, https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1-768x411.png 768w" sizes="(max-width: 863px) 100vw, 863px" /></a></div></div><!-- data-section="title_tagline" -->
+					</div>
+																	<div class="site-header-main-section-right site-header-section site-header-section-right">
+						<div class="site-header-item site-header-focus-item site-header-item-main-navigation header-navigation-layout-stretch-false header-navigation-layout-fill-stretch-false" data-section="kadence_customizer_primary_navigation">
+		<nav id="site-navigation" class="main-navigation header-navigation hover-to-open nav--toggle-sub header-navigation-style-underline header-navigation-dropdown-animation-fade" role="navigation" aria-label="Principal">
+			<div class="primary-menu-container header-menu-container">
+	<ul id="primary-menu" class="menu"><li id="menu-item-1276" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1276"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/"><span class="nav-drop-title-wrap">Installateur de panneaux solaires<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-1284" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1284"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/"><span class="nav-drop-title-wrap">Région Bordelaise<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+	<ul class="sub-menu">
+		<li id="menu-item-2338" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2338"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">Bordeaux</a></li>
+		<li id="menu-item-2314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2314"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-begles/">Bègles</a></li>
+		<li id="menu-item-2316" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2316"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bruges/">Bruges</a></li>
+		<li id="menu-item-2315" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2315"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-blaye/">Blaye</a></li>
+		<li id="menu-item-2317" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2317"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-cenon/">Cenon</a></li>
+		<li id="menu-item-2318" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2318"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-floirac/">Floirac</a></li>
+		<li id="menu-item-2320" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2320"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-libourne/">Libourne</a></li>
+		<li id="menu-item-2321" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2321"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-lormont/">Lormont</a></li>
+		<li id="menu-item-2322" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2322"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-merignac/">Mérignac</a></li>
+		<li id="menu-item-2323" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2323"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pessac/">Pessac</a></li>
+		<li id="menu-item-2324" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2324"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-talence/">Talence</a></li>
+	</ul>
+</li>
+	<li id="menu-item-2325" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2325"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-rochelle/"><span class="nav-drop-title-wrap">Nord de la Nouvelle Aquitaine<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+	<ul class="sub-menu">
+		<li id="menu-item-2333" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2333"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-angouleme/">Angoulême</a></li>
+		<li id="menu-item-2343" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2343"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bergerac/">Bergerac</a></li>
+		<li id="menu-item-2332" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2332"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-cognac/">Cognac</a></li>
+		<li id="menu-item-2331" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2331"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-rochelle/">La Rochelle</a></li>
+		<li id="menu-item-2327" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2327"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-marmande/">Marmande</a></li>
+		<li id="menu-item-2326" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2326"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-niort/">Niort</a></li>
+		<li id="menu-item-2329" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2329"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-royan/">Royan</a></li>
+		<li id="menu-item-2330" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2330"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-rochefort/">Rochefort</a></li>
+		<li id="menu-item-2351" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2351"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-perigueux/">Périgueux</a></li>
+	</ul>
+</li>
+	<li id="menu-item-1277" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1277"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/"><span class="nav-drop-title-wrap">Centre de la Nouvelle Aquitaine<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+	<ul class="sub-menu">
+		<li id="menu-item-2313" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2313"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-arcachon/">Arcachon</a></li>
+		<li id="menu-item-2328" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2328"><a href="https://soleilaquitain.fr/installateur-de-panneaux-solaires-agen/">Agen</a></li>
+		<li id="menu-item-2339" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2339"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-andernos-les-bains/">Andernos-les-Bains</a></li>
+		<li id="menu-item-2341" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2341"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-teste-de-buch/">La Teste-de-Buch</a></li>
+		<li id="menu-item-2319" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2319"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-langon/">Langon</a></li>
+		<li id="menu-item-2342" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2342"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-villenave-dornon/">Villenave-d’Ornon</a></li>
+	</ul>
+</li>
+	<li id="menu-item-2309" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2309"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-mont-de-marsan/"><span class="nav-drop-title-wrap">Sud de la Nouvelle Aquitaine<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+	<ul class="sub-menu">
+		<li id="menu-item-2307" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2307"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bayonne/">Bayonne</a></li>
+		<li id="menu-item-2312" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2312"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-dax/">Dax</a></li>
+		<li id="menu-item-2311" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2311"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-mont-de-marsan/">Mont-de-Marsan</a></li>
+		<li id="menu-item-2308" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2308"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pau/">Pau</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li id="menu-item-2346" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2346"><a href="https://soleilaquitain.fr/notre-equipe/"><span class="nav-drop-title-wrap">L&rsquo;entreprise<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-2345" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2345"><a href="https://soleilaquitain.fr/realisations/">Nos réalisations</a></li>
+	<li id="menu-item-2334" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2334"><a href="https://soleilaquitain.fr/nos-brochures/">Nos brochures</a></li>
+	<li id="menu-item-2335" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2335"><a href="https://soleilaquitain.fr/notre-equipe/">Notre équipe</a></li>
+</ul>
+</li>
+<li id="menu-item-44" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-44"><a href="https://soleilaquitain.fr/realisations/"><span class="nav-drop-title-wrap">Informations<span class="dropdown-nav-toggle"><span class="kadence-svg-iconset svg-baseline"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></span></span></a>
+<ul class="sub-menu">
+	<li id="menu-item-2344" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2344"><a href="https://soleilaquitain.fr/aides-panneaux-solaires/">Aides panneaux solaires </a></li>
+	<li id="menu-item-2337" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2337"><a href="https://soleilaquitain.fr/rentabilite-panneaux-solaires/">Rentabilité panneaux solaires</a></li>
+</ul>
+</li>
+<li id="menu-item-749" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-11 current_page_item menu-item-749"><a href="https://soleilaquitain.fr/contact/" aria-current="page">Contact</a></li>
+</ul>		</div>
+	</nav><!-- #site-navigation -->
+	</div><!-- data-section="primary_navigation" -->
+<div class="site-header-item site-header-focus-item" data-section="kadence_customizer_header_button">
+	<div class="header-button-wrap"><div class="header-button-inner-wrap"><a href="https://soleilaquitain.fr/wp-content/uploads/2026/04/AG_12032026_JPSUN_SA_Simulateur_aides_solaires-JPSUN-2.html" target="_blank" rel="noopener noreferrer" class="button header-button button-size-medium button-style-filled">Simulez vos économies !</a></div></div></div><!-- data-section="header_button" -->
+					</div>
+							</div>
+		</div>
+	</div>
+</div>
+				</div>
+			</div>
+					</div>
+	</div>
+	
+<div id="mobile-header" class="site-mobile-header-wrap">
+	<div class="site-header-inner-wrap">
+		<div class="site-header-upper-wrap">
+			<div class="site-header-upper-inner-wrap">
+			<div class="site-main-header-wrap site-header-focus-item site-header-row-layout-standard site-header-row-tablet-layout-default site-header-row-mobile-layout-default ">
+	<div class="site-header-row-container-inner">
+		<div class="site-container">
+			<div class="site-main-header-inner-wrap site-header-row site-header-row-has-sides site-header-row-no-center">
+									<div class="site-header-main-section-left site-header-section site-header-section-left">
+						<div class="site-header-item site-header-focus-item" data-section="title_tagline">
+	<div class="site-branding mobile-site-branding branding-layout-standard branding-tablet-layout-inherit site-brand-logo-only branding-mobile-layout-inherit"><a class="brand has-logo-image" href="https://soleilaquitain.fr/" rel="home"><img fetchpriority="high" width="863" height="462" src="https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png" class="custom-logo" alt="Soleil Aquitain" decoding="async" srcset="https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1.png 863w, https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1-300x161.png 300w, https://soleilaquitain.fr/wp-content/uploads/2026/01/Soleil-Aquitain-logo-1-1-768x411.png 768w" sizes="(max-width: 863px) 100vw, 863px" /></a></div></div><!-- data-section="title_tagline" -->
+					</div>
+																	<div class="site-header-main-section-right site-header-section site-header-section-right">
+						<div class="site-header-item site-header-focus-item site-header-item-navgation-popup-toggle" data-section="kadence_customizer_mobile_trigger">
+		<div class="mobile-toggle-open-container">
+						<button id="mobile-toggle" class="menu-toggle-open drawer-toggle menu-toggle-style-default" aria-label="Ouvrir le menu" data-toggle-target="#mobile-drawer" data-toggle-body-class="showing-popup-drawer-from-right" aria-expanded="false" data-set-focus=".menu-toggle-close"
+					>
+						<span class="menu-toggle-icon"><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-menu-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Ouvrir/fermer le menu</title><path d="M3 13h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 7h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 19h18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-18c-0.552 0-1 0.448-1 1s0.448 1 1 1z"></path>
+				</svg></span></span>
+		</button>
+	</div>
+	</div><!-- data-section="mobile_trigger" -->
+					</div>
+							</div>
+		</div>
+	</div>
+</div>
+			</div>
+		</div>
+			</div>
+</div>
+</header><!-- #masthead -->
+
+	<main id="inner-wrap" class="wrap kt-clear" role="main">
+				<div data-elementor-type="wp-page" data-elementor-id="11" class="elementor elementor-11" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-c590e55 e-flex e-con-boxed e-con e-parent" data-id="c590e55" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-95f66c8 e-con-full e-flex e-con e-child" data-id="95f66c8" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+		<div class="elementor-element elementor-element-17f36b7 e-con-full e-flex e-con e-child" data-id="17f36b7" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-29d0af5 elementor-hidden-tablet elementor-hidden-mobile elementor-widget elementor-widget-spacer" data-id="29d0af5" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
+							<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+						</div>
+				<div class="elementor-element elementor-element-7f1f808 elementor-widget elementor-widget-heading" data-id="7f1f808" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">CONTACT</h1>				</div>
+				<div class="elementor-element elementor-element-b4fa2dc elementor-widget__width-initial elementor-widget elementor-widget-heading" data-id="b4fa2dc" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">Demandez à être contacté</h2>				</div>
+				<div class="elementor-element elementor-element-0994598 elementor-widget elementor-widget-heading" data-id="0994598" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">ou réservez un rendez-vous avec un expert</h2>				</div>
+				<div class="elementor-element elementor-element-da94e4c elementor-widget elementor-widget-text-editor" data-id="da94e4c" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée.</p>								</div>
+				<div class="elementor-element elementor-element-c9bfa83 elementor-align-left elementor-widget elementor-widget-button" data-id="c9bfa83" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<svg aria-hidden="true" class="e-font-icon-svg e-fas-phone-alt" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M497.39 361.8l-112-48a24 24 0 0 0-28 6.9l-49.6 60.6A370.66 370.66 0 0 1 130.6 204.11l60.6-49.6a23.94 23.94 0 0 0 6.9-28l-48-112A24.16 24.16 0 0 0 122.6.61l-104 24A24 24 0 0 0 0 48c0 256.5 207.9 464 464 464a24 24 0 0 0 23.4-18.6l24-104a24.29 24.29 0 0 0-14.01-27.6z"></path></svg>			</span>
+									<span class="elementor-button-text">05 33 51 14 34</span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-ef4e55f elementor-align-left elementor-widget elementor-widget-button" data-id="ef4e55f" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<svg aria-hidden="true" class="e-font-icon-svg e-fas-mail-bulk" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M160 448c-25.6 0-51.2-22.4-64-32-64-44.8-83.2-60.8-96-70.4V480c0 17.67 14.33 32 32 32h256c17.67 0 32-14.33 32-32V345.6c-12.8 9.6-32 25.6-96 70.4-12.8 9.6-38.4 32-64 32zm128-192H32c-17.67 0-32 14.33-32 32v16c25.6 19.2 22.4 19.2 115.2 86.4 9.6 6.4 28.8 25.6 44.8 25.6s35.2-19.2 44.8-22.4c92.8-67.2 89.6-67.2 115.2-86.4V288c0-17.67-14.33-32-32-32zm256-96H224c-17.67 0-32 14.33-32 32v32h96c33.21 0 60.59 25.42 63.71 57.82l.29-.22V416h192c17.67 0 32-14.33 32-32V192c0-17.67-14.33-32-32-32zm-32 128h-64v-64h64v64zm-352-96c0-35.29 28.71-64 64-64h224V32c0-17.67-14.33-32-32-32H96C78.33 0 64 14.33 64 32v192h96v-32z"></path></svg>			</span>
+									<span class="elementor-button-text">contact@soleilaquitain.fr</span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-daa1abf elementor-align-left elementor-widget elementor-widget-button" data-id="daa1abf" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<svg aria-hidden="true" class="e-font-icon-svg e-fas-map-marker-alt" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg"><path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path></svg>			</span>
+									<span class="elementor-button-text">4 rue Alfred Kastler, 33380 Mios</span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-2537f42 elementor-widget elementor-widget-button" data-id="2537f42" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+						<span class="elementor-button-icon">
+				<svg aria-hidden="true" class="e-font-icon-svg e-far-clock" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"></path></svg>			</span>
+									<span class="elementor-button-text">Lundi - Vendredi : 9h - 18h </span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-12d8cdd elementor-widget elementor-widget-spacer" data-id="12d8cdd" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
+							<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+						</div>
+		<div class="elementor-element elementor-element-7fb2049 e-grid e-con-full e-con e-child" data-id="7fb2049" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-6e17cc0 elementor-align-right elementor-widget elementor-widget-button" data-id="6e17cc0" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">RGE QualiPV</span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-a5997b6 elementor-align-right elementor-widget elementor-widget-button" data-id="a5997b6" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Garantie décennale</span>
+					</span>
+					</a>
+								</div>
+				<div class="elementor-element elementor-element-4447951 elementor-align-right elementor-widget elementor-widget-button" data-id="4447951" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
+										<a class="elementor-button elementor-size-sm" role="button">
+						<span class="elementor-button-content-wrapper">
+									<span class="elementor-button-text">Assurance RC Pro</span>
+					</span>
+					</a>
+								</div>
+				</div>
+				<div class="elementor-element elementor-element-967732e elementor-widget elementor-widget-spacer" data-id="967732e" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
+							<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-c1cbb02 e-con-full e-flex e-con e-child" data-id="c1cbb02" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+				<div class="elementor-element elementor-element-50ec840 elementor-button-align-stretch elementor-widget elementor-widget-form" data-id="50ec840" data-element_type="widget" data-e-type="widget" data-settings="{&quot;step_next_label&quot;:&quot;Suivant&quot;,&quot;step_previous_label&quot;:&quot;Pr\u00e9c\u00e9dent&quot;,&quot;button_width&quot;:&quot;100&quot;,&quot;step_type&quot;:&quot;number_text&quot;,&quot;step_icon_shape&quot;:&quot;circle&quot;}" data-widget_type="form.default">
+							<form class="elementor-form" method="post" name="Recevez votre étude personnalisée" aria-label="Recevez votre étude personnalisée">
+			<input type="hidden" name="post_id" value="11"/>
+			<input type="hidden" name="form_id" value="50ec840"/>
+			<input type="hidden" name="referer_title" value="Contact - Soleil Aquitain" />
+
+							<input type="hidden" name="queried_id" value="11"/>
+			
+			<div class="elementor-form-fields-wrapper elementor-labels-above">
+								<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-name elementor-col-100">
+												<label for="form-field-name" class="elementor-field-label">
+								Nom complet *							</label>
+														<input size="1" type="text" name="form_fields[name]" id="form-field-name" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean Dupont">
+											</div>
+								<div class="elementor-field-type-tel elementor-field-group elementor-column elementor-field-group-field_717fa75 elementor-col-100">
+												<label for="form-field-field_717fa75" class="elementor-field-label">
+								Téléphone *							</label>
+								<input size="1" type="tel" name="form_fields[field_717fa75]" id="form-field-field_717fa75" class="elementor-field elementor-size-xs  elementor-field-textual" pattern="[0-9()#&amp;+*-=.]+" title="Seuls les caractères de numéros de téléphone (#, -, *, etc.) sont acceptés.">
+
+						</div>
+								<div class="elementor-field-type-email elementor-field-group elementor-column elementor-field-group-email elementor-col-100 elementor-field-required">
+												<label for="form-field-email" class="elementor-field-label">
+								E-mail							</label>
+														<input size="1" type="email" name="form_fields[email]" id="form-field-email" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Jean@email.com" required="required">
+											</div>
+								<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-field_97e98c6 elementor-col-100 elementor-field-required">
+												<label for="form-field-field_97e98c6" class="elementor-field-label">
+								Ville / Code postal							</label>
+														<input size="1" type="text" name="form_fields[field_97e98c6]" id="form-field-field_97e98c6" class="elementor-field elementor-size-xs  elementor-field-textual" placeholder="Bordeaux 33000" required="required">
+											</div>
+								<div class="elementor-field-type-textarea elementor-field-group elementor-column elementor-field-group-message elementor-col-100">
+												<label for="form-field-message" class="elementor-field-label">
+								Votre projet (optionnel)							</label>
+						<textarea class="elementor-field-textual elementor-field  elementor-size-xs" name="form_fields[message]" id="form-field-message" rows="4" placeholder="Décrivez brièvement votre projet : type de maison, surface de toiture, consommation actuelle..."></textarea>				</div>
+								<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100 e-form__buttons">
+					<button class="elementor-button elementor-size-sm" type="submit">
+						<span class="elementor-button-content-wrapper">
+															<span class="elementor-button-icon">
+									<svg aria-hidden="true" class="e-font-icon-svg e-far-paper-plane" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M440 6.5L24 246.4c-34.4 19.9-31.1 70.8 5.7 85.9L144 379.6V464c0 46.4 59.2 65.5 86.6 28.6l43.8-59.1 111.9 46.2c5.9 2.4 12.1 3.6 18.3 3.6 8.2 0 16.3-2.1 23.6-6.2 12.8-7.2 21.6-20 23.9-34.5l59.4-387.2c6.1-40.1-36.9-68.8-71.5-48.9zM192 464v-64.6l36.6 15.1L192 464zm212.6-28.7l-153.8-63.5L391 169.5c10.7-15.5-9.5-33.5-23.7-21.2L155.8 332.6 48 288 464 48l-59.4 387.3z"></path></svg>																	</span>
+																						<span class="elementor-button-text">Envoyer ma demande</span>
+													</span>
+					</button>
+				</div>
+			</div>
+		</form>
+						</div>
+				<div class="elementor-element elementor-element-bda9945 elementor-widget elementor-widget-text-editor" data-id="bda9945" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>En soumettant ce formulaire, vous acceptez d&rsquo;être contacté par Soleil Aquitain. Vos données sont traitées conformément à notre politique de confidentialité.</p>								</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-ebce291 e-flex e-con-boxed e-con e-parent" data-id="ebce291" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+				<div class="elementor-element elementor-element-0f6d4e0 elementor-widget elementor-widget-spacer" data-id="0f6d4e0" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
+							<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</main><!-- #inner-wrap -->
+			<footer data-elementor-type="footer" data-elementor-id="1452" class="elementor elementor-1452 elementor-location-footer" data-elementor-post-type="elementor_library">
+			<div class="elementor-element elementor-element-2cf6961d e-con-full e-flex e-con e-parent" data-id="2cf6961d" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+		<div class="elementor-element elementor-element-ece7bf2 e-con-full e-flex e-con e-child" data-id="ece7bf2" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-4af3020 elementor-widget elementor-widget-heading" data-id="4af3020" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h6 class="elementor-heading-title elementor-size-default">Services</h6>				</div>
+				<div class="elementor-element elementor-element-cd46272 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="cd46272" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+							<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="http://www.soleilaquitain.fr">
+
+											<span class="elementor-icon-list-text">Particulier</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="http://www.jpsun.fr" target="_blank">
+
+											<span class="elementor-icon-list-text">Entreprise</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="http://www.jpsun.fr">
+
+											<span class="elementor-icon-list-text">Agriculteur</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="http://www.jpsun.fr">
+
+											<span class="elementor-icon-list-text">Collectivité</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="http://www.aedesenergies.fr">
+
+											<span class="elementor-icon-list-text">Industriel</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="http://www.jpsun.fr">
+
+											<span class="elementor-icon-list-text">Parking</span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-c844dd5 e-con-full e-flex e-con e-child" data-id="c844dd5" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-dea4e9d elementor-widget elementor-widget-heading" data-id="dea4e9d" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h6 class="elementor-heading-title elementor-size-default">Région Bordelaise</h6>				</div>
+				<div class="elementor-element elementor-element-24798cd elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="24798cd" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+							<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">
+
+											<span class="elementor-icon-list-text">Bordeaux</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-begles/">
+
+											<span class="elementor-icon-list-text">Bègles</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-merignac/">
+
+											<span class="elementor-icon-list-text">Merignac</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pessac/">
+
+											<span class="elementor-icon-list-text">Pessac</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-floirac/">
+
+											<span class="elementor-icon-list-text">Floirac</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-talence/">
+
+											<span class="elementor-icon-list-text">Talence</span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-715b00f e-con-full e-flex e-con e-child" data-id="715b00f" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-41fd322 elementor-widget elementor-widget-heading" data-id="41fd322" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h6 class="elementor-heading-title elementor-size-default">Nouvelle Aquitaine</h6>				</div>
+				<div class="elementor-element elementor-element-5830b97 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="5830b97" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+							<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-rochelle/">
+
+											<span class="elementor-icon-list-text">La Rochelle</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-arcachon/">
+
+											<span class="elementor-icon-list-text">Arcachon</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-de-panneaux-solaires-agen/">
+
+											<span class="elementor-icon-list-text">Agen</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bayonne/">
+
+											<span class="elementor-icon-list-text">Bayonne</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pau/">
+
+											<span class="elementor-icon-list-text">Pau</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/installateur-panneaux-solaires-dax/">
+
+											<span class="elementor-icon-list-text">Dax</span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-56687ab e-con-full e-flex e-con e-child" data-id="56687ab" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-79bffb43 elementor-widget elementor-widget-heading" data-id="79bffb43" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h6 class="elementor-heading-title elementor-size-default">Liens</h6>				</div>
+				<div class="elementor-element elementor-element-3c48841 elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-widget elementor-widget-icon-list" data-id="3c48841" data-element_type="widget" data-e-type="widget" data-widget_type="icon-list.default">
+							<ul class="elementor-icon-list-items">
+							<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/politique-de-confidentialite-rgpd/">
+
+											<span class="elementor-icon-list-text">RGPD</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/mentions-legales-et-cgv/">
+
+											<span class="elementor-icon-list-text">Mentions Légales et CGV</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/notre-equipe/">
+
+											<span class="elementor-icon-list-text">Notre équipe</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/realisations/">
+
+											<span class="elementor-icon-list-text">Nos réalisations</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/aides-panneaux-solaires/">
+
+											<span class="elementor-icon-list-text">Aides panneaux solaires</span>
+											</a>
+									</li>
+								<li class="elementor-icon-list-item">
+											<a href="https://soleilaquitain.fr/contact/">
+
+											<span class="elementor-icon-list-text">Contact</span>
+											</a>
+									</li>
+						</ul>
+						</div>
+				</div>
+				</div>
+		<div class="elementor-element elementor-element-9425b85 e-flex e-con-boxed e-con e-parent" data-id="9425b85" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+					<div class="e-con-inner">
+				<div class="elementor-element elementor-element-5c640a6d elementor-widget elementor-widget-heading" data-id="5c640a6d" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<div class="elementor-heading-title elementor-size-default">© 2026 - soleilaquitain.fr</div>				</div>
+					</div>
+				</div>
+				</footer>
+		</div><!-- #wrapper -->
+
+			<script>document.documentElement.style.setProperty('--scrollbar-offset', window.innerWidth - document.documentElement.clientWidth + 'px' );</script>
+			<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/kadence/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+		<!-- Click to Chat - https://holithemes.com/plugins/click-to-chat/  v4.39 -->
+			<style id="ht-ctc-entry-animations">.ht_ctc_entry_animation{animation-duration:0.4s;animation-fill-mode:both;animation-delay:0s;animation-iteration-count:1;}			@keyframes ht_ctc_anim_corner {0% {opacity: 0;transform: scale(0);}100% {opacity: 1;transform: scale(1);}}.ht_ctc_an_entry_corner {animation-name: ht_ctc_anim_corner;animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);transform-origin: bottom var(--side, right);}
+			</style>						<div class="ht-ctc ht-ctc-chat ctc-analytics ctc_wp_desktop style-4  ht_ctc_entry_animation ht_ctc_an_entry_corner " id="ht-ctc-chat"  
+				style="display: none;  position: fixed; bottom: 15px; right: 15px;"   >
+								<div class="ht_ctc_style ht_ctc_chat_style">
+				
+<div class="ctc_chip ctc-analytics ctc_s_4 ctc_nb" style="display:flex;justify-content: center;align-items: center;background-color:#e4e4e4;color:#7f7d7d;padding:0 12px;border-radius:25px;font-size:13px;line-height:32px; " data-nb_top="-10px" data-nb_right="-10px">
+			<span class="s4_img" style="margin:0 8px 0 -12px;;order:0;">
+		<svg style="pointer-events:none; display: block; height:32px; width:32px;" width="32px" height="32px" viewBox="0 0 1219.547 1225.016">
+            <path style="fill: #E0E0E0;" fill="#E0E0E0" d="M1041.858 178.02C927.206 63.289 774.753.07 612.325 0 277.617 0 5.232 272.298 5.098 606.991c-.039 106.986 27.915 211.42 81.048 303.476L0 1225.016l321.898-84.406c88.689 48.368 188.547 73.855 290.166 73.896h.258.003c334.654 0 607.08-272.346 607.222-607.023.056-162.208-63.052-314.724-177.689-429.463zm-429.533 933.963h-.197c-90.578-.048-179.402-24.366-256.878-70.339l-18.438-10.93-191.021 50.083 51-186.176-12.013-19.087c-50.525-80.336-77.198-173.175-77.16-268.504.111-278.186 226.507-504.503 504.898-504.503 134.812.056 261.519 52.604 356.814 147.965 95.289 95.36 147.728 222.128 147.688 356.948-.118 278.195-226.522 504.543-504.693 504.543z"/>
+            <linearGradient id="htwaicona-chat-s4" gradientUnits="userSpaceOnUse" x1="609.77" y1="1190.114" x2="609.77" y2="21.084">
+                <stop offset="0" stop-color="#20b038"/>
+                <stop offset="1" stop-color="#60d66a"/>
+            </linearGradient>
+            <path style="fill: url(#htwaicona-chat-s4);" fill="url(#htwaicona-chat-s4)" d="M27.875 1190.114l82.211-300.18c-50.719-87.852-77.391-187.523-77.359-289.602.133-319.398 260.078-579.25 579.469-579.25 155.016.07 300.508 60.398 409.898 169.891 109.414 109.492 169.633 255.031 169.57 409.812-.133 319.406-260.094 579.281-579.445 579.281-.023 0 .016 0 0 0h-.258c-96.977-.031-192.266-24.375-276.898-70.5l-307.188 80.548z"/>
+            <image overflow="visible" opacity=".08" width="682" height="639" transform="translate(270.984 291.372)"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" style="fill: #FFFFFF;" fill="#FFF" d="M462.273 349.294c-11.234-24.977-23.062-25.477-33.75-25.914-8.742-.375-18.75-.352-28.742-.352-10 0-26.25 3.758-39.992 18.766-13.75 15.008-52.5 51.289-52.5 125.078 0 73.797 53.75 145.102 61.242 155.117 7.5 10 103.758 166.266 256.203 226.383 126.695 49.961 152.477 40.023 179.977 37.523s88.734-36.273 101.234-71.297c12.5-35.016 12.5-65.031 8.75-71.305-3.75-6.25-13.75-10-28.75-17.5s-88.734-43.789-102.484-48.789-23.75-7.5-33.75 7.516c-10 15-38.727 48.773-47.477 58.773-8.75 10.023-17.5 11.273-32.5 3.773-15-7.523-63.305-23.344-120.609-74.438-44.586-39.75-74.688-88.844-83.438-103.859-8.75-15-.938-23.125 6.586-30.602 6.734-6.719 15-17.508 22.5-26.266 7.484-8.758 9.984-15.008 14.984-25.008 5-10.016 2.5-18.773-1.25-26.273s-32.898-81.67-46.234-111.326z"/>
+            <path style="fill: #FFFFFF;" fill="#FFF" d="M1036.898 176.091C923.562 62.677 772.859.185 612.297.114 281.43.114 12.172 269.286 12.039 600.137 12 705.896 39.633 809.13 92.156 900.13L7 1211.067l318.203-83.438c87.672 47.812 186.383 73.008 286.836 73.047h.255.003c330.812 0 600.109-269.219 600.25-600.055.055-160.343-62.328-311.108-175.649-424.53zm-424.601 923.242h-.195c-89.539-.047-177.344-24.086-253.93-69.531l-18.227-10.805-188.828 49.508 50.414-184.039-11.875-18.867c-49.945-79.414-76.312-171.188-76.273-265.422.109-274.992 223.906-498.711 499.102-498.711 133.266.055 258.516 52 352.719 146.266 94.195 94.266 146.031 219.578 145.992 352.852-.118 274.999-223.923 498.749-498.899 498.749z"/>
+        </svg>		</span>
+			<span class="ctc_cta">Besoin d&#039;un conseil ?</span>
+</div>
+				</div>
+			</div>
+							<span class="ht_ctc_chat_data" data-settings="{&quot;number&quot;:&quot;33645454299&quot;,&quot;pre_filled&quot;:&quot;Hello !&quot;,&quot;dis_m&quot;:&quot;show&quot;,&quot;dis_d&quot;:&quot;show&quot;,&quot;css&quot;:&quot;cursor: pointer; z-index: 99999999;&quot;,&quot;pos_d&quot;:&quot;position: fixed; bottom: 15px; right: 15px;&quot;,&quot;pos_m&quot;:&quot;position: fixed; bottom: 15px; right: 15px;&quot;,&quot;side_d&quot;:&quot;right&quot;,&quot;side_m&quot;:&quot;right&quot;,&quot;schedule&quot;:&quot;no&quot;,&quot;se&quot;:150,&quot;ani&quot;:&quot;no-animation&quot;,&quot;page_id&quot;:11,&quot;url_target_d&quot;:&quot;_blank&quot;,&quot;ga&quot;:&quot;yes&quot;,&quot;gtm&quot;:&quot;1&quot;,&quot;fb&quot;:&quot;yes&quot;,&quot;webhook_format&quot;:&quot;json&quot;,&quot;g_init&quot;:&quot;default&quot;,&quot;g_an_event_name&quot;:&quot;click to chat&quot;,&quot;gtm_event_name&quot;:&quot;Click to Chat&quot;,&quot;pixel_event_name&quot;:&quot;Click to Chat by HoliThemes&quot;}" data-rest="b93c311161"></span>
+							<script>
+				const lazyloadRunObserver = () => {
+					const lazyloadBackgrounds = document.querySelectorAll( `.e-con.e-parent:not(.e-lazyloaded)` );
+					const lazyloadBackgroundObserver = new IntersectionObserver( ( entries ) => {
+						entries.forEach( ( entry ) => {
+							if ( entry.isIntersecting ) {
+								let lazyloadBackground = entry.target;
+								if( lazyloadBackground ) {
+									lazyloadBackground.classList.add( 'e-lazyloaded' );
+								}
+								lazyloadBackgroundObserver.unobserve( entry.target );
+							}
+						});
+					}, { rootMargin: '200px 0px 200px 0px' } );
+					lazyloadBackgrounds.forEach( ( lazyloadBackground ) => {
+						lazyloadBackgroundObserver.observe( lazyloadBackground );
+					} );
+				};
+				const events = [
+					'DOMContentLoaded',
+					'elementor/lazyload/observe',
+				];
+				events.forEach( ( event ) => {
+					document.addEventListener( event, lazyloadRunObserver );
+				} );
+			</script>
+				<div id="mobile-drawer" class="popup-drawer popup-drawer-layout-sidepanel popup-drawer-animation-fade popup-drawer-side-right" data-drawer-target-string="#mobile-drawer"
+			>
+		<div class="drawer-overlay" data-drawer-target-string="#mobile-drawer"></div>
+		<div class="drawer-inner">
+						<div class="drawer-header">
+				<button class="menu-toggle-close drawer-toggle" aria-label="Fermer le menu"  data-toggle-target="#mobile-drawer" data-toggle-body-class="showing-popup-drawer-from-right" aria-expanded="false" data-set-focus=".menu-toggle-open"
+							>
+					<span class="toggle-close-bar"></span>
+					<span class="toggle-close-bar"></span>
+				</button>
+			</div>
+			<div class="drawer-content mobile-drawer-content content-align-left content-valign-top">
+								<div class="site-header-item site-header-focus-item site-header-item-mobile-navigation mobile-navigation-layout-stretch-false" data-section="kadence_customizer_mobile_navigation">
+		<nav id="mobile-site-navigation" class="mobile-navigation drawer-navigation drawer-navigation-parent-toggle-false" role="navigation" aria-label="Primary Mobile">
+				<div class="mobile-menu-container drawer-menu-container">
+			<ul id="mobile-menu" class="menu has-collapse-sub-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1276"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">Installateur de panneaux solaires</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-1276 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1284"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">Région Bordelaise</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-1284 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+	<ul class="sub-menu">
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2338"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">Bordeaux</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2314"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-begles/">Bègles</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2316"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bruges/">Bruges</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2315"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-blaye/">Blaye</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2317"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-cenon/">Cenon</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2318"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-floirac/">Floirac</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2320"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-libourne/">Libourne</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2321"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-lormont/">Lormont</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2322"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-merignac/">Mérignac</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2323"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pessac/">Pessac</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2324"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-talence/">Talence</a></li>
+	</ul>
+</li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2325"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-rochelle/">Nord de la Nouvelle Aquitaine</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-2325 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+	<ul class="sub-menu">
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2333"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-angouleme/">Angoulême</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2343"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bergerac/">Bergerac</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2332"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-cognac/">Cognac</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2331"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-rochelle/">La Rochelle</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2327"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-marmande/">Marmande</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2326"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-niort/">Niort</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2329"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-royan/">Royan</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2330"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-rochefort/">Rochefort</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2351"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-perigueux/">Périgueux</a></li>
+	</ul>
+</li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1277"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bordeaux/">Centre de la Nouvelle Aquitaine</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-1277 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+	<ul class="sub-menu">
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2313"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-arcachon/">Arcachon</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2328"><a href="https://soleilaquitain.fr/installateur-de-panneaux-solaires-agen/">Agen</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2339"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-andernos-les-bains/">Andernos-les-Bains</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2341"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-la-teste-de-buch/">La Teste-de-Buch</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2319"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-langon/">Langon</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2342"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-villenave-dornon/">Villenave-d’Ornon</a></li>
+	</ul>
+</li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2309"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-mont-de-marsan/">Sud de la Nouvelle Aquitaine</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-2309 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+	<ul class="sub-menu">
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2307"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-bayonne/">Bayonne</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2312"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-dax/">Dax</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2311"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-mont-de-marsan/">Mont-de-Marsan</a></li>
+		<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2308"><a href="https://soleilaquitain.fr/installateur-panneaux-solaires-pau/">Pau</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-2346"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/notre-equipe/">L&rsquo;entreprise</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-2346 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2345"><a href="https://soleilaquitain.fr/realisations/">Nos réalisations</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2334"><a href="https://soleilaquitain.fr/nos-brochures/">Nos brochures</a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2335"><a href="https://soleilaquitain.fr/notre-equipe/">Notre équipe</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-44"><div class="drawer-nav-drop-wrap"><a href="https://soleilaquitain.fr/realisations/">Informations</a><button class="drawer-sub-toggle" data-toggle-duration="10" data-toggle-target="#mobile-menu .menu-item-44 &gt; .sub-menu" aria-expanded="false"><span class="screen-reader-text">Ouvrir/fermer le menu enfant</span><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-arrow-down-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Déplier</title><path d="M5.293 9.707l6 6c0.391 0.391 1.024 0.391 1.414 0l6-6c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span></button></div>
+<ul class="sub-menu">
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2344"><a href="https://soleilaquitain.fr/aides-panneaux-solaires/">Aides panneaux solaires </a></li>
+	<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2337"><a href="https://soleilaquitain.fr/rentabilite-panneaux-solaires/">Rentabilité panneaux solaires</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-11 current_page_item menu-item-749"><a href="https://soleilaquitain.fr/contact/" aria-current="page">Contact</a></li>
+</ul>		</div>
+	</nav><!-- #site-navigation -->
+	</div><!-- data-section="mobile_navigation" -->
+<div class="site-header-item site-header-focus-item" data-section="kadence_customizer_mobile_button">
+	<div class="mobile-header-button-wrap"><div class="mobile-header-button-inner-wrap"><a href="https://soleilaquitain.fr/wp-content/uploads/2026/03/AG_12032026_SA_Simulateur_aides_solaires-2.html" target="_self" class="button mobile-header-button button-size-medium button-style-filled">Simulateur</a></div></div></div><!-- data-section="mobile_button" -->
+<div class="site-header-item site-header-focus-item" data-section="kadence_customizer_header_search">
+		<div class="search-toggle-open-container">
+						<button class="search-toggle-open drawer-toggle search-toggle-style-default" aria-label="Afficher le formulaire de recherche" aria-haspopup="dialog" aria-controls="search-drawer" data-toggle-target="#search-drawer" data-toggle-body-class="showing-popup-drawer-from-full" aria-expanded="false" data-set-focus="#search-drawer .search-field"
+					>
+						<span class="search-toggle-icon"><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-search-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="26" height="28" viewBox="0 0 26 28"><title>Rechercher</title><path d="M18 13c0-3.859-3.141-7-7-7s-7 3.141-7 7 3.141 7 7 7 7-3.141 7-7zM26 26c0 1.094-0.906 2-2 2-0.531 0-1.047-0.219-1.406-0.594l-5.359-5.344c-1.828 1.266-4.016 1.937-6.234 1.937-6.078 0-11-4.922-11-11s4.922-11 11-11 11 4.922 11 11c0 2.219-0.672 4.406-1.937 6.234l5.359 5.359c0.359 0.359 0.578 0.875 0.578 1.406z"></path>
+				</svg></span></span>
+		</button>
+	</div>
+	</div><!-- data-section="header_search" -->
+							</div>
+		</div>
+	</div>
+	<script id="ht_ctc_app_js-js-extra">
+var ht_ctc_chat_var = {"number":"33645454299","pre_filled":"Hello !","dis_m":"show","dis_d":"show","css":"cursor: pointer; z-index: 99999999;","pos_d":"position: fixed; bottom: 15px; right: 15px;","pos_m":"position: fixed; bottom: 15px; right: 15px;","side_d":"right","side_m":"right","schedule":"no","se":"150","ani":"no-animation","page_id":"11","url_target_d":"_blank","ga":"yes","gtm":"1","fb":"yes","webhook_format":"json","g_init":"default","g_an_event_name":"click to chat","gtm_event_name":"Click to Chat","pixel_event_name":"Click to Chat by HoliThemes"};
+var ht_ctc_variables = {"g_an_event_name":"click to chat","gtm_event_name":"Click to Chat","pixel_event_type":"trackCustom","pixel_event_name":"Click to Chat by HoliThemes","g_an_params":["g_an_param_1","g_an_param_2","g_an_param_3"],"g_an_param_1":{"key":"number","value":"{number}"},"g_an_param_2":{"key":"title","value":"{title}"},"g_an_param_3":{"key":"url","value":"{url}"},"pixel_params":["pixel_param_1","pixel_param_2","pixel_param_3","pixel_param_4"],"pixel_param_1":{"key":"Category","value":"Click to Chat for WhatsApp"},"pixel_param_2":{"key":"ID","value":"{number}"},"pixel_param_3":{"key":"Title","value":"{title}"},"pixel_param_4":{"key":"URL","value":"{url}"},"gtm_params":["gtm_param_1","gtm_param_2","gtm_param_3","gtm_param_4","gtm_param_5"],"gtm_param_1":{"key":"type","value":"chat"},"gtm_param_2":{"key":"number","value":"{number}"},"gtm_param_3":{"key":"title","value":"{title}"},"gtm_param_4":{"key":"url","value":"{url}"},"gtm_param_5":{"key":"ref","value":"dataLayer push"}};
+//# sourceURL=ht_ctc_app_js-js-extra
+</script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/click-to-chat-for-whatsapp/new/inc/assets/js/app.js?ver=4.39" id="ht_ctc_app_js-js" defer data-wp-strategy="defer"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/honeypot/includes/js/wpa.js?ver=2.3.04" id="wpascript-js"></script>
+<script id="wpascript-js-after">
+wpa_field_info = {"wpa_field_name":"xtboij4894","wpa_field_value":788214,"wpa_add_test":"no"}
+//# sourceURL=wpascript-js-after
+</script>
+<script id="kadence-navigation-js-extra">
+var kadenceConfig = {"screenReader":{"expand":"Menu enfant","expandOf":"Menu enfant de","collapse":"Menu enfant","collapseOf":"Menu enfant de"},"breakPoints":{"desktop":"1024","tablet":768},"scrollOffset":"0"};
+//# sourceURL=kadence-navigation-js-extra
+</script>
+<script src="https://soleilaquitain.fr/wp-content/themes/kadence/assets/js/navigation.min.js?ver=1.4.5" id="kadence-navigation-js" async></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=4.0.1" id="elementor-webpack-runtime-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=4.0.1" id="elementor-frontend-modules-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/ui/core.min.js?ver=1.13.3" id="jquery-ui-core-js"></script>
+<script id="elementor-frontend-js-before">
+var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false,"isScriptDebug":false},"i18n":{"shareOnFacebook":"Partager sur Facebook","shareOnTwitter":"Partager sur Twitter","pinIt":"L\u2019\u00e9pingler","download":"T\u00e9l\u00e9charger","downloadImage":"T\u00e9l\u00e9charger une image","fullscreen":"Plein \u00e9cran","zoom":"Zoom","share":"Partager","playVideo":"Lire la vid\u00e9o","previous":"Pr\u00e9c\u00e9dent","next":"Suivant","close":"Fermer","a11yCarouselPrevSlideMessage":"Diapositive pr\u00e9c\u00e9dente","a11yCarouselNextSlideMessage":"Diapositive suivante","a11yCarouselFirstSlideMessage":"Ceci est la premi\u00e8re diapositive","a11yCarouselLastSlideMessage":"Ceci est la derni\u00e8re diapositive","a11yCarouselPaginationBulletMessage":"Aller \u00e0 la diapositive"},"is_rtl":false,"breakpoints":{"xs":0,"sm":480,"md":768,"lg":1025,"xl":1440,"xxl":1600},"responsive":{"breakpoints":{"mobile":{"label":"Portrait mobile","value":767,"default_value":767,"direction":"max","is_enabled":true},"mobile_extra":{"label":"Mobile Paysage","value":880,"default_value":880,"direction":"max","is_enabled":false},"tablet":{"label":"Tablette en mode portrait","value":1024,"default_value":1024,"direction":"max","is_enabled":true},"tablet_extra":{"label":"Tablette en mode paysage","value":1200,"default_value":1200,"direction":"max","is_enabled":false},"laptop":{"label":"Portable","value":1366,"default_value":1366,"direction":"max","is_enabled":false},"widescreen":{"label":"\u00c9cran large","value":2400,"default_value":2400,"direction":"min","is_enabled":false}},"hasCustomBreakpoints":false},"version":"4.0.1","is_static":false,"experimentalFeatures":{"e_font_icon_svg":true,"additional_custom_breakpoints":true,"container":true,"e_optimized_markup":true,"theme_builder_v2":true,"e_pro_free_trial_popup":true,"nested-elements":true,"global_classes_should_enforce_capabilities":true,"e_variables":true,"e_opt_in_v4_page":true,"e_components":true,"e_interactions":true,"e_widget_creation":true,"import-export-customization":true,"e_pro_atomic_form":true,"mega-menu":true,"e_pro_variables":true,"e_pro_interactions":true},"urls":{"assets":"https:\/\/soleilaquitain.fr\/wp-content\/plugins\/elementor\/assets\/","ajaxurl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php","uploadUrl":"https:\/\/soleilaquitain.fr\/wp-content\/uploads"},"nonces":{"floatingButtonsClickTracking":"c7af93b1e1","atomicFormsSendForm":"6516b84181"},"swiperClass":"swiper","settings":{"page":[],"editorPreferences":[]},"kit":{"body_background_background":"classic","active_breakpoints":["viewport_mobile","viewport_tablet"],"global_image_lightbox":"yes","lightbox_enable_counter":"yes","lightbox_enable_fullscreen":"yes","lightbox_enable_zoom":"yes","lightbox_enable_share":"yes","lightbox_title_src":"title","lightbox_description_src":"description"},"post":{"id":11,"title":"Contact%20-%20Soleil%20Aquitain","excerpt":"","featuredImage":"https:\/\/soleilaquitain.fr\/wp-content\/uploads\/2026\/01\/Contact-400_380.jpg"}};
+//# sourceURL=elementor-frontend-js-before
+</script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=4.0.1" id="elementor-frontend-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/webpack-pro.runtime.min.js?ver=4.0.1" id="elementor-pro-webpack-runtime-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/dist/hooks.min.js?ver=dd5603f07f9220ed27f1" id="wp-hooks-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/dist/i18n.min.js?ver=c26c3dc7bed366793375" id="wp-i18n-js"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script id="elementor-pro-frontend-js-before">
+var ElementorProFrontendConfig = {"ajaxurl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php","nonce":"9140dc12b7","urls":{"assets":"https:\/\/soleilaquitain.fr\/wp-content\/plugins\/elementor-pro\/assets\/","rest":"https:\/\/soleilaquitain.fr\/wp-json\/"},"settings":{"lazy_load_background_images":true},"popup":{"hasPopUps":false},"shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"mix":{"title":"Mix"},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"},"x-twitter":{"title":"X"},"threads":{"title":"Threads"}},"facebook_sdk":{"lang":"fr_FR","app_id":""},"lottie":{"defaultAnimationUrl":"https:\/\/soleilaquitain.fr\/wp-content\/plugins\/elementor-pro\/modules\/lottie\/assets\/animations\/default.json"}};
+//# sourceURL=elementor-pro-frontend-js-before
+</script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/frontend.min.js?ver=4.0.1" id="elementor-pro-frontend-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/js/elements-handlers.min.js?ver=4.0.1" id="pro-elements-handlers-js"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://soleilaquitain.fr/wp-includes/js/wp-emoji-release.min.js?ver=6.9.4"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=https://soleilaquitain.fr/wp-includes/js/wp-emoji-loader.min.js
+</script>
+	<div id="search-drawer" aria-modal="true" role="dialog" aria-label="Rechercher" class="popup-drawer popup-drawer-layout-fullwidth" data-drawer-target-string="#search-drawer"
+			>
+		<div class="drawer-overlay" data-drawer-target-string="#search-drawer"></div>
+		<div class="drawer-inner">
+			<div class="drawer-header">
+				<button class="search-toggle-close drawer-toggle" aria-label="Fermer la recherche"  data-toggle-target="#search-drawer" data-toggle-body-class="showing-popup-drawer-from-full" data-set-focus=".search-toggle-open"
+							>
+					<span class="kadence-svg-iconset"><svg class="kadence-svg-icon kadence-close-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Fermer le menu</title><path d="M5.293 6.707l5.293 5.293-5.293 5.293c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0l5.293-5.293 5.293 5.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-5.293-5.293 5.293-5.293c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-5.293 5.293-5.293-5.293c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path>
+				</svg></span>				</button>
+			</div>
+			<div class="drawer-content">
+				<form role="search" method="get" class="search-form" action="https://soleilaquitain.fr/">
+				<label>
+					<span class="screen-reader-text">Rechercher :</span>
+					<input type="search" class="search-field" placeholder="Rechercher…" value="" name="s" />
+				</label>
+				<input type="submit" class="search-submit" value="Rechercher" />
+			<div class="kadence-search-icon-wrap"><span class="kadence-svg-iconset"><svg aria-hidden="true" class="kadence-svg-icon kadence-search-svg" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" width="26" height="28" viewBox="0 0 26 28"><title>Rechercher</title><path d="M18 13c0-3.859-3.141-7-7-7s-7 3.141-7 7 3.141 7 7 7 7-3.141 7-7zM26 26c0 1.094-0.906 2-2 2-0.531 0-1.047-0.219-1.406-0.594l-5.359-5.344c-1.828 1.266-4.016 1.937-6.234 1.937-6.078 0-11-4.922-11-11s4.922-11 11-11 11 4.922 11 11c0 2.219-0.672 4.406-1.937 6.234l5.359 5.359c0.359 0.359 0.578 0.875 0.578 1.406z"></path>
+				</svg></span></div></form>			</div>
+		</div>
+	</div>
+	
+		<!-- Cookie Notice plugin v2.5.16 by Hu-manity.co https://hu-manity.co/ -->
+		<div id="cookie-notice" role="dialog" class="cookie-notice-hidden cookie-revoke-hidden cn-position-bottom" aria-label="Cookie Notice" style="background-color: rgba(168,196,192,0.8);"><div class="cookie-notice-container" style="color: #fff"><span id="cn-notice-text" class="cn-text-container">Nous utilisons des cookies pour vous garantir la meilleure expérience sur notre site web. Si vous continuez à utiliser ce site, nous supposerons que vous en êtes satisfait.</span><span id="cn-notice-buttons" class="cn-buttons-container"><button id="cn-accept-cookie" data-cookie-set="accept" class="cn-set-cookie cn-button" aria-label="OK" style="background-color: #020000">OK</button></span><button type="button" id="cn-close-notice" data-cookie-set="accept" class="cn-close-icon" aria-label="Non"></button></div>
+			
+		</div>
+		<!-- / Cookie Notice plugin --></body>
+</html>
+
+
+<!-- Page supported by LiteSpeed Cache 7.8.1 on 2026-05-02 22:48:46 -->
