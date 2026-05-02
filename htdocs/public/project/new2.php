@@ -611,6 +611,9 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 					<label for="form-field-message" class="elementor-field-label">Votre projet (optionnel)</label>
 					<textarea class="elementor-field-textual elementor-field  elementor-size-xs" name="form_fields[message]" id="form-field-message" rows="4" placeholder="Décrivez brièvement votre projet : type de maison, surface de toiture, consommation actuelle..." value="<?php print dol_escape_htmltag($description);?>"></textarea>
 				</div>
+				<div class="elementor-field-type-checkbox elementor-field-group elementor-column elementor-field-group-rgpd_consent elementor-col-100">
+					<?php echo '<label style="font-weight:400"><input type="checkbox" name="rgpd_consent" value="1" '.($rgpdConsent ? 'checked' : '').' required> En soumettant ce formulaire, vous acceptez d’être contacté par Soleil Aquitain. Vos données sont traitées conformément à notre politique de confidentialité.</label>'; ?>
+				</div>
 				<div class="elementor-field-group elementor-column elementor-field-type-submit elementor-col-100 e-form__buttons">
 					<button class="elementor-button elementor-size-sm" type="submit">
 						<span class="elementor-button-content-wrapper">
@@ -622,16 +625,7 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 				</div>
 			</div>
 		<?php
-			
-			
-			echo '<label>E-mail *<input type="email" name="email" required value="'.dol_escape_htmltag($email).'"></label>';
-			echo '<label>Ville<input type="text" name="town" required value="'.dol_escape_htmltag($town).'"></label>';
-			echo '<label>Code postal<input type="text" name="zip" required value="'.dol_escape_htmltag($zip).'"></label>';
-			echo '<label>Votre projet (optionnel)<textarea name="description" rows="5">'.dol_escape_htmltag($description).'</textarea></label>';
-			echo '<label style="font-weight:400"><input type="checkbox" name="rgpd_consent" value="1" '.($rgpdConsent ? 'checked' : '').' required> En soumettant ce formulaire, vous acceptez d’être contacté par Soleil Aquitain. Vos données sont traitées conformément à notre politique de confidentialité.</label>';
-			echo '<button type="submit" class="sa-btn">Envoyer ma demande</button>';
 			echo '</form>';
-			echo '</div></div></div>';
 		?>
 						</div>
 				<div class="elementor-element elementor-element-bda9945 elementor-widget elementor-widget-text-editor" data-id="bda9945" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
