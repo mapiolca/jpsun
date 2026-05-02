@@ -557,21 +557,21 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 					</a>
 								</div>
 				<div class="elementor-element elementor-element-4447951 elementor-align-right elementor-widget elementor-widget-button" data-id="4447951" data-element_type="widget" data-e-type="widget" data-widget_type="button.default">
-										<a class="elementor-button elementor-size-sm" role="button">
+					<a class="elementor-button elementor-size-sm" role="button">
 						<span class="elementor-button-content-wrapper">
-									<span class="elementor-button-text">Assurance RC Pro</span>
-					</span>
+							<span class="elementor-button-text">Assurance RC Pro</span>
+						</span>
 					</a>
-								</div>
 				</div>
-				<div class="elementor-element elementor-element-967732e elementor-widget elementor-widget-spacer" data-id="967732e" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
-							<div class="elementor-spacer">
-			<div class="elementor-spacer-inner"></div>
+			</div>
+			<div class="elementor-element elementor-element-967732e elementor-widget elementor-widget-spacer" data-id="967732e" data-element_type="widget" data-e-type="widget" data-widget_type="spacer.default">
+				<div class="elementor-spacer">
+					<div class="elementor-spacer-inner"></div>
+				</div>
+			</div>
 		</div>
-						</div>
-				</div>
 		<div class="elementor-element elementor-element-c1cbb02 e-con-full e-flex e-con e-child" data-id="c1cbb02" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
-				<div class="elementor-element elementor-element-50ec840 elementor-button-align-stretch elementor-widget elementor-widget-form" data-id="50ec840" data-element_type="widget" data-e-type="widget" data-settings="{&quot;step_next_label&quot;:&quot;Suivant&quot;,&quot;step_previous_label&quot;:&quot;Pr\u00e9c\u00e9dent&quot;,&quot;button_width&quot;:&quot;100&quot;,&quot;step_type&quot;:&quot;number_text&quot;,&quot;step_icon_shape&quot;:&quot;circle&quot;}" data-widget_type="form.default">
+			<div class="elementor-element elementor-element-50ec840 elementor-button-align-stretch elementor-widget elementor-widget-form" data-id="50ec840" data-element_type="widget" data-e-type="widget" data-settings="{&quot;step_next_label&quot;:&quot;Suivant&quot;,&quot;step_previous_label&quot;:&quot;Pr\u00e9c\u00e9dent&quot;,&quot;button_width&quot;:&quot;100&quot;,&quot;step_type&quot;:&quot;number_text&quot;,&quot;step_icon_shape&quot;:&quot;circle&quot;}" data-widget_type="form.default">
 <?php
 			if (!empty($successMessage)) echo '<div class="sa-msg sa-ok">'.dol_escape_htmltag($successMessage).'</div>';
 			if (!empty($publicError)) echo '<div class="sa-msg sa-ko">'.dol_escape_htmltag($publicError).'</div>';
@@ -584,7 +584,7 @@ var cnArgs = {"ajaxUrl":"https:\/\/soleilaquitain.fr\/wp-admin\/admin-ajax.php",
 			foreach ($utms as $utmKey => $utmVal) {
 				echo '<input type="hidden" name="'.$utmKey.'" value="'.dol_escape_htmltag($utmVal).'">';
 			}
-			echo '<input class="sa-hid" type="text" name="website_url" value=""> hidden';
+			echo '<input class="sa-hid" type="hidden" name="website_url" value="">';
 ?>
 			<div class="elementor-form-fields-wrapper elementor-labels-above">
 				<div class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-name elementor-col-100">
