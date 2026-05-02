@@ -206,11 +206,34 @@ if ($action === 'added') {
 
 $formTokenTs = dol_now();
 
+
+$remoteHeadAssets = '';
+$remoteContactUrl = 'https://soleilaquitain.fr/contact/';
+$context = stream_context_create(array('http' => array('timeout' => 5, 'header' => "User-Agent: Mozilla/5.0\r\n")));
+$remoteHtml = @file_get_contents($remoteContactUrl, false, $context);
+if ($remoteHtml !== false) {
+	if (preg_match_all("/<link[^>]+rel=[\"'](?:stylesheet|preload)[\"'][^>]*>/i", $remoteHtml, $matchesLink)) {
+		foreach ($matchesLink[0] as $linkTag) {
+			if (preg_match("/href=[\"']([^\"']+)[\"']/i", $linkTag, $mhref)) {
+				$href = $mhref[1];
+				if (strpos($href, '//') === 0) $href = 'https:'.$href;
+				elseif (!preg_match('/^https?:\/\//i', $href)) $href = rtrim($remoteContactUrl, '/').'/'.ltrim($href, '/');
+				$remoteHeadAssets .= '<link rel="stylesheet" href="'.dol_escape_htmltag($href).'">';
+			}
+		}
+	}
+	if (preg_match_all("/<script[^>]+src=[\"']([^\"']+)[\"'][^>]*><\\/script>/i", $remoteHtml, $matchesScript)) {
+		foreach ($matchesScript[1] as $src) {
+			if (strpos($src, '//') === 0) $src = 'https:'.$src;
+			elseif (!preg_match('/^https?:\/\//i', $src)) $src = rtrim($remoteContactUrl, '/').'/'.ltrim($src, '/');
+			$remoteHeadAssets .= '<script defer src="'.dol_escape_htmltag($src).'"></script>';
+		}
+	}
+}
+
 $head = '<meta name="viewport" content="width=device-width,initial-scale=1">';
 $head .= '<link rel="preconnect" href="https://soleilaquitain.fr" crossorigin>';
-$head .= '<link rel="stylesheet" href="https://soleilaquitain.fr/contact/">';
-$head .= '<script defer src="https://soleilaquitain.fr/wp-includes/js/jquery/jquery.min.js"></script>';
-$head .= '<script defer src="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/js/frontend.min.js"></script>';
+$head .= $remoteHeadAssets;
 $head .= '<style>';
 $head .= 'body{margin:0;font-family:Arial,sans-serif;background:#f6f8fb;color:#1f2a37}.sa-wrap{max-width:1100px;margin:0 auto;padding:24px}.sa-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:start}.sa-card{background:#fff;border-radius:16px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:24px}.sa-title{font-size:46px;font-weight:800;margin:10px 0}.sa-sub{font-size:26px;font-weight:700;margin:0}.sa-sub2{font-size:22px;font-weight:500;margin:6px 0 16px}.sa-intro{line-height:1.5;color:#4b5563}.sa-list{margin:16px 0 0;padding:0;list-style:none}.sa-list li{margin:8px 0}.sa-badge{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:6px 12px;margin:4px 8px 0 0;font-size:13px}.sa-form input,.sa-form textarea{width:100%;box-sizing:border-box;border:1px solid #dbe1ea;border-radius:10px;padding:12px;margin-top:6px}.sa-form label{display:block;font-weight:600;margin:12px 0 0}.sa-btn{margin-top:14px;background:#1d4ed8;color:#fff;border:none;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;width:100%}.sa-msg{border-radius:10px;padding:10px 12px;margin-bottom:10px}.sa-ok{background:#dcfce7;color:#166534}.sa-ko{background:#fee2e2;color:#991b1b}.sa-hid{display:none}@media (max-width:900px){.sa-grid{grid-template-columns:1fr}.sa-title{font-size:34px}}';
 $head .= '</style>';
