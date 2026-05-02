@@ -17,7 +17,17 @@ if ($entity > 0) {
 	define('DOLENTITY', $entity);
 }
 
-require '../../main.inc.php';
+// EN: Load Dolibarr environment from core or custom path
+// FR: Charger l'environnement Dolibarr depuis le chemin core ou custom
+if (!@include '../../main.inc.php') {
+	if (!@include '../../../main.inc.php') {
+		if (!@include '../../../../main.inc.php') {
+			if (!@include '../../../../../main.inc.php') {
+				die('Include of main fails');
+			}
+		}
+	}
+}
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
