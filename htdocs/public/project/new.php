@@ -207,36 +207,56 @@ if ($action === 'added') {
 $formTokenTs = dol_now();
 
 
-$remoteHeadAssets = '';
-$remoteContactUrl = 'https://soleilaquitain.fr/contact/';
-$context = stream_context_create(array('http' => array('timeout' => 5, 'header' => "User-Agent: Mozilla/5.0\r\n")));
-$remoteHtml = @file_get_contents($remoteContactUrl, false, $context);
-if ($remoteHtml !== false) {
-	if (preg_match_all("/<link[^>]+rel=[\"'](?:stylesheet|preload)[\"'][^>]*>/i", $remoteHtml, $matchesLink)) {
-		foreach ($matchesLink[0] as $linkTag) {
-			if (preg_match("/href=[\"']([^\"']+)[\"']/i", $linkTag, $mhref)) {
-				$href = $mhref[1];
-				if (strpos($href, '//') === 0) $href = 'https:'.$href;
-				elseif (!preg_match('/^https?:\/\//i', $href)) $href = rtrim($remoteContactUrl, '/').'/'.ltrim($href, '/');
-				$remoteHeadAssets .= '<link rel="stylesheet" href="'.dol_escape_htmltag($href).'">';
-			}
-		}
-	}
-	if (preg_match_all("/<script[^>]+src=[\"']([^\"']+)[\"'][^>]*><\\/script>/i", $remoteHtml, $matchesScript)) {
-		foreach ($matchesScript[1] as $src) {
-			if (strpos($src, '//') === 0) $src = 'https:'.$src;
-			elseif (!preg_match('/^https?:\/\//i', $src)) $src = rtrim($remoteContactUrl, '/').'/'.ltrim($src, '/');
-			$remoteHeadAssets .= '<script defer src="'.dol_escape_htmltag($src).'"></script>';
-		}
-	}
-}
-
-$head = '<meta name="viewport" content="width=device-width,initial-scale=1">';
-$head .= '<link rel="preconnect" href="https://soleilaquitain.fr" crossorigin>';
-$head .= $remoteHeadAssets;
-$head .= '<style>';
-$head .= 'body{margin:0;font-family:Arial,sans-serif;background:#f6f8fb;color:#1f2a37}.sa-wrap{max-width:1100px;margin:0 auto;padding:24px}.sa-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:start}.sa-card{background:#fff;border-radius:16px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:24px}.sa-title{font-size:46px;font-weight:800;margin:10px 0}.sa-sub{font-size:26px;font-weight:700;margin:0}.sa-sub2{font-size:22px;font-weight:500;margin:6px 0 16px}.sa-intro{line-height:1.5;color:#4b5563}.sa-list{margin:16px 0 0;padding:0;list-style:none}.sa-list li{margin:8px 0}.sa-badge{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:6px 12px;margin:4px 8px 0 0;font-size:13px}.sa-form input,.sa-form textarea{width:100%;box-sizing:border-box;border:1px solid #dbe1ea;border-radius:10px;padding:12px;margin-top:6px}.sa-form label{display:block;font-weight:600;margin:12px 0 0}.sa-btn{margin-top:14px;background:#1d4ed8;color:#fff;border:none;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;width:100%}.sa-msg{border-radius:10px;padding:10px 12px;margin-bottom:10px}.sa-ok{background:#dcfce7;color:#166534}.sa-ko{background:#fee2e2;color:#991b1b}.sa-hid{display:none}@media (max-width:900px){.sa-grid{grid-template-columns:1fr}.sa-title{font-size:34px}}';
-$head .= '</style>';
+$head = <<<'HTML'
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<title>Contact - Soleil Aquitain</title>
+<meta name="description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+<link rel="canonical" href="https://soleilaquitain.fr/contact/">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Contact - Soleil Aquitain">
+<meta property="og:description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée.">
+<meta property="og:url" content="https://soleilaquitain.fr/contact/">
+<meta property="og:site_name" content="Soleil Aquitain">
+<meta property="og:updated_time" content="2026-03-22T20:34:37+00:00">
+<meta property="og:image" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg">
+<meta property="article:published_time" content="2026-01-08T11:11:09+00:00">
+<meta property="article:modified_time" content="2026-03-22T20:34:37+00:00">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact - Soleil Aquitain">
+<meta name="twitter:description" content="Remplissez le formulaire ou contactez-nous directement. Nous vous répondons sous 24h avec une étude personnalisée.">
+<meta name="twitter:image" content="https://soleilaquitain.fr/wp-content/uploads/2026/01/Contact-400_380.jpg">
+<link rel="alternate" type="application/rss+xml" title="Soleil Aquitain » Flux" href="https://soleilaquitain.fr/feed/">
+<link rel="alternate" type="application/rss+xml" title="Soleil Aquitain » Flux des commentaires" href="https://soleilaquitain.fr/comments/feed/">
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://soleilaquitain.fr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsoleilaquitain.fr%2Fcontact%2F">
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://soleilaquitain.fr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsoleilaquitain.fr%2Fcontact%2F&amp;format=xml">
+<link rel="stylesheet" id="ht_ctc_main_css-css" href="https://soleilaquitain.fr/wp-content/plugins/click-to-chat-for-whatsapp/new/inc/assets/css/main.css?ver=4.39" media="all">
+<link rel="stylesheet" id="cookie-notice-front-css" href="https://soleilaquitain.fr/wp-content/plugins/cookie-notice/css/front.min.css?ver=2.5.16" media="all">
+<link rel="stylesheet" id="wpa-css-css" href="https://soleilaquitain.fr/wp-content/plugins/honeypot/includes/css/wpa.css?ver=2.3.04" media="all">
+<link rel="stylesheet" id="kadence-global-css" href="https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/global.min.css?ver=1.4.5" media="all">
+<link rel="stylesheet" id="kadence-header-css" href="https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/header.min.css?ver=1.4.5" media="all">
+<link rel="stylesheet" id="kadence-content-css" href="https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/content.min.css?ver=1.4.5" media="all">
+<link rel="stylesheet" id="kadence-footer-css" href="https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/footer.min.css?ver=1.4.5" media="all">
+<link rel="stylesheet" id="elementor-frontend-css" href="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/frontend.min.css?ver=4.0.1" media="all">
+<link rel="stylesheet" id="widget-heading-css" href="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-heading.min.css?ver=4.0.1" media="all">
+<link rel="stylesheet" id="widget-icon-list-css" href="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-icon-list.min.css?ver=4.0.1" media="all">
+<link rel="stylesheet" id="elementor-post-9-css" href="https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-9.css?ver=1777551887" media="all">
+<link rel="stylesheet" id="widget-spacer-css" href="https://soleilaquitain.fr/wp-content/plugins/elementor/assets/css/widget-spacer.min.css?ver=4.0.1" media="all">
+<link rel="stylesheet" id="widget-form-css" href="https://soleilaquitain.fr/wp-content/plugins/elementor-pro/assets/css/widget-form.min.css?ver=4.0.1" media="all">
+<link rel="stylesheet" id="elementor-post-11-css" href="https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-11.css?ver=1777553729" media="all">
+<link rel="stylesheet" id="elementor-post-1452-css" href="https://soleilaquitain.fr/wp-content/uploads/elementor/css/post-1452.css?ver=1777551888" media="all">
+<link rel="stylesheet" id="kadence-rankmath-css" href="https://soleilaquitain.fr/wp-content/themes/kadence/assets/css/rankmath.min.css?ver=1.4.5" media="all">
+<link rel="stylesheet" id="elementor-gf-poppins-css" href="https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&amp;display=swap" media="all">
+<link rel="stylesheet" id="kadence-fonts-gfonts-css" href="https://fonts.googleapis.com/css?family=Roboto:regular&amp;display=swap" media="all">
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<script src="https://soleilaquitain.fr/wp-content/plugins/cookie-notice/js/front.min.js?ver=2.5.16" id="cookie-notice-front-js"></script>
+<script src="https://soleilaquitain.fr/wp-includes/js/wp-emoji-release.min.js?ver=6.9.4" defer=""></script>
+<style id="wp-img-auto-sizes-contain-inline-css">img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}</style>
+<style id="sa-local-fallback">body{margin:0;font-family:Arial,sans-serif;background:#f6f8fb;color:#1f2a37}.sa-wrap{max-width:1100px;margin:0 auto;padding:24px}.sa-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:start}.sa-card{background:#fff;border-radius:16px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:24px}.sa-title{font-size:46px;font-weight:800;margin:10px 0}.sa-sub{font-size:26px;font-weight:700;margin:0}.sa-sub2{font-size:22px;font-weight:500;margin:6px 0 16px}.sa-intro{line-height:1.5;color:#4b5563}.sa-list{margin:16px 0 0;padding:0;list-style:none}.sa-list li{margin:8px 0}.sa-badge{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:6px 12px;margin:4px 8px 0 0;font-size:13px}.sa-form input,.sa-form textarea{width:100%;box-sizing:border-box;border:1px solid #dbe1ea;border-radius:10px;padding:12px;margin-top:6px}.sa-form label{display:block;font-weight:600;margin:12px 0 0}.sa-btn{margin-top:14px;background:#1d4ed8;color:#fff;border:none;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;width:100%}.sa-msg{border-radius:10px;padding:10px 12px;margin-bottom:10px}.sa-ok{background:#dcfce7;color:#166534}.sa-ko{background:#fee2e2;color:#991b1b}.sa-hid{display:none}@media (max-width:900px){.sa-grid{grid-template-columns:1fr}.sa-title{font-size:34px}}</style>
+HTML;
 
 top_htmlhead('', 'CONTACT - Soleil Aquitain', 0, 0, '', '', $head);
 echo '<body><div class="sa-wrap">';
