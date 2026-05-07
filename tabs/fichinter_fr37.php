@@ -19,7 +19,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
+require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 
 dol_include_once('/jpsun/class/jpsunfichinterfr37.class.php');
 
@@ -156,41 +158,58 @@ function jpsun_fr37_textarea($name, $value, $rows = 3, $attrs = '')
 
 /**
  * @param Fichinter $object Intervention object
- * @return array<int,string>
+ * @return array<int,array{type:string,user_html:string}>
  */
 function jpsun_fr37_fetch_contacts($object)
 {
 	global $db;
 
 	$rows = array();
-	$sql = "SELECT ctc.libelle, ctc.source, sp.lastname AS sp_lastname, sp.firstname AS sp_firstname, sp.email AS sp_email, sp.phone AS sp_phone,";
-	$sql .= " u.lastname AS u_lastname, u.firstname AS u_firstname, u.email AS u_email, u.office_phone AS u_phone";
-	$sql .= " FROM ".MAIN_DB_PREFIX."element_contact AS ec";
-	$sql .= " INNER JOIN ".MAIN_DB_PREFIX."c_type_contact AS ctc ON ctc.rowid = ec.fk_c_type_contact";
-	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."socpeople AS sp ON sp.rowid = ec.fk_socpeople AND ctc.source = 'external'";
-	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."user AS u ON u.rowid = ec.fk_socpeople AND ctc.source = 'internal'";
-	$sql .= " WHERE ec.element_id = ".((int) $object->id)." AND ctc.element = 'fichinter'";
-	$sql .= " ORDER BY ctc.libelle ASC";
-	$resql = $db->query($sql);
-	if (!$resql) {
+	if (!method_exists($object, 'liste_contact')) {
 		return $rows;
 	}
 
-	while ($obj = $db->fetch_object($resql)) {
-		$name = trim(($obj->source === 'internal' ? $obj->u_firstname.' '.$obj->u_lastname : $obj->sp_firstname.' '.$obj->sp_lastname));
-		$phone = ($obj->source === 'internal' ? $obj->u_phone : $obj->sp_phone);
-		$email = ($obj->source === 'internal' ? $obj->u_email : $obj->sp_email);
-		$line = $obj->libelle.' : '.$name;
-		if ($phone) {
-			$line .= ' - '.$phone;
+	$userstatic = new User($db);
+	$contactstatic = new Contact($db);
+
+	foreach (array('internal', 'external') as $source) {
+		$contactlist = $object->liste_contact(-1, $source);
+		if (!is_array($contactlist)) {
+			continue;
 		}
-		if ($email) {
-			$line .= ' - '.$email;
+
+		foreach ($contactlist as $contact) {
+			$contactHtml = '';
+			if ($source === 'internal') {
+				if ($userstatic->fetch((int) $contact['id']) > 0) {
+					$contactHtml = $userstatic->getNomUrl(-1, '', 0, 0, 0, 0, '', 'valignmiddle');
+				}
+			} else {
+				if ($contactstatic->fetch((int) $contact['id']) > 0) {
+					$contactHtml = $contactstatic->getNomUrl(1, '', 0, '', 0, 0);
+				}
+			}
+
+			if ($contactHtml !== '') {
+				$rows[] = array(
+					'type' => !empty($contact['libelle']) ? $contact['libelle'] : (!empty($contact['code']) ? $contact['code'] : ''),
+					'user_html' => $contactHtml,
+				);
+			}
 		}
-		$rows[] = $line;
 	}
 
 	return $rows;
+}
+
+/**
+ * @return string
+ */
+function jpsun_fr37_string_remove_button()
+{
+	global $langs;
+
+	return '<button class="button button-delete jpsun-fr37-remove-string" type="button" title="'.dol_escape_htmltag($langs->trans('Delete')).'">'.img_picto($langs->trans('Delete'), 'delete').'</button>';
 }
 
 /**
@@ -415,16 +434,28 @@ print '<div class="underbanner clearboth"></div>';
 print load_fiche_titre($langs->trans('JpsunFr37Context'), '', '');
 print '<div class="div-table-responsive">';
 print '<table class="border centpercent tableforfield">';
-print '<tr><td class="titlefield">'.$langs->trans('JpsunFr37CustomerAddress').'</td><td>';
+print '<tr><td class="titlefield">'.$langs->trans('Customer').'</td><td>';
 if (!empty($object->thirdparty->id)) {
-	print $object->thirdparty->getNomUrl(1).'<br>';
-	print dol_nl2br(dol_escape_htmltag($object->thirdparty->getFullAddress(1)));
+	print $object->thirdparty->getNomUrl(1);
 }
 print '</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37Project').'</td><td>'.($project ? $project->getNomUrl(1) : '<span class="opacitymedium">'.$langs->trans('None').'</span>').'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37InterventionDate').'</td><td>'.(!empty($object->datei) ? dol_print_date($object->datei, 'dayhour') : '').'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37LinkedObjects').'</td><td>'.(empty($linkedObjects) ? '<span class="opacitymedium">'.$langs->trans('None').'</span>' : implode('<br>', $linkedObjects)).'</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37Contacts').'</td><td>'.(empty($contacts) ? '<span class="opacitymedium">'.$langs->trans('None').'</span>' : dol_nl2br(dol_escape_htmltag(implode("\n", $contacts)))).'</td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37Contacts').'</td><td>';
+if (empty($contacts)) {
+	print '<span class="opacitymedium">'.$langs->trans('None').'</span>';
+} else {
+	print '<div class="div-table-responsive-no-min">';
+	print '<table class="noborder centpercent">';
+	print '<tr class="liste_titre"><th>'.$langs->trans('Type').'</th><th>'.$langs->trans('User').'</th></tr>';
+	foreach ($contacts as $contactRow) {
+		print '<tr><td>'.dol_escape_htmltag($contactRow['type']).'</td><td>'.$contactRow['user_html'].'</td></tr>';
+	}
+	print '</table>';
+	print '</div>';
+}
+print '</td></tr>';
 print '</table>';
 print '</div>';
 
@@ -521,11 +552,11 @@ foreach ($strings as $stringRow) {
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="1" name="string_no[]" value="'.dol_escape_htmltag((string) $stringRow['string_no']).'"></td>';
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="text" inputmode="decimal" name="string_voltage[]" value="'.dol_escape_htmltag((string) $stringRow['voltage']).'"></td>';
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="0" name="string_pv_count[]" value="'.dol_escape_htmltag((string) $stringRow['pv_count']).'"></td>';
-	print '<td class="jpsun-fr37-string-actions"><button class="button button-delete jpsun-fr37-remove-string" type="button">-</button></td>';
+	print '<td class="jpsun-fr37-string-actions">'.jpsun_fr37_string_remove_button().'</td>';
 	print '</tr>';
 }
 print '</tbody></table></div>';
-print '<button class="button smallpaddingimp jpsun-fr37-add-string" type="button">'.$langs->trans('JpsunFr37AddString').'</button>';
+print '<button class="button button-add smallpaddingimp jpsun-fr37-add-string" type="button" title="'.dol_escape_htmltag($langs->trans('JpsunFr37AddString')).'">'.img_picto($langs->trans('JpsunFr37AddString'), 'add').'</button>';
 print '</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37EarthValue').'</td><td><input class="flat width100 maxwidthonsmartphone" type="text" inputmode="decimal" name="earth_value" value="'.dol_escape_htmltag((string) $values['earth_value']).'"> Ohm</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37InverterType').'</td><td><select class="flat minwidth300 maxwidthonsmartphone jpsun-fr37-inverter-type-select" name="inverter_type" data-category="INVERTER" data-text-value="1">';
@@ -585,6 +616,7 @@ if (empty($consuelCases)) {
 }
 print '</div>';
 
+print '<div class="fichehalfleft">';
 print load_fiche_titre($langs->trans('JpsunFr37BeforePhotos'), '', '');
 print '<div class="div-table-responsive"><table class="border centpercent tableforfieldcreate"><tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37BeforePhotos').'</td><td>';
 jpsun_fr37_print_photos($object, 'before');
@@ -597,7 +629,9 @@ if ($canEdit) {
 	print '</form>';
 }
 print '</td></tr></table></div>';
+print '</div>';
 
+print '<div class="fichehalfright">';
 print load_fiche_titre($langs->trans('JpsunFr37AfterPhotos'), '', '');
 print '<div class="div-table-responsive"><table class="border centpercent tableforfieldcreate"><tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37AfterPhotos').'</td><td>';
 jpsun_fr37_print_photos($object, 'after');
@@ -610,6 +644,8 @@ if ($canEdit) {
 	print '</form>';
 }
 print '</td></tr></table></div>';
+print '</div>';
+print '<div class="clearboth"></div>';
 
 print '</div>';
 print dol_get_fiche_end();
@@ -650,11 +686,12 @@ jQuery(function($) {
 
 	$(".jpsun-fr37-add-string").on("click", function() {
 		var rowCount = $("#jpsun_fr37_strings tbody tr").length + 1;
+		var removeButton = "'.dol_escape_js(jpsun_fr37_string_remove_button()).'";
 		var row = "<tr>"
 			+ "<td><input class=\"flat width75 maxwidthonsmartphone\" type=\"number\" min=\"1\" name=\"string_no[]\" value=\"" + rowCount + "\"></td>"
 			+ "<td><input class=\"flat width75 maxwidthonsmartphone\" type=\"text\" inputmode=\"decimal\" name=\"string_voltage[]\"></td>"
 			+ "<td><input class=\"flat width75 maxwidthonsmartphone\" type=\"number\" min=\"0\" name=\"string_pv_count[]\"></td>"
-			+ "<td class=\"jpsun-fr37-string-actions\"><button class=\"button button-delete jpsun-fr37-remove-string\" type=\"button\">-</button></td>"
+			+ "<td class=\"jpsun-fr37-string-actions\">" + removeButton + "</td>"
 			+ "</tr>";
 		$("#jpsun_fr37_strings tbody").append(row);
 	});
