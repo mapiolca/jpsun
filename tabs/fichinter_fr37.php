@@ -380,6 +380,7 @@ $inverterTypeValue = $values['inverter_type'];
 if ($inverterTypeValue === '') {
 	$inverterTypeValue = $report->getProductLabelsText(JpsunFichinterFr37::PRODUCT_ROLE_INVERTER_SOLD);
 }
+$consuelCases = $report->getConsuelCases();
 
 $title = $langs->trans('JpsunFr37Report').' - '.$object->ref;
 llxHeader('', $title);
@@ -404,8 +405,8 @@ print '<style>
 .jpsun-fr37-photo-grid{margin-top:8px}
 .jpsun-fr37-photo{display:inline-block;vertical-align:top;width:120px;max-width:45%;margin:0 8px 10px 0}
 .jpsun-fr37-photo img{display:block;max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);background:#fff}
-.jpsun-fr37-consuel-preview{margin-top:8px}
-.jpsun-fr37-consuel-preview img{max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);background:#fff}
+.jpsun-fr37-consuel-slide{display:none}
+.jpsun-fr37-consuel-slide img{max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);background:#fff}
 </style>';
 
 print '<div class="fichecenter jpsun-fr37">';
@@ -502,10 +503,10 @@ print '<div class="div-table-responsive">';
 print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37ConsuelCase').'</td><td>';
 print '<select class="flat minwidth200 maxwidthonsmartphone" name="consuel_case" id="jpsun_fr37_consuel_case"><option value="">&nbsp;</option>';
-foreach ($report->getConsuelCases() as $case) {
+foreach ($consuelCases as $case) {
 	print '<option value="'.dol_escape_htmltag($case->code).'"'.($values['consuel_case'] === $case->code ? ' selected' : '').'>'.dol_escape_htmltag($case->label).'</option>';
 }
-print '</select><div id="jpsun_fr37_consuel_preview" class="jpsun-fr37-consuel-preview"></div></td></tr>';
+print '</select> <a href="#" id="jpsun_fr37_consuel_info" class="marginleftonly" title="'.dol_escape_htmltag($langs->trans('Info')).'">'.img_picto($langs->trans('Info'), 'info').'</a></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37CheckDcConnectors').'</td><td><input type="checkbox" name="check_dc_connectors" value="1"'.($values['check_dc_connectors'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37CheckAcBox').'</td><td><input type="checkbox" name="check_ac_box" value="1"'.($values['check_ac_box'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37CheckCablesTrunking').'</td><td><input type="checkbox" name="check_cables_trunking" value="1"'.($values['check_cables_trunking'] ? ' checked' : '').'></td></tr>';
@@ -555,6 +556,34 @@ if ($canEdit) {
 	print '</div>';
 }
 print '</form>';
+
+print '<div id="jpsun_fr37_consuel_modal" title="'.dol_escape_htmltag($langs->trans('JpsunFr37ConsuelCase')).'" style="display:none">';
+if (empty($consuelCases)) {
+	print '<span class="opacitymedium">'.$langs->trans('None').'</span>';
+} else {
+	$consuelCount = count($consuelCases);
+	foreach ($consuelCases as $index => $case) {
+		$imageUrl = '';
+		if (!empty($case->illustration)) {
+			$imageUrl = dol_buildpath('/jpsun/img/consuel/'.basename($case->illustration), 1);
+		}
+		print '<div class="jpsun-fr37-consuel-slide" data-code="'.dol_escape_htmltag($case->code).'">';
+		print '<div class="titre">'.dol_escape_htmltag($case->label).'</div>';
+		if ($imageUrl) {
+			print '<div class="center"><img src="'.$imageUrl.'" alt="'.dol_escape_htmltag($case->label).'"></div>';
+		}
+		if (!empty($case->description)) {
+			print '<div class="margintoponly">'.dol_nl2br(dol_escape_htmltag($case->description)).'</div>';
+		}
+		print '<div class="right opacitymedium">'.($index + 1).' / '.$consuelCount.'</div>';
+		print '</div>';
+	}
+	print '<div class="center margintoponly">';
+	print '<button type="button" class="button jpsun-fr37-consuel-prev">'.$langs->trans('Previous').'</button> ';
+	print '<button type="button" class="button button-edit jpsun-fr37-consuel-next">'.$langs->trans('Next').'</button>';
+	print '</div>';
+}
+print '</div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37BeforePhotos'), '', '');
 print '<div class="div-table-responsive"><table class="border centpercent tableforfieldcreate"><tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37BeforePhotos').'</td><td>';
@@ -635,19 +664,58 @@ jQuery(function($) {
 		}
 	});
 
-	function loadConsuelPreview() {
-		var code = $("#jpsun_fr37_consuel_case").val();
-		var $target = $("#jpsun_fr37_consuel_preview");
-		if (!code) {
-			$target.empty();
+	var consuelIndex = 0;
+	var $consuelModal = $("#jpsun_fr37_consuel_modal");
+	var $consuelSlides = $consuelModal.find(".jpsun-fr37-consuel-slide");
+
+	function showConsuelSlide(index) {
+		if (!$consuelSlides.length) {
 			return;
 		}
-		$.get("'.dol_buildpath('/jpsun/ajax/fr37_consuel_tooltip.php', 1).'", { code: code }, function(html) {
-			$target.html(html);
-		});
+		consuelIndex = (index + $consuelSlides.length) % $consuelSlides.length;
+		$consuelSlides.hide().eq(consuelIndex).show();
 	}
-	$("#jpsun_fr37_consuel_case").on("change", loadConsuelPreview);
-	loadConsuelPreview();
+
+	function getSelectedConsuelIndex() {
+		var selectedCode = $("#jpsun_fr37_consuel_case").val();
+		var selectedIndex = 0;
+		if (selectedCode) {
+			$consuelSlides.each(function(index) {
+				if ($(this).data("code") === selectedCode) {
+					selectedIndex = index;
+					return false;
+				}
+			});
+		}
+		return selectedIndex;
+	}
+
+	$("#jpsun_fr37_consuel_info").on("click", function(event) {
+		event.preventDefault();
+		showConsuelSlide(getSelectedConsuelIndex());
+		if ($.fn.dialog) {
+			if (!$consuelModal.hasClass("ui-dialog-content")) {
+				$consuelModal.dialog({
+					autoOpen: false,
+					modal: true,
+					width: Math.min($(window).width() - 40, 860),
+					maxHeight: $(window).height() - 60
+				});
+			} else {
+				$consuelModal.dialog("option", "width", Math.min($(window).width() - 40, 860));
+				$consuelModal.dialog("option", "maxHeight", $(window).height() - 60);
+			}
+			$consuelModal.dialog("open");
+		} else {
+			$consuelModal.show();
+		}
+	});
+	$(".jpsun-fr37-consuel-prev").on("click", function() {
+		showConsuelSlide(consuelIndex - 1);
+	});
+	$(".jpsun-fr37-consuel-next").on("click", function() {
+		showConsuelSlide(consuelIndex + 1);
+	});
 });
 </script>';
 
