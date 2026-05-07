@@ -205,11 +205,11 @@ function jpsun_fr37_fetch_contacts($object)
 /**
  * @return string
  */
-function jpsun_fr37_string_remove_button()
+function jpsun_fr37_string_remove_link()
 {
 	global $langs;
 
-	return '<button class="button button-delete jpsun-fr37-remove-string" type="button" title="'.dol_escape_htmltag($langs->trans('Delete')).'">'.img_picto($langs->trans('Delete'), 'delete').'</button>';
+	return '<a class="reposition jpsun-fr37-remove-string" href="" title="'.dol_escape_htmltag($langs->trans('Delete')).'">'.img_delete().'</a>';
 }
 
 /**
@@ -434,13 +434,7 @@ print '<div class="underbanner clearboth"></div>';
 print load_fiche_titre($langs->trans('JpsunFr37Context'), '', '');
 print '<div class="div-table-responsive">';
 print '<table class="border centpercent tableforfield">';
-print '<tr><td class="titlefield">'.$langs->trans('Customer').'</td><td>';
-if (!empty($object->thirdparty->id)) {
-	print $object->thirdparty->getNomUrl(1);
-}
-print '</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37Project').'</td><td>'.($project ? $project->getNomUrl(1) : '<span class="opacitymedium">'.$langs->trans('None').'</span>').'</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37InterventionDate').'</td><td>'.(!empty($object->datei) ? dol_print_date($object->datei, 'dayhour') : '').'</td></tr>';
+print '<tr><td class="titlefield">'.$langs->trans('JpsunFr37InterventionDate').'</td><td>'.(!empty($object->datei) ? dol_print_date($object->datei, 'dayhour') : '').'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37LinkedObjects').'</td><td>'.(empty($linkedObjects) ? '<span class="opacitymedium">'.$langs->trans('None').'</span>' : implode('<br>', $linkedObjects)).'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37Contacts').'</td><td>';
 if (empty($contacts)) {
@@ -552,11 +546,11 @@ foreach ($strings as $stringRow) {
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="1" name="string_no[]" value="'.dol_escape_htmltag((string) $stringRow['string_no']).'"></td>';
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="text" inputmode="decimal" name="string_voltage[]" value="'.dol_escape_htmltag((string) $stringRow['voltage']).'"></td>';
 	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="0" name="string_pv_count[]" value="'.dol_escape_htmltag((string) $stringRow['pv_count']).'"></td>';
-	print '<td class="jpsun-fr37-string-actions">'.jpsun_fr37_string_remove_button().'</td>';
+	print '<td class="jpsun-fr37-string-actions">'.jpsun_fr37_string_remove_link().'</td>';
 	print '</tr>';
 }
 print '</tbody></table></div>';
-print '<button class="button button-add smallpaddingimp jpsun-fr37-add-string" type="button" title="'.dol_escape_htmltag($langs->trans('JpsunFr37AddString')).'">'.img_picto($langs->trans('JpsunFr37AddString'), 'add').'</button>';
+print '<a class="editfielda reposition jpsun-fr37-add-string" href="" title="'.dol_escape_htmltag($langs->trans('JpsunFr37AddString')).'">'.img_picto($langs->trans('JpsunFr37AddString'), 'add').'</a>';
 print '</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37EarthValue').'</td><td><input class="flat width100 maxwidthonsmartphone" type="text" inputmode="decimal" name="earth_value" value="'.dol_escape_htmltag((string) $values['earth_value']).'"> Ohm</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37InverterType').'</td><td><select class="flat minwidth300 maxwidthonsmartphone jpsun-fr37-inverter-type-select" name="inverter_type" data-category="INVERTER" data-text-value="1">';
@@ -684,9 +678,10 @@ jQuery(function($) {
 		});
 	}
 
-	$(".jpsun-fr37-add-string").on("click", function() {
+	$(".jpsun-fr37-add-string").on("click", function(event) {
+		event.preventDefault();
 		var rowCount = $("#jpsun_fr37_strings tbody tr").length + 1;
-		var removeButton = "'.dol_escape_js(jpsun_fr37_string_remove_button()).'";
+		var removeButton = "'.dol_escape_js(jpsun_fr37_string_remove_link()).'";
 		var row = "<tr>"
 			+ "<td><input class=\"flat width75 maxwidthonsmartphone\" type=\"number\" min=\"1\" name=\"string_no[]\" value=\"" + rowCount + "\"></td>"
 			+ "<td><input class=\"flat width75 maxwidthonsmartphone\" type=\"text\" inputmode=\"decimal\" name=\"string_voltage[]\"></td>"
@@ -695,7 +690,8 @@ jQuery(function($) {
 			+ "</tr>";
 		$("#jpsun_fr37_strings tbody").append(row);
 	});
-	$(document).on("click", ".jpsun-fr37-remove-string", function() {
+	$(document).on("click", ".jpsun-fr37-remove-string", function(event) {
+		event.preventDefault();
 		if ($("#jpsun_fr37_strings tbody tr").length > 1) {
 			$(this).closest("tr").remove();
 		}
