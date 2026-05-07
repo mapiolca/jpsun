@@ -119,10 +119,28 @@ class modJpsun extends DolibarrModules
 			
 
 		); 
+		$this->tabs[] = array(
+			'data'=>'intervention:+jpsun_fr37:JpsunFr37Tab:jpsun@jpsun:getDolGlobalInt("JPSUN_FICHINTER_FR37_ENABLE") && $user->hasRight("jpsun", "fr37", "read"):/jpsun/tabs/fichinter_fr37.php?id=__ID__',
+		);
 		
 
         // Dictionnaries
         $this->dictionnaries = array();
+        $this->dictionaries = array(
+            'langs' => 'jpsun@jpsun',
+            'tabname' => array(MAIN_DB_PREFIX.'c_technical_category', MAIN_DB_PREFIX.'c_jpsun_consuel_case'),
+            'tablib' => array('JpsunTechnicalCategories', 'JpsunConsuelCases'),
+            'tabsql' => array(
+                'SELECT rowid, entity, code, label, description, active, position FROM '.MAIN_DB_PREFIX.'c_technical_category',
+                'SELECT rowid, entity, code, label, description, illustration, active, position FROM '.MAIN_DB_PREFIX.'c_jpsun_consuel_case'
+            ),
+            'tabsqlsort' => array('position ASC, code ASC', 'position ASC, code ASC'),
+            'tabfield' => array('entity,code,label,description,position', 'entity,code,label,description,illustration,position'),
+            'tabfieldvalue' => array('entity,code,label,description,position', 'entity,code,label,description,illustration,position'),
+            'tabfieldinsert' => array('entity,code,label,description,position', 'entity,code,label,description,illustration,position'),
+            'tabrowid' => array('rowid', 'rowid'),
+            'tabcond' => array('$conf->jpsun->enabled', '$conf->jpsun->enabled'),
+        );
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
@@ -164,6 +182,18 @@ class modJpsun extends DolibarrModules
 		$this->rights[$r][0] = $this->numero . sprintf('%02d', ($o * 10) + 2);
 		$this->rights[$r][1] = 'EditerPuissancesCretesManuellement';
 		$this->rights[$r][4] = 'pcinstall';
+		$this->rights[$r][5] = 'write';
+		$r++;
+
+		$this->rights[$r][0] = $this->numero . sprintf('%02d', ($o * 10) + 3);
+		$this->rights[$r][1] = 'ReadFr37Tab';
+		$this->rights[$r][4] = 'fr37';
+		$this->rights[$r][5] = 'read';
+		$r++;
+
+		$this->rights[$r][0] = $this->numero . sprintf('%02d', ($o * 10) + 4);
+		$this->rights[$r][1] = 'EditFr37Tab';
+		$this->rights[$r][4] = 'fr37';
 		$this->rights[$r][5] = 'write';
 		$r++;
 		/*
@@ -317,6 +347,76 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_module_pv_pc', 'jpsun_module_pv_pc', 'int', 1, '4', 'product', 0, 0, '', '', 1, '', '($object->finished == 2 ? -1:0)', 'jpsun_module_pv_pc_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_productdet', 'jpsun_ProductDet', 'html', 1, '2000', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_ProductDet_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+
+		    $ext->fetch_name_optionals_label('product');
+		    $productTechnicalCategoryField = array(
+		    	'label' => 'PppvTechnicalCategory',
+		    	'type' => 'sellist',
+		    	'pos' => 110,
+		    	'size' => '',
+		    	'elementtype' => 'product',
+		    	'unique' => 0,
+		    	'required' => 0,
+		    	'default_value' => '',
+		    	'param' => serialize(array('options' => array('c_technical_category:label:rowid::active:=:1' => null))),
+		    	'alwayseditable' => 1,
+		    	'perms' => '',
+		    	'list' => -1,
+		    	'help' => 'PppvTechnicalCategoryHelp',
+		    	'computed' => '',
+		    	'entity' => $conf->entity,
+		    	'langfile' => 'jpsun@jpsun',
+		    	'enabled' => '$conf->jpsun->enabled',
+		    	'totalizable' => 0,
+		    	'printable' => 0,
+		    );
+		    if (empty($ext->attributes['product']['label']['pppv_technical_category'])) {
+		    	$ext->addExtraField(
+		    		'pppv_technical_category',
+		    		$productTechnicalCategoryField['label'],
+		    		$productTechnicalCategoryField['type'],
+		    		$productTechnicalCategoryField['pos'],
+		    		$productTechnicalCategoryField['size'],
+		    		$productTechnicalCategoryField['elementtype'],
+		    		$productTechnicalCategoryField['unique'],
+		    		$productTechnicalCategoryField['required'],
+		    		$productTechnicalCategoryField['default_value'],
+		    		$productTechnicalCategoryField['param'],
+		    		$productTechnicalCategoryField['alwayseditable'],
+		    		$productTechnicalCategoryField['perms'],
+		    		$productTechnicalCategoryField['list'],
+		    		$productTechnicalCategoryField['help'],
+		    		$productTechnicalCategoryField['computed'],
+		    		$productTechnicalCategoryField['entity'],
+		    		$productTechnicalCategoryField['langfile'],
+		    		$productTechnicalCategoryField['enabled'],
+		    		$productTechnicalCategoryField['totalizable'],
+		    		$productTechnicalCategoryField['printable']
+		    	);
+		    } else {
+		    	$ext->update(
+		    		'pppv_technical_category',
+		    		$productTechnicalCategoryField['label'],
+		    		$productTechnicalCategoryField['type'],
+		    		$productTechnicalCategoryField['size'],
+		    		$productTechnicalCategoryField['elementtype'],
+		    		$productTechnicalCategoryField['unique'],
+		    		$productTechnicalCategoryField['required'],
+		    		$productTechnicalCategoryField['pos'],
+		    		$productTechnicalCategoryField['param'],
+		    		$productTechnicalCategoryField['alwayseditable'],
+		    		$productTechnicalCategoryField['perms'],
+		    		$productTechnicalCategoryField['list'],
+		    		$productTechnicalCategoryField['help'],
+		    		$productTechnicalCategoryField['default_value'],
+		    		$productTechnicalCategoryField['computed'],
+		    		$productTechnicalCategoryField['entity'],
+		    		$productTechnicalCategoryField['langfile'],
+		    		$productTechnicalCategoryField['enabled'],
+		    		$productTechnicalCategoryField['totalizable'],
+		    		$productTechnicalCategoryField['printable']
+		    	);
+		    }
 		    
 		//Projets 
 		    

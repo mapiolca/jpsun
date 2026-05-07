@@ -736,6 +736,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		global $langs;
 	
 		$mode = GETPOST('mode', 'aZ09');
+		if (in_array($mode, array('fichinter', 'ficheinter', 'intervention', 'jpsun_fr37'), true)) {
+			return $this->addFr37FichinterSignature($parameters, $object);
+		}
 		if ($mode !== 'contract') return 0;
 	
 		$sourcefile     = $parameters['sourcefile'] ?? '';
@@ -793,6 +796,86 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$object->indexFile($newpdffilename, 1);
 	
 		// CRUCIAL: si tu ne renvoies pas 1, Dolibarr refait son fallback page 15
+		return 1;
+	}
+
+	/**
+	 * Add online customer signature to the last page of a combined FR37 intervention PDF.
+	 *
+	 * @param array        $parameters Hook parameters
+	 * @param CommonObject $object     Signed object
+	 * @return int 1 if the hook replaced the standard signature insertion, 0 otherwise
+	 */
+	protected function addFr37FichinterSignature($parameters, &$object)
+	{
+		global $langs;
+
+		$sourcefile = $parameters['sourcefile'] ?? '';
+		$newpdffilename = $parameters['newpdffilename'] ?? '';
+		if (empty($sourcefile) || empty($newpdffilename)) {
+			return 0;
+		}
+		if (strpos(basename($sourcefile), '_FR37') === false) {
+			return 0;
+		}
+		if (!preg_match('/_signed-(\d{14})\.pdf$/', $newpdffilename, $m)) {
+			return 0;
+		}
+
+		$date = $m[1];
+		$upload_dir = dirname($sourcefile).'/';
+		$sigpath = $upload_dir.'signatures/'.$date.'_signature.png';
+		if (!dol_is_file($sourcefile) || !dol_is_file($sigpath)) {
+			return 0;
+		}
+		if (!function_exists('pdf_getInstance')) {
+			require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+		}
+
+		$online_sign_name = GETPOST('onlinesignname', 'alphanohtml');
+		$pdf = pdf_getInstance();
+		if (class_exists('TCPDF')) {
+			$pdf->setPrintHeader(false);
+			$pdf->setPrintFooter(false);
+		}
+		$pdf->SetFont(pdf_getPDFFont($langs));
+		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) {
+			$pdf->SetCompression(false);
+		}
+		if (!method_exists($pdf, 'setSourceFile') || !method_exists($pdf, 'importPage')) {
+			return 0;
+		}
+
+		$pagecount = $pdf->setSourceFile($sourcefile);
+		$targetPage = $pagecount;
+		$x = 120;
+		$y = 210;
+		$w = 70;
+		$h = 25;
+
+		for ($i = 1; $i <= $pagecount; $i++) {
+			$tpl = $pdf->importPage($i);
+			$s = $pdf->getTemplatesize($tpl);
+			$pageWidth = isset($s['width']) ? $s['width'] : $s['w'];
+			$pageHeight = isset($s['height']) ? $s['height'] : $s['h'];
+
+			$pdf->AddPage(($pageHeight > $pageWidth ? 'P' : 'L'), array($pageWidth, $pageHeight));
+			$pdf->useTemplate($tpl, 0, 0, $pageWidth, $pageHeight, true);
+
+			if ($i == $targetPage) {
+				$pdf->Image($sigpath, $x, $y + 2, $w, $h - 4);
+				$pdf->SetFont(pdf_getPDFFont($langs), '', pdf_getPDFFontSize($langs) - 1);
+				$pdf->SetTextColor(80, 80, 80);
+				$pdf->SetXY($x, $y + $h + 1);
+				$pdf->MultiCell($w, 4, $langs->trans('Signature').' : '.dol_print_date(dol_now(), 'day', false, $langs, true).' - '.$online_sign_name, 0, 'L');
+			}
+		}
+
+		$pdf->Output($newpdffilename, 'F');
+		if (is_object($object) && method_exists($object, 'indexFile')) {
+			$object->indexFile($newpdffilename, 1);
+		}
+
 		return 1;
 	}
 

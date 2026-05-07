@@ -115,6 +115,10 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
     setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
 
+    // FICHINTER
+    setup_print_title($langs->trans("JpsunFichinter"));
+    setup_print_on_off('JPSUN_FICHINTER_FR37_ENABLE');
+
 
     // GLOBAL
     setup_print_title($langs->trans("Global"));

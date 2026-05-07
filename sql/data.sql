@@ -1,4 +1,32 @@
 -- ============================================================================
+
+-- FR37 TECHNICAL CATEGORIES
+
+DELETE FROM llx_c_technical_category WHERE code IN ('PV_PANEL', 'INVERTER') AND entity='__ENTITY__';
+
+INSERT INTO llx_c_technical_category (entity, code, label, description, active, position) VALUES ('__ENTITY__', 'PV_PANEL', 'Panneaux photovoltaiques', 'Modules et panneaux photovoltaiques utilisables dans le rapport FR37.', 1, 10);
+INSERT INTO llx_c_technical_category (entity, code, label, description, active, position) VALUES ('__ENTITY__', 'INVERTER', 'Onduleurs', 'Onduleurs utilisables dans le rapport FR37.', 1, 20);
+
+-- FR37 CONSUEL CASES
+
+DELETE FROM llx_c_jpsun_consuel_case WHERE code IN ('CAS1', 'CAS2', 'CAS3', 'CAS4') AND entity='__ENTITY__';
+
+INSERT INTO llx_c_jpsun_consuel_case (entity, code, label, description, illustration, active, position) VALUES ('__ENTITY__', 'CAS1', 'Consuel CAS 1', 'Coffret electrique dedie. Presence d''un disjoncteur D1 entre le generateur, l''AGCP et le tableau. Le courant assigne de D1 doit etre inferieur ou egal au courant de reglage de l''AGCP. La section du cable S1 doit etre adaptee au calibre de D1.', 'cas1.jpeg', 1, 10);
+INSERT INTO llx_c_jpsun_consuel_case (entity, code, label, description, illustration, active, position) VALUES ('__ENTITY__', 'CAS2', 'Consuel CAS 2', 'Meme principe que le CAS 1, mais D1 est integre directement dans le tableau de consommation. Conditions identiques : D1 doit etre inferieur ou egal au courant de reglage de l''AGCP et la section doit etre adaptee.', 'cas2.jpeg', 1, 20);
+INSERT INTO llx_c_jpsun_consuel_case (entity, code, label, description, illustration, active, position) VALUES ('__ENTITY__', 'CAS3', 'Consuel CAS 3', 'Pas de disjoncteur D1 en amont du tableau principal. Le courant du generateur s''additionne au courant de l''AGCP avec risque de surcharge. Il faut verifier que le tableau et les equipements supportent le courant de reglage de l''AGCP plus le courant du generateur.', 'cas3.jpeg', 1, 30);
+INSERT INTO llx_c_jpsun_consuel_case (entity, code, label, description, illustration, active, position) VALUES ('__ENTITY__', 'CAS4', 'Consuel CAS 4', 'Tous les cas qui ne respectent pas CAS 1, CAS 2 ou CAS 3. Exemple : D1 avec un calibre superieur au courant de reglage de l''AGCP. Il faut verifier que toute l''installation supporte le courant nominal de D1.', 'cas4.jpeg', 1, 40);
+
+-- FR37 CONTACT TYPES
+
+DELETE FROM llx_c_type_contact WHERE element='fichinter' AND code IN ('JPSUN_TECH_ROOF', 'JPSUN_TECH_ELEC', 'JPSUN_TECH_RESP', 'JPSUN_SITE_PRESENT', 'JPSUN_CUSTOMER_SIGNER');
+
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('fichinter', 'internal', 'JPSUN_TECH_ROOF', 'FR37 | Technicien toiture', 1, 'jpsun');
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('fichinter', 'internal', 'JPSUN_TECH_ELEC', 'FR37 | Technicien electricite', 1, 'jpsun');
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('fichinter', 'internal', 'JPSUN_TECH_RESP', 'FR37 | Responsable technique', 1, 'jpsun');
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('fichinter', 'external', 'JPSUN_SITE_PRESENT', 'FR37 | Present sur site', 1, 'jpsun');
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('fichinter', 'external', 'JPSUN_CUSTOMER_SIGNER', 'FR37 | Signataire client', 1, 'jpsun');
+
+-- ============================================================================
 -- Copyright (C) 2025 Pierre Ardoin
 --
 -- This program is free software; you can redistribute it and/or modify
