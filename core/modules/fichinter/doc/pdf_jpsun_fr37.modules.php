@@ -107,9 +107,6 @@ class pdf_jpsun_fr37 extends ModelePDFFicheinter
 		if (method_exists($object, 'fetch_thirdparty')) {
 			$object->fetch_thirdparty();
 		}
-		if (method_exists($object, 'fetchNotes')) {
-			$object->fetchNotes();
-		}
 
 		$pdf = pdf_getInstance($this->format);
 		if (method_exists($pdf, 'setPrintHeader')) {
@@ -302,7 +299,7 @@ class pdf_jpsun_fr37 extends ModelePDFFicheinter
 		}
 
 		$this->section($pdf, $object, $outputlangs, $outputlangs->trans('JpsunFr37ObservationsConclusion'));
-		$this->row($pdf, $object, $outputlangs, $outputlangs->trans('JpsunFr37PublicNotesFromIntervention'), empty($object->note_public) ? '' : $object->note_public);
+		$this->row($pdf, $object, $outputlangs, $outputlangs->trans('JpsunFr37ObservationsConclusion'), $values['observations_conclusion']);
 	}
 
 	protected function section($pdf, $object, $outputlangs, $title)

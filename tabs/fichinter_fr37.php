@@ -41,9 +41,6 @@ if ($id <= 0 || $object->fetch($id) <= 0) {
 	exit;
 }
 $object->fetch_thirdparty();
-if (method_exists($object, 'fetchNotes')) {
-	$object->fetchNotes();
-}
 
 restrictedArea($user, 'ficheinter', $object->id, 'fichinter');
 if (!$user->hasRight('jpsun', 'fr37', 'read')) {
@@ -316,6 +313,7 @@ if ($action === 'save' && $canEdit) {
 		'connection_type' => GETPOST('connection_type', 'alpha'),
 		'wifi_reason' => GETPOST('wifi_reason', 'restricthtml'),
 		'sim_info' => GETPOST('sim_info', 'restricthtml'),
+		'observations_conclusion' => GETPOST('observations_conclusion', 'restricthtml'),
 	);
 
 	$products = array(
@@ -392,8 +390,6 @@ if ($projectId > 0) {
 	}
 }
 
-$contacts = jpsun_fr37_fetch_contacts($object);
-$linkedObjects = jpsun_fr37_fetch_linked_objects($object);
 $values = $report->values;
 $inverterTypeValue = $values['inverter_type'];
 if ($inverterTypeValue === '') {
@@ -431,27 +427,6 @@ print '<style>
 print '<div class="fichecenter jpsun-fr37">';
 
 print '<div class="underbanner clearboth"></div>';
-print load_fiche_titre($langs->trans('JpsunFr37Context'), '', '');
-print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfield">';
-print '<tr><td class="titlefield">'.$langs->trans('JpsunFr37InterventionDate').'</td><td>'.(!empty($object->datei) ? dol_print_date($object->datei, 'dayhour') : '').'</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37LinkedObjects').'</td><td>'.(empty($linkedObjects) ? '<span class="opacitymedium">'.$langs->trans('None').'</span>' : implode('<br>', $linkedObjects)).'</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37Contacts').'</td><td>';
-if (empty($contacts)) {
-	print '<span class="opacitymedium">'.$langs->trans('None').'</span>';
-} else {
-	print '<div class="div-table-responsive-no-min">';
-	print '<table class="noborder centpercent">';
-	print '<tr class="liste_titre"><th>'.$langs->trans('Type').'</th><th>'.$langs->trans('User').'</th></tr>';
-	foreach ($contacts as $contactRow) {
-		print '<tr><td>'.dol_escape_htmltag($contactRow['type']).'</td><td>'.$contactRow['user_html'].'</td></tr>';
-	}
-	print '</table>';
-	print '</div>';
-}
-print '</td></tr>';
-print '</table>';
-print '</div>';
 
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.((int) $object->id).'">';
 print '<input type="hidden" name="token" value="'.newToken().'">';
@@ -537,21 +512,6 @@ print '<tr><td>'.$langs->trans('JpsunFr37CheckAcBox').'</td><td><input type="che
 print '<tr><td>'.$langs->trans('JpsunFr37CheckCablesTrunking').'</td><td><input type="checkbox" name="check_cables_trunking" value="1"'.($values['check_cables_trunking'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37CheckGrounds').'</td><td><input type="checkbox" name="check_grounds" value="1"'.($values['check_grounds'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37CheckLabels').'</td><td><input type="checkbox" name="check_labels" value="1"'.($values['check_labels'] ? ' checked' : '').'></td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37StringVoltages').'</td><td>';
-print '<div class="div-table-responsive-no-min">';
-print '<table class="noborder centpercent jpsun-fr37-string-table" id="jpsun_fr37_strings"><thead><tr><th>'.$langs->trans('JpsunFr37StringNo').'</th><th>'.$langs->trans('JpsunFr37Voltage').'</th><th>'.$langs->trans('JpsunFr37PvCount').'</th><th></th></tr></thead><tbody>';
-$strings = !empty($report->strings) ? $report->strings : array(array('string_no' => 1, 'voltage' => '', 'pv_count' => ''));
-foreach ($strings as $stringRow) {
-	print '<tr>';
-	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="1" name="string_no[]" value="'.dol_escape_htmltag((string) $stringRow['string_no']).'"></td>';
-	print '<td><input class="flat width75 maxwidthonsmartphone" type="text" inputmode="decimal" name="string_voltage[]" value="'.dol_escape_htmltag((string) $stringRow['voltage']).'"></td>';
-	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="0" name="string_pv_count[]" value="'.dol_escape_htmltag((string) $stringRow['pv_count']).'"></td>';
-	print '<td class="jpsun-fr37-string-actions">'.jpsun_fr37_string_remove_link().'</td>';
-	print '</tr>';
-}
-print '</tbody></table></div>';
-print '<a class="editfielda reposition jpsun-fr37-add-string" href="" title="'.dol_escape_htmltag($langs->trans('JpsunFr37AddString')).'">'.img_picto($langs->trans('JpsunFr37AddString'), 'add').'</a>';
-print '</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37EarthValue').'</td><td><input class="flat width100 maxwidthonsmartphone" type="text" inputmode="decimal" name="earth_value" value="'.dol_escape_htmltag((string) $values['earth_value']).'"> Ohm</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37InverterType').'</td><td><select class="flat minwidth300 maxwidthonsmartphone jpsun-fr37-inverter-type-select" name="inverter_type" data-category="INVERTER" data-text-value="1">';
 if ($inverterTypeValue !== '') {
@@ -569,10 +529,26 @@ print '</table></div>';
 print '</div>';
 print '<div class="clearboth"></div>';
 
+print load_fiche_titre($langs->trans('JpsunFr37StringVoltages'), '', '');
+print '<div class="div-table-responsive-no-min">';
+print '<table class="noborder centpercent jpsun-fr37-string-table" id="jpsun_fr37_strings"><thead><tr><th>'.$langs->trans('JpsunFr37StringNo').'</th><th>'.$langs->trans('JpsunFr37Voltage').'</th><th>'.$langs->trans('JpsunFr37PvCount').'</th><th></th></tr></thead><tbody>';
+$strings = !empty($report->strings) ? $report->strings : array(array('string_no' => 1, 'voltage' => '', 'pv_count' => ''));
+foreach ($strings as $stringRow) {
+	print '<tr>';
+	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="1" name="string_no[]" value="'.dol_escape_htmltag((string) $stringRow['string_no']).'"></td>';
+	print '<td><input class="flat width75 maxwidthonsmartphone" type="text" inputmode="decimal" name="string_voltage[]" value="'.dol_escape_htmltag((string) $stringRow['voltage']).'"></td>';
+	print '<td><input class="flat width75 maxwidthonsmartphone" type="number" min="0" name="string_pv_count[]" value="'.dol_escape_htmltag((string) $stringRow['pv_count']).'"></td>';
+	print '<td class="jpsun-fr37-string-actions">'.jpsun_fr37_string_remove_link().'</td>';
+	print '</tr>';
+}
+print '</tbody></table>';
+print '</div>';
+print '<div class="margintoponly"><a class="editfielda reposition jpsun-fr37-add-string" href="" title="'.dol_escape_htmltag($langs->trans('JpsunFr37AddString')).'">'.img_picto('add', 'add').'</a></div>';
+
 print load_fiche_titre($langs->trans('JpsunFr37ObservationsConclusion'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfield">';
-print '<tr><td class="titlefield">'.$langs->trans('JpsunFr37PublicNotesFromIntervention').'</td><td>'.(empty($object->note_public) ? '<span class="opacitymedium">'.$langs->trans('None').'</span>' : dol_nl2br(dol_escape_htmltag($object->note_public))).'</td></tr>';
+print '<table class="border centpercent tableforfieldcreate">';
+print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37ObservationsConclusion').'</td><td>'.jpsun_fr37_textarea('observations_conclusion', $values['observations_conclusion'], 4).'</td></tr>';
 print '</table></div>';
 
 if ($canEdit) {

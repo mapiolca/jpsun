@@ -44,6 +44,6 @@ CREATE TABLE llx_jpsun_fichinter_fr37 (
   inverter_power double(24,8) DEFAULT NULL,
   connection_type varchar(64),
   wifi_reason text,
-  sim_info text
+  sim_info text,
+  observations_conclusion text
 ) ENGINE=innodb;
-

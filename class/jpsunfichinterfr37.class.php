@@ -93,6 +93,7 @@ class JpsunFichinterFr37
 			'connection_type' => 'string',
 			'wifi_reason' => 'text',
 			'sim_info' => 'text',
+			'observations_conclusion' => 'text',
 		);
 	}
 
@@ -181,6 +182,10 @@ class JpsunFichinterFr37
 		global $conf;
 
 		$fkFichinter = (int) $fkFichinter;
+		if ($this->ensureMainTableSchema() < 0) {
+			return -1;
+		}
+
 		$existing = $this->fetchByFichinter($fkFichinter);
 		if ($existing < 0) {
 			return -1;
@@ -443,6 +448,37 @@ class JpsunFichinterFr37
 			$position++;
 		}
 
+		return 1;
+	}
+
+	/**
+	 * Keep existing installations compatible when new FR37 fields are added.
+	 *
+	 * @return int 1 if OK, <0 error
+	 */
+	private function ensureMainTableSchema()
+	{
+		static $done = false;
+		if ($done) {
+			return 1;
+		}
+
+		$table = MAIN_DB_PREFIX.'jpsun_fichinter_fr37';
+		$resql = $this->db->query("SHOW COLUMNS FROM ".$table." LIKE 'observations_conclusion'");
+		if (!$resql) {
+			$this->error = $this->db->lasterror();
+			return -1;
+		}
+
+		if ($this->db->num_rows($resql) <= 0) {
+			$sql = "ALTER TABLE ".$table." ADD observations_conclusion text";
+			if (!$this->db->query($sql)) {
+				$this->error = $this->db->lasterror();
+				return -1;
+			}
+		}
+
+		$done = true;
 		return 1;
 	}
 
