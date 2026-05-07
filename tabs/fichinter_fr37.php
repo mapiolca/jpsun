@@ -77,16 +77,33 @@ function jpsun_fr37_getpost_array($name)
 }
 
 /**
- * @param string $key      Translation key
- * @param string $name     Input name
- * @param string $checked  Current checked value
+ * @param string       $name    Input name
+ * @param array        $entries Checkbox values
+ * @param array|string $checked Current checked values
+ * @param int          $columns Number of native tagtable columns
  * @return string
  */
-function jpsun_fr37_checkbox($key, $name, $checked)
+function jpsun_fr37_checkbox_list($name, $entries, $checked, $columns = 2)
 {
-	global $langs;
+	$checked = (array) $checked;
+	$columns = max(1, (int) $columns);
+	$out = '<div class="tagtable noborder centpercent">';
 
-	return '<label><input type="checkbox" name="'.$name.'[]" value="'.dol_escape_htmltag($key).'"'.(in_array($key, (array) $checked, true) ? ' checked' : '').'> <span>'.$langs->trans($key).'</span></label>';
+	foreach (array_chunk((array) $entries, $columns) as $row) {
+		$out .= '<div class="tagtr">';
+		foreach ($row as $entry) {
+			$out .= '<div class="tagtd maxwidthonsmartphone">';
+			$out .= '<label><input type="checkbox" name="'.$name.'[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $checked, true) ? ' checked' : '').'> '.dol_escape_htmltag($entry).'</label>';
+			$out .= '</div>';
+		}
+		for ($i = count($row); $i < $columns; $i++) {
+			$out .= '<div class="tagtd"></div>';
+		}
+		$out .= '</div>';
+	}
+	$out .= '</div>';
+
+	return $out;
 }
 
 /**
@@ -382,27 +399,13 @@ $morehtmlref .= '</div>';
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 
 print '<style>
-.jpsun-fr37 .titlefieldcreate{min-width:190px}
-.jpsun-fr37 textarea{min-height:72px}
-.jpsun-fr37 .jpsun-fr37-checkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 14px}
-.jpsun-fr37 .jpsun-fr37-checkgrid label{display:flex;align-items:flex-start;gap:6px;line-height:1.35}
-.jpsun-fr37 .jpsun-fr37-product-select{width:100%;min-height:34px}
 .jpsun-fr37 .select2-container{max-width:100%}
 .jpsun-fr37 .jpsun-fr37-string-actions{white-space:nowrap}
-.jpsun-fr37-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:8px}
-.jpsun-fr37-photo{min-width:0}
-.jpsun-fr37-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border:1px solid var(--border-color,#ddd);border-radius:4px;background:#fff}
+.jpsun-fr37-photo-grid{margin-top:8px}
+.jpsun-fr37-photo{display:inline-block;vertical-align:top;width:120px;max-width:45%;margin:0 8px 10px 0}
+.jpsun-fr37-photo img{display:block;max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);background:#fff}
 .jpsun-fr37-consuel-preview{margin-top:8px}
-.jpsun-fr37-consuel-preview img{max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);border-radius:4px;background:#fff}
-@media (max-width: 768px){
-	.jpsun-fr37 .fichehalfleft,.jpsun-fr37 .fichehalfright{float:none;width:100%;margin:0}
-	.jpsun-fr37 table.border td,.jpsun-fr37 table.tableforfieldcreate td{display:block;width:100%!important;box-sizing:border-box}
-	.jpsun-fr37 table.border td.titlefieldcreate,.jpsun-fr37 table.tableforfieldcreate td.titlefieldcreate{padding-bottom:2px}
-	.jpsun-fr37 input.flat,.jpsun-fr37 select.flat,.jpsun-fr37 textarea{width:100%;max-width:100%;box-sizing:border-box}
-	.jpsun-fr37 .jpsun-fr37-string-table th:nth-child(1),.jpsun-fr37 .jpsun-fr37-string-table td:nth-child(1){width:22%}
-	.jpsun-fr37 .jpsun-fr37-string-table th:nth-child(2),.jpsun-fr37 .jpsun-fr37-string-table td:nth-child(2){width:34%}
-	.jpsun-fr37 .jpsun-fr37-string-table th:nth-child(3),.jpsun-fr37 .jpsun-fr37-string-table td:nth-child(3){width:34%}
-}
+.jpsun-fr37-consuel-preview img{max-width:100%;height:auto;border:1px solid var(--border-color,#ddd);background:#fff}
 </style>';
 
 print '<div class="fichecenter jpsun-fr37">';
@@ -428,9 +431,10 @@ print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.((int) $object-
 print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="action" value="save">';
 
+print '<div class="fichehalfleft">';
 print load_fiche_titre($langs->trans('JpsunFr37InterventionObject'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
+print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37PresentOnSite').'</td><td><input type="checkbox" name="present_on_site" value="1"'.($values['present_on_site'] ? ' checked' : '').'></td></tr>';
 print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans('JpsunFr37InterventionObject').'</td><td>';
 print jpsun_fr37_select('intervention_object', $values['intervention_object'], array(
@@ -446,7 +450,7 @@ print '</table></div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37Installation'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
+print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37PanelsRef').'</td><td>'.jpsun_fr37_product_select($report, JpsunFichinterFr37::PRODUCT_ROLE_PANEL, 'PV_PANEL', 'products_panel').'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37InvertersSold').'</td><td>'.jpsun_fr37_product_select($report, JpsunFichinterFr37::PRODUCT_ROLE_INVERTER_SOLD, 'INVERTER', 'products_inverter_sold').'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37PanelQty').'</td><td><input class="flat width75 maxwidthonsmartphone" type="number" min="0" name="panel_qty" value="'.dol_escape_htmltag((string) $values['panel_qty']).'"></td></tr>';
@@ -458,43 +462,19 @@ print '<tr><td>'.$langs->trans('JpsunFr37InstallType').'</td><td>';
 print jpsun_fr37_select('install_type', $values['install_type'], array('ROOF' => 'JpsunFr37InstallRoof', 'INTEGRATED' => 'JpsunFr37InstallIntegrated', 'GROUND' => 'JpsunFr37InstallGround', 'OTHER' => 'JpsunFr37ObjectOther'), 'id="jpsun_fr37_install_type"');
 print '<div id="jpsun_fr37_install_type_other" class="marginleftonly marginbottomonly">'.jpsun_fr37_textarea('install_type_other', $values['install_type_other'], 2).'</div>';
 print '</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37RoofAccess').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Echelle', 'Echafaudage', 'Nacelle', 'Acces interieur') as $entry) {
-	print '<label><input type="checkbox" name="roof_access[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('roof_access_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37RoofAccess').'</td><td>'.jpsun_fr37_checkbox_list('roof_access', array('Echelle', 'Echafaudage', 'Nacelle', 'Acces interieur'), $report->getJsonList('roof_access_json')).'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37ElectricalConnection').'</td><td>'.jpsun_fr37_textarea('electrical_connection', $values['electrical_connection'], 2).'</td></tr>';
 print '</table></div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37RiskAnalysis'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
-print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37Risks').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Chute de hauteur', 'Risque electrique', 'Manutention', 'Meteo', 'Coactivite', 'Autre') as $entry) {
-	print '<label><input type="checkbox" name="risk_identified[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('risk_identified_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
+print '<table class="border centpercent tableforfieldcreate">';
+print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37Risks').'</td><td>'.jpsun_fr37_checkbox_list('risk_identified', array('Chute de hauteur', 'Risque electrique', 'Manutention', 'Meteo', 'Coactivite', 'Autre'), $report->getJsonList('risk_identified_json')).'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37RiskOther').'</td><td>'.jpsun_fr37_textarea('risk_other', $values['risk_other'], 2).'</td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37PreventionMeasures').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Balisage', 'Consignation', 'Verification support', 'Meteo favorable', 'Habilitation') as $entry) {
-	print '<label><input type="checkbox" name="prevention_measures[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('prevention_measures_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37CollectiveProtection').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Garde-corps', 'Filets', 'Nacelle', 'Echafaudage') as $entry) {
-	print '<label><input type="checkbox" name="collective_protection[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('collective_protection_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37IndividualProtection').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Harnais', 'Casque', 'Gants', 'Chaussures securite', 'Lunettes') as $entry) {
-	print '<label><input type="checkbox" name="individual_protection[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('individual_protection_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
-print '<tr><td>'.$langs->trans('JpsunFr37SafetyRules').'</td><td><div class="jpsun-fr37-checkgrid">';
-foreach (array('Consignation', 'Travail hors tension', 'Zone balisee', 'Absence pluie', 'Travail en binome') as $entry) {
-	print '<label><input type="checkbox" name="safety_rules[]" value="'.dol_escape_htmltag($entry).'"'.(in_array($entry, $report->getJsonList('safety_rules_json'), true) ? ' checked' : '').'> <span>'.dol_escape_htmltag($entry).'</span></label>';
-}
-print '</div></td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37PreventionMeasures').'</td><td>'.jpsun_fr37_checkbox_list('prevention_measures', array('Balisage', 'Consignation', 'Verification support', 'Meteo favorable', 'Habilitation'), $report->getJsonList('prevention_measures_json')).'</td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37CollectiveProtection').'</td><td>'.jpsun_fr37_checkbox_list('collective_protection', array('Garde-corps', 'Filets', 'Nacelle', 'Echafaudage'), $report->getJsonList('collective_protection_json')).'</td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37IndividualProtection').'</td><td>'.jpsun_fr37_checkbox_list('individual_protection', array('Harnais', 'Casque', 'Gants', 'Chaussures securite', 'Lunettes'), $report->getJsonList('individual_protection_json')).'</td></tr>';
+print '<tr><td>'.$langs->trans('JpsunFr37SafetyRules').'</td><td>'.jpsun_fr37_checkbox_list('safety_rules', array('Consignation', 'Travail hors tension', 'Zone balisee', 'Absence pluie', 'Travail en binome'), $report->getJsonList('safety_rules_json')).'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37LiftPlanned').'</td><td><input type="checkbox" name="lift_planned" value="1"'.($values['lift_planned'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37LadderPlanned').'</td><td><input type="checkbox" name="ladder_planned" value="1"'.($values['ladder_planned'] ? ' checked' : '').'></td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37LifelinePlanned').'</td><td><input type="checkbox" name="lifeline_planned" value="1"'.($values['lifeline_planned'] ? ' checked' : '').'></td></tr>';
@@ -502,22 +482,24 @@ print '<tr><td>'.$langs->trans('JpsunFr37EpiChecked').'</td><td><input type="che
 print '<tr><td>'.$langs->trans('JpsunFr37SafetyInstructions').'</td><td>'.jpsun_fr37_textarea('safety_instructions', $values['safety_instructions'], 3).'</td></tr>';
 print '</table></div>';
 
+print '</div>';
+print '<div class="fichehalfright">';
 print load_fiche_titre($langs->trans('JpsunFr37SoldWork'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
+print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37InverterLocation').'</td><td>'.jpsun_fr37_textarea('inverter_location', $values['inverter_location'], 4).'</td></tr>';
 print '<tr><td>'.$langs->trans('JpsunFr37PanelLayout').'</td><td>'.jpsun_fr37_textarea('panel_layout', $values['panel_layout'], 4).'</td></tr>';
 print '</table></div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37WorksDone'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
+print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37WorksDone').'</td><td>'.jpsun_fr37_textarea('works_done', $values['works_done'], 4).'</td></tr>';
 print '</table></div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37Tests'), '', '');
 print '<div class="div-table-responsive">';
-print '<table class="border centpercent tableforfieldcreate jpsun-fr37-table">';
+print '<table class="border centpercent tableforfieldcreate">';
 print '<tr><td class="titlefieldcreate">'.$langs->trans('JpsunFr37ConsuelCase').'</td><td>';
 print '<select class="flat minwidth200 maxwidthonsmartphone" name="consuel_case" id="jpsun_fr37_consuel_case"><option value="">&nbsp;</option>';
 foreach ($report->getConsuelCases() as $case) {
@@ -558,6 +540,8 @@ print '<div id="jpsun_fr37_wifi_reason" class="marginleftonly marginbottomonly">
 print '<div id="jpsun_fr37_sim_info" class="marginleftonly marginbottomonly">'.jpsun_fr37_textarea('sim_info', $values['sim_info'], 2).'</div>';
 print '</td></tr>';
 print '</table></div>';
+print '</div>';
+print '<div class="clearboth"></div>';
 
 print load_fiche_titre($langs->trans('JpsunFr37ObservationsConclusion'), '', '');
 print '<div class="div-table-responsive">';

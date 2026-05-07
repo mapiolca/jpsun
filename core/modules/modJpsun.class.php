@@ -358,7 +358,7 @@ class modJpsun extends DolibarrModules
 		    	'unique' => 0,
 		    	'required' => 0,
 		    	'default_value' => '',
-		    	'param' => serialize(array('options' => array('c_technical_category:label:rowid::active:=:1' => null))),
+		    	'param' => serialize(array('options' => array('c_technical_category:label:rowid::(active:=:1)' => null))),
 		    	'alwayseditable' => 1,
 		    	'perms' => '',
 		    	'list' => -1,
