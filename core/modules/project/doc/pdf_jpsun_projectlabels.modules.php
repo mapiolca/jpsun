@@ -242,12 +242,6 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$current_y = $inner_y;
 		$spacing = ($w <= 28) ? 0.8 : 1.2;
 		$line_height = ($w <= 28) ? 3.5 : 4.5;
-		$label_font_size = max(4, $font_size - 2);
-
-		$company_logo_label = $outputlangs->transnoentities('JpsunProjectLabelCompanyLogo');
-		$project_ref_label = $outputlangs->transnoentities('JpsunProjectLabelProjectRef');
-		$project_title_label = $outputlangs->transnoentities('JpsunProjectLabelProjectTitle');
-		$thirdparty_label = $outputlangs->transnoentities('JpsunProjectLabelThirdParty');
 
 		$thirdparty = $this->getProjectThirdparty($object);
 		$thirdparty_name = '';
@@ -267,66 +261,41 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			return min($pdf->GetY(), $cell_y + $max_height);
 		};
 
-		$buildLabelValue = function ($label, $value) {
-			if ((string) $value === '') {
-				return '';
-			}
-
-			return $label.': '.$value;
-		};
-
+		$pdf->SetLineWidth(0.1);
 		$pdf->Rect($x, $y, $w, $h);
 
-		// Keep a local logo fallback for older calls but prefer the current company logo.
-		$logo_file = $logo;
+		$logo_file = '';
 		if (!empty($mysoc->logo)) {
 			$logo_file = $conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
 		}
 
-		// Draw the company logo at the top of each label when the file is readable.
-		$maxLogoWidth = min($w - 4, 42);
-		if ($w <= 28) {
-			$maxLogoWidth = min($maxLogoWidth, $w - 6);
-		}
-
-		if (!empty($logo_file) && is_readable($logo_file) && $maxLogoWidth > 0 && $current_y < $bottom_y) {
-			$current_y = $drawLimitedMultiCell(
-				$company_logo_label, $inner_x, $current_y, $inner_width,
-				$bottom_y - $current_y, $line_height, 'C', '', $label_font_size
-			);
-			$current_y += $spacing;
-
-			$logo_width = min($inner_width, $maxLogoWidth);
+		if (!empty($logo_file) && is_readable($logo_file) && $current_y < $bottom_y) {
+			$maxLogoWidth = min($inner_width, ($w <= 28) ? $w - 6 : 42);
+			$logo_width = max(0, $maxLogoWidth);
 			$logo_height = min(pdf_getHeightForLogo($logo_file), ($w <= 28) ? 8 : 12, $bottom_y - $current_y);
 			$logo_x = $x + (($w - $logo_width) / 2);
+
 			if ($logo_width > 0 && $logo_height > 0) {
 				$pdf->Image($logo_file, $logo_x, $current_y, $logo_width, $logo_height);
 				$current_y += $logo_height + $spacing;
 			}
-		} elseif (!empty($mysoc->name) && $current_y < $bottom_y) {
-			$current_y = $drawLimitedMultiCell(
-				$buildLabelValue($company_logo_label, $mysoc->name), $inner_x, $current_y, $inner_width,
-				$bottom_y - $current_y, $line_height, 'C', 'B', $font_size
-			);
-			$current_y += $spacing;
 		}
 
 		$current_y = $drawLimitedMultiCell(
-			$buildLabelValue($project_ref_label, $object->ref), $inner_x, $current_y, $inner_width,
+			$object->ref, $inner_x, $current_y, $inner_width,
 			$bottom_y - $current_y, $line_height, 'C', 'B', $font_size + 1
 		);
 		$current_y += $spacing;
 
 		$current_y = $drawLimitedMultiCell(
-			$buildLabelValue($project_title_label, $object->title), $inner_x, $current_y, $inner_width,
+			$object->title, $inner_x, $current_y, $inner_width,
 			$bottom_y - $current_y, $line_height, 'L', '', $font_size
 		);
 		$current_y += $spacing;
 
 		$drawLimitedMultiCell(
-			$buildLabelValue($thirdparty_label, $thirdparty_name), $inner_x, $current_y, $inner_width,
+			$thirdparty_name, $inner_x, $current_y, $inner_width,
 			$bottom_y - $current_y, $line_height, 'L', '', $font_size
 		);
 	}
-
 }
