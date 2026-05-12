@@ -253,13 +253,26 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$logo_file = $conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
 		}
 
-		if (!empty($mysoc->logo) && $logo_file && is_readable($logo_file) && $current_y < $bottom_y) {
-			$logo_width = min($inner_width, ($w <= 28) ? 12 : 22);
+		// Draw the company logo at the top of each label when the file is readable.
+		$maxLogoWidth = min($w - 4, 42);
+		if ($w <= 28) {
+			$maxLogoWidth = min($maxLogoWidth, $w - 6);
+		}
+
+		if (!empty($logo_file) && is_readable($logo_file) && $maxLogoWidth > 0 && $current_y < $bottom_y) {
+			$logo_width = min($inner_width, $maxLogoWidth);
 			$logo_height = min(pdf_getHeightForLogo($logo_file), ($w <= 28) ? 8 : 12, $bottom_y - $current_y);
+			$logo_x = $x + (($w - $logo_width) / 2);
 			if ($logo_width > 0 && $logo_height > 0) {
-				$pdf->Image($logo_file, $inner_x, $current_y, $logo_width, $logo_height);
+				$pdf->Image($logo_file, $logo_x, $current_y, $logo_width, $logo_height);
 				$current_y += $logo_height + $spacing;
 			}
+		} elseif (!empty($mysoc->name) && $current_y < $bottom_y) {
+			$current_y = $this->drawLimitedMultiCell(
+				$pdf, $outputlangs, $mysoc->name, $inner_x, $current_y, $inner_width,
+				$bottom_y - $current_y, $line_height, 'C', 'B', $font_size
+			);
+			$current_y += $spacing;
 		}
 
 		$current_y = $this->drawLimitedMultiCell(
