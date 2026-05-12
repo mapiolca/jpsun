@@ -249,27 +249,39 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$thirdparty_name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
 		}
 
+		$project_title = '';
+		if (!empty($object->title)) {
+			$project_title = $object->title;
+		} elseif (!empty($object->name)) {
+			$project_title = $object->name;
+		}
+
 		$drawLimitedMultiCell = function ($text, $cell_x, $cell_y, $cell_width, $max_height, $cell_line_height, $align, $style, $cell_font_size) use (&$pdf, $outputlangs) {
 			if ((string) $text === '' || $max_height <= 0) {
 				return $cell_y;
 			}
 
+			$output_text = $outputlangs->convToOutputCharset($text);
 			$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(1, $cell_font_size));
-			$pdf->SetXY($cell_x, $cell_y);
-			$pdf->MultiCell($cell_width, $cell_line_height, $outputlangs->convToOutputCharset($text), 0, $align, false, 1, '', '', true, 0, false, true, $max_height, 'T', true);
+			$line_count = method_exists($pdf, 'getNumLines') ? $pdf->getNumLines($output_text, $cell_width) : 1;
+			$cell_height = min($max_height, max($cell_line_height, $line_count * $cell_line_height));
 
-			return min($pdf->GetY(), $cell_y + $max_height);
+			$pdf->SetXY($cell_x, $cell_y);
+			$pdf->MultiCell($cell_width, $cell_line_height, $output_text, 0, $align, false, 1, '', '', true, 1, false, true, $cell_height, 'T', false);
+
+			return $cell_y + $cell_height;
 		};
 
 		$getNoWordCutFontSize = function ($text, $base_font_size, $style) use (&$pdf, $outputlangs, $inner_width) {
 			$font_size_to_try = $base_font_size;
+			$min_font_size = max(4, $base_font_size - 3);
 			$words = preg_split('/\s+/u', trim((string) $text));
 
 			if (empty($words)) {
 				return $font_size_to_try;
 			}
 
-			while ($font_size_to_try > 1) {
+			while ($font_size_to_try > $min_font_size) {
 				$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, $font_size_to_try);
 				$longest_word_width = 0;
 
@@ -288,11 +300,11 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 				$font_size_to_try -= 0.5;
 			}
 
-			return max(1, $font_size_to_try);
+			return max($min_font_size, $font_size_to_try);
 		};
 
 		$getLineHeight = function ($cell_font_size) use ($line_height) {
-			return min($line_height, max(2, $cell_font_size * 0.45));
+			return max($line_height, $cell_font_size * 0.5);
 		};
 
 		$pdf->SetLineWidth(0.1);
@@ -325,7 +337,7 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		}
 
 		$ref_font_size = $getNoWordCutFontSize($object->ref, $font_size + 1, 'B');
-		$title_font_size = $getNoWordCutFontSize($object->title, $font_size, '');
+		$title_font_size = $getNoWordCutFontSize($project_title, $font_size, '');
 		$thirdparty_font_size = $getNoWordCutFontSize($thirdparty_name, $font_size, '');
 
 		$current_y = $drawLimitedMultiCell(
@@ -335,7 +347,7 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$current_y += $spacing;
 
 		$current_y = $drawLimitedMultiCell(
-			$object->title, $inner_x, $current_y, $inner_width,
+			$project_title, $inner_x, $current_y, $inner_width,
 			$bottom_y - $current_y, $getLineHeight($title_font_size), 'L', '', $title_font_size
 		);
 		$current_y += $spacing;
