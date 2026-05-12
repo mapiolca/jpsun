@@ -229,10 +229,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 
 		// Keep the label layout horizontal. If rotation is approved later, wrap the rotated block with TCPDF StartTransform(), Rotate() and StopTransform().
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-		$font_size = $default_font_size;
-		if ($w <= 28) {
-			$font_size = $default_font_size - 2;
-		}
+		$max_ref_font_size = ($w <= 25) ? max(9, $default_font_size) : (($w <= 28) ? max(10, $default_font_size) : max(18, $default_font_size + 7));
+		$max_text_font_size = ($w <= 25) ? max(7, $default_font_size - 1) : (($w <= 28) ? max(8, $default_font_size) : max(13, $default_font_size + 2));
 
 		$padding = 2;
 		$inner_x = $x + $padding;
@@ -307,6 +305,18 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			return max($line_height, $cell_font_size * 0.5);
 		};
 
+		$getTextBlockHeight = function ($text, $cell_width, $cell_line_height, $style, $cell_font_size) use (&$pdf, $outputlangs) {
+			if ((string) $text === '') {
+				return 0;
+			}
+
+			$output_text = $outputlangs->convToOutputCharset($text);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(1, $cell_font_size));
+			$line_count = method_exists($pdf, 'getNumLines') ? $pdf->getNumLines($output_text, $cell_width) : 1;
+
+			return max($cell_line_height, $line_count * $cell_line_height);
+		};
+
 		$pdf->SetLineWidth(0.1);
 		$pdf->Rect($x, $y, $w, $h);
 
@@ -315,11 +325,11 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$logo_file = $conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
 		}
 
-		if (!empty($logo_file) && is_readable($logo_file) && $current_y < $bottom_y) {
+		$logo_width = 0;
+		$logo_height = 0;
+		if (!empty($logo_file) && is_readable($logo_file)) {
 			$maxLogoWidth = min($inner_width, ($w <= 28) ? $w - 6 : 42);
-			$maxLogoHeight = min(($w <= 28) ? 8 : 12, $bottom_y - $current_y);
-			$logo_width = 0;
-			$logo_height = 0;
+			$maxLogoHeight = min(($w <= 28) ? 8 : 12, $h - (2 * $padding));
 			$logo_size = getimagesize($logo_file);
 
 			if (is_array($logo_size) && !empty($logo_size[0]) && !empty($logo_size[1]) && $maxLogoWidth > 0 && $maxLogoHeight > 0) {
@@ -327,34 +337,56 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 				$logo_width = $logo_size[0] * $logo_ratio;
 				$logo_height = $logo_size[1] * $logo_ratio;
 			}
-
-			$logo_x = $x + (($w - $logo_width) / 2);
-
-			if ($logo_width > 0 && $logo_height > 0) {
-				$pdf->Image($logo_file, $logo_x, $current_y, $logo_width, $logo_height);
-				$current_y += $logo_height + $spacing;
-			}
 		}
 
-		$ref_font_size = $getNoWordCutFontSize($object->ref, $font_size + 1, 'B');
-		$title_font_size = $getNoWordCutFontSize($project_title, $font_size, '');
-		$thirdparty_font_size = $getNoWordCutFontSize($thirdparty_name, $font_size, '');
+		$ref_font_size = $getNoWordCutFontSize($object->ref, $max_ref_font_size, 'B');
+		$title_font_size = $getNoWordCutFontSize($project_title, $max_text_font_size, '');
+		$thirdparty_font_size = $getNoWordCutFontSize($thirdparty_name, $max_text_font_size, '');
+		$ref_line_height = $getLineHeight($ref_font_size);
+		$title_line_height = $getLineHeight($title_font_size);
+		$thirdparty_line_height = $getLineHeight($thirdparty_font_size);
+		$ref_height = $getTextBlockHeight($object->ref, $inner_width, $ref_line_height, 'B', $ref_font_size);
+		$title_height = $getTextBlockHeight($project_title, $inner_width, $title_line_height, '', $title_font_size);
+		$thirdparty_height = $getTextBlockHeight($thirdparty_name, $inner_width, $thirdparty_line_height, '', $thirdparty_font_size);
+		$content_height = $ref_height + $title_height + $thirdparty_height;
+
+		if ($logo_height > 0) {
+			$content_height += $logo_height + $spacing;
+		}
+		if ($title_height > 0) {
+			$content_height += $spacing;
+		}
+		if ($thirdparty_height > 0) {
+			$content_height += $spacing;
+		}
+
+		$current_y = $inner_y + max(0, (($bottom_y - $inner_y) - $content_height) / 2);
+
+		if ($logo_width > 0 && $logo_height > 0 && $current_y < $bottom_y) {
+			$logo_x = $x + (($w - $logo_width) / 2);
+			$pdf->Image($logo_file, $logo_x, $current_y, $logo_width, $logo_height);
+			$current_y += $logo_height + $spacing;
+		}
 
 		$current_y = $drawLimitedMultiCell(
 			$object->ref, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $getLineHeight($ref_font_size), 'C', 'B', $ref_font_size
+			$bottom_y - $current_y, $ref_line_height, 'C', 'B', $ref_font_size
 		);
-		$current_y += $spacing;
 
-		$current_y = $drawLimitedMultiCell(
-			$project_title, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $getLineHeight($title_font_size), 'L', '', $title_font_size
-		);
-		$current_y += $spacing;
+		if ($title_height > 0) {
+			$current_y += $spacing;
+			$current_y = $drawLimitedMultiCell(
+				$project_title, $inner_x, $current_y, $inner_width,
+				$bottom_y - $current_y, $title_line_height, 'C', '', $title_font_size
+			);
+		}
 
-		$drawLimitedMultiCell(
-			$thirdparty_name, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $getLineHeight($thirdparty_font_size), 'L', '', $thirdparty_font_size
-		);
+		if ($thirdparty_height > 0) {
+			$current_y += $spacing;
+			$drawLimitedMultiCell(
+				$thirdparty_name, $inner_x, $current_y, $inner_width,
+				$bottom_y - $current_y, $thirdparty_line_height, 'C', '', $thirdparty_font_size
+			);
+		}
 	}
 }
