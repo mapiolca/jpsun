@@ -84,8 +84,7 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$this->description = $langs->trans('JpsunProjectLabelsPdfModel');
 		$this->type = 'pdf';
 
-		// EN: Force A4 format for the labels sheet.
-		// FR: Forcer le format A4 pour la planche d'étiquettes.
+		// Force A4 format for the labels sheet.
 		$this->page_largeur = 210;
 		$this->page_hauteur = 297;
 		$this->format = array($this->page_largeur, $this->page_hauteur);
@@ -148,10 +147,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 
 		$file = $dir.'/'.$objectref.'_LABELS.pdf';
 
-		// EN: Create a single PDF instance and add exactly one A4 page.
-		// FR: Créer une seule instance PDF et ajouter une seule page A4.
+		// Create a single PDF instance and add exactly one A4 page.
 		$pdf = pdf_getInstance($this->format);
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
 		$pdf->SetCreator('Dolibarr');
 		$pdf->SetTitle($objectref.' - '.$outputlangs->transnoentities('JpsunProjectLabelsPdfModel'));
 		$pdf->SetSubject($outputlangs->transnoentities('JpsunProjectLabelsPdfModel'));
@@ -161,19 +158,24 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetDrawColor(80, 80, 80);
 
-		$thirdparty = $this->getProjectThirdparty($object);
-		$labeldata = $this->getLabelData($object, $thirdparty, $outputlangs);
+		$logo = '';
+		if (!empty($this->emetteur->logo)) {
+			$logo = $conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
+		}
 
-		$label_count = 4;
-		$gap = 3;
-		$available_width = $this->page_largeur - $this->marge_gauche - $this->marge_droite - ($gap * ($label_count - 1));
-		$label_width = $available_width / $label_count;
-		$label_height = 55;
-		$start_y = $this->marge_haute;
+		$startX = 24.5;
+		$startY = 30;
+		$formats = array(
+			array('w' => 50, 'h' => 158),
+			array('w' => 25, 'h' => 158),
+			array('w' => 28, 'h' => 185),
+			array('w' => 58, 'h' => 185),
+		);
 
-		for ($i = 0; $i < $label_count; $i++) {
-			$x = $this->marge_gauche + ($i * ($label_width + $gap));
-			$this->drawProjectLabel($pdf, $x, $start_y, $label_width, $label_height, $labeldata, $default_font_size, $outputlangs);
+		$x = $startX;
+		foreach ($formats as $format) {
+			$this->drawProjectLabel($pdf, $object, $outputlangs, $x, $startY, $format['w'], $format['h'], $logo);
+			$x += $format['w'];
 		}
 
 		$pdf->Output($file, 'F');
@@ -230,24 +232,33 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	/**
 	 * Draw one project label.
 	 *
-	 * @param TCPDF     $pdf               PDF instance
-	 * @param float     $x                 X position
-	 * @param float     $y                 Y position
-	 * @param float     $width             Label width
-	 * @param float     $height            Label height
-	 * @param array     $labeldata         Label content
-	 * @param int       $default_font_size Default PDF font size
-	 * @param Translate $outputlangs       Output language object
+	 * @param TCPDF     $pdf         PDF instance
+	 * @param Project   $object      Project object
+	 * @param Translate $outputlangs Output language object
+	 * @param float     $x           X position
+	 * @param float     $y           Y position
+	 * @param float     $w           Label width
+	 * @param float     $h           Label height
+	 * @param string    $logo        Logo path
 	 * @return void
 	 */
-	private function drawProjectLabel(&$pdf, $x, $y, $width, $height, $labeldata, $default_font_size, $outputlangs)
+	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo)
 	{
-		$pdf->Rect($x, $y, $width, $height);
+		$pdf->Rect($x, $y, $w, $h);
 
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		$thirdparty = $this->getProjectThirdparty($object);
+		$labeldata = $this->getLabelData($object, $thirdparty, $outputlangs);
 		$padding = 3;
 		$inner_x = $x + $padding;
-		$inner_width = $width - (2 * $padding);
+		$inner_width = $w - (2 * $padding);
 		$current_y = $y + $padding;
+
+		if ($logo && is_readable($logo)) {
+			$logo_width = min($inner_width, 22);
+			$pdf->Image($logo, $inner_x, $current_y, $logo_width, 0);
+			$current_y += min(pdf_getHeightForLogo($logo), 12) + 2;
+		}
 
 		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $default_font_size + 1);
 		$pdf->SetXY($inner_x, $current_y);
