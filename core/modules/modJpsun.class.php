@@ -327,6 +327,9 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_project_prix_rachat', 'jpsun_project_prix_rachat', 'price', 101, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_prix_rachat_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_project_type_racc', 'jpsun_project_type_racc', 'select', 102, '', 'projet', 0, 0, '', 'a:1:{s:7:"options";a:3:{i:1;s:26:"jpsun_project_type_racc_vt";i:2;s:26:"jpsun_project_type_racc_as";i:3;s:26:"jpsun_project_type_racc_at";}}', 1, '', '-1', 'jpsun_project_pc_help', '',  $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_project_mes_date', 'jpsun_project_mes_date', 'date', 103, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_mes_date_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_address', 'project_address', 'varchar', 104, '255', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_zip', 'project_zip', 'varchar', 105, '25', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_town', 'project_town', 'varchar', 106, '128', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
 	    //Utilisateurs
 	    
