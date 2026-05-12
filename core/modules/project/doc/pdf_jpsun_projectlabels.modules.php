@@ -208,28 +208,6 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	}
 
 	/**
-	 * Prepare visible label lines.
-	 *
-	 * @param Project      $object      Project object
-	 * @param Societe|null $thirdparty  Thirdparty object
-	 * @param Translate    $outputlangs Output language object
-	 * @return array<int,array{label:string,value:string}> Label lines
-	 */
-	private function getLabelData($object, $thirdparty, $outputlangs)
-	{
-		$thirdparty_name = '';
-		if (is_object($thirdparty)) {
-			$thirdparty_name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
-		}
-
-		return array(
-			array('label' => $outputlangs->transnoentities('Ref'), 'value' => $object->ref),
-			array('label' => $outputlangs->transnoentities('Project'), 'value' => $object->title),
-			array('label' => $outputlangs->transnoentities('ThirdParty'), 'value' => $thirdparty_name),
-		);
-	}
-
-	/**
 	 * Draw one project label.
 	 *
 	 * @param TCPDF     $pdf         PDF instance
@@ -244,41 +222,90 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	 */
 	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo)
 	{
+		global $conf, $mysoc;
+
 		$pdf->Rect($x, $y, $w, $h);
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		$font_size = $default_font_size;
+		if ($w <= 28) {
+			$font_size = $default_font_size - 2;
+		}
+
 		$thirdparty = $this->getProjectThirdparty($object);
-		$labeldata = $this->getLabelData($object, $thirdparty, $outputlangs);
-		$padding = 3;
+		$thirdparty_name = '';
+		if (is_object($thirdparty)) {
+			$thirdparty_name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
+		}
+
+		$padding = 2;
 		$inner_x = $x + $padding;
-		$inner_width = $w - (2 * $padding);
-		$current_y = $y + $padding;
+		$inner_y = $y + $padding;
+		$inner_width = max(1, $w - (2 * $padding));
+		$bottom_y = $y + $h - $padding;
+		$current_y = $inner_y;
+		$spacing = ($w <= 28) ? 0.8 : 1.2;
+		$line_height = ($w <= 28) ? 3.5 : 4.5;
 
-		if ($logo && is_readable($logo)) {
-			$logo_width = min($inner_width, 22);
-			$pdf->Image($logo, $inner_x, $current_y, $logo_width, 0);
-			$current_y += min(pdf_getHeightForLogo($logo), 12) + 2;
+		// Keep a local logo fallback for older calls but prefer the current company logo.
+		$logo_file = $logo;
+		if (!empty($mysoc->logo)) {
+			$logo_file = $conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
 		}
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $default_font_size + 1);
-		$pdf->SetXY($inner_x, $current_y);
-		$pdf->MultiCell($inner_width, 5, $outputlangs->convToOutputCharset($outputlangs->transnoentities('Project')), 0, 'C');
-		$current_y = $pdf->GetY() + 2;
-
-		foreach ($labeldata as $line) {
-			if ($line['value'] === '') {
-				continue;
+		if (!empty($mysoc->logo) && $logo_file && is_readable($logo_file) && $current_y < $bottom_y) {
+			$logo_width = min($inner_width, ($w <= 28) ? 12 : 22);
+			$logo_height = min(pdf_getHeightForLogo($logo_file), ($w <= 28) ? 8 : 12, $bottom_y - $current_y);
+			if ($logo_width > 0 && $logo_height > 0) {
+				$pdf->Image($logo_file, $inner_x, $current_y, $logo_width, $logo_height);
+				$current_y += $logo_height + $spacing;
 			}
-
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $default_font_size - 2);
-			$pdf->SetXY($inner_x, $current_y);
-			$pdf->MultiCell($inner_width, 4, $outputlangs->convToOutputCharset($line['label']), 0, 'L');
-			$current_y = $pdf->GetY();
-
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size - 1);
-			$pdf->SetXY($inner_x, $current_y);
-			$pdf->MultiCell($inner_width, 5, $outputlangs->convToOutputCharset($line['value']), 0, 'L');
-			$current_y = $pdf->GetY() + 1;
 		}
+
+		$current_y = $this->drawLimitedMultiCell(
+			$pdf, $outputlangs, $object->ref, $inner_x, $current_y, $inner_width,
+			$bottom_y - $current_y, $line_height, 'C', 'B', $font_size + 1
+		);
+		$current_y += $spacing;
+
+		$current_y = $this->drawLimitedMultiCell(
+			$pdf, $outputlangs, $object->title, $inner_x, $current_y, $inner_width,
+			$bottom_y - $current_y, $line_height, 'L', '', $font_size
+		);
+		$current_y += $spacing;
+
+		$this->drawLimitedMultiCell(
+			$pdf, $outputlangs, $thirdparty_name, $inner_x, $current_y, $inner_width,
+			$bottom_y - $current_y, $line_height, 'L', '', $font_size
+		);
+	}
+
+	/**
+	 * Draw text inside a limited area without overflowing the label.
+	 *
+	 * @param TCPDF     $pdf         PDF instance
+	 * @param Translate $outputlangs Output language object
+	 * @param string    $text        Text to print
+	 * @param float     $x           X position
+	 * @param float     $y           Y position
+	 * @param float     $w           Cell width
+	 * @param float     $max_height  Maximum cell height
+	 * @param float     $line_height Line height
+	 * @param string    $align       Text alignment
+	 * @param string    $style       Font style
+	 * @param float     $font_size   Font size
+	 * @return float                 New Y position
+	 */
+	private function drawLimitedMultiCell(&$pdf, $outputlangs, $text, $x, $y, $w, $max_height, $line_height, $align, $style, $font_size)
+	{
+		if ((string) $text === '' || $max_height <= 0) {
+			return $y;
+		}
+
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(4, $font_size));
+		$pdf->SetXY($x, $y);
+		$pdf->MultiCell($w, $line_height, $outputlangs->convToOutputCharset($text), 0, $align, false, 1, '', '', true, 0, false, true, $max_height, 'T', true);
+
+		return min($pdf->GetY(), $y + $max_height);
 	}
 }
