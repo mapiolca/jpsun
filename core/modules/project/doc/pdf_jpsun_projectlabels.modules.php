@@ -271,8 +271,17 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 
 		if (!empty($logo_file) && is_readable($logo_file) && $current_y < $bottom_y) {
 			$maxLogoWidth = min($inner_width, ($w <= 28) ? $w - 6 : 42);
-			$logo_width = max(0, $maxLogoWidth);
-			$logo_height = min(pdf_getHeightForLogo($logo_file), ($w <= 28) ? 8 : 12, $bottom_y - $current_y);
+			$maxLogoHeight = min(($w <= 28) ? 8 : 12, $bottom_y - $current_y);
+			$logo_width = 0;
+			$logo_height = 0;
+			$logo_size = getimagesize($logo_file);
+
+			if (is_array($logo_size) && !empty($logo_size[0]) && !empty($logo_size[1]) && $maxLogoWidth > 0 && $maxLogoHeight > 0) {
+				$logo_ratio = min($maxLogoWidth / $logo_size[0], $maxLogoHeight / $logo_size[1]);
+				$logo_width = $logo_size[0] * $logo_ratio;
+				$logo_height = $logo_size[1] * $logo_ratio;
+			}
+
 			$logo_x = $x + (($w - $logo_width) / 2);
 
 			if ($logo_width > 0 && $logo_height > 0) {
