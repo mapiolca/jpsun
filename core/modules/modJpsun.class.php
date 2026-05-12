@@ -92,6 +92,7 @@ class modJpsun extends DolibarrModules
 			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard'),
 			'picto'=>'object_jpsun@jpsun'
 		);
+		$this->module_parts['models'] = 1;
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
