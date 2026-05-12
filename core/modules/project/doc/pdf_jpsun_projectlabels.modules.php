@@ -254,11 +254,45 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 				return $cell_y;
 			}
 
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(4, $cell_font_size));
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(1, $cell_font_size));
 			$pdf->SetXY($cell_x, $cell_y);
 			$pdf->MultiCell($cell_width, $cell_line_height, $outputlangs->convToOutputCharset($text), 0, $align, false, 1, '', '', true, 0, false, true, $max_height, 'T', true);
 
 			return min($pdf->GetY(), $cell_y + $max_height);
+		};
+
+		$getNoWordCutFontSize = function ($text, $base_font_size, $style) use (&$pdf, $outputlangs, $inner_width) {
+			$font_size_to_try = $base_font_size;
+			$words = preg_split('/\s+/u', trim((string) $text));
+
+			if (empty($words)) {
+				return $font_size_to_try;
+			}
+
+			while ($font_size_to_try > 1) {
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, $font_size_to_try);
+				$longest_word_width = 0;
+
+				foreach ($words as $word) {
+					if ($word === '') {
+						continue;
+					}
+
+					$longest_word_width = max($longest_word_width, $pdf->GetStringWidth($outputlangs->convToOutputCharset($word)));
+				}
+
+				if ($longest_word_width <= $inner_width) {
+					break;
+				}
+
+				$font_size_to_try -= 0.5;
+			}
+
+			return max(1, $font_size_to_try);
+		};
+
+		$getLineHeight = function ($cell_font_size) use ($line_height) {
+			return min($line_height, max(2, $cell_font_size * 0.45));
 		};
 
 		$pdf->SetLineWidth(0.1);
@@ -290,21 +324,25 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			}
 		}
 
+		$ref_font_size = $getNoWordCutFontSize($object->ref, $font_size + 1, 'B');
+		$title_font_size = $getNoWordCutFontSize($object->title, $font_size, '');
+		$thirdparty_font_size = $getNoWordCutFontSize($thirdparty_name, $font_size, '');
+
 		$current_y = $drawLimitedMultiCell(
 			$object->ref, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $line_height, 'C', 'B', $font_size + 1
+			$bottom_y - $current_y, $getLineHeight($ref_font_size), 'C', 'B', $ref_font_size
 		);
 		$current_y += $spacing;
 
 		$current_y = $drawLimitedMultiCell(
 			$object->title, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $line_height, 'L', '', $font_size
+			$bottom_y - $current_y, $getLineHeight($title_font_size), 'L', '', $title_font_size
 		);
 		$current_y += $spacing;
 
 		$drawLimitedMultiCell(
 			$thirdparty_name, $inner_x, $current_y, $inner_width,
-			$bottom_y - $current_y, $line_height, 'L', '', $font_size
+			$bottom_y - $current_y, $getLineHeight($thirdparty_font_size), 'L', '', $thirdparty_font_size
 		);
 	}
 }
