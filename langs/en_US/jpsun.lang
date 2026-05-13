@@ -313,3 +313,13 @@ JpsunPeakPowerRecomputeError=Error during peak power recalculation.
 
 JpsunWidgetPuissanceCreteInfo=Calculation rule: peak power (jpsun_pc_install) on validated orders, grouped by date_cloture.
 EditerPuissancesCretesManuellement=Edit peak powers manually.
+JpsunProjectLabelsPdfModel=JPSUN project labels
+JpsunProjectLabels=Project labels
+JpsunProjectLabelFormat=Label format
+JpsunProjectLabelCompanyLogo=Company logo
+JpsunProjectLabelProjectRef=Project reference
+JpsunProjectLabelProjectTitle=Project title
+JpsunProjectLabelThirdParty=Third party
+project_address=Country name
+project_zip=Location ZIP code
+project_town=Location name

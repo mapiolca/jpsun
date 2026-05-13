@@ -313,3 +313,13 @@ JpsunPeakPowerRecomputeError=Errore durante il ricalcolo della potenza di picco.
 
 JpsunWidgetPuissanceCreteInfo=Regola di calcolo: potenza di picco (jpsun_pc_install) sugli ordini convalidati, raggruppata per date_cloture.
 EditerPuissancesCretesManuellement=Modificare manualmente le potenze di picco.
+JpsunProjectLabelsPdfModel=Etichette progetto JPSUN
+JpsunProjectLabels=Etichette progetto
+JpsunProjectLabelFormat=Formato etichetta
+JpsunProjectLabelCompanyLogo=Logo aziendale
+JpsunProjectLabelProjectRef=Riferimento progetto
+JpsunProjectLabelProjectTitle=Titolo progetto
+JpsunProjectLabelThirdParty=Terzo
+project_address=Nome del paese
+project_zip=CAP del luogo
+project_town=Nome del luogo
