@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.15';
+		$this->version = '1.16';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -326,6 +326,9 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_project_prix_rachat', 'jpsun_project_prix_rachat', 'price', 101, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_prix_rachat_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_project_type_racc', 'jpsun_project_type_racc', 'select', 102, '', 'projet', 0, 0, '', 'a:1:{s:7:"options";a:3:{i:1;s:26:"jpsun_project_type_racc_vt";i:2;s:26:"jpsun_project_type_racc_as";i:3;s:26:"jpsun_project_type_racc_at";}}', 1, '', '-1', 'jpsun_project_pc_help', '',  $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_project_mes_date', 'jpsun_project_mes_date', 'date', 103, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_mes_date_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_address', 'project_address', 'varchar', 104, '255', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_zip', 'project_zip', 'varchar', 105, '25', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$ext->addExtraField('project_town', 'project_town', 'varchar', 106, '128', 'projet', 0, 0, '', '', 1, '', '-1', '', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
 	    //Utilisateurs
 	    
@@ -345,7 +348,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
 			'entity' => 0,
@@ -443,7 +446,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'JpsunTauxTvaFactureHelp',
 			'computed' => '',
 			'entity' => 0,
@@ -514,7 +517,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
 			'entity' => 0,
@@ -668,7 +671,7 @@ class modJpsun extends DolibarrModules
 				'unique' => 0,
 				'required' => 1,
 				'default_value' => '',
-				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:3)";N;}}',
+				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:2)";N;}}',
 				'alwayseditable' => 1,
 				'perms' => '',
 				'list' => -1,
@@ -980,8 +983,3 @@ class modJpsun extends DolibarrModules
 }
 
 ?>
-
-
-
-
-
