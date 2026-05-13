@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 12/05/2026
+- Dernière mise à jour : 13/05/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.16
+- Version : 1.16.1
 - PHP : 8.2
 - Compatibilité : Dolibarr 21+
 

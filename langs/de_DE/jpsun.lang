@@ -320,6 +320,3 @@ JpsunProjectLabelCompanyLogo=Firmenlogo
 JpsunProjectLabelProjectRef=Projektreferenz
 JpsunProjectLabelProjectTitle=Projekttitel
 JpsunProjectLabelThirdParty=Dritter
-project_address=Landesname
-project_zip=Postleitzahl des Ortes
-project_town=Ortsname
