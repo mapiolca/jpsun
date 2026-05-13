@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.16 (12/05/2026)
+- Ajout d'un modèle PDF d'étiquettes de classeur pour les projets.
+- Génération d'une page A4 unique contenant les quatre formats d'étiquettes côte à côte.
+- Ajout des formats 5 x 15,8 cm, 2,5 x 15,8 cm, 2,8 x 18,5 cm et 5,8 x 18,5 cm.
+- Affichage du logo société, de la référence projet, du libellé projet et du nom du tiers sur chaque étiquette.
+
 ## 1.15 (29/04/2026)
 - Ajout des widgets puissance crête (annuel, mensuel, hebdomadaire) et du widget camembert CA par catégorie facture.
 - Ajout/mise à jour idempotente de l'extrafield `jpsun_pc_install` sur devis, factures et commandes.
