@@ -26,6 +26,7 @@ require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 
 /**
 	* Class to generate project label PDF documents.
@@ -150,13 +151,20 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		// Create a single PDF instance and add exactly one A4 page.
 		$pdf = pdf_getInstance($this->format);
 		$pdf->SetCreator('Dolibarr');
-		$pdf->SetTitle($objectref.' - '.$outputlangs->transnoentities('JpsunProjectLabelsPdfModel'));
-		$pdf->SetSubject($outputlangs->transnoentities('JpsunProjectLabelsPdfModel'));
+		$pdf_model_label = $outputlangs->transnoentities('JpsunProjectLabelsPdfModel');
+		$pdf_labels_label = $outputlangs->transnoentities('JpsunProjectLabels');
+		$pdf_format_label = $outputlangs->transnoentities('JpsunProjectLabelFormat');
+		$pdf->SetTitle($objectref.' - '.$pdf_labels_label);
+		$pdf->SetSubject($pdf_model_label.' - '.$pdf_format_label);
 		$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);
 		$pdf->SetAutoPageBreak(false, $this->marge_basse);
 		$pdf->AddPage();
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetDrawColor(80, 80, 80);
+
+		if (method_exists($object, 'fetch_optionals')) {
+			$object->fetch_optionals();
+		}
 
 		$logo = '';
 		if (!empty($this->emetteur->logo)) {
@@ -208,28 +216,6 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	}
 
 	/**
-	 * Prepare visible label lines.
-	 *
-	 * @param Project      $object      Project object
-	 * @param Societe|null $thirdparty  Thirdparty object
-	 * @param Translate    $outputlangs Output language object
-	 * @return array<int,array{label:string,value:string}> Label lines
-	 */
-	private function getLabelData($object, $thirdparty, $outputlangs)
-	{
-		$thirdparty_name = '';
-		if (is_object($thirdparty)) {
-			$thirdparty_name = pdfBuildThirdpartyName($thirdparty, $outputlangs);
-		}
-
-		return array(
-			array('label' => $outputlangs->transnoentities('Ref'), 'value' => $object->ref),
-			array('label' => $outputlangs->transnoentities('Project'), 'value' => $object->title),
-			array('label' => $outputlangs->transnoentities('ThirdParty'), 'value' => $thirdparty_name),
-		);
-	}
-
-	/**
 	 * Draw one project label.
 	 *
 	 * @param TCPDF     $pdf         PDF instance
@@ -244,41 +230,165 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	 */
 	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo)
 	{
-		$pdf->Rect($x, $y, $w, $h);
+		global $conf, $mysoc;
 
+		// Keep the label layout horizontal. If rotation is approved later, wrap the rotated block with TCPDF StartTransform(), Rotate() and StopTransform().
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
-		$thirdparty = $this->getProjectThirdparty($object);
-		$labeldata = $this->getLabelData($object, $thirdparty, $outputlangs);
-		$padding = 3;
-		$inner_x = $x + $padding;
-		$inner_width = $w - (2 * $padding);
-		$current_y = $y + $padding;
+		$max_ref_font_size = ($w <= 25) ? max(9, $default_font_size) : (($w <= 28) ? max(10, $default_font_size) : max(18, $default_font_size + 7));
+		$max_text_font_size = ($w <= 25) ? max(7, $default_font_size - 1) : (($w <= 28) ? max(8, $default_font_size) : max(13, $default_font_size + 2));
 
-		if ($logo && is_readable($logo)) {
-			$logo_width = min($inner_width, 22);
-			$pdf->Image($logo, $inner_x, $current_y, $logo_width, 0);
-			$current_y += min(pdf_getHeightForLogo($logo), 12) + 2;
+		$padding = 2;
+		$inner_x = $x + $padding;
+		$inner_y = $y + $padding;
+		$inner_width = max(1, $w - (2 * $padding));
+		$bottom_y = $y + $h - $padding;
+		$spacing = ($w <= 28) ? 0.8 : 1.2;
+		$line_height = ($w <= 28) ? 3.5 : 4.5;
+
+		$project_title = '';
+		if (!empty($object->title)) {
+			$project_title = $object->title;
+		} elseif (!empty($object->name)) {
+			$project_title = $object->name;
 		}
 
-		$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $default_font_size + 1);
-		$pdf->SetXY($inner_x, $current_y);
-		$pdf->MultiCell($inner_width, 5, $outputlangs->convToOutputCharset($outputlangs->transnoentities('Project')), 0, 'C');
-		$current_y = $pdf->GetY() + 2;
+		$project_address = empty($object->array_options['options_project_address']) ? '' : $object->array_options['options_project_address'];
+		$project_zip = empty($object->array_options['options_project_zip']) ? '' : $object->array_options['options_project_zip'];
+		$project_town = empty($object->array_options['options_project_town']) ? '' : $object->array_options['options_project_town'];
+		$project_location = trim($project_zip.' '.$project_town);
+		$category_labels = $this->getProjectCategoryLabels($object);
+		$project_categories = implode(' / ', $category_labels);
+		$project_year = '';
+		if (!empty($object->date_start)) {
+			$project_year = dol_print_date($object->date_start, '%Y');
+		}
 
-		foreach ($labeldata as $line) {
-			if ($line['value'] === '') {
-				continue;
+		$drawLimitedMultiCell = function ($text, $cell_x, $cell_y, $cell_width, $cell_height, $align, $style, $cell_font_size) use (&$pdf, $outputlangs) {
+			if ((string) $text === '' || $cell_height <= 0) {
+				return;
 			}
 
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), 'B', $default_font_size - 2);
-			$pdf->SetXY($inner_x, $current_y);
-			$pdf->MultiCell($inner_width, 4, $outputlangs->convToOutputCharset($line['label']), 0, 'L');
-			$current_y = $pdf->GetY();
+			$output_text = $outputlangs->convToOutputCharset($text);
+			$cell_line_height = max(2, $cell_font_size * 0.5);
+			$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, max(1, $cell_font_size));
+			$pdf->SetXY($cell_x, $cell_y);
+			$pdf->MultiCell($cell_width, $cell_line_height, $output_text, 0, $align, false, 1, '', '', true, 1, false, true, $cell_height, 'M', false);
+		};
 
-			$pdf->SetFont(pdf_getPDFFont($outputlangs), '', $default_font_size - 1);
-			$pdf->SetXY($inner_x, $current_y);
-			$pdf->MultiCell($inner_width, 5, $outputlangs->convToOutputCharset($line['value']), 0, 'L');
-			$current_y = $pdf->GetY() + 1;
+		$getFittedFontSize = function ($text, $base_font_size, $style, $cell_width, $cell_height) use (&$pdf, $outputlangs) {
+			if ((string) $text === '') {
+				return $base_font_size;
+			}
+
+			$font_size_to_try = $base_font_size;
+			$min_font_size = 4;
+			$words = preg_split('/\s+/u', trim((string) $text));
+			$output_text = $outputlangs->convToOutputCharset($text);
+
+			while ($font_size_to_try > $min_font_size) {
+				$pdf->SetFont(pdf_getPDFFont($outputlangs), $style, $font_size_to_try);
+				$longest_word_width = 0;
+
+				foreach ($words as $word) {
+					if ($word === '') {
+						continue;
+					}
+
+					$longest_word_width = max($longest_word_width, $pdf->GetStringWidth($outputlangs->convToOutputCharset($word)));
+				}
+
+				$cell_line_height = max(2, $font_size_to_try * 0.5);
+				$line_count = method_exists($pdf, 'getNumLines') ? $pdf->getNumLines($output_text, $cell_width) : 1;
+				$text_height = max($cell_line_height, $line_count * $cell_line_height);
+
+				if ($longest_word_width <= $cell_width && $text_height <= $cell_height) {
+					break;
+				}
+
+				$font_size_to_try -= 0.5;
+			}
+
+			return max($min_font_size, $font_size_to_try);
+		};
+
+		$pdf->SetLineWidth(0.1);
+		$pdf->Rect($x, $y, $w, $h);
+
+		$logo_file = '';
+		if (!empty($mysoc->logo)) {
+			$logo_file = $conf->mycompany->dir_output.'/logos/'.$mysoc->logo;
+		}
+
+		$logo_width = 0;
+		$logo_height = 0;
+		$logo_y = $inner_y;
+		if (!empty($logo_file) && is_readable($logo_file)) {
+			$maxLogoWidth = min($inner_width, ($w <= 28) ? $w - 6 : 42);
+			$maxLogoHeight = min(($w <= 28) ? 8 : 12, max(1, ($h - (2 * $padding)) * 0.14));
+			$logo_size = getimagesize($logo_file);
+
+			if (is_array($logo_size) && !empty($logo_size[0]) && !empty($logo_size[1]) && $maxLogoWidth > 0 && $maxLogoHeight > 0) {
+				$logo_ratio = min($maxLogoWidth / $logo_size[0], $maxLogoHeight / $logo_size[1]);
+				$logo_width = $logo_size[0] * $logo_ratio;
+				$logo_height = $logo_size[1] * $logo_ratio;
+			}
+		}
+
+		if ($logo_width > 0 && $logo_height > 0) {
+			$logo_x = $x + (($w - $logo_width) / 2);
+			$pdf->Image($logo_file, $logo_x, $logo_y, $logo_width, $logo_height);
+		}
+
+		$text_top_y = $inner_y + $logo_height + ($logo_height > 0 ? $spacing : 0);
+		$text_available_height = max(1, $bottom_y - $text_top_y);
+		$slots = array(
+			array('text' => trim($project_address."\n".$project_location), 'style' => 'B', 'weight' => 1.25, 'max_font' => $max_text_font_size),
+			array('text' => $project_categories, 'style' => 'B', 'weight' => 0.75, 'max_font' => $max_text_font_size),
+			array('text' => $project_title, 'style' => 'B', 'weight' => 3.4, 'max_font' => $max_text_font_size + 2),
+			array('text' => $object->ref, 'style' => 'B', 'weight' => 1.05, 'max_font' => $max_ref_font_size),
+			array('text' => $project_year, 'style' => 'B', 'weight' => 0.7, 'max_font' => $max_text_font_size),
+		);
+		$total_weight = 0;
+
+		foreach ($slots as $slot) {
+			$total_weight += $slot['weight'];
+		}
+
+		$current_y = $text_top_y;
+		foreach ($slots as $slot) {
+			$slot_height = $text_available_height * ($slot['weight'] / $total_weight);
+			$text = trim((string) $slot['text']);
+
+			if ($text !== '') {
+				$font_size = $getFittedFontSize($text, $slot['max_font'], $slot['style'], $inner_width, max(1, $slot_height - $spacing));
+				$drawLimitedMultiCell($text, $inner_x, $current_y, $inner_width, max(1, $slot_height - $spacing), 'C', $slot['style'], $font_size);
+			}
+
+			$current_y += $slot_height;
 		}
 	}
+
+	/**
+	 * Return labels of categories linked to a project.
+	 *
+	 * @param Project $object Project object
+	 * @return string[] Category labels
+	 */
+	private function getProjectCategoryLabels($object)
+	{
+		$labels = array();
+
+		if (empty($object->id)) {
+			return $labels;
+		}
+
+		$categorie = new Categorie($this->db);
+		$categories = $categorie->containing($object->id, 'project', 'label');
+		if (is_array($categories)) {
+			$labels = $categories;
+		}
+
+		return $labels;
+	}
+
 }
