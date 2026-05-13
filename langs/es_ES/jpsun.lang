@@ -236,6 +236,7 @@ JpsunContractAcBoxInstallHeightM =Altura de instalación caja AC (m)
 JpsunContractAccessCode =Código de acceso (si es necesario)
 JpsunContractPdlNumber =Número de PDL:
 JpsunContractSiteAddress =Dirección de ubicación
+jpsunWorkSiteAddress=Dirección de obra
 JpsunContractSiteRepresentative1 =Representante del sitio 1
 JpsunContractSiteRepresentative2 =Representante del sitio 2
 

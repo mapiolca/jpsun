@@ -178,7 +178,7 @@ DELETE FROM llx_c_type_contact WHERE element='contrat' AND source='external' AND
 DELETE FROM llx_c_type_contact WHERE element='project' AND source='external' AND code='PROJECTADD';
 
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEADDRESS', 'Adresse du site', 1, NULL);
-INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('project', 'external', 'PROJECTADD', 'Adresse du Chantier', 1, NULL);
+INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module, position) VALUES ('project', 'external', 'PROJECTADD', 'jpsunWorkSiteAddress', 1, NULL, 1);
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT1', 'Représentant du site 1', 1, NULL);
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT2', 'Représentant du site 2', 1, NULL);
 

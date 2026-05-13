@@ -37,6 +37,8 @@ if (empty($preselectedtypeofcontact)) {
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 
+$langs->load('jpsun@jpsun');
+
 $module = $object->element;
 
 // Special cases
@@ -221,7 +223,7 @@ foreach (array('internal', 'external') as $source) {
 		$entry = new stdClass();
 		$entry->id   = $contact['rowid'];
 		$entry->type_id = $contact['fk_c_type_contact'];
-		$entry->type = $contact['libelle'];
+		$entry->type = $langs->trans((string) $contact['libelle']);
 		$entry->nature = "";
 		$entry->nature_html = "";
 		$entry->thirdparty_id = 0;

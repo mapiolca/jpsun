@@ -242,6 +242,7 @@ JpsunContractAcBoxInstallHeightM = Hauteur d'installation Coffret AC (m)
 JpsunContractAccessCode = Code accès (si nécessaire)
 JpsunContractPdlNumber = N° de PDL :
 JpsunContractSiteAddress = Adresse du site
+jpsunWorkSiteAddress=Adresse du chantier
 JpsunContractSiteRepresentative1 = Représentant du site 1
 JpsunContractSiteRepresentative2 = Représentant du site 2
 
