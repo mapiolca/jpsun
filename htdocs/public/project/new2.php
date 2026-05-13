@@ -1,3 +1,5 @@
+<!doctype html>
+<html lang="fr-FR" prefix="og: https://ogp.me/ns#" class="no-js" itemtype="https://schema.org/WebPage" itemscope>
 <?php
 /* Copyright (C) 2026 Pierre Ardoin <developpeur@lesmetiersdubatiment.fr>
  *
@@ -48,7 +50,7 @@ $entityposted = GETPOSTINT('entity') ?: (defined('DOLENTITY') ? DOLENTITY : 1);
 
 $fullname = trim(GETPOST('fullname', 'alphanohtml'));
 $phone = trim(GETPOST('phone', 'alphanohtml'));
-$email = trim(GETPOST('email', 'alphanohtml'));
+$email = trim(GETPOST('email', 'alpha'));
 $town = trim(GETPOST('town', 'alphanohtml'));
 $zip = trim(GETPOST('zip', 'alphanohtml'));
 $description = trim(GETPOST('description', 'restricthtml'));
