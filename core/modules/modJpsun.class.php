@@ -92,7 +92,6 @@ class modJpsun extends DolibarrModules
 			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard'),
 			'picto'=>'object_jpsun@jpsun'
 		);
-		$this->module_parts['models'] = 1;
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
@@ -349,7 +348,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
 			'entity' => 0,
@@ -447,7 +446,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'JpsunTauxTvaFactureHelp',
 			'computed' => '',
 			'entity' => 0,
@@ -518,7 +517,7 @@ class modJpsun extends DolibarrModules
 			'param' => '',
 			'alwayseditable' => 1,
 			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -2,
+			'list' => -1,
 			'help' => 'jpsun_pc_install_help',
 			'computed' => '',
 			'entity' => 0,
@@ -672,7 +671,7 @@ class modJpsun extends DolibarrModules
 				'unique' => 0,
 				'required' => 1,
 				'default_value' => '',
-				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:3)";N;}}',
+				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:2)";N;}}',
 				'alwayseditable' => 1,
 				'perms' => '',
 				'list' => -1,
@@ -984,8 +983,3 @@ class modJpsun extends DolibarrModules
 }
 
 ?>
-
-
-
-
-
