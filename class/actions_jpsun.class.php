@@ -342,16 +342,41 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	 */
 	private function buildAutoProjectGuardQuestion($projects)
 	{
-		global $langs;
+		global $form, $langs;
+
+		$projectOptions = array();
+		foreach ($projects as $project) {
+			$projectOptions[(int) $project['id']] = $project['label'];
+		}
+
+		if (is_object($form) && method_exists($form, 'selectarray')) {
+			$projectSelect = $form->selectarray(
+				'jpsun_autoproject_existing_project_id',
+				$projectOptions,
+				'',
+				0,
+				0,
+				0,
+				'',
+				0,
+				0,
+				0,
+				'',
+				'flat minwidth300 maxwidth500',
+				1
+			);
+		} else {
+			$projectSelect = '<select class="flat minwidth300 maxwidth500" name="jpsun_autoproject_existing_project_id" id="jpsun_autoproject_existing_project_id">';
+			foreach ($projectOptions as $projectId => $projectLabel) {
+				$projectSelect .= '<option value="'.((int) $projectId).'">'.dol_escape_htmltag($projectLabel).'</option>';
+			}
+			$projectSelect .= '</select>';
+		}
 
 		$html = '<div id="jpsun-autoproject-guard" class="jpsun-autoproject-guard">';
 		$html .= '<div class="opacitymedium marginbottomonly">'.$langs->trans('JpsunAutoProjectGuardIntro').'</div>';
 		$html .= '<div class="marginbottomonly"><label><input type="radio" name="jpsun_autoproject_guard_choice" value="existing" checked="checked"> '.$langs->trans('JpsunAutoProjectGuardUseExisting').'</label></div>';
-		$html .= '<div class="marginleftonly marginbottomonly"><select class="flat minwidth300 maxwidth500" name="jpsun_autoproject_existing_project_id" id="jpsun_autoproject_existing_project_id">';
-		foreach ($projects as $project) {
-			$html .= '<option value="'.((int) $project['id']).'">'.dol_escape_htmltag($project['label']).'</option>';
-		}
-		$html .= '</select></div>';
+		$html .= '<div class="marginleftonly marginbottomonly">'.$projectSelect.'</div>';
 		$html .= '<div><label><input type="radio" name="jpsun_autoproject_guard_choice" value="new"> '.$langs->trans('JpsunAutoProjectGuardCreateNew').'</label></div>';
 		$html .= '</div>';
 
@@ -379,6 +404,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 					var projectSelect = guard.querySelector("select[name=jpsun_autoproject_existing_project_id]");
 					if (projectSelect) {
 						projectSelect.disabled = !(selectedChoice && selectedChoice.value === "existing");
+						if (typeof jQuery !== "undefined") {
+							jQuery(projectSelect).trigger("change.select2");
+						}
 					}
 				}
 				function initGuard() {
