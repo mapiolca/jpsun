@@ -28,6 +28,7 @@
  * Class ActionsMyModule
  */
 require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
+require_once __DIR__ . '/../lib/jpsun.lib.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**
@@ -72,6 +73,228 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
     {
         $this->db = $db;
     }
+
+	/**
+	 * Validate and save the required native delivery delay before proposal signature.
+	 *
+	 * @param array        $parameters  Hook metadatas
+	 * @param CommonObject $object      Current object
+	 * @param string       $action      Current action
+	 * @param HookManager  $hookmanager Hook manager
+	 * @return int                      <0 on error, 0 to continue, >0 to replace standard code
+	 */
+	public function doActions($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs, $user;
+
+		if (!$this->mustValidatePropalDeliveryDelay($parameters, $object)) {
+			return 0;
+		}
+		if ($action !== 'confirm_closeas' || !$this->isSignedPropalCloseRequest()) {
+			return 0;
+		}
+
+		$langs->loadLangs(array('jpsun@jpsun'));
+
+		$selectedAvailabilityId = (int) GETPOST('jpsun_delivery_availability_id', 'int');
+		if ($selectedAvailabilityId > 0) {
+			$selectedDelay = jpsunFetchAvailabilityDelay($this->db, $selectedAvailabilityId, $langs);
+			if (!is_array($selectedDelay)) {
+				setEventMessages($langs->trans('JpsunPropalSignedDeliveryDelayInvalid'), null, 'errors');
+				$action = 'closeas';
+				return 1;
+			}
+
+			$res = $this->savePropalAvailability($object, $selectedAvailabilityId, $user);
+			if ($res < 0) {
+				setEventMessages($this->error, $this->errors, 'errors');
+				$action = 'closeas';
+				return -1;
+			}
+		}
+
+		$delay = jpsunGetPropalAvailabilityDelay($this->db, $object, $langs);
+		if (!is_array($delay)) {
+			setEventMessages($langs->trans('JpsunPropalSignedDeliveryDelayRequired'), null, 'errors');
+			$action = 'closeas';
+			return 1;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Inject a mandatory native availability selector in the proposal signature confirmation.
+	 *
+	 * @param array        $parameters  Hook metadatas
+	 * @param CommonObject $object      Current object
+	 * @param string       $action      Current action
+	 * @param HookManager  $hookmanager Hook manager
+	 * @return int                      <0 on error, 0 to continue, >0 to replace standard code
+	 */
+	public function formConfirm($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+
+		if (!$this->mustValidatePropalDeliveryDelay($parameters, $object)) {
+			return 0;
+		}
+		if ($action !== 'closeas' || !$this->isSignedPropalCloseRequest()) {
+			return 0;
+		}
+
+		$langs->loadLangs(array('jpsun@jpsun'));
+		if (is_array(jpsunGetPropalAvailabilityDelay($this->db, $object, $langs))) {
+			return 0;
+		}
+
+		$formConfirm = '';
+		if (!empty($parameters['formconfirm'])) {
+			$formConfirm = (string) $parameters['formconfirm'];
+		} elseif (!empty($parameters['formConfirm'])) {
+			$formConfirm = (string) $parameters['formConfirm'];
+		}
+		if ($formConfirm === '' || strpos($formConfirm, 'name="jpsun_delivery_availability_id"') !== false) {
+			return 0;
+		}
+
+		$selectorHtml = $this->buildDeliveryAvailabilitySelectorHtml($langs);
+		$this->resprints = $this->injectHtmlInConfirmQuestions($formConfirm, $selectorHtml);
+
+		return 1;
+	}
+
+	/**
+	 * Check whether delivery delay validation applies to the current proposal hook.
+	 *
+	 * @param array  $parameters Hook metadatas
+	 * @param Object $object     Current object
+	 * @return bool
+	 */
+	private function mustValidatePropalDeliveryDelay($parameters, $object)
+	{
+		if (!isModEnabled('project') || !getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			return false;
+		}
+
+		$contexts = explode(':', isset($parameters['context']) ? (string) $parameters['context'] : '');
+		if (!in_array('propalcard', $contexts, true)) {
+			return false;
+		}
+
+		return is_object($object) && !empty($object->element) && $object->element === 'propal';
+	}
+
+	/**
+	 * Check whether the current close request is a signed proposal close.
+	 *
+	 * @return bool
+	 */
+	private function isSignedPropalCloseRequest()
+	{
+		$postedStatus = (int) GETPOST('statut', 'int');
+		if ($postedStatus <= 0) {
+			return false;
+		}
+
+		dol_include_once('/comm/propal/class/propal.class.php');
+		$signedStatus = defined('Propal::STATUS_SIGNED') ? (int) constant('Propal::STATUS_SIGNED') : 2;
+
+		return $postedStatus === $signedStatus;
+	}
+
+	/**
+	 * Save the selected native availability on the proposal.
+	 *
+	 * @param Object $object               Proposal object
+	 * @param int    $selectedAvailability Selected availability id
+	 * @param User   $user                 Current user
+	 * @return int                         1 if OK, <0 on error
+	 */
+	private function savePropalAvailability(&$object, $selectedAvailability, $user)
+	{
+		$selectedAvailability = (int) $selectedAvailability;
+		$objectId = !empty($object->id) ? (int) $object->id : (int) $object->rowid;
+		if ($objectId <= 0 || $selectedAvailability <= 0) {
+			$this->error = 'Invalid proposal availability data';
+			$this->errors[] = $this->error;
+			return -1;
+		}
+
+		if (method_exists($object, 'set_availability')) {
+			$res = $object->set_availability($user, $selectedAvailability);
+			if ($res < 0) {
+				$this->error = $object->error;
+				$this->errors = $object->errors;
+				return -1;
+			}
+		} else {
+			$sql = "UPDATE ".MAIN_DB_PREFIX."propal";
+			$sql .= " SET fk_availability = ".$selectedAvailability;
+			$sql .= " WHERE rowid = ".$objectId;
+			$resql = $this->db->query($sql);
+			if (!$resql) {
+				$this->error = $this->db->lasterror();
+				$this->errors[] = $this->error;
+				return -1;
+			}
+		}
+
+		$object->fk_availability = $selectedAvailability;
+		$object->availability_id = $selectedAvailability;
+
+		return 1;
+	}
+
+	/**
+	 * Build selector HTML for parseable native availability choices.
+	 *
+	 * @param Translate $langs Translation handler
+	 * @return string
+	 */
+	private function buildDeliveryAvailabilitySelectorHtml($langs)
+	{
+		$availabilities = jpsunFetchParseableAvailabilities($this->db, $langs);
+		$html = '<div class="jpsun-delivery-delay-confirm-question">';
+		$html .= '<label class="fieldrequired" for="jpsun_delivery_availability_id">'.$langs->trans('JpsunPropalSignedDeliveryDelaySelect').'</label>';
+
+		if (empty($availabilities)) {
+			$html .= '<div class="error">'.$langs->trans('JpsunPropalSignedDeliveryDelayNoOption').'</div>';
+			$html .= '</div>';
+			return $html;
+		}
+
+		$html .= ' <select class="flat minwidth200" id="jpsun_delivery_availability_id" name="jpsun_delivery_availability_id" required>';
+		$html .= '<option value="">'.$langs->trans('Select').'</option>';
+		foreach ($availabilities as $availability) {
+			$html .= '<option value="'.((int) $availability['rowid']).'">'.dol_escape_htmltag($availability['display']).'</option>';
+		}
+		$html .= '</select>';
+		$html .= '<br><span class="opacitymedium">'.$langs->trans('JpsunPropalSignedDeliveryDelaySelectHelp').'</span>';
+		$html .= '</div>';
+
+		return $html;
+	}
+
+	/**
+	 * Add HTML to the confirmation questions block while preserving Dolibarr modal fields.
+	 *
+	 * @param string $formConfirm Confirm form HTML
+	 * @param string $html        HTML to insert
+	 * @return string
+	 */
+	private function injectHtmlInConfirmQuestions($formConfirm, $html)
+	{
+		$needle = '<div class="confirmquestions">';
+		$pos = strpos($formConfirm, $needle);
+		if ($pos !== false) {
+			return substr($formConfirm, 0, $pos + strlen($needle)).$html.substr($formConfirm, $pos + strlen($needle));
+		}
+
+		$updated = preg_replace('/(<form\b[^>]*>)/i', '$1'.$html, $formConfirm, 1);
+
+		return ($updated !== null && $updated !== $formConfirm) ? $updated : $html.$formConfirm;
+	}
 
     /**
      * Overloading the doActions function : replacing the parent's function with the one below

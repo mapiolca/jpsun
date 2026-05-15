@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.17 (15/05/2026)
+- Signature de devis client: obligation de disposer d'un délai de livraison natif Dolibarr convertible en durée quand `JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED` est actif.
+- Ajout du réglage `JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS` pour définir la durée de planification projet autour de la livraison, en jours ouvrés.
+- Création automatique des projets: calcul des dates de début et fin autour de la date de livraison cible, avec exclusion des week-ends.
+- Ajout des traductions associées en `fr_FR`, `en_US`, `de_DE`, `es_ES` et `it_IT`.
+
 ## 1.16.1 (13/05/2026)
 - Remplacement des extrafields projet `project_address`, `project_zip` et `project_town` par le contact externe projet `PROJECTADD` (`jpsunWorkSiteAddress`, position 1).
 - Les etiquettes de classeur projet `jpsun_projectlabels` utilisent maintenant l'adresse, le code postal et la ville de ce contact.

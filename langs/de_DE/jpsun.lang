@@ -49,6 +49,8 @@ jpsunTHR=Tatsächlicher Stundensatz
 
 JpsunSetup =JPSUN-Modul-Einstellungen
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Projekt automatisch bei Angebotsunterzeichnung erstellen
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS =Projektplanungsdauer rund um die Lieferung
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS_HELP =Positive Anzahl von Arbeitstagen zur Planung des Projekts rund um das berechnete Lieferdatum.
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Wenn ein Projekt geschlossen wird, Enddatum bei Aufgaben ohne Enddatum auf das Projektschlussdatum setzen
 JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =Wenn ein Projekt geschlossen wird, alle Projektaufgaben schließen (Fortschritt auf 100 % und Status Geschlossen)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Wenn ein Projekt geschlossen wird, sein Enddatum mit dem Projektschlussdatum erzwingen
@@ -127,6 +129,11 @@ JpsunPropalSignedProjectLinkError =Projekt kann nicht mit dem Angebot %s (ID %s)
 JpsunPropalSignedProjectOrderLinkError =Auftrag kann nicht mit dem Projekt für das Angebot %s (ID %s) verknüpft werden. Auftrag %s.
 JpsunPropalSignedProjectCreated =Projekt für das Angebot %s (ID %s) erstellt: Projekt %s (Ref %s).
 JpsunPropalSignedProjectCreatedDetails =Kopierte Extrafelder: %s - Verknüpfte Aufträge: %s.
+JpsunPropalSignedDeliveryDelayRequired =Vor der Unterzeichnung dieses Angebots ist eine in eine Dauer umwandelbare Lieferfrist erforderlich, da die automatische Projekterstellung aktiv ist.
+JpsunPropalSignedDeliveryDelayInvalid =Die gewählte Lieferfrist kann nicht in eine Dauer umgewandelt werden.
+JpsunPropalSignedDeliveryDelaySelect =Lieferfrist
+JpsunPropalSignedDeliveryDelaySelectHelp =Wählen Sie eine native Dolibarr-Frist, z. B. 3 Monate oder 12 Wochen.
+JpsunPropalSignedDeliveryDelayNoOption =Keine aktive native Lieferfrist kann in eine Dauer umgewandelt werden.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Kundenaufträge

@@ -22,6 +22,7 @@
  */
 
 dol_include_once('/core/triggers/dolibarrtriggers.class.php');
+require_once __DIR__ . '/../../lib/jpsun.lib.php';
 
 /**
  *	\class		InterfaceAutoProjectOnPropalSigned
@@ -165,15 +166,30 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
     		
     		    $langs->loadLangs(array('jpsun@jpsun'));
     
-        		// EN: Avoid duplicates when a project is already linked
-        		// FR: Éviter les doublons lorsqu'un projet est déjà lié
-        		$object->fetchObjectLinked($object->id, $object->element, null, 'project', 'OR', 0, 'sourcetype', 0);
-        		if (!empty($object->linkedObjectsIds['project'])) {
-        			dol_syslog($langs->trans('JpsunPropalSignedProjectAlreadyLinked', $object->ref, $object->id), LOG_INFO);
-        			return 0;
-        		}
-        
-        		// EN: Load required classes
+                // EN: Avoid duplicates when a project is already linked
+                // FR: Éviter les doublons lorsqu'un projet est déjà lié
+                $object->fetchObjectLinked($object->id, $object->element, null, 'project', 'OR', 0, 'sourcetype', 0);
+                if (!empty($object->linkedObjectsIds['project'])) {
+                    dol_syslog($langs->trans('JpsunPropalSignedProjectAlreadyLinked', $object->ref, $object->id), LOG_INFO);
+                    return 0;
+                }
+
+                $availabilityDelay = jpsunGetPropalAvailabilityDelay($this->db, $object, $langs);
+                if (!is_array($availabilityDelay)) {
+                    $this->error = $langs->trans('JpsunPropalSignedDeliveryDelayRequired');
+                    $this->errors[] = $this->error;
+                    dol_syslog('JPSUN AutoProject: missing or invalid delivery delay on propal id='.$object->id, LOG_ERR);
+                    setEventMessages($this->error, null, 'errors');
+                    return -1;
+                }
+
+                $projectDates = jpsunBuildProjectDateRangeFromDeliveryDelay(
+                    $this->getPropalSignatureTimestamp($object),
+                    $availabilityDelay,
+                    getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS', 5)
+                );
+
+                // EN: Load required classes
         		// FR: Charger les classes nécessaires
         		dol_include_once('/projet/class/project.class.php');
         		dol_include_once('/core/class/extrafields.class.php');
@@ -199,11 +215,15 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
         		if (empty($project->title)) {
         			$project->title = !empty($object->title) ? $object->title : $object->ref;
         		}
-        		$project->description = $object->note_public;
-        		$project->status = Project::STATUS_VALIDATED;
-        		$project->statut = Project::STATUS_VALIDATED;
-        
-        		// EN: Copy extrafields with matching codes
+                $project->description = $object->note_public;
+                $project->status = Project::STATUS_VALIDATED;
+                $project->statut = Project::STATUS_VALIDATED;
+                $project->date_start = $projectDates['date_start'];
+                $project->date_end = $projectDates['date_end'];
+                $project->dateo = $projectDates['date_start'];
+                $project->datee = $projectDates['date_end'];
+
+                // EN: Copy extrafields with matching codes
         		// FR: Copier les extrachamps avec les mêmes codes
         		$extrafields = new ExtraFields($this->db);
         		$extrafields->fetch_name_optionals_label($project->table_element);
@@ -321,6 +341,23 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		return 1;
+	}
+
+	/**
+	 * Return the proposal signature date used as delivery delay starting point.
+	 *
+	 * @param Object $object Proposal object
+	 * @return int
+	 */
+	private function getPropalSignatureTimestamp($object)
+	{
+		foreach (array('date_signature', 'date_cloture', 'date_close') as $property) {
+			if (!empty($object->{$property})) {
+				return (int) $object->{$property};
+			}
+		}
+
+		return dol_now();
 	}
 
 	/**
