@@ -127,6 +127,12 @@ JpsunPropalSignedProjectLinkError =No se pudo vincular el proyecto al presupuest
 JpsunPropalSignedProjectOrderLinkError =No se pudo vincular el pedido al proyecto para el presupuesto %s (id %s). Pedido %s.
 JpsunPropalSignedProjectCreated =Proyecto creado para el presupuesto %s (id %s): proyecto %s (ref %s).
 JpsunPropalSignedProjectCreatedDetails =Campos extra copiados: %s - Pedidos vinculados: %s.
+JpsunAutoProjectGuardLabel=Proyecto
+JpsunAutoProjectGuardIntro=Ya existe uno o varios proyectos para este cliente. Elija el proyecto a utilizar o confirme la creacion de un nuevo proyecto.
+JpsunAutoProjectGuardUseExisting=Anadir este presupuesto a un proyecto existente
+JpsunAutoProjectGuardCreateNew=Crear un nuevo proyecto
+JpsunAutoProjectGuardInvalidProject=El proyecto seleccionado no es valido o no corresponde al cliente del presupuesto.
+JpsunAutoProjectGuardProjectLinked=El presupuesto %s se ha vinculado al proyecto %s.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Pedidos de clientes

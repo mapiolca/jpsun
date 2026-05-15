@@ -127,6 +127,12 @@ JpsunPropalSignedProjectLinkError=Unable to link project to proposal %s (id %s).
 JpsunPropalSignedProjectOrderLinkError=Unable to link order to project for proposal %s (id %s). Order %s.
 JpsunPropalSignedProjectCreated=Project created for proposal %s (id %s): project %s (ref %s).
 JpsunPropalSignedProjectCreatedDetails=Copied extrafields: %s - Linked orders: %s.
+JpsunAutoProjectGuardLabel=Project
+JpsunAutoProjectGuardIntro=One or more projects already exist for this customer. Choose the project to use or confirm that a new project should be created.
+JpsunAutoProjectGuardUseExisting=Add this proposal to an existing project
+JpsunAutoProjectGuardCreateNew=Create a new project
+JpsunAutoProjectGuardInvalidProject=The selected project is invalid or does not match the proposal customer.
+JpsunAutoProjectGuardProjectLinked=Proposal %s has been linked to project %s.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Customer orders
