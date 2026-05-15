@@ -128,10 +128,14 @@ JpsunPropalSignedProjectOrderLinkError =Impossibile collegare l'ordine al proget
 JpsunPropalSignedProjectCreated =Progetto creato per il preventivo %s (id %s): progetto %s (rif %s).
 JpsunPropalSignedProjectCreatedDetails =Campi extra copiati: %s - Ordini collegati: %s.
 JpsunAutoProjectGuardLabel=Progetto
-JpsunAutoProjectGuardIntro=Esistono gia uno o piu progetti per questo cliente. Scegliere il progetto da usare o confermare la creazione di un nuovo progetto.
+JpsunAutoProjectGuardTitle=Scelta del progetto
+JpsunAutoProjectGuardConfirmText=Esiste gia un progetto idoneo. Confermare il progetto da usare prima di firmare il preventivo.
+JpsunAutoProjectGuardIntro=Esistono gia uno o piu progetti idonei. Scegliere il progetto da usare o confermare la creazione di un nuovo progetto.
 JpsunAutoProjectGuardUseExisting=Aggiungere questo preventivo a un progetto esistente
 JpsunAutoProjectGuardCreateNew=Creare un nuovo progetto
-JpsunAutoProjectGuardInvalidProject=Il progetto selezionato non e valido o non corrisponde al cliente del preventivo.
+JpsunAutoProjectGuardCancelSignature=Annulla la firma
+JpsunAutoProjectGuardInvalidChoice=La scelta del progetto non e valida.
+JpsunAutoProjectGuardInvalidProject=Il progetto selezionato non e valido o non e idoneo per questo preventivo.
 JpsunAutoProjectGuardProjectLinked=Il preventivo %s e stato collegato al progetto %s.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
