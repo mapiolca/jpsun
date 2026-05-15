@@ -49,6 +49,8 @@ jpsunTHR=Actual hourly rate
 
 JpsunSetup =JPSUN module settings
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Automatically create a project on proposal signature
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS =Project planning duration around delivery
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS_HELP =Positive number of business days used to plan the project around the calculated delivery date.
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =When a project is closed, set end date on tasks without end date to the project closing date
 JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =When a project is closed, close all project tasks (progress to 100% and status Closed)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =When a project is closed, force its end date with the project closing date
@@ -137,6 +139,11 @@ JpsunAutoProjectGuardCancelSignature=Cancel signature
 JpsunAutoProjectGuardInvalidChoice=The project choice is invalid.
 JpsunAutoProjectGuardInvalidProject=The selected project is invalid or is not eligible for this proposal.
 JpsunAutoProjectGuardProjectLinked=Proposal %s has been linked to project %s.
+JpsunPropalSignedDeliveryDelayRequired=A parseable delivery delay is required before signing this proposal because automatic project creation is enabled.
+JpsunPropalSignedDeliveryDelayInvalid=The selected delivery delay cannot be converted to a duration.
+JpsunPropalSignedDeliveryDelaySelect=Delivery delay
+JpsunPropalSignedDeliveryDelaySelectHelp=Choose a native Dolibarr delay such as 3 months or 12 weeks.
+JpsunPropalSignedDeliveryDelayNoOption=No active native delivery delay can be converted to a duration.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Customer orders

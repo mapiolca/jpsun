@@ -49,6 +49,8 @@ jpsunTHR=Tarifa horaria real
 
 JpsunSetup =Ajustes del módulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Crear automáticamente un proyecto al firmar el presupuesto
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS =Duración de planificación del proyecto alrededor de la entrega
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS_HELP =Número positivo de días laborables usado para planificar el proyecto alrededor de la fecha de entrega calculada.
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Cuando un proyecto se cierre, establecer la fecha de fin de las tareas sin fecha de fin con la fecha de cierre del proyecto
 JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =Cuando un proyecto se cierre, cerrar todas las tareas del proyecto (progreso al 100% y estado Cerrada)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Cuando un proyecto se cierre, forzar su fecha de fin con la fecha de cierre del proyecto
@@ -137,6 +139,11 @@ JpsunAutoProjectGuardCancelSignature=Cancelar la firma
 JpsunAutoProjectGuardInvalidChoice=La seleccion de proyecto no es valida.
 JpsunAutoProjectGuardInvalidProject=El proyecto seleccionado no es valido o no es elegible para este presupuesto.
 JpsunAutoProjectGuardProjectLinked=El presupuesto %s se ha vinculado al proyecto %s.
+JpsunPropalSignedDeliveryDelayRequired =Antes de firmar este presupuesto se requiere un plazo de entrega convertible en duración porque la creación automática de proyectos está activa.
+JpsunPropalSignedDeliveryDelayInvalid =El plazo de entrega seleccionado no se puede convertir en una duración.
+JpsunPropalSignedDeliveryDelaySelect =Plazo de entrega
+JpsunPropalSignedDeliveryDelaySelectHelp =Elija un plazo nativo de Dolibarr, por ejemplo 3 meses o 12 semanas.
+JpsunPropalSignedDeliveryDelayNoOption =Ningún plazo de entrega nativo activo se puede convertir en una duración.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Pedidos de clientes

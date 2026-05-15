@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 13/05/2026
+- Dernière mise à jour : 15/05/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.16.1
+- Version : 1.17
 - PHP : 8.2
 - Compatibilité : Dolibarr 21+
 
@@ -23,6 +23,7 @@
 ## Fonctionnalités
 
 - Ajout de fonctionnalités diverses pour JPSUN.
+- Création automatique des projets depuis devis signés avec délai de livraison natif Dolibarr obligatoire et dates projet planifiées autour de la livraison.
 
 ## Traductions
 

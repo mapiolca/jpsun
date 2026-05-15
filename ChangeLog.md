@@ -3,6 +3,10 @@
 ## 1.17 (15/05/2026)
 - Ajout d'un garde-fou a la creation automatique de projet a la signature d'un devis : apres confirmation de la signature, si un projet eligible existe et que le devis n'est pas deja lie a un projet, l'utilisateur choisit entre rattacher le devis a un projet existant ou creer un nouveau projet.
 - Correction de la suppression des anciens extrafields projet pour ignorer les colonnes deja absentes.
+- Signature de devis client: obligation de disposer d'un délai de livraison natif Dolibarr convertible en durée quand `JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED` est actif.
+- Ajout du réglage `JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS` pour définir la durée de planification projet autour de la livraison, en jours ouvrés.
+- Création automatique des projets: calcul des dates de début et fin autour de la date de livraison cible, avec exclusion des week-ends.
+- Ajout des traductions associées en `fr_FR`, `en_US`, `de_DE`, `es_ES` et `it_IT`.
 
 ## 1.16.1 (13/05/2026)
 - Remplacement des extrafields projet `project_address`, `project_zip` et `project_town` par le contact externe projet `PROJECTADD` (`jpsunWorkSiteAddress`, position 1).

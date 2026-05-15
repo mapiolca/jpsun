@@ -575,3 +575,337 @@ function jpsunRecomputeInstalledPeakPowerFromProductLines($db)
 
 	return array('result' => 1, 'updated' => $updated, 'error' => $error);
 }
+
+/**
+ * Normalize a delivery delay text before parsing it.
+ *
+ * @param string $text Raw text
+ * @return string
+ */
+function jpsunNormalizeDeliveryDelayText($text)
+{
+	$text = strtolower((string) $text);
+	if (function_exists('iconv')) {
+		$converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+		if ($converted !== false) {
+			$text = $converted;
+		}
+	}
+
+	$replacements = array(
+		'_' => ' ',
+		'-' => ' ',
+		'/' => ' ',
+		'.' => ' ',
+		',' => ' '
+	);
+	$text = strtr($text, $replacements);
+	$text = preg_replace('/\s+/', ' ', $text);
+
+	return trim((string) $text);
+}
+
+/**
+ * Parse a native Dolibarr availability delay text.
+ *
+ * Supported units are days, weeks and months in French and English.
+ *
+ * @param string $text Raw code, label or translation
+ * @return array{value:int,unit:string,source:string}|null
+ */
+function jpsunParseDeliveryDelayText($text)
+{
+	$normalized = jpsunNormalizeDeliveryDelayText($text);
+	if ($normalized === '') {
+		return null;
+	}
+
+	$patterns = array(
+		'day' => '/(?:^|\b)([1-9][0-9]*)\s*(?:day|days|jour|jours|j|d)(?:\b|$)/',
+		'week' => '/(?:^|\b)([1-9][0-9]*)\s*(?:week|weeks|wk|wks|semaine|semaines|sem|w)(?:\b|$)/',
+		'month' => '/(?:^|\b)([1-9][0-9]*)\s*(?:month|months|mon|mons|mo|mois)(?:\b|$)/'
+	);
+
+	foreach ($patterns as $unit => $pattern) {
+		if (preg_match($pattern, $normalized, $matches)) {
+			return array(
+				'value' => (int) $matches[1],
+				'unit' => $unit,
+				'source' => $text
+			);
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Try to translate a Dolibarr availability code.
+ *
+ * @param Translate|null $langs Translation handler
+ * @param string        $code  Availability code
+ * @return string
+ */
+function jpsunTranslateAvailabilityCode($langs, $code)
+{
+	$code = (string) $code;
+	if ($code === '' || !is_object($langs)) {
+		return '';
+	}
+
+	$key = 'AvailabilityType'.$code;
+	if (method_exists($langs, 'transnoentitiesnoconv')) {
+		$translated = $langs->transnoentitiesnoconv($key);
+		if ($translated !== $key) {
+			return $translated;
+		}
+	}
+	if (method_exists($langs, 'transnoentities')) {
+		$translated = $langs->transnoentities($key);
+		if ($translated !== $key) {
+			return $translated;
+		}
+	}
+	if (method_exists($langs, 'trans')) {
+		$translated = $langs->trans($key);
+		if ($translated !== $key) {
+			return $translated;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Parse delay from availability row data.
+ *
+ * @param int           $rowid Availability row id
+ * @param string        $code  Availability code
+ * @param string        $label Availability label
+ * @param Translate|null $langs Translation handler
+ * @return array{value:int,unit:string,source:string,rowid:int,code:string,label:string}|null
+ */
+function jpsunParseAvailabilityDelay($rowid, $code, $label, $langs = null)
+{
+	$candidates = array(
+		(string) $code,
+		(string) $label,
+		jpsunTranslateAvailabilityCode($langs, (string) $code)
+	);
+
+	foreach ($candidates as $candidate) {
+		$delay = jpsunParseDeliveryDelayText($candidate);
+		if (is_array($delay)) {
+			$delay['rowid'] = (int) $rowid;
+			$delay['code'] = (string) $code;
+			$delay['label'] = (string) $label;
+			return $delay;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Fetch and parse one native Dolibarr availability delay.
+ *
+ * @param DoliDB        $db             Database handler
+ * @param int           $availabilityId Availability id
+ * @param Translate|null $langs          Translation handler
+ * @return array{value:int,unit:string,source:string,rowid:int,code:string,label:string}|null
+ */
+function jpsunFetchAvailabilityDelay($db, $availabilityId, $langs = null)
+{
+	$availabilityId = (int) $availabilityId;
+	if ($availabilityId <= 0) {
+		return null;
+	}
+
+	$sql = "SELECT rowid, code, label";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_availability";
+	$sql .= " WHERE rowid = ".$availabilityId;
+
+	$resql = $db->query($sql);
+	if (!$resql) {
+		dol_syslog(__METHOD__.' SQL error: '.$db->lasterror(), LOG_ERR);
+		return null;
+	}
+
+	$obj = $db->fetch_object($resql);
+	if (!$obj) {
+		return null;
+	}
+
+	return jpsunParseAvailabilityDelay((int) $obj->rowid, (string) $obj->code, (string) $obj->label, $langs);
+}
+
+/**
+ * Parse the delivery delay already available on a proposal object.
+ *
+ * @param DoliDB        $db     Database handler
+ * @param Object        $object Proposal object
+ * @param Translate|null $langs Translation handler
+ * @return array{value:int,unit:string,source:string,rowid?:int,code?:string,label?:string}|null
+ */
+function jpsunGetPropalAvailabilityDelay($db, $object, $langs = null)
+{
+	$availabilityId = 0;
+	if (!empty($object->fk_availability)) {
+		$availabilityId = (int) $object->fk_availability;
+	} elseif (!empty($object->availability_id)) {
+		$availabilityId = (int) $object->availability_id;
+	}
+
+	if ($availabilityId > 0) {
+		$delay = jpsunFetchAvailabilityDelay($db, $availabilityId, $langs);
+		if (is_array($delay)) {
+			return $delay;
+		}
+	}
+
+	$candidates = array();
+	if (!empty($object->availability_code)) {
+		$candidates[] = (string) $object->availability_code;
+		$candidates[] = jpsunTranslateAvailabilityCode($langs, (string) $object->availability_code);
+	}
+	if (!empty($object->availability)) {
+		$candidates[] = (string) $object->availability;
+	}
+
+	foreach ($candidates as $candidate) {
+		$delay = jpsunParseDeliveryDelayText($candidate);
+		if (is_array($delay)) {
+			return $delay;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Fetch availability choices that can be converted to a delivery delay.
+ *
+ * @param DoliDB        $db     Database handler
+ * @param Translate|null $langs Translation handler
+ * @return array<int,array{rowid:int,code:string,label:string,display:string,delay:array}>
+ */
+function jpsunFetchParseableAvailabilities($db, $langs = null)
+{
+	$availabilities = array();
+	$sql = "SELECT rowid, code, label";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_availability";
+	$sql .= " WHERE active = 1";
+	$sql .= " ORDER BY rowid";
+
+	$resql = $db->query($sql);
+	if (!$resql) {
+		dol_syslog(__METHOD__.' SQL error: '.$db->lasterror(), LOG_ERR);
+		return $availabilities;
+	}
+
+	while ($obj = $db->fetch_object($resql)) {
+		$delay = jpsunParseAvailabilityDelay((int) $obj->rowid, (string) $obj->code, (string) $obj->label, $langs);
+		if (!is_array($delay)) {
+			continue;
+		}
+
+		$display = jpsunTranslateAvailabilityCode($langs, (string) $obj->code);
+		if ($display === '') {
+			$display = (string) $obj->label;
+		}
+		if ($display === '') {
+			$display = (string) $obj->code;
+		}
+
+		$availabilities[(int) $obj->rowid] = array(
+			'rowid' => (int) $obj->rowid,
+			'code' => (string) $obj->code,
+			'label' => (string) $obj->label,
+			'display' => $display,
+			'delay' => $delay
+		);
+	}
+
+	return $availabilities;
+}
+
+/**
+ * Return true when a date falls on a weekend.
+ *
+ * @param DateTimeImmutable $date Date to check
+ * @return bool
+ */
+function jpsunIsWeekendDate(DateTimeImmutable $date)
+{
+	return ((int) $date->format('N')) >= 6;
+}
+
+/**
+ * Add business days, excluding Saturday and Sunday.
+ *
+ * @param DateTimeImmutable $date Date
+ * @param int               $days Business days to add, may be negative
+ * @return DateTimeImmutable
+ */
+function jpsunAddBusinessDays(DateTimeImmutable $date, $days)
+{
+	$days = (int) $days;
+	if ($days === 0) {
+		return $date;
+	}
+
+	$direction = ($days > 0) ? 1 : -1;
+	$remaining = abs($days);
+	$current = $date;
+
+	while ($remaining > 0) {
+		$current = $current->modify(($direction > 0 ? '+1 day' : '-1 day'));
+		if (!jpsunIsWeekendDate($current)) {
+			$remaining--;
+		}
+	}
+
+	return $current;
+}
+
+/**
+ * Build project planning dates from signature date and delivery delay.
+ *
+ * @param int   $signatureTimestamp Signature timestamp
+ * @param array $delay              Parsed delay with value/unit
+ * @param int   $windowBusinessDays Business-day window length
+ * @return array{delivery_date:int,date_start:int,date_end:int}
+ */
+function jpsunBuildProjectDateRangeFromDeliveryDelay($signatureTimestamp, $delay, $windowBusinessDays)
+{
+	$timezone = new DateTimeZone(date_default_timezone_get());
+	$signatureDate = (new DateTimeImmutable('@'.((int) $signatureTimestamp)))->setTimezone($timezone)->setTime(0, 0, 0);
+
+	$value = max(1, (int) (isset($delay['value']) ? $delay['value'] : 0));
+	$unit = isset($delay['unit']) ? (string) $delay['unit'] : 'day';
+
+	if ($unit === 'month') {
+		$targetDate = $signatureDate->modify('+'.$value.' month');
+	} elseif ($unit === 'week') {
+		$targetDate = $signatureDate->modify('+'.$value.' week');
+	} else {
+		$targetDate = $signatureDate->modify('+'.$value.' day');
+	}
+
+	while (jpsunIsWeekendDate($targetDate)) {
+		$targetDate = $targetDate->modify('+1 day');
+	}
+
+	$windowBusinessDays = max(1, (int) $windowBusinessDays);
+	$daysBefore = (int) ceil(($windowBusinessDays - 1) / 2);
+	$daysAfter = (int) floor(($windowBusinessDays - 1) / 2);
+
+	$dateStart = jpsunAddBusinessDays($targetDate, -$daysBefore);
+	$dateEnd = jpsunAddBusinessDays($targetDate, $daysAfter);
+
+	return array(
+		'delivery_date' => $targetDate->getTimestamp(),
+		'date_start' => $dateStart->getTimestamp(),
+		'date_end' => $dateEnd->getTimestamp()
+	);
+}

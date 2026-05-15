@@ -51,7 +51,11 @@ $action = GETPOST('action', 'alpha');
 if (preg_match('/set_(.*)/',$action,$reg))
 {
     $code=$reg[1];
-    if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
+    $value = GETPOST($code, 'none');
+    if ($code === 'JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS') {
+        $value = max(1, (int) GETPOST($code, 'int'));
+    }
+    if (dolibarr_set_const($db, $code, $value, 'chaine', 0, '', $conf->entity) > 0)
     {
         header("Location: ".$_SERVER["PHP_SELF"]);
         exit;
@@ -157,6 +161,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 	// WORKFLOW
 	setup_print_title($langs->trans("Workflow"));
 	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+	setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS', false, '', array('type' => 'number', 'min' => '1', 'step' => '1', 'value' => getDolGlobalString('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS', '5')), 'input');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');

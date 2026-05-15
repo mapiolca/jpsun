@@ -49,6 +49,8 @@ jpsunTHR=Tariffa oraria reale
 
 JpsunSetup =Impostazioni del modulo JPSUN
 JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED =Creare automaticamente un progetto alla firma del preventivo
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS =Durata di pianificazione del progetto intorno alla consegna
+JPSUN_AUTOPROJECT_DELIVERY_WINDOW_BUSINESS_DAYS_HELP =Numero positivo di giorni lavorativi usato per pianificare il progetto intorno alla data di consegna calcolata.
 JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE =Quando un progetto viene chiuso, impostare la data di fine delle attività senza data di fine con la data di chiusura del progetto
 JPSUN_PROJECT_CLOSE_COMPLETE_TASKS =Quando un progetto viene chiuso, chiudere tutte le attività del progetto (avanzamento al 100% e stato Chiusa)
 JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE =Quando un progetto viene chiuso, forzare la sua data di fine con la data di chiusura del progetto
@@ -137,6 +139,11 @@ JpsunAutoProjectGuardCancelSignature=Annulla la firma
 JpsunAutoProjectGuardInvalidChoice=La scelta del progetto non e valida.
 JpsunAutoProjectGuardInvalidProject=Il progetto selezionato non e valido o non e idoneo per questo preventivo.
 JpsunAutoProjectGuardProjectLinked=Il preventivo %s e stato collegato al progetto %s.
+JpsunPropalSignedDeliveryDelayRequired =Prima di firmare questo preventivo è richiesto un termine di consegna convertibile in durata perché la creazione automatica del progetto è attiva.
+JpsunPropalSignedDeliveryDelayInvalid =Il termine di consegna selezionato non può essere convertito in una durata.
+JpsunPropalSignedDeliveryDelaySelect =Termine di consegna
+JpsunPropalSignedDeliveryDelaySelectHelp =Scegliere un termine nativo Dolibarr, per esempio 3 mesi o 12 settimane.
+JpsunPropalSignedDeliveryDelayNoOption =Nessun termine di consegna nativo attivo può essere convertito in una durata.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Ordini clienti
