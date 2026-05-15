@@ -28,7 +28,7 @@
  * Class ActionsMyModule
  */
 require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
-require_once __DIR__ . '/../lib/jpsun.lib.php';
+require_once dirname(__DIR__) . '/lib/jpsun_delivery.lib.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**

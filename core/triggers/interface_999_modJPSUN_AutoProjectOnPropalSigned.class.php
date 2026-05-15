@@ -22,7 +22,7 @@
  */
 
 dol_include_once('/core/triggers/dolibarrtriggers.class.php');
-require_once __DIR__.'/../../lib/jpsun.lib.php';
+require_once dirname(__DIR__, 2).'/lib/jpsun_delivery.lib.php';
 
 /**
  *	\class		InterfaceAutoProjectOnPropalSigned
