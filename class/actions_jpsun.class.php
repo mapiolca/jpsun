@@ -28,6 +28,7 @@
  * Class ActionsMyModule
  */
 require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
+require_once __DIR__ . '/../lib/jpsun.lib.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**
@@ -146,9 +147,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	/**
 	 * Hook called before standard object actions.
 	 *
-	 * Used on proposal signature to attach the proposal to an existing project
-	 * before Dolibarr closes/signs it, so the auto-project trigger does not
-	 * create a duplicate.
+	 * Used on proposal signature to require a delivery delay and optionally
+	 * attach the proposal to an existing project before Dolibarr closes/signs
+	 * it, so the auto-project trigger does not create a duplicate.
 	 *
 	 * @param	array		$parameters		Hook metadata
 	 * @param	CommonObject	$object		Current object
@@ -167,7 +168,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if (!isModEnabled('project') || !getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
 			return 0;
 		}
-		if (empty($object) || empty($object->id) || empty($object->socid) || $this->propalAlreadyLinkedToProject($object)) {
+		if (empty($object) || empty($object->id)) {
 			return 0;
 		}
 		if ($action !== 'confirm_closeas') {
@@ -182,7 +183,29 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$langs->load('jpsun@jpsun');
 
+		$propalAlreadyLinkedToProject = $this->propalAlreadyLinkedToProject($object);
+		$availabilityId = jpsunGetPropalAvailabilityId($object);
+
 		if (GETPOSTINT('jpsun_autoproject_guard_confirmed')) {
+			if ($availabilityId <= 0) {
+				$availabilityId = GETPOSTINT('jpsun_autoproject_availability_id');
+				$result = $this->setPropalAvailabilityFromSignatureGuard($object, $availabilityId, $user, $langs);
+				if ($result < 0) {
+					return -1;
+				}
+			} elseif ($this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
+				return -1;
+			}
+
+			if ($propalAlreadyLinkedToProject || empty($object->socid)) {
+				return 0;
+			}
+
+			$projects = $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user);
+			if (empty($projects)) {
+				return 0;
+			}
+
 			$choice = GETPOST('jpsun_autoproject_guard_choice', 'aZ09');
 			if ($choice === 'new') {
 				return 0;
@@ -217,8 +240,13 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return 0;
 		}
 
-		$projects = $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user);
-		if (empty($projects)) {
+		if ($availabilityId > 0 && $this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
+			return -1;
+		}
+
+		$needsAvailability = ($availabilityId <= 0);
+		$projects = (!$propalAlreadyLinkedToProject && !empty($object->socid) ? $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user) : array());
+		if (!$needsAvailability && empty($projects)) {
 			return 0;
 		}
 
@@ -249,12 +277,13 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if ($action !== 'jpsun_autoproject_guard') {
 			return 0;
 		}
-		if (empty($object) || empty($object->id) || empty($object->socid) || $this->propalAlreadyLinkedToProject($object)) {
+		if (empty($object) || empty($object->id)) {
 			return 0;
 		}
 
-		$projects = $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user);
-		if (empty($projects)) {
+		$needsAvailability = (jpsunGetPropalAvailabilityId($object) <= 0);
+		$projects = (!$this->propalAlreadyLinkedToProject($object) && !empty($object->socid) ? $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user) : array());
+		if (!$needsAvailability && empty($projects)) {
 			return 0;
 		}
 		if (!is_object($form)) {
@@ -266,23 +295,118 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$formquestion = array();
 		$this->addAutoProjectGuardHiddenFields($formquestion);
-		$formquestion[] = $this->buildAutoProjectGuardQuestion($projects);
-		$formquestion[] = array('type' => 'onecolumn', 'value' => $this->buildAutoProjectGuardScript());
+		if ($needsAvailability) {
+			$formquestion[] = $this->buildAutoProjectDeliveryDelayQuestion();
+		}
+		if (!empty($projects)) {
+			$formquestion[] = $this->buildAutoProjectGuardQuestion($projects);
+			$formquestion[] = array('type' => 'onecolumn', 'value' => $this->buildAutoProjectGuardScript());
+		}
 
 		$this->resprints = $form->formconfirm(
 			$_SERVER['PHP_SELF'].'?id='.$object->id,
-			$langs->trans('JpsunAutoProjectGuardTitle'),
-			$langs->trans('JpsunAutoProjectGuardConfirmText'),
+			$langs->trans('JpsunAutoProjectSignatureGuardTitle'),
+			$langs->trans('JpsunAutoProjectSignatureGuardConfirmText'),
 			'confirm_closeas',
 			$formquestion,
 			'',
 			1,
-			360,
+			($needsAvailability && !empty($projects) ? 430 : 340),
 			700,
 			0,
 			$langs->trans('Yes'),
 			$langs->trans('JpsunAutoProjectGuardCancelSignature')
 		);
+		return 1;
+	}
+
+	/**
+	 * Build the required delivery delay row added to the signature guard modal.
+	 *
+	 * @return	array	Form question row
+	 */
+	private function buildAutoProjectDeliveryDelayQuestion()
+	{
+		global $form, $langs;
+
+		ob_start();
+		$form->selectAvailabilityDelay('', 'jpsun_autoproject_availability_id', '', 1, 'minwidth300 maxwidth500');
+		$availabilitySelect = ob_get_clean();
+
+		return array(
+			'type' => 'other',
+			'name' => 'jpsun_autoproject_availability_id',
+			'label' => $langs->trans('JpsunAutoProjectDeliveryDelayLabel'),
+			'value' => $availabilitySelect
+		);
+	}
+
+	/**
+	 * Save the delivery delay selected in the signature guard.
+	 *
+	 * @param	CommonObject	$object			Proposal object
+	 * @param	int				$availabilityId	Availability id
+	 * @param	User			$user			Current user
+	 * @param	Translate		$langs			Language object
+	 * @return	int								1 if OK, <0 if KO
+	 */
+	private function setPropalAvailabilityFromSignatureGuard(&$object, $availabilityId, $user, $langs)
+	{
+		$availabilityId = (int) $availabilityId;
+		if ($this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
+			return -1;
+		}
+
+		if (!method_exists($object, 'set_availability')) {
+			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelaySaveError');
+			$this->errors[] = $this->error;
+			setEventMessages($this->error, null, 'errors');
+			return -1;
+		}
+
+		$result = $object->set_availability($user, $availabilityId);
+		if ($result < 0) {
+			$this->error = !empty($object->error) ? $object->error : $langs->trans('JpsunAutoProjectDeliveryDelaySaveError');
+			$this->errors[] = $this->error;
+			setEventMessages($this->error, $object->errors, 'errors');
+			return -1;
+		}
+
+		$object->availability_id = $availabilityId;
+		$object->fk_availability = $availabilityId;
+
+		return 1;
+	}
+
+	/**
+	 * Ensure the selected delivery delay can be used for project date calculation.
+	 *
+	 * @param	int			$availabilityId	Availability id
+	 * @param	Translate	$langs			Language object
+	 * @return	int							1 if OK, <0 if KO
+	 */
+	private function validatePropalAvailabilityDuration($availabilityId, $langs)
+	{
+		$availabilityId = (int) $availabilityId;
+		if ($availabilityId <= 0) {
+			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayRequired');
+			$this->errors[] = $this->error;
+			setEventMessages($this->error, null, 'errors');
+			return -1;
+		}
+
+		$duration = jpsunGetAvailabilityDurationSpec($this->db, $availabilityId, $langs);
+		if ($duration['result'] <= 0) {
+			$label = trim(($duration['label'] ?? '').' '.($duration['code'] ?? ''));
+			if ($label === '') {
+				$label = (string) $availabilityId;
+			}
+			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayInvalid', $label);
+			$this->errors[] = $this->error;
+			setEventMessages($this->error, null, 'errors');
+			return -1;
+		}
+
 		return 1;
 	}
 

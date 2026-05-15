@@ -2,6 +2,8 @@
 
 ## 1.17 (15/05/2026)
 - Ajout d'un garde-fou a la creation automatique de projet a la signature d'un devis : apres confirmation de la signature, si un projet eligible existe et que le devis n'est pas deja lie a un projet, l'utilisateur choisit entre rattacher le devis a un projet existant ou creer un nouveau projet.
+- Le delai de livraison du devis est desormais obligatoire a la signature lorsque la creation automatique de projet est activee, et les dates du projet cree sont calculees autour de la date de livraison estimee.
+- Ajout du reglage `JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS` pour definir le nombre de jours ouvres de la plage projet autour de la date de livraison calculee.
 - Correction de la suppression des anciens extrafields projet pour ignorer les colonnes deja absentes.
 
 ## 1.16.1 (13/05/2026)
