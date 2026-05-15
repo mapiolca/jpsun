@@ -236,6 +236,7 @@ JpsunContractAcBoxInstallHeightM =Installationshöhe AC-Box (m)
 JpsunContractAccessCode =Zugangscode (falls erforderlich)
 JpsunContractPdlNumber =PDL-Nummer:
 JpsunContractSiteAddress =Adresse der Anlage
+jpsunWorkSiteAddress=Baustellenadresse
 JpsunContractSiteRepresentative1 =Standortvertreter 1
 JpsunContractSiteRepresentative2 =Standortvertreter 2
 
@@ -320,6 +321,3 @@ JpsunProjectLabelCompanyLogo=Firmenlogo
 JpsunProjectLabelProjectRef=Projektreferenz
 JpsunProjectLabelProjectTitle=Projekttitel
 JpsunProjectLabelThirdParty=Dritter
-project_address=Landesname
-project_zip=Postleitzahl des Ortes
-project_town=Ortsname

@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.16.1 (13/05/2026)
+- Remplacement des extrafields projet `project_address`, `project_zip` et `project_town` par le contact externe projet `PROJECTADD` (`jpsunWorkSiteAddress`, position 1).
+- Les etiquettes de classeur projet `jpsun_projectlabels` utilisent maintenant l'adresse, le code postal et la ville de ce contact.
+- Suppression automatique des anciens extrafields projet lors de l'initialisation du module.
+
 ## 1.16 (12/05/2026)
 - Ajout d'un modèle PDF d'étiquettes de classeur pour les projets.
 - Génération d'une page A4 unique contenant les quatre formats d'étiquettes côte à côte.

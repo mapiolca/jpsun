@@ -583,7 +583,7 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		foreach ($contact_array as $c) {
 			$typeLabel = ($c['source'] === 'internal' ? $outputlangs->trans('Internal') : $outputlangs->trans('External'));
-			$role = (string) $c['libelle'];
+			$role = $outputlangs->trans((string) $c['libelle']);
 			$name = '';
 			$socname = '';
 			$email = (string) $c['email'];

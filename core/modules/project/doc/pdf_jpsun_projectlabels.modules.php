@@ -27,6 +27,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
+require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 
 /**
 	* Class to generate project label PDF documents.
@@ -179,10 +180,11 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			array('w' => 28, 'h' => 185),
 			array('w' => 58, 'h' => 185),
 		);
+		$project_address_data = $this->getProjectAddressContact($object);
 
 		$x = $startX;
 		foreach ($formats as $format) {
-			$this->drawProjectLabel($pdf, $object, $outputlangs, $x, $startY, $format['w'], $format['h'], $logo);
+			$this->drawProjectLabel($pdf, $object, $outputlangs, $x, $startY, $format['w'], $format['h'], $logo, $project_address_data);
 			$x += $format['w'];
 		}
 
@@ -216,6 +218,52 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	}
 
 	/**
+	 * Return the first project site address contact linked with PROJECTADD.
+	 *
+	 * @param Project $object Project object
+	 * @return array{address:string,zip:string,town:string} Project address fields
+	 */
+	private function getProjectAddressContact($object)
+	{
+		$address = array('address' => '', 'zip' => '', 'town' => '');
+
+		if (empty($object->id) || !method_exists($object, 'liste_contact')) {
+			return $address;
+		}
+
+		$contactlist = $object->liste_contact(-1, 'external');
+		if (!is_array($contactlist)) {
+			return $address;
+		}
+
+		foreach ($contactlist as $contact) {
+			$contactcode = '';
+			if (!empty($contact['code'])) {
+				$contactcode = $contact['code'];
+			} elseif (!empty($contact['typecode'])) {
+				$contactcode = $contact['typecode'];
+			}
+
+			if ($contactcode !== 'PROJECTADD') {
+				continue;
+			}
+
+			$contactstatic = new Contact($this->db);
+			if (!empty($contact['id'])) {
+				$contactstatic->fetch((int) $contact['id']);
+			}
+
+			$address['address'] = !empty($contactstatic->address) ? $contactstatic->address : (isset($contact['address']) ? $contact['address'] : '');
+			$address['zip'] = !empty($contactstatic->zip) ? $contactstatic->zip : (isset($contact['zip']) ? $contact['zip'] : '');
+			$address['town'] = !empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
+
+			return $address;
+		}
+
+		return $address;
+	}
+
+	/**
 	 * Draw one project label.
 	 *
 	 * @param TCPDF     $pdf         PDF instance
@@ -226,9 +274,10 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	 * @param float     $w           Label width
 	 * @param float     $h           Label height
 	 * @param string    $logo        Logo path
+	 * @param array     $project_address_data Project address fields
 	 * @return void
 	 */
-	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo)
+	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo, $project_address_data)
 	{
 		global $conf, $mysoc;
 
@@ -252,9 +301,9 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$project_title = $object->name;
 		}
 
-		$project_address = empty($object->array_options['options_project_address']) ? '' : $object->array_options['options_project_address'];
-		$project_zip = empty($object->array_options['options_project_zip']) ? '' : $object->array_options['options_project_zip'];
-		$project_town = empty($object->array_options['options_project_town']) ? '' : $object->array_options['options_project_town'];
+		$project_address = empty($project_address_data['address']) ? '' : $project_address_data['address'];
+		$project_zip = empty($project_address_data['zip']) ? '' : $project_address_data['zip'];
+		$project_town = empty($project_address_data['town']) ? '' : $project_address_data['town'];
 		$project_location = trim($project_zip.' '.$project_town);
 		$category_labels = $this->getProjectCategoryLabels($object);
 		$project_categories = implode(' / ', $category_labels);
