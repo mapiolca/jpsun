@@ -366,6 +366,459 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
     }
 
+	/**
+	 * Hook called before standard object actions.
+	 *
+	 * Used on proposal signature to attach the proposal to an existing project
+	 * before Dolibarr closes/signs it, so the auto-project trigger does not
+	 * create a duplicate.
+	 *
+	 * @param	array		$parameters		Hook metadata
+	 * @param	CommonObject	$object		Current object
+	 * @param	string		$action		Current action
+	 * @param	HookManager	$hookmanager	Hook manager
+	 * @return	int					<0 on error, 0 on success
+	 */
+	public function doActions($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs, $user;
+
+		$contexts = explode(':', $parameters['context']);
+		if (!in_array('propalcard', $contexts, true)) {
+			return 0;
+		}
+		if (!isModEnabled('project') || !getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			return 0;
+		}
+		if (empty($object) || empty($object->id) || empty($object->socid) || $this->propalAlreadyLinkedToProject($object)) {
+			return 0;
+		}
+		if ($action !== 'confirm_closeas') {
+			return 0;
+		}
+		if (GETPOSTINT('statut') !== (int) $object::STATUS_SIGNED) {
+			return 0;
+		}
+		if (GETPOST('cancel', 'alpha')) {
+			return 0;
+		}
+
+		$langs->load('jpsun@jpsun');
+
+		if (GETPOSTINT('jpsun_autoproject_guard_confirmed')) {
+			$choice = GETPOST('jpsun_autoproject_guard_choice', 'aZ09');
+			if ($choice === 'new') {
+				return 0;
+			}
+			if ($choice !== 'existing') {
+				$this->error = $langs->trans('JpsunAutoProjectGuardInvalidChoice');
+				$this->errors[] = $this->error;
+				setEventMessages($this->error, null, 'errors');
+				return -1;
+			}
+
+			$projectId = GETPOSTINT('jpsun_autoproject_existing_project_id');
+			$project = $this->fetchAutoProjectGuardProject($projectId, (int) $object->socid, $user);
+			if (!is_object($project) || empty($project->id)) {
+				$this->error = $langs->trans('JpsunAutoProjectGuardInvalidProject');
+				$this->errors[] = $this->error;
+				setEventMessages($this->error, null, 'errors');
+				return -1;
+			}
+
+			$result = $this->linkPropalToExistingProject($object, $project, $user, $langs);
+			if ($result < 0) {
+				setEventMessages($this->error, $this->errors, 'errors');
+				return -1;
+			}
+
+			setEventMessages($langs->trans('JpsunAutoProjectGuardProjectLinked', $object->ref, $project->ref), null, 'mesgs');
+			return 0;
+		}
+
+		if (GETPOST('confirm', 'alpha') !== 'yes') {
+			return 0;
+		}
+
+		$projects = $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user);
+		if (empty($projects)) {
+			return 0;
+		}
+
+		$action = 'jpsun_autoproject_guard';
+		return 1;
+	}
+
+	/**
+	 * Hook called after Dolibarr built a confirmation modal.
+	 *
+	 * @param	array		$parameters		Hook metadata
+	 * @param	CommonObject	$object		Current object
+	 * @param	string		$action		Current action
+	 * @param	HookManager	$hookmanager	Hook manager
+	 * @return	int					0 to append, 1 to replace
+	 */
+	public function formConfirm($parameters, &$object, &$action, $hookmanager)
+	{
+		global $db, $form, $langs, $user;
+
+		$contexts = explode(':', $parameters['context']);
+		if (!in_array('propalcard', $contexts, true)) {
+			return 0;
+		}
+		if (!isModEnabled('project') || !getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			return 0;
+		}
+		if ($action !== 'jpsun_autoproject_guard') {
+			return 0;
+		}
+		if (empty($object) || empty($object->id) || empty($object->socid) || $this->propalAlreadyLinkedToProject($object)) {
+			return 0;
+		}
+
+		$projects = $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user);
+		if (empty($projects)) {
+			return 0;
+		}
+		if (!is_object($form)) {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+			$form = new Form($db);
+		}
+
+		$langs->loadLangs(array('jpsun@jpsun', 'propal'));
+
+		$formquestion = array();
+		$this->addAutoProjectGuardHiddenFields($formquestion);
+		$formquestion[] = $this->buildAutoProjectGuardQuestion($projects);
+		$formquestion[] = array('type' => 'onecolumn', 'value' => $this->buildAutoProjectGuardScript());
+
+		$this->resprints = $form->formconfirm(
+			$_SERVER['PHP_SELF'].'?id='.$object->id,
+			$langs->trans('JpsunAutoProjectGuardTitle'),
+			$langs->trans('JpsunAutoProjectGuardConfirmText'),
+			'confirm_closeas',
+			$formquestion,
+			'',
+			1,
+			360,
+			700,
+			0,
+			$langs->trans('Yes'),
+			$langs->trans('JpsunAutoProjectGuardCancelSignature')
+		);
+		return 1;
+	}
+
+	/**
+	 * Add the native close/signature values as hidden fields for the guard modal.
+	 *
+	 * @param	array		$formquestion	Form question array
+	 * @return	void
+	 */
+	private function addAutoProjectGuardHiddenFields(&$formquestion)
+	{
+		$formquestion[] = array('type' => 'hidden', 'name' => 'statut', 'value' => (string) GETPOSTINT('statut'));
+		$formquestion[] = array('type' => 'hidden', 'name' => 'note_private', 'value' => GETPOST('note_private', 'restricthtml'));
+		$formquestion[] = array('type' => 'hidden', 'name' => 'jpsun_autoproject_guard_confirmed', 'value' => '1');
+
+		foreach (array('generate_deposit', 'validate_generated_deposit') as $field) {
+			if (isset($_POST[$field]) || isset($_GET[$field])) {
+				$formquestion[] = array('type' => 'hidden', 'name' => $field, 'value' => '1');
+			}
+		}
+
+		foreach (array('cond_reglement_id') as $field) {
+			if (isset($_POST[$field]) || isset($_GET[$field])) {
+				$formquestion[] = array('type' => 'hidden', 'name' => $field, 'value' => (string) GETPOSTINT($field));
+			}
+		}
+
+		foreach (array(
+			'datef',
+			'datefday',
+			'datefmonth',
+			'datefyear',
+			'datefhour',
+			'datefmin',
+			'date_pointoftax',
+			'date_pointoftaxday',
+			'date_pointoftaxmonth',
+			'date_pointoftaxyear',
+			'date_pointoftaxhour',
+			'date_pointoftaxmin',
+			'backtopage',
+			'backtopageforcancel',
+			'contextpage',
+			'optioncss'
+		) as $field) {
+			if (isset($_POST[$field]) || isset($_GET[$field])) {
+				$formquestion[] = array('type' => 'hidden', 'name' => $field, 'value' => GETPOST($field, 'alphanohtml'));
+			}
+		}
+	}
+
+	/**
+	 * Build the auto-project guard row added to the second signature modal.
+	 *
+	 * @param	array	$projects	Eligible projects
+	 * @return	array				Form question row
+	 */
+	private function buildAutoProjectGuardQuestion($projects)
+	{
+		global $form, $langs;
+
+		$projectOptions = array();
+		foreach ($projects as $project) {
+			$projectOptions[(int) $project['id']] = $project['label'];
+		}
+
+		if (is_object($form) && method_exists($form, 'selectarray')) {
+			$projectSelect = $form->selectarray(
+				'jpsun_autoproject_existing_project_id',
+				$projectOptions,
+				'',
+				0,
+				0,
+				0,
+				'',
+				0,
+				0,
+				0,
+				'',
+				'flat minwidth300 maxwidth500',
+				1
+			);
+		} else {
+			$projectSelect = '<select class="flat minwidth300 maxwidth500" name="jpsun_autoproject_existing_project_id" id="jpsun_autoproject_existing_project_id">';
+			foreach ($projectOptions as $projectId => $projectLabel) {
+				$projectSelect .= '<option value="'.((int) $projectId).'">'.dol_escape_htmltag($projectLabel).'</option>';
+			}
+			$projectSelect .= '</select>';
+		}
+
+		$html = '<div id="jpsun-autoproject-guard" class="jpsun-autoproject-guard">';
+		$html .= '<div class="opacitymedium marginbottomonly">'.$langs->trans('JpsunAutoProjectGuardIntro').'</div>';
+		$html .= '<div class="marginbottomonly"><label><input type="radio" name="jpsun_autoproject_guard_choice" value="existing" checked="checked"> '.$langs->trans('JpsunAutoProjectGuardUseExisting').'</label></div>';
+		$html .= '<div class="marginleftonly marginbottomonly">'.$projectSelect.'</div>';
+		$html .= '<div><label><input type="radio" name="jpsun_autoproject_guard_choice" value="new"> '.$langs->trans('JpsunAutoProjectGuardCreateNew').'</label></div>';
+		$html .= '</div>';
+
+		return array(
+			'type' => 'other',
+			'name' => 'jpsun_autoproject_guard_choice,jpsun_autoproject_existing_project_id',
+			'label' => $langs->trans('JpsunAutoProjectGuardLabel'),
+			'value' => $html
+		);
+	}
+
+	/**
+	 * Build Javascript for the guard confirmation modal.
+	 *
+	 * @return	string	HTML script
+	 */
+	private function buildAutoProjectGuardScript()
+	{
+		return '<script nonce="'.getNonce().'">
+			(function() {
+				function updateGuard() {
+					var guard = document.getElementById("jpsun-autoproject-guard");
+					if (!guard) return;
+					var selectedChoice = guard.querySelector("input[name=jpsun_autoproject_guard_choice]:checked");
+					var projectSelect = guard.querySelector("select[name=jpsun_autoproject_existing_project_id]");
+					if (projectSelect) {
+						projectSelect.disabled = !(selectedChoice && selectedChoice.value === "existing");
+						if (typeof jQuery !== "undefined") {
+							jQuery(projectSelect).trigger("change.select2");
+						}
+					}
+				}
+				function initGuard() {
+					document.querySelectorAll("input[name=jpsun_autoproject_guard_choice]").forEach(function(input) {
+						input.addEventListener("change", updateGuard);
+					});
+					updateGuard();
+				}
+				if (document.readyState === "loading") {
+					document.addEventListener("DOMContentLoaded", initGuard);
+				} else {
+					initGuard();
+				}
+			})();
+		</script>';
+	}
+
+	/**
+	 * Check whether a proposal already has a project link.
+	 *
+	 * @param	CommonObject	$object	Proposal object
+	 * @return	bool
+	 */
+	private function propalAlreadyLinkedToProject($object)
+	{
+		if (!empty($object->fk_projet) || !empty($object->fk_project)) {
+			return true;
+		}
+
+		if (!method_exists($object, 'fetchObjectLinked')) {
+			return false;
+		}
+
+		$element = !empty($object->element) ? $object->element : 'propal';
+		$object->fetchObjectLinked((int) $object->id, $element, null, 'project', 'OR', 0, 'sourcetype', 0);
+		return (!empty($object->linkedObjectsIds['project']) || !empty($object->linkedObjectsIds['projet']));
+	}
+
+	/**
+	 * Fetch existing projects eligible for a proposal customer.
+	 *
+	 * @param	int		$socid	Thirdparty id
+	 * @param	User	$user	Current user
+	 * @return	array			Array of projects with id and label
+	 */
+	private function getCustomerProjectsForAutoProjectGuard($socid, $user)
+	{
+		global $db;
+
+		$socid = (int) $socid;
+		if ($socid <= 0) {
+			return array();
+		}
+
+		dol_include_once('/projet/class/project.class.php');
+		$projectStatic = new Project($db);
+		$projectListFilter = '';
+		if (!$user->hasRight('projet', 'all', 'lire')) {
+			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
+			if (empty($projectsListId)) {
+				return array();
+			}
+			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId).")";
+		}
+
+		$socidFilter = '';
+		$allowOtherCompany = trim(getDolGlobalString('PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY'));
+		$allowOtherCompanyLower = strtolower($allowOtherCompany);
+		$allowAllProjects = getDolGlobalInt('PROJECT_CAN_ALWAYS_LINK_TO_ALL_CUSTOMERS')
+			|| in_array($allowOtherCompanyLower, array('all', '1', 'yes', 'true', 'on'), true);
+
+		if (!$allowAllProjects) {
+			$allowedSocids = array($socid);
+			if ($allowOtherCompany !== '') {
+				foreach (preg_split('/[\s,;:|]+/', $allowOtherCompany) as $allowedSocid) {
+					$allowedSocid = (int) $allowedSocid;
+					if ($allowedSocid > 0) {
+						$allowedSocids[] = $allowedSocid;
+					}
+				}
+			}
+			$allowedSocids = array_values(array_unique($allowedSocids));
+			$socidFilter = " AND p.fk_soc IN (".implode(',', $allowedSocids).")";
+		}
+
+		$sql = "SELECT p.rowid, p.ref, p.title";
+		$sql .= " FROM ".MAIN_DB_PREFIX."projet AS p";
+		$sql .= " WHERE 1 = 1";
+		$sql .= $socidFilter;
+		$sql .= " AND p.entity IN (".getEntity('project').")";
+		$sql .= $projectListFilter;
+		$sql .= " ORDER BY p.rowid DESC";
+
+		$resql = $db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' SQL error: '.$db->lasterror(), LOG_ERR);
+			return array();
+		}
+
+		$projects = array();
+		while ($obj = $db->fetch_object($resql)) {
+			$label = $obj->ref;
+			if (!empty($obj->title)) {
+				$label .= ' - '.$obj->title;
+			}
+			$projects[] = array(
+				'id' => (int) $obj->rowid,
+				'label' => $label
+			);
+		}
+
+		return $projects;
+	}
+
+	/**
+	 * Fetch and validate a project selected in the guard modal.
+	 *
+	 * @param	int		$projectId	Project id
+	 * @param	int		$socid		Proposal thirdparty id
+	 * @param	User	$user		Current user
+	 * @return	Project|null
+	 */
+	private function fetchAutoProjectGuardProject($projectId, $socid, $user)
+	{
+		global $db;
+
+		$projectId = (int) $projectId;
+		if ($projectId <= 0) {
+			return null;
+		}
+
+		$authorizedProjects = $this->getCustomerProjectsForAutoProjectGuard($socid, $user);
+		$isAuthorized = false;
+		foreach ($authorizedProjects as $projectData) {
+			if ((int) $projectData['id'] === $projectId) {
+				$isAuthorized = true;
+				break;
+			}
+		}
+		if (!$isAuthorized) {
+			return null;
+		}
+
+		dol_include_once('/projet/class/project.class.php');
+		$project = new Project($db);
+		if ($project->fetch($projectId) <= 0) {
+			return null;
+		}
+
+		return $project;
+	}
+
+	/**
+	 * Link a proposal to an existing project.
+	 *
+	 * @param	CommonObject	$object		Proposal object
+	 * @param	Project		$project	Project object
+	 * @param	User		$user		Current user
+	 * @param	Translate	$langs		Language object
+	 * @return	int					1 if OK, <0 on error
+	 */
+	private function linkPropalToExistingProject(&$object, $project, $user, $langs)
+	{
+		$propalId = (int) $object->id;
+		if ($propalId <= 0 || empty($project->id)) {
+			$this->error = $langs->trans('JpsunAutoProjectGuardInvalidProject');
+			$this->errors[] = $this->error;
+			return -1;
+		}
+
+		$result = $project->update_element('propal', $propalId);
+		if ($result < 0) {
+			$this->error = $langs->trans('JpsunPropalSignedProjectLinkError', $object->ref, $propalId, $project->id);
+			$this->errors[] = $this->error;
+			dol_syslog(__METHOD__.' failed to set fk_projet on propal id='.$propalId.' project id='.$project->id.' : '.$project->error, LOG_ERR);
+			return -1;
+		}
+
+		$object->fk_projet = $project->id;
+		$object->fk_project = $project->id;
+
+		$linkResult = $project->add_object_linked('propal', $propalId, $user);
+		if ($linkResult < 0) {
+			dol_syslog(__METHOD__.' add_object_linked warning for propal id='.$propalId.' project id='.$project->id.' : '.$project->error, LOG_WARNING);
+		}
+
+		return 1;
+	}
+
     /**
      * Overloading the doActions function : replacing the parent's function with the one below
      *

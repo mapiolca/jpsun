@@ -162,7 +162,8 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		    // EN: Check expected object type // EN: Stop if proposal not already has a native project link // EN: Stop if project module is enabled
     		// FR: Vérifier le type d'objet attendu // FR: Stopper si le devis n'a pas déjà un projet natif // FR: Stopper si le module projet est sactivé
 			
-    		if (empty($object->fk_projet) && isModEnabled('project') && getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
+			$propalHasProject = (!empty($object->fk_projet) || !empty($object->fk_project));
+			if (!$propalHasProject && isModEnabled('project') && getDolGlobalInt('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED')) {
     		
     		    $langs->loadLangs(array('jpsun@jpsun'));
     
