@@ -127,6 +127,16 @@ JpsunPropalSignedProjectLinkError =Projekt kann nicht mit dem Angebot %s (ID %s)
 JpsunPropalSignedProjectOrderLinkError =Auftrag kann nicht mit dem Projekt für das Angebot %s (ID %s) verknüpft werden. Auftrag %s.
 JpsunPropalSignedProjectCreated =Projekt für das Angebot %s (ID %s) erstellt: Projekt %s (Ref %s).
 JpsunPropalSignedProjectCreatedDetails =Kopierte Extrafelder: %s - Verknüpfte Aufträge: %s.
+JpsunAutoProjectGuardLabel=Projekt
+JpsunAutoProjectGuardTitle=Projektauswahl
+JpsunAutoProjectGuardConfirmText=Es existiert bereits ein berechtigtes Projekt. Bestaetigen Sie vor der Unterzeichnung das zu verwendende Projekt.
+JpsunAutoProjectGuardIntro=Es existiert bereits mindestens ein berechtigtes Projekt. Waehlen Sie das zu verwendende Projekt oder bestaetigen Sie die Erstellung eines neuen Projekts.
+JpsunAutoProjectGuardUseExisting=Dieses Angebot einem bestehenden Projekt hinzufuegen
+JpsunAutoProjectGuardCreateNew=Neues Projekt erstellen
+JpsunAutoProjectGuardCancelSignature=Unterzeichnung abbrechen
+JpsunAutoProjectGuardInvalidChoice=Die Projektauswahl ist ungueltig.
+JpsunAutoProjectGuardInvalidProject=Das ausgewaehlte Projekt ist ungueltig oder fuer dieses Angebot nicht berechtigt.
+JpsunAutoProjectGuardProjectLinked=Angebot %s wurde mit Projekt %s verknuepft.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Kundenaufträge
