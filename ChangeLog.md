@@ -1,5 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.17 (15/05/2026)
+- Ajout d'un garde-fou a la creation automatique de projet a la signature d'un devis : apres confirmation de la signature, si un projet eligible existe et que le devis n'est pas deja lie a un projet, l'utilisateur choisit entre rattacher le devis a un projet existant ou creer un nouveau projet.
+- Correction de la suppression des anciens extrafields projet pour ignorer les colonnes deja absentes.
+
 ## 1.16.1 (13/05/2026)
 - Remplacement des extrafields projet `project_address`, `project_zip` et `project_town` par le contact externe projet `PROJECTADD` (`jpsunWorkSiteAddress`, position 1).
 - Les etiquettes de classeur projet `jpsun_projectlabels` utilisent maintenant l'adresse, le code postal et la ville de ce contact.

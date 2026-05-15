@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.16.1';
+		$this->version = '1.17';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -89,7 +89,7 @@ class modJpsun extends DolibarrModules
 			//'css' => array(''),
 			'triggers' => 1,
 			'models' => 1,
-			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard'),
+			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard', 'propalcard'),
 			'picto'=>'object_jpsun@jpsun'
 		);
 
@@ -327,7 +327,7 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_project_type_racc', 'jpsun_project_type_racc', 'select', 102, '', 'projet', 0, 0, '', 'a:1:{s:7:"options";a:3:{i:1;s:26:"jpsun_project_type_racc_vt";i:2;s:26:"jpsun_project_type_racc_as";i:3;s:26:"jpsun_project_type_racc_at";}}', 1, '', '-1', 'jpsun_project_pc_help', '',  $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    $ext->addExtraField('jpsun_project_mes_date', 'jpsun_project_mes_date', 'date', 103, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_mes_date_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 			foreach (array('project_address', 'project_zip', 'project_town') as $obsoleteProjectExtraField) {
-				$result = $ext->delete($obsoleteProjectExtraField, 'projet');
+				$result = $this->deleteObsoleteProjectExtraFieldIfExists($ext, $obsoleteProjectExtraField);
 				if ($result < 0) {
 					$this->error = $ext->error;
 					$this->errors = $ext->errors;
@@ -957,6 +957,47 @@ class modJpsun extends DolibarrModules
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
 
 		return $this->_init($sql);
+	}
+
+	/**
+	 * Delete an obsolete project extrafield only when its physical column exists.
+	 *
+	 * @param	ExtraFields	$ext		Extrafields manager
+	 * @param	string		$attrname	Extrafield code
+	 * @return	int					>=0 if OK, <0 if KO
+	 */
+	private function deleteObsoleteProjectExtraFieldIfExists($ext, $attrname)
+	{
+		global $db;
+
+		$attrname = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $attrname);
+		if ($attrname === '') {
+			return 0;
+		}
+
+		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."projet_extrafields LIKE '".$db->escape($attrname)."'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' unable to inspect project extrafield column '.$attrname.' : '.$db->lasterror(), LOG_WARNING);
+			return 0;
+		}
+
+		if ($db->num_rows($resql) > 0) {
+			return $ext->delete($attrname, 'projet');
+		}
+
+		$sql = "DELETE FROM ".MAIN_DB_PREFIX."extrafields";
+		$sql .= " WHERE name = '".$db->escape($attrname)."'";
+		$sql .= " AND elementtype = 'projet'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			$ext->error = $db->lasterror();
+			$ext->errors[] = $ext->error;
+			dol_syslog(__METHOD__.' unable to clean obsolete project extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
+			return -1;
+		}
+
+		return 1;
 	}
 
 	/**
