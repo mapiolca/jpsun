@@ -139,7 +139,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if (!$this->mustValidatePropalDeliveryDelay($parameters, $object)) {
 			return 0;
 		}
-		if ($action !== 'closeas' || !$this->isSignedPropalCloseRequest()) {
+		if ($action !== 'closeas') {
+			return 0;
+		}
+
+		$postedStatus = (int) GETPOST('statut', 'int');
+		if ($postedStatus > 0 && !$this->isSignedStatusValue($postedStatus)) {
 			return 0;
 		}
 
@@ -197,10 +202,30 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return false;
 		}
 
-		dol_include_once('/comm/propal/class/propal.class.php');
-		$signedStatus = defined('Propal::STATUS_SIGNED') ? (int) constant('Propal::STATUS_SIGNED') : 2;
+		return $this->isSignedStatusValue($postedStatus);
+	}
 
-		return $postedStatus === $signedStatus;
+	/**
+	 * Check whether a proposal status value means signed.
+	 *
+	 * @param int $status Proposal status
+	 * @return bool
+	 */
+	private function isSignedStatusValue($status)
+	{
+		return (int) $status === $this->getSignedPropalStatus();
+	}
+
+	/**
+	 * Return the Dolibarr signed proposal status value.
+	 *
+	 * @return int
+	 */
+	private function getSignedPropalStatus()
+	{
+		dol_include_once('/comm/propal/class/propal.class.php');
+
+		return defined('Propal::STATUS_SIGNED') ? (int) constant('Propal::STATUS_SIGNED') : 2;
 	}
 
 	/**
@@ -255,7 +280,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	private function buildDeliveryAvailabilitySelectorHtml($langs)
 	{
 		$availabilities = jpsunFetchParseableAvailabilities($this->db, $langs);
-		$html = '<div class="jpsun-delivery-delay-confirm-question">';
+		$signedStatus = $this->getSignedPropalStatus();
+		$html = '<div class="jpsun-delivery-delay-confirm-question" id="jpsun_delivery_delay_confirm_question">';
 		$html .= '<label class="fieldrequired" for="jpsun_delivery_availability_id">'.$langs->trans('JpsunPropalSignedDeliveryDelaySelect').'</label>';
 
 		if (empty($availabilities)) {
@@ -264,13 +290,29 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return $html;
 		}
 
-		$html .= ' <select class="flat minwidth200" id="jpsun_delivery_availability_id" name="jpsun_delivery_availability_id" required>';
+		$html .= ' <select class="flat minwidth200" id="jpsun_delivery_availability_id" name="jpsun_delivery_availability_id">';
 		$html .= '<option value="">'.$langs->trans('Select').'</option>';
 		foreach ($availabilities as $availability) {
 			$html .= '<option value="'.((int) $availability['rowid']).'">'.dol_escape_htmltag($availability['display']).'</option>';
 		}
 		$html .= '</select>';
 		$html .= '<br><span class="opacitymedium">'.$langs->trans('JpsunPropalSignedDeliveryDelaySelectHelp').'</span>';
+		$html .= '<script>
+			jQuery(function() {
+				var signedStatus = "'.((int) $signedStatus).'";
+				var $status = jQuery("#statut");
+				var $question = jQuery("#jpsun_delivery_delay_confirm_question");
+				var $select = jQuery("#jpsun_delivery_availability_id");
+				function jpsunToggleDeliveryDelayRequirement() {
+					var mustRequire = ($status.length === 0 || $status.val() == signedStatus);
+					$question.toggle(mustRequire);
+					$select.prop("required", mustRequire);
+					$select.prop("disabled", !mustRequire);
+				}
+				$status.on("change", jpsunToggleDeliveryDelayRequirement);
+				jpsunToggleDeliveryDelayRequirement();
+			});
+		</script>';
 		$html .= '</div>';
 
 		return $html;
