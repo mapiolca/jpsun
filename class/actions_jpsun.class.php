@@ -596,30 +596,10 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId).")";
 		}
 
-		$socidFilter = '';
-		$allowOtherCompany = trim(getDolGlobalString('PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY'));
-		$allowOtherCompanyLower = strtolower($allowOtherCompany);
-		$allowAllProjects = getDolGlobalInt('PROJECT_CAN_ALWAYS_LINK_TO_ALL_CUSTOMERS')
-			|| in_array($allowOtherCompanyLower, array('all', '1', 'yes', 'true', 'on'), true);
-
-		if (!$allowAllProjects) {
-			$allowedSocids = array($socid);
-			if ($allowOtherCompany !== '') {
-				foreach (preg_split('/[\s,;:|]+/', $allowOtherCompany) as $allowedSocid) {
-					$allowedSocid = (int) $allowedSocid;
-					if ($allowedSocid > 0) {
-						$allowedSocids[] = $allowedSocid;
-					}
-				}
-			}
-			$allowedSocids = array_values(array_unique($allowedSocids));
-			$socidFilter = " AND p.fk_soc IN (".implode(',', $allowedSocids).")";
-		}
-
 		$sql = "SELECT p.rowid, p.ref, p.title";
 		$sql .= " FROM ".MAIN_DB_PREFIX."projet AS p";
 		$sql .= " WHERE 1 = 1";
-		$sql .= $socidFilter;
+		$sql .= " AND p.fk_soc = ".$socid;
 		$sql .= " AND p.entity IN (".getEntity('project').")";
 		$sql .= $projectListFilter;
 		$sql .= " ORDER BY p.rowid DESC";

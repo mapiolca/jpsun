@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.18 (25/05/2026)
+- Le garde-fou de signature des devis ne propose plus que les projets du tiers du devis dans la selection de projet existant.
+- Le reglage de benefice previsionnel projet `JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD` est masque sauf si la constante cachee `SHOW_DEPRECATED_FEATURES` est activee.
+- Mise a jour de la version du module et du README en 1.18.
+
 ## 1.17 (15/05/2026)
 - Ajout d'un garde-fou a la creation automatique de projet a la signature d'un devis : apres confirmation de la signature, si un projet eligible existe et que le devis n'est pas deja lie a un projet, l'utilisateur choisit entre rattacher le devis a un projet existant ou creer un nouveau projet.
 - Le delai de livraison du devis est desormais obligatoire a la signature lorsque la creation automatique de projet est activee, et les dates du projet cree sont calculees autour de la date de livraison estimee.
