@@ -157,6 +157,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 	// WORKFLOW
 	setup_print_title($langs->trans("Workflow"));
 	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+	setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', false, '', array('type' => 'number', 'min' => '1', 'step' => '1', 'value' => getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5)));
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
 	setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
@@ -247,7 +248,9 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 **/
 	if(floatval(DOL_VERSION) >= 13.0){
 		setup_print_title($langs->trans("Project"));
-		setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
+		if (getDolGlobalInt('SHOW_DEPRECATED_FEATURES')) {
+			setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
+		}
 		setup_print_input_form_part('JPSUN_PROJECT_FORECAST_DEFAULT_THM');
 		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL');
 		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_ORDER');
