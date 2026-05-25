@@ -331,7 +331,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 	}
 
 	/**
-	 * Set project dates from the proposal native delivery delay.
+	 * Set project dates from the proposal native delivery date or delivery delay.
 	 *
 	 * @param	Project		$project	Project being created
 	 * @param	Propal		$propal		Source proposal
@@ -341,54 +341,67 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 	private function setProjectDatesFromPropalDeliveryDelay($project, $propal, $langs)
 	{
 		$availabilityId = jpsunGetPropalAvailabilityId($propal);
-		if ($availabilityId <= 0) {
-			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayRequired');
-			$this->errors[] = $this->error;
-			dol_syslog(__METHOD__.' missing availability delay on propal id='.(int) $propal->id, LOG_ERR);
-			setEventMessages($this->error, null, 'errors');
-			return -1;
-		}
-
-		$duration = jpsunGetAvailabilityDurationSpec($this->db, $availabilityId, $langs);
-		if ($duration['result'] <= 0) {
-			$label = trim(($duration['label'] ?? '').' '.($duration['code'] ?? ''));
-			if ($label === '') {
-				$label = (string) $availabilityId;
-			}
-			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayInvalid', $label);
-			$this->errors[] = $this->error;
-			dol_syslog(__METHOD__.' invalid availability delay on propal id='.(int) $propal->id.' availability='.$availabilityId.' label='.$label, LOG_ERR);
-			setEventMessages($this->error, null, 'errors');
-			return -1;
-		}
-
+		$propalDeliveryDate = jpsunGetPropalDeliveryDate($propal);
 		$signatureDate = !empty($propal->date_signature) ? (int) $propal->date_signature : dol_now();
-		$deliveryDate = jpsunAddAvailabilityDurationToDate($signatureDate, $duration);
-		if ($deliveryDate <= 0) {
-			$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayInvalid', (string) $availabilityId);
-			$this->errors[] = $this->error;
-			dol_syslog(__METHOD__.' unable to calculate delivery date on propal id='.(int) $propal->id.' availability='.$availabilityId, LOG_ERR);
-			setEventMessages($this->error, null, 'errors');
-			return -1;
-		}
-
 		$workdays = getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5);
-		$windowMode = (($duration['mode'] ?? '') === 'from_signature' ? 'from_signature' : 'around_delivery');
-		if ($windowMode === 'from_signature') {
-			$window = jpsunBuildBusinessDayWindowFromDate($signatureDate, $workdays);
-		} else {
+		$duration = array('quantity' => 0, 'unit' => '');
+		$dateSource = 'delivery_date';
+
+		if ($propalDeliveryDate > 0) {
+			$deliveryDate = jpsunNormalizeDateTimestamp($propalDeliveryDate);
 			$window = jpsunBuildBusinessDayWindowAroundDate($deliveryDate, $workdays);
+		} else {
+			if ($availabilityId <= 0) {
+				$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayRequired');
+				$this->errors[] = $this->error;
+				dol_syslog(__METHOD__.' missing delivery date and availability delay on propal id='.(int) $propal->id, LOG_ERR);
+				setEventMessages($this->error, null, 'errors');
+				return -1;
+			}
+
+			$duration = jpsunGetAvailabilityDurationSpec($this->db, $availabilityId, $langs);
+			if ($duration['result'] <= 0) {
+				$label = trim(($duration['label'] ?? '').' '.($duration['code'] ?? ''));
+				if ($label === '') {
+					$label = (string) $availabilityId;
+				}
+				$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayInvalid', $label);
+				$this->errors[] = $this->error;
+				dol_syslog(__METHOD__.' invalid availability delay on propal id='.(int) $propal->id.' availability='.$availabilityId.' label='.$label, LOG_ERR);
+				setEventMessages($this->error, null, 'errors');
+				return -1;
+			}
+
+			$deliveryDate = jpsunAddAvailabilityDurationToDate($signatureDate, $duration);
+			if ($deliveryDate <= 0) {
+				$this->error = $langs->trans('JpsunAutoProjectDeliveryDelayInvalid', (string) $availabilityId);
+				$this->errors[] = $this->error;
+				dol_syslog(__METHOD__.' unable to calculate delivery date on propal id='.(int) $propal->id.' availability='.$availabilityId, LOG_ERR);
+				setEventMessages($this->error, null, 'errors');
+				return -1;
+			}
+
+			if (($duration['mode'] ?? '') === 'from_signature') {
+				$dateSource = 'availability_from_signature';
+				$window = jpsunBuildBusinessDayWindowFromDate($signatureDate, $workdays);
+			} else {
+				$dateSource = 'availability_duration';
+				$window = jpsunBuildBusinessDayWindowAroundDate($deliveryDate, $workdays);
+			}
 		}
 		$project->date_start = $window['date_start'];
 		$project->date_end = $window['date_end'];
+		$durationLog = (!empty($duration['unit']) ? (int) $duration['quantity'].' '.$duration['unit'] : 'none');
 
 		dol_syslog(
 			__METHOD__.' propal id='.(int) $propal->id
 			.' availability='.$availabilityId
-			.' duration='.(int) $duration['quantity'].' '.$duration['unit']
-			.' window_mode='.$windowMode
+			.' duration='.$durationLog
+			.' date_source='.$dateSource
+			.' calendar_source='.($window['calendar_source'] ?? jpsunGetBusinessCalendarSource())
 			.' signature='.$signatureDate
 			.' delivery='.$deliveryDate
+			.' propal_delivery='.$propalDeliveryDate
 			.' project_start='.$project->date_start
 			.' project_end='.$project->date_end,
 			LOG_INFO

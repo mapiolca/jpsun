@@ -147,7 +147,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	/**
 	 * Hook called before standard object actions.
 	 *
-	 * Used on proposal signature to require a delivery delay and optionally
+	 * Used on proposal signature to require a delivery date or delay and optionally
 	 * attach the proposal to an existing project before Dolibarr closes/signs
 	 * it, so the auto-project trigger does not create a duplicate.
 	 *
@@ -185,16 +185,19 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$propalAlreadyLinkedToProject = $this->propalAlreadyLinkedToProject($object);
 		$availabilityId = jpsunGetPropalAvailabilityId($object);
+		$deliveryDate = jpsunGetPropalDeliveryDate($object);
 
 		if (GETPOSTINT('jpsun_autoproject_guard_confirmed')) {
-			if ($availabilityId <= 0) {
-				$availabilityId = GETPOSTINT('jpsun_autoproject_availability_id');
-				$result = $this->setPropalAvailabilityFromSignatureGuard($object, $availabilityId, $user, $langs);
-				if ($result < 0) {
+			if ($deliveryDate <= 0) {
+				if ($availabilityId <= 0) {
+					$availabilityId = GETPOSTINT('jpsun_autoproject_availability_id');
+					$result = $this->setPropalAvailabilityFromSignatureGuard($object, $availabilityId, $user, $langs);
+					if ($result < 0) {
+						return -1;
+					}
+				} elseif ($this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
 					return -1;
 				}
-			} elseif ($this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
-				return -1;
 			}
 
 			if ($propalAlreadyLinkedToProject || empty($object->socid)) {
@@ -240,11 +243,11 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return 0;
 		}
 
-		if ($availabilityId > 0 && $this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
+		if ($deliveryDate <= 0 && $availabilityId > 0 && $this->validatePropalAvailabilityDuration($availabilityId, $langs) < 0) {
 			return -1;
 		}
 
-		$needsAvailability = ($availabilityId <= 0);
+		$needsAvailability = ($deliveryDate <= 0 && $availabilityId <= 0);
 		$projects = (!$propalAlreadyLinkedToProject && !empty($object->socid) ? $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user) : array());
 		if (!$needsAvailability && empty($projects)) {
 			return 0;
@@ -281,7 +284,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			return 0;
 		}
 
-		$needsAvailability = (jpsunGetPropalAvailabilityId($object) <= 0);
+		$needsAvailability = (jpsunGetPropalDeliveryDate($object) <= 0 && jpsunGetPropalAvailabilityId($object) <= 0);
 		$projects = (!$this->propalAlreadyLinkedToProject($object) && !empty($object->socid) ? $this->getCustomerProjectsForAutoProjectGuard((int) $object->socid, $user) : array());
 		if (!$needsAvailability && empty($projects)) {
 			return 0;

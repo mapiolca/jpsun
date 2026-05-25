@@ -4,6 +4,7 @@
 - Le garde-fou de signature des devis ne propose plus que les projets du tiers du devis dans la selection de projet existant.
 - Le reglage de benefice previsionnel projet `JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD` est masque sauf si la constante cachee `SHOW_DEPRECATED_FEATURES` est activee.
 - Le delai de livraison Dolibarr `AV_NOW` est traite comme immediat : il vaut 0 jour et cree une plage projet ouvree a partir de la date de signature.
+- La date de livraison du devis est prioritaire sur le delai de livraison et les plages projet tiennent compte des heures d'ouverture ou des jours non ouvres Dolibarr lorsque disponibles.
 - Mise a jour de la version du module et du README en 1.18.
 
 ## 1.17 (15/05/2026)

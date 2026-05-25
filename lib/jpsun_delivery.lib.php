@@ -33,6 +33,26 @@ function jpsunGetPropalAvailabilityId($object)
 }
 
 /**
+ * Get the native Dolibarr delivery date from a proposal-like object.
+ *
+ * @param	object	$object	Proposal object
+ * @return	int				Delivery date timestamp, 0 if empty
+ */
+function jpsunGetPropalDeliveryDate($object)
+{
+	if (!isset($object->delivery_date) || empty($object->delivery_date)) {
+		return 0;
+	}
+
+	if (is_numeric($object->delivery_date)) {
+		return (int) $object->delivery_date;
+	}
+
+	$timestamp = strtotime((string) $object->delivery_date);
+	return ($timestamp !== false && $timestamp > 0 ? $timestamp : 0);
+}
+
+/**
  * Load and parse a Dolibarr availability delay into a duration spec.
  *
  * @param	DoliDB		$db					Database handler
@@ -208,7 +228,8 @@ function jpsunBuildBusinessDayWindowAroundDate($deliveryTimestamp, $workdays)
 	return array(
 		'date_start' => jpsunShiftBusinessDays($pivot, -$daysBefore),
 		'date_end' => jpsunShiftBusinessDays($pivot, $daysAfter),
-		'pivot' => $pivot
+		'pivot' => $pivot,
+		'calendar_source' => jpsunGetBusinessCalendarSource()
 	);
 }
 
@@ -227,12 +248,13 @@ function jpsunBuildBusinessDayWindowFromDate($signatureTimestamp, $workdays)
 	return array(
 		'date_start' => $pivot,
 		'date_end' => jpsunShiftBusinessDays($pivot, $workdays - 1),
-		'pivot' => $pivot
+		'pivot' => $pivot,
+		'calendar_source' => jpsunGetBusinessCalendarSource()
 	);
 }
 
 /**
- * Move a timestamp to the next business day if it falls on a weekend.
+ * Move a timestamp to the next business day if it falls on a non-working day.
  *
  * @param	int	$timestamp	Timestamp
  * @return	int				Business day timestamp at local midnight
@@ -272,7 +294,7 @@ function jpsunShiftBusinessDays($timestamp, $offset)
 }
 
 /**
- * Check if a timestamp is Monday-Friday.
+ * Check if a timestamp is a business day according to Dolibarr configuration.
  *
  * @param	int	$timestamp	Timestamp
  * @return	bool			True for business days
@@ -280,7 +302,123 @@ function jpsunShiftBusinessDays($timestamp, $offset)
 function jpsunIsBusinessDay($timestamp)
 {
 	$weekday = (int) date('N', $timestamp);
+	$calendarSource = jpsunGetBusinessCalendarSource();
+
+	if ($calendarSource === 'opening_hours') {
+		return (trim(getDolGlobalString(jpsunGetOpeningHoursConstantForWeekday($weekday))) !== '');
+	}
+
+	if ($calendarSource === 'holiday_non_working_days') {
+		return !getDolGlobalInt(jpsunGetNonWorkingDayConstantForWeekday($weekday), jpsunGetDefaultNonWorkingDayValue($weekday));
+	}
+
 	return ($weekday >= 1 && $weekday <= 5);
+}
+
+/**
+ * Get the active source for business-day calculation.
+ *
+ * @return	string	Source code
+ */
+function jpsunGetBusinessCalendarSource()
+{
+	if (jpsunHasOpeningHoursConfiguration()) {
+		return 'opening_hours';
+	}
+
+	if (function_exists('isModEnabled') && isModEnabled('holiday') && jpsunHolidayCalendarHasBusinessDay()) {
+		return 'holiday_non_working_days';
+	}
+
+	return 'default_weekdays';
+}
+
+/**
+ * Check if at least one opening-hours constant is configured.
+ *
+ * @return	bool	True if opening hours are configured
+ */
+function jpsunHasOpeningHoursConfiguration()
+{
+	for ($weekday = 1; $weekday <= 7; $weekday++) {
+		if (trim(getDolGlobalString(jpsunGetOpeningHoursConstantForWeekday($weekday))) !== '') {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check if the holiday non-working day configuration leaves at least one business day.
+ *
+ * @return	bool	True if at least one business day exists
+ */
+function jpsunHolidayCalendarHasBusinessDay()
+{
+	for ($weekday = 1; $weekday <= 7; $weekday++) {
+		if (!getDolGlobalInt(jpsunGetNonWorkingDayConstantForWeekday($weekday), jpsunGetDefaultNonWorkingDayValue($weekday))) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Get the opening-hours constant name for a weekday.
+ *
+ * @param	int	$weekday	ISO weekday number, Monday=1
+ * @return	string			Global constant name
+ */
+function jpsunGetOpeningHoursConstantForWeekday($weekday)
+{
+	$suffixes = array(
+		1 => 'MONDAY',
+		2 => 'TUESDAY',
+		3 => 'WEDNESDAY',
+		4 => 'THURSDAY',
+		5 => 'FRIDAY',
+		6 => 'SATURDAY',
+		7 => 'SUNDAY'
+	);
+
+	$weekday = max(1, min(7, (int) $weekday));
+	return 'MAIN_INFO_OPENINGHOURS_'.$suffixes[$weekday];
+}
+
+/**
+ * Get the non-working day constant name for a weekday.
+ *
+ * @param	int	$weekday	ISO weekday number, Monday=1
+ * @return	string			Global constant name
+ */
+function jpsunGetNonWorkingDayConstantForWeekday($weekday)
+{
+	$suffixes = array(
+		1 => 'MONDAY',
+		2 => 'TUESDAY',
+		3 => 'WEDNESDAY',
+		4 => 'THURSDAY',
+		5 => 'FRIDAY',
+		6 => 'SATURDAY',
+		7 => 'SUNDAY'
+	);
+
+	$weekday = max(1, min(7, (int) $weekday));
+	return 'MAIN_NON_WORKING_DAYS_INCLUDE_'.$suffixes[$weekday];
+}
+
+/**
+ * Get the default non-working value for a weekday.
+ *
+ * @param	int	$weekday	ISO weekday number, Monday=1
+ * @return	int				1 for non-working, 0 for working
+ */
+function jpsunGetDefaultNonWorkingDayValue($weekday)
+{
+	$weekday = (int) $weekday;
+	return ($weekday === 6 || $weekday === 7 ? 1 : 0);
 }
 
 /**
