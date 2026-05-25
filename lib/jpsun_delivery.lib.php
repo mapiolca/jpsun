@@ -60,6 +60,18 @@ function jpsunGetAvailabilityDurationSpec($db, $availabilityId, $langs = null)
 		return array('result' => 0, 'error' => 'Availability not found');
 	}
 
+	if (strtoupper(trim((string) $obj->code)) === 'AV_NOW') {
+		return array(
+			'result' => 1,
+			'quantity' => 0,
+			'unit' => 'day',
+			'mode' => 'from_signature',
+			'raw' => 'AV_NOW',
+			'code' => (string) $obj->code,
+			'label' => (string) $obj->label
+		);
+	}
+
 	$candidates = array();
 	foreach (array($obj->code, $obj->label) as $candidate) {
 		$candidate = trim((string) $candidate);
@@ -160,7 +172,7 @@ function jpsunAddAvailabilityDurationToDate($baseTimestamp, $durationSpec)
 {
 	$quantity = (int) ($durationSpec['quantity'] ?? 0);
 	$unit = (string) ($durationSpec['unit'] ?? '');
-	if ($quantity <= 0 || !in_array($unit, array('day', 'week', 'month', 'year'), true)) {
+	if ($quantity < 0 || !in_array($unit, array('day', 'week', 'month', 'year'), true)) {
 		return 0;
 	}
 
@@ -172,7 +184,9 @@ function jpsunAddAvailabilityDurationToDate($baseTimestamp, $durationSpec)
 		'month' => 'months',
 		'year' => 'years'
 	);
-	$date = $date->modify('+'.$quantity.' '.$modifyUnit[$unit]);
+	if ($quantity > 0) {
+		$date = $date->modify('+'.$quantity.' '.$modifyUnit[$unit]);
+	}
 
 	return dol_mktime(0, 0, 0, (int) $date->format('n'), (int) $date->format('j'), (int) $date->format('Y'));
 }
@@ -194,6 +208,25 @@ function jpsunBuildBusinessDayWindowAroundDate($deliveryTimestamp, $workdays)
 	return array(
 		'date_start' => jpsunShiftBusinessDays($pivot, -$daysBefore),
 		'date_end' => jpsunShiftBusinessDays($pivot, $daysAfter),
+		'pivot' => $pivot
+	);
+}
+
+/**
+ * Build a forward business-day project window from a signature date.
+ *
+ * @param	int	$signatureTimestamp	Signature timestamp
+ * @param	int	$workdays			Number of business days in the window
+ * @return	array{date_start:int,date_end:int,pivot:int}
+ */
+function jpsunBuildBusinessDayWindowFromDate($signatureTimestamp, $workdays)
+{
+	$workdays = max(1, (int) $workdays);
+	$pivot = jpsunMoveToNextBusinessDay($signatureTimestamp);
+
+	return array(
+		'date_start' => $pivot,
+		'date_end' => jpsunShiftBusinessDays($pivot, $workdays - 1),
 		'pivot' => $pivot
 	);
 }

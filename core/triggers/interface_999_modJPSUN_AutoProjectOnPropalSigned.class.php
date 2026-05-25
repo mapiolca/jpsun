@@ -373,7 +373,12 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		$workdays = getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5);
-		$window = jpsunBuildBusinessDayWindowAroundDate($deliveryDate, $workdays);
+		$windowMode = (($duration['mode'] ?? '') === 'from_signature' ? 'from_signature' : 'around_delivery');
+		if ($windowMode === 'from_signature') {
+			$window = jpsunBuildBusinessDayWindowFromDate($signatureDate, $workdays);
+		} else {
+			$window = jpsunBuildBusinessDayWindowAroundDate($deliveryDate, $workdays);
+		}
 		$project->date_start = $window['date_start'];
 		$project->date_end = $window['date_end'];
 
@@ -381,6 +386,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			__METHOD__.' propal id='.(int) $propal->id
 			.' availability='.$availabilityId
 			.' duration='.(int) $duration['quantity'].' '.$duration['unit']
+			.' window_mode='.$windowMode
 			.' signature='.$signatureDate
 			.' delivery='.$deliveryDate
 			.' project_start='.$project->date_start
