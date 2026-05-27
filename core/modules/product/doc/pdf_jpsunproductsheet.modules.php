@@ -304,7 +304,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$featuresY = $categoriesY - ($categoriesHeight > 0 ? $tableGap : 0) - $featuresHeight;
 		$notesY = ($notesHeight > 0) ? $featuresY - $tableGap - $notesHeight : 0;
 		$descriptionBottomY = (($notesHeight > 0) ? $notesY : $featuresY) - $tableGap;
-		$descriptionBodyY = 73;
+		$descriptionBodyY = 48;
 		$descriptionBelowImageY = $mainImageBottomY + 5;
 		$descriptionZones = array();
 		if ($mainImageBottomY > $descriptionBodyY) {
@@ -316,7 +316,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 
 		$this->renderVisualColumn($pdf, $secondaryImages, 12, 68, 23, 23, 9);
 		$this->renderMainImage($pdf, $mainImage, $outputlangs, $default_font_size, $mainImageX, $mainImageY, $mainImageW, $mainImageH, $soft, $muted);
-		$this->renderDescriptionFlowBlock($pdf, $text['description'], $outputlangs, $default_font_size, $bodyX, 51, $descriptionZones, $dark);
+		$this->renderDescriptionFlowBlock($pdf, $text['description'], $outputlangs, $default_font_size, $bodyX, 36, $descriptionZones, $dark);
 		$this->renderPublicNotesBlock($pdf, $publicNotes, $outputlangs, $default_font_size, $bodyX, $notesY, $bodyW, $notesHeight, $dark, $light);
 		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, $bodyX, $featuresY, $bodyW, $featuresHeight, $dark, $light);
 		$this->renderCategoriesTable($pdf, $categories, $outputlangs, $default_font_size, $bodyX, $categoriesY, $bodyW, $categoriesHeight, $dark, $light);
