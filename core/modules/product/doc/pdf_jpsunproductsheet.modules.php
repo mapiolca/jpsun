@@ -286,7 +286,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
 		$pdf->SetFont('', '', $default_font_size + 1);
 		$pdf->SetXY(38, 30);
-		$pdf->MultiCell(160, 5, $outputlangs->transnoentities('Ref').' '.$outputlangs->convToOutputCharset($object->ref), 0, 'L', false, 1, '', '', true, 0, false, true, 8, 'T', true);
+		$pdf->MultiCell($this->page_largeur - $this->marge_droite - 38, 5, $outputlangs->transnoentities('Ref').' '.$outputlangs->convToOutputCharset($object->ref), 0, 'R', false, 1, '', '', true, 0, false, true, 8, 'T', true);
 
 		$bodyX = 39;
 		$bodyW = 151;
