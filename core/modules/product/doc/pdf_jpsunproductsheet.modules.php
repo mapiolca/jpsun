@@ -260,7 +260,8 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	private function renderProductSheet(&$pdf, $object, $outputlangs, $default_font_size)
 	{
 		$text = $this->getLocalizedProductText($object, $outputlangs);
-		$images = $this->getProductImages($object);
+		$mainImage = $this->getProductMainImage($object);
+		$secondaryImages = $this->getProductSecondaryImages($object, empty($mainImage['source']) ? '' : $mainImage['source']);
 		$features = $this->buildFeatureRows($object, $outputlangs);
 		$categories = $this->getProductCategoryLabels($object);
 		$publicNotes = $this->getPublicNotesText($object, $outputlangs);
@@ -303,7 +304,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$featuresY = $categoriesY - ($categoriesHeight > 0 ? $tableGap : 0) - $featuresHeight;
 		$notesY = ($notesHeight > 0) ? $featuresY - $tableGap - $notesHeight : 0;
 		$descriptionBottomY = (($notesHeight > 0) ? $notesY : $featuresY) - $tableGap;
-		$descriptionBodyY = 83;
+		$descriptionBodyY = 73;
 		$descriptionBelowImageY = $mainImageBottomY + 5;
 		$descriptionZones = array();
 		if ($mainImageBottomY > $descriptionBodyY) {
@@ -313,9 +314,9 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$descriptionZones[] = array('x' => $bodyX, 'y' => $descriptionBelowImageY, 'w' => $bodyW, 'h' => $descriptionBottomY - $descriptionBelowImageY);
 		}
 
-		$this->renderVisualColumn($pdf, $images, 12, 68, 23, 23, 9);
-		$this->renderMainImage($pdf, $images, $outputlangs, $default_font_size, $mainImageX, $mainImageY, $mainImageW, $mainImageH, $soft, $muted);
-		$this->renderDescriptionFlowBlock($pdf, $text['description'], $outputlangs, $default_font_size, $bodyX, 61, $descriptionZones, $dark);
+		$this->renderVisualColumn($pdf, $secondaryImages, 12, 68, 23, 23, 9);
+		$this->renderMainImage($pdf, $mainImage, $outputlangs, $default_font_size, $mainImageX, $mainImageY, $mainImageW, $mainImageH, $soft, $muted);
+		$this->renderDescriptionFlowBlock($pdf, $text['description'], $outputlangs, $default_font_size, $bodyX, 51, $descriptionZones, $dark);
 		$this->renderPublicNotesBlock($pdf, $publicNotes, $outputlangs, $default_font_size, $bodyX, $notesY, $bodyW, $notesHeight, $dark, $light);
 		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, $bodyX, $featuresY, $bodyW, $featuresHeight, $dark, $light);
 		$this->renderCategoriesTable($pdf, $categories, $outputlangs, $default_font_size, $bodyX, $categoriesY, $bodyW, $categoriesHeight, $dark, $light);
@@ -361,12 +362,69 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	}
 
 	/**
-	 * Return product images in Dolibarr display order.
+	 * Return the main product image with the same selection rule as the Cyan proposal model.
 	 *
 	 * @param	Product	$object		Product object
+	 * @return	array{photo:string,thumb:string,source:string}
+	 */
+	private function getProductMainImage($object)
+	{
+		foreach ($this->getProductPhotoDirs($object) as $dir) {
+			foreach ($object->liste_photos($dir, 1) as $photo) {
+				$image = $this->buildProductImagePath($dir, $photo);
+				if (!empty($image['photo'])) {
+					return $image;
+				}
+			}
+		}
+
+		return array('photo' => '', 'thumb' => '', 'source' => '');
+	}
+
+	/**
+	 * Return secondary product images without changing main image selection.
+	 *
+	 * @param	Product	$object				Product object
+	 * @param	string	$mainImageSource	Main image source path
 	 * @return	array<int,array{photo:string,thumb:string}>
 	 */
-	private function getProductImages($object)
+	private function getProductSecondaryImages($object, $mainImageSource)
+	{
+		$images = array();
+		$alreadyseen = array();
+		if ($mainImageSource !== '') {
+			$alreadyseen[$mainImageSource] = 1;
+		}
+
+		foreach ($this->getProductPhotoDirs($object) as $dir) {
+			$photos = $object->liste_photos($dir);
+			foreach ($photos as $photo) {
+				if (empty($photo['photo']) || !empty($alreadyseen[$dir.$photo['photo']])) {
+					continue;
+				}
+
+				$image = $this->buildProductImagePath($dir, $photo);
+				if (empty($image['photo'])) {
+					continue;
+				}
+
+				$sourcepath = $image['source'];
+				$alreadyseen[$sourcepath] = 1;
+				unset($image['source']);
+				$images[] = $image;
+			}
+		}
+
+		return $images;
+	}
+
+	/**
+	 * Return product photo directories in the same order as the Cyan proposal model.
+	 *
+	 * @param	Product	$object		Product object
+	 * @return	string[]			Existing directory paths
+	 */
+	private function getProductPhotoDirs($object)
 	{
 		global $conf;
 
@@ -380,6 +438,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$pdir[] = get_exdir($object->id, 2, 0, 0, $object, 'product').$object->id.'/photos/';
 		}
 
+		$dirs = array();
 		foreach ($pdir as $midir) {
 			if (!empty($conf->product->multidir_output[$object->entity]) && $conf->entity != $object->entity) {
 				$dir = $conf->product->multidir_output[$object->entity].'/'.$midir;
@@ -387,53 +446,12 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 				$dir = $conf->product->dir_output.'/'.$midir;
 			}
 
-			if (!is_dir($dir)) {
-				continue;
+			if (is_dir($dir)) {
+				$dirs[] = $dir;
 			}
-
-			$firstPhotos = $object->liste_photos($dir, 1);
-			if (empty($firstPhotos)) {
-				continue;
-			}
-
-			$images = array();
-			$alreadyseen = array();
-			foreach ($firstPhotos as $photo) {
-				$image = $this->buildProductImagePath($dir, $photo);
-				if (!empty($image['photo'])) {
-					$sourcepath = $image['source'];
-					unset($image['source']);
-					$images[] = $image;
-					$alreadyseen[$sourcepath] = 1;
-					break;
-				}
-			}
-
-			if (empty($images)) {
-				continue;
-			}
-
-			$photos = $object->liste_photos($dir);
-			foreach ($photos as $photo) {
-				if (empty($photo['photo']) || !empty($alreadyseen[$dir.$photo['photo']])) {
-					continue;
-				}
-
-				$image = $this->buildProductImagePath($dir, $photo);
-				if (empty($image['photo'])) {
-					continue;
-				}
-
-				$sourcepath = $image['source'];
-				unset($image['source']);
-				$images[] = $image;
-				$alreadyseen[$sourcepath] = 1;
-			}
-
-			return $images;
 		}
 
-		return array();
+		return $dirs;
 	}
 
 	/**
@@ -788,9 +806,9 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	 */
 	private function renderVisualColumn(&$pdf, $images, $x, $y, $w, $h, $gap)
 	{
-		$max = min(5, max(0, count($images) - 1));
+		$max = min(5, count($images));
 		for ($i = 0; $i < $max; $i++) {
-			$img = $images[$i + 1];
+			$img = $images[$i];
 			$curY = $y + ($i * ($h + $gap));
 			$this->drawRoundedRect($pdf, $x, $curY, $w, $h, 2, 'DF', array('color' => array(223, 226, 229)), array(255, 255, 255));
 
@@ -1089,7 +1107,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	 * Render the main product image.
 	 *
 	 * @param	TCPDF										$pdf					PDF object
-	 * @param	array<int,array{photo:string,thumb:string}>	$images					Images
+	 * @param	array{photo:string,thumb:string,source:string}	$image				Main image
 	 * @param	Translate									$outputlangs			Output language
 	 * @param	int											$default_font_size		Default font size
 	 * @param	float|int									$x						X
@@ -1100,13 +1118,13 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	 * @param	array										$muted					Muted text color
 	 * @return	void
 	 */
-	private function renderMainImage(&$pdf, $images, $outputlangs, $default_font_size, $x, $y, $w, $h, $soft, $muted)
+	private function renderMainImage(&$pdf, $image, $outputlangs, $default_font_size, $x, $y, $w, $h, $soft, $muted)
 	{
 		$this->drawRoundedRect($pdf, $x, $y, $w, $h, 4, 'DF', array('color' => array(230, 230, 230)), array(255, 255, 255));
 
-		if (!empty($images[0]['photo'])) {
-			$size = $this->fitImageSize($images[0]['photo'], $w - 4, $h - 4, true);
-			$pdf->Image($images[0]['photo'], $x + (($w - $size['width']) / 2), $y + (($h - $size['height']) / 2), $size['width'], $size['height'], '', '', '', 2, 300);
+		if (!empty($image['photo'])) {
+			$size = $this->fitImageSize($image['photo'], $w - 4, $h - 4, true);
+			$pdf->Image($image['photo'], $x + (($w - $size['width']) / 2), $y + (($h - $size['height']) / 2), $size['width'], $size['height'], '', '', '', 2, 300);
 			return;
 		}
 
