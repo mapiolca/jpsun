@@ -23,6 +23,7 @@
 
 require_once DOL_DOCUMENT_ROOT.'/core/modules/product/modules_product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -87,7 +88,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	{
 		global $langs, $mysoc;
 
-		$langs->loadLangs(array('main', 'companies', 'products', 'jpsun@jpsun'));
+		$langs->loadLangs(array('main', 'companies', 'products', 'categories', 'jpsun@jpsun'));
 
 		$this->db = $db;
 		$this->name = $langs->trans('JpsunProductSheetName');
@@ -144,7 +145,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(array('main', 'dict', 'companies', 'products', 'jpsun@jpsun'));
+		$outputlangs->loadLangs(array('main', 'dict', 'companies', 'products', 'categories', 'jpsun@jpsun'));
 
 		if (empty($conf->product->dir_output)) {
 			$this->error = $langs->trans('ErrorConstantNotDefined', 'PRODUCT_OUTPUTDIR');
@@ -260,6 +261,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$text = $this->getLocalizedProductText($object, $outputlangs);
 		$images = $this->getProductImages($object);
 		$features = $this->buildFeatureRows($object, $outputlangs);
+		$categories = $this->getProductCategoryLabels($object);
 
 		$dark = array(0, 58, 79);
 		$accent = array(247, 184, 32);
@@ -275,18 +277,19 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', 'B', $default_font_size + 9);
-		$pdf->SetXY(43, 11);
-		$pdf->MultiCell(155, 12, $outputlangs->convToOutputCharset($text['label']), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
+		$pdf->SetXY(38, 11);
+		$pdf->MultiCell(160, 12, $outputlangs->convToOutputCharset($text['label']), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
 
 		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
 		$pdf->SetFont('', '', $default_font_size + 1);
-		$pdf->SetXY(43, 30);
-		$pdf->MultiCell(155, 5, $outputlangs->transnoentities('Ref').' '.$outputlangs->convToOutputCharset($object->ref), 0, 'L', false, 1, '', '', true, 0, false, true, 8, 'T', true);
+		$pdf->SetXY(38, 30);
+		$pdf->MultiCell(160, 5, $outputlangs->transnoentities('Ref').' '.$outputlangs->convToOutputCharset($object->ref), 0, 'L', false, 1, '', '', true, 0, false, true, 8, 'T', true);
 
 		$this->renderVisualColumn($pdf, $images, 12, 68, 23, 23, 9);
-		$this->renderDescriptionBlock($pdf, $text['description'], $outputlangs, $default_font_size, 44, 61, 72, 57, $dark);
-		$this->renderMainImage($pdf, $images, $outputlangs, $default_font_size, 124, 50, 66, 78, $soft, $muted);
-		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, 44, 148, 146, 108, $dark, $light);
+		$this->renderDescriptionBlock($pdf, $text['description'], $outputlangs, $default_font_size, 39, 61, 79, 57, $dark);
+		$this->renderMainImage($pdf, $images, $outputlangs, $default_font_size, 124, 48, 76, 76, $soft, $muted);
+		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, 39, 144, 151, empty($categories) ? 112 : 74, $dark, $light);
+		$this->renderCategoriesTable($pdf, $categories, $outputlangs, $default_font_size, 39, 224, 151, 32, $dark, $light);
 
 		$pdf->SetTextColor(0, 0, 0);
 	}
@@ -394,34 +397,10 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	 */
 	private function buildFeatureRows($object, $outputlangs)
 	{
-		global $conf;
-
 		$rows = array();
 
 		$type = ((int) $object->type === 1) ? $outputlangs->transnoentities('Service') : $outputlangs->transnoentities('Product');
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('Type'), $type);
-
-		if (isset($object->status)) {
-			$status = ((int) $object->status === 1) ? $outputlangs->transnoentities('JpsunProductSheetForSale') : $outputlangs->transnoentities('JpsunProductSheetNotForSale');
-			$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetSellStatus'), $status);
-		}
-
-		if (isset($object->status_buy)) {
-			$statusbuy = ((int) $object->status_buy === 1) ? $outputlangs->transnoentities('JpsunProductSheetForPurchase') : $outputlangs->transnoentities('JpsunProductSheetNotForPurchase');
-			$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetPurchaseStatus'), $statusbuy);
-		}
-
-		if (isset($object->price) && is_numeric($object->price)) {
-			$this->addFeatureRow($rows, $outputlangs->transnoentities('PriceUHT'), price(price2num($object->price, 'MU'), 0, $outputlangs, 0, -1, -1, $conf->currency));
-		}
-
-		if (isset($object->price_ttc) && is_numeric($object->price_ttc)) {
-			$this->addFeatureRow($rows, $outputlangs->transnoentities('PriceUTTC'), price(price2num($object->price_ttc, 'MU'), 0, $outputlangs, 0, -1, -1, $conf->currency));
-		}
-
-		if (isset($object->tva_tx) && $object->tva_tx !== '') {
-			$this->addFeatureRow($rows, $outputlangs->transnoentities('VAT'), vatrate($object->tva_tx, 1));
-		}
 
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('Weight'), $this->formatMeasure($object, 'weight', 'weight', $outputlangs));
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetDimensions'), $this->formatDimensions($object, $outputlangs));
@@ -432,6 +411,29 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetCustomsCode'), isset($object->customcode) ? $object->customcode : '');
 
 		return $rows;
+	}
+
+	/**
+	 * Return labels of categories linked to a product.
+	 *
+	 * @param	Product	$object		Product object
+	 * @return	string[]			Category labels
+	 */
+	private function getProductCategoryLabels($object)
+	{
+		$labels = array();
+
+		if (empty($object->id)) {
+			return $labels;
+		}
+
+		$categorie = new Categorie($this->db);
+		$categories = $categorie->containing($object->id, 'product', 'label');
+		if (is_array($categories)) {
+			$labels = $categories;
+		}
+
+		return $labels;
 	}
 
 	/**
@@ -642,7 +644,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', 'B', $default_font_size + 6);
 		$pdf->SetXY($x, $y);
-		$pdf->MultiCell($w, 8, $outputlangs->transnoentities('JpsunProductSheetProductDescription'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
+		$pdf->MultiCell($w, 8, $outputlangs->transnoentities('Description'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
 
 		$description = $this->plainTextForPdf($description);
 		if ($description === '') {
@@ -675,7 +677,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$this->drawRoundedRect($pdf, $x, $y, $w, $h, 4, 'DF', array('color' => array(230, 230, 230)), array(255, 255, 255));
 
 		if (!empty($images[0]['photo'])) {
-			$size = $this->fitImageSize($images[0]['photo'], $w - 8, $h - 8);
+			$size = $this->fitImageSize($images[0]['photo'], $w - 4, $h - 4, true);
 			$pdf->Image($images[0]['photo'], $x + (($w - $size['width']) / 2), $y + (($h - $size['height']) / 2), $size['width'], $size['height'], '', '', '', 2, 300);
 			return;
 		}
@@ -717,7 +719,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetXY($x + 2, $currentY + 1.5);
 		$pdf->Cell($col1 - 3, 4, $outputlangs->transnoentities('JpsunProductSheetFeatures'), 0, 0, 'L');
 		$pdf->SetXY($x + $col1 + 2, $currentY + 1.5);
-		$pdf->Cell($col2 - 3, 4, $outputlangs->transnoentities('JpsunProductSheetValue'), 0, 0, 'L');
+		$pdf->Cell($col2 - 3, 4, $outputlangs->transnoentities('Value'), 0, 0, 'L');
 		$currentY += 7;
 
 		$pdf->SetFont('', '', $default_font_size - 2);
@@ -753,14 +755,72 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	}
 
 	/**
+	 * Render linked product category labels as a compact table.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string[]	$categories				Category labels
+	 * @param	Translate	$outputlangs			Output language
+	 * @param	int			$default_font_size		Default font size
+	 * @param	float|int	$x						X
+	 * @param	float|int	$y						Y
+	 * @param	float|int	$w						Width
+	 * @param	float|int	$h						Height
+	 * @param	array		$dark					Dark color
+	 * @param	array		$light					Light color
+	 * @return	void
+	 */
+	private function renderCategoriesTable(&$pdf, $categories, $outputlangs, $default_font_size, $x, $y, $w, $h, $dark, $light)
+	{
+		if (empty($categories)) {
+			return;
+		}
+
+		$currentY = $y;
+		$bottomY = $y + $h;
+
+		$pdf->SetFillColor($dark[0], $dark[1], $dark[2]);
+		$pdf->SetTextColor(255, 255, 255);
+		$pdf->SetFont('', 'B', $default_font_size - 1);
+		$pdf->Rect($x, $currentY, $w, 7, 'F');
+		$pdf->SetXY($x + 2, $currentY + 1.5);
+		$pdf->Cell($w - 4, 4, $outputlangs->transnoentities('Categories'), 0, 0, 'L');
+		$currentY += 7;
+
+		$pdf->SetFont('', '', $default_font_size - 2);
+		$pdf->SetTextColor(0, 0, 0);
+
+		foreach (array_values($categories) as $index => $category) {
+			$category = $outputlangs->convToOutputCharset((string) $category);
+			$rowHeight = max(6, $this->getStringHeight($pdf, $w - 4, $category) + 2);
+
+			if ($currentY + $rowHeight > $bottomY) {
+				$pdf->SetXY($x, $currentY);
+				$pdf->MultiCell($w, 5, $outputlangs->transnoentities('JpsunProductSheetMoreFields'), 1, 'L');
+				break;
+			}
+
+			if ($index % 2 === 0) {
+				$pdf->SetFillColor($light[0], $light[1], $light[2]);
+			} else {
+				$pdf->SetFillColor(255, 255, 255);
+			}
+
+			$pdf->SetXY($x, $currentY);
+			$pdf->MultiCell($w, $rowHeight, $category, 1, 'L', true, 1, '', '', true, 0, false, true, $rowHeight, 'M', true);
+			$currentY += $rowHeight;
+		}
+	}
+
+	/**
 	 * Fit an image into a given box while preserving ratio.
 	 *
 	 * @param	string		$path		Image path
 	 * @param	float|int	$maxW		Max width
 	 * @param	float|int	$maxH		Max height
+	 * @param	bool		$allowGrow	Allow image upscaling
 	 * @return	array{width:float|int,height:float|int}
 	 */
-	private function fitImageSize($path, $maxW, $maxH)
+	private function fitImageSize($path, $maxW, $maxH, $allowGrow = false)
 	{
 		$size = pdf_getSizeForImage($path);
 		$width = empty($size['width']) ? $maxW : $size['width'];
@@ -771,7 +831,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		}
 
 		$ratio = min($maxW / $width, $maxH / $height);
-		if ($ratio > 1) {
+		if (!$allowGrow && $ratio > 1) {
 			$ratio = 1;
 		}
 
