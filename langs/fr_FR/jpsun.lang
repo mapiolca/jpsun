@@ -214,6 +214,7 @@ JpsunProductSheetTitle = Fiche produit
 JpsunProductSheetFeatures = Caracteristiques
 JpsunProductSheetNoDescription = Aucune description renseignee.
 JpsunProductSheetNoImage = Aucune image
+JpsunProductSheetPublicNotes = Notes publiques
 JpsunProductSheetDimensions = Dimensions
 JpsunProductSheetCountryOrigin = Pays d'origine
 JpsunProductSheetCustomsCode = Code douanier

@@ -262,6 +262,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$images = $this->getProductImages($object);
 		$features = $this->buildFeatureRows($object, $outputlangs);
 		$categories = $this->getProductCategoryLabels($object);
+		$publicNotes = $this->getPublicNotesText($object, $outputlangs);
 
 		$dark = array(0, 58, 79);
 		$accent = array(247, 184, 32);
@@ -285,11 +286,38 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetXY(38, 30);
 		$pdf->MultiCell(160, 5, $outputlangs->transnoentities('Ref').' '.$outputlangs->convToOutputCharset($object->ref), 0, 'L', false, 1, '', '', true, 0, false, true, 8, 'T', true);
 
+		$bodyX = 39;
+		$bodyW = 151;
+		$mainImageX = 124;
+		$mainImageY = 48;
+		$mainImageW = 76;
+		$mainImageH = 76;
+		$mainImageBottomY = $mainImageY + $mainImageH;
+		$tableGap = 5;
+		$sheetBottomY = min($this->page_hauteur - $this->marge_basse - 17, 270);
+		$categoriesHeight = empty($categories) ? 0 : 26;
+		$featuresHeight = empty($categories) ? 68 : 58;
+		$notesHeight = ($publicNotes === '') ? 0 : 24;
+		$categoriesY = $sheetBottomY - $categoriesHeight;
+		$featuresY = $categoriesY - ($categoriesHeight > 0 ? $tableGap : 0) - $featuresHeight;
+		$notesY = ($notesHeight > 0) ? $featuresY - $tableGap - $notesHeight : 0;
+		$descriptionBottomY = (($notesHeight > 0) ? $notesY : $featuresY) - $tableGap;
+		$descriptionBodyY = 83;
+		$descriptionBelowImageY = $mainImageBottomY + 5;
+		$descriptionZones = array();
+		if ($mainImageBottomY > $descriptionBodyY) {
+			$descriptionZones[] = array('x' => $bodyX, 'y' => $descriptionBodyY, 'w' => $mainImageX - $bodyX - 6, 'h' => $mainImageBottomY - $descriptionBodyY);
+		}
+		if ($descriptionBottomY > $descriptionBelowImageY) {
+			$descriptionZones[] = array('x' => $bodyX, 'y' => $descriptionBelowImageY, 'w' => $bodyW, 'h' => $descriptionBottomY - $descriptionBelowImageY);
+		}
+
 		$this->renderVisualColumn($pdf, $images, 12, 68, 23, 23, 9);
-		$this->renderDescriptionBlock($pdf, $text['description'], $outputlangs, $default_font_size, 39, 61, 79, 57, $dark);
-		$this->renderMainImage($pdf, $images, $outputlangs, $default_font_size, 124, 48, 76, 76, $soft, $muted);
-		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, 39, 144, 151, empty($categories) ? 112 : 74, $dark, $light);
-		$this->renderCategoriesTable($pdf, $categories, $outputlangs, $default_font_size, 39, 224, 151, 32, $dark, $light);
+		$this->renderMainImage($pdf, $images, $outputlangs, $default_font_size, $mainImageX, $mainImageY, $mainImageW, $mainImageH, $soft, $muted);
+		$this->renderDescriptionFlowBlock($pdf, $text['description'], $outputlangs, $default_font_size, $bodyX, 61, $descriptionZones, $dark);
+		$this->renderPublicNotesBlock($pdf, $publicNotes, $outputlangs, $default_font_size, $bodyX, $notesY, $bodyW, $notesHeight, $dark, $light);
+		$this->renderFeaturesTable($pdf, $features, $outputlangs, $default_font_size, $bodyX, $featuresY, $bodyW, $featuresHeight, $dark, $light);
+		$this->renderCategoriesTable($pdf, $categories, $outputlangs, $default_font_size, $bodyX, $categoriesY, $bodyW, $categoriesHeight, $dark, $light);
 
 		$pdf->SetTextColor(0, 0, 0);
 	}
@@ -434,6 +462,30 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		}
 
 		return $labels;
+	}
+
+	/**
+	 * Return public notes prepared for PDF output.
+	 *
+	 * @param	Product		$object			Product object
+	 * @param	Translate	$outputlangs	Output language
+	 * @return	string						Public notes as plain text
+	 */
+	private function getPublicNotesText($object, $outputlangs)
+	{
+		$notetoshow = empty($object->note_public) ? '' : $object->note_public;
+		if ($notetoshow === '') {
+			return '';
+		}
+
+		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, $object);
+		complete_substitutions_array($substitutionarray, $outputlangs, $object);
+		$notetoshow = make_substitutions($notetoshow, $substitutionarray, $outputlangs);
+		if (function_exists('convertBackOfficeMediasLinksToPublicLinks')) {
+			$notetoshow = convertBackOfficeMediasLinksToPublicLinks($notetoshow);
+		}
+
+		return $this->plainTextForPdf($notetoshow);
 	}
 
 	/**
@@ -626,25 +678,24 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	}
 
 	/**
-	 * Render description block.
+	 * Render description in successive zones so text can flow around the main image.
 	 *
 	 * @param	TCPDF		$pdf					PDF object
 	 * @param	string		$description			Product description
 	 * @param	Translate	$outputlangs			Output language
 	 * @param	int			$default_font_size		Default font size
-	 * @param	float|int	$x						X
-	 * @param	float|int	$y						Y
-	 * @param	float|int	$w						Width
-	 * @param	float|int	$h						Height
+	 * @param	float|int	$x						Title X
+	 * @param	float|int	$y						Title Y
+	 * @param	array		$zones					Text zones
 	 * @param	array		$dark					Dark color
 	 * @return	void
 	 */
-	private function renderDescriptionBlock(&$pdf, $description, $outputlangs, $default_font_size, $x, $y, $w, $h, $dark)
+	private function renderDescriptionFlowBlock(&$pdf, $description, $outputlangs, $default_font_size, $x, $y, $zones, $dark)
 	{
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', 'B', $default_font_size + 6);
 		$pdf->SetXY($x, $y);
-		$pdf->MultiCell($w, 8, $outputlangs->transnoentities('Description'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
+		$pdf->MultiCell(84, 8, $outputlangs->transnoentities('Description'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
 
 		$description = $this->plainTextForPdf($description);
 		if ($description === '') {
@@ -653,8 +704,263 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 
 		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
 		$pdf->SetFont('', '', $default_font_size - 1);
-		$pdf->SetXY($x, $y + 22);
-		$pdf->MultiCell($w, $h - 22, $outputlangs->convToOutputCharset($description), 0, 'L', false, 1, '', '', true, 0, false, true, $h - 22, 'T', true);
+		$this->renderFlowingPlainText($pdf, $description, $outputlangs, $zones, 4.4, true);
+	}
+
+	/**
+	 * Render public notes between product copy and feature tables.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$notes					Public notes
+	 * @param	Translate	$outputlangs			Output language
+	 * @param	int			$default_font_size		Default font size
+	 * @param	float|int	$x						X
+	 * @param	float|int	$y						Y
+	 * @param	float|int	$w						Width
+	 * @param	float|int	$h						Height
+	 * @param	array		$dark					Dark color
+	 * @param	array		$light					Light fill color
+	 * @return	void
+	 */
+	private function renderPublicNotesBlock(&$pdf, $notes, $outputlangs, $default_font_size, $x, $y, $w, $h, $dark, $light)
+	{
+		if ($notes === '' || $h <= 8) {
+			return;
+		}
+
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetFont('', 'B', $default_font_size + 1);
+		$pdf->SetXY($x, $y);
+		$pdf->MultiCell($w, 5, $this->transNativeOrCustom($outputlangs, 'NotePublic', 'JpsunProductSheetPublicNotes'), 0, 'L', false, 1);
+
+		$bodyY = $y + 7;
+		$bodyH = $h - 7;
+		$pdf->SetFillColor($light[0], $light[1], $light[2]);
+		$pdf->Rect($x, $bodyY, $w, $bodyH, 'F');
+		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
+		$pdf->SetFont('', '', $default_font_size - 2);
+		$this->renderFlowingPlainText(
+			$pdf,
+			$notes,
+			$outputlangs,
+			array(array('x' => $x + 2, 'y' => $bodyY + 1, 'w' => $w - 4, 'h' => $bodyH - 2)),
+			4.1,
+			true
+		);
+	}
+
+	/**
+	 * Render plain text across a list of bounded zones.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$text					Text to render
+	 * @param	Translate	$outputlangs			Output language
+	 * @param	array		$zones					Text zones
+	 * @param	float|int	$lineHeight				Line height
+	 * @param	bool		$showOverflowNotice	Show an overflow notice in the last zone
+	 * @return	void
+	 */
+	private function renderFlowingPlainText(&$pdf, $text, $outputlangs, $zones, $lineHeight, $showOverflowNotice)
+	{
+		$remaining = trim((string) $text);
+		$zoneCount = count($zones);
+		foreach ($zones as $index => $zone) {
+			if ($remaining === '') {
+				break;
+			}
+			if (empty($zone['w']) || empty($zone['h']) || $zone['w'] <= 0 || $zone['h'] <= 0) {
+				continue;
+			}
+
+			$split = $this->splitTextForBox($pdf, $remaining, $zone['w'], $zone['h'], $lineHeight);
+			$textToPrint = $split['text'];
+			$remaining = $split['remaining'];
+
+			if ($index === $zoneCount - 1 && $showOverflowNotice && $remaining !== '') {
+				$textToPrint = $this->appendOverflowNotice($textToPrint, $outputlangs->transnoentities('JpsunProductSheetMoreFields'), $this->maxLinesForHeight($zone['h'], $lineHeight));
+				$remaining = '';
+			}
+
+			if ($textToPrint === '') {
+				continue;
+			}
+
+			$pdf->SetXY($zone['x'], $zone['y']);
+			$pdf->MultiCell($zone['w'], $lineHeight, $outputlangs->convToOutputCharset($textToPrint), 0, 'L', false, 1, '', '', true, 0, false, true, $zone['h'], 'T', false);
+		}
+	}
+
+	/**
+	 * Split text into the part that fits a box and the remaining text.
+	 *
+	 * @param	TCPDF		$pdf			PDF object
+	 * @param	string		$text			Text to split
+	 * @param	float|int	$w				Box width
+	 * @param	float|int	$h				Box height
+	 * @param	float|int	$lineHeight		Line height
+	 * @return	array{text:string,remaining:string}
+	 */
+	private function splitTextForBox(&$pdf, $text, $w, $h, $lineHeight)
+	{
+		$maxLines = $this->maxLinesForHeight($h, $lineHeight);
+		$text = trim((string) $text);
+		if ($maxLines <= 0 || $text === '') {
+			return array('text' => '', 'remaining' => $text);
+		}
+
+		$paragraphs = preg_split("/\r\n|\r|\n/", $text);
+		$lines = array();
+		$paragraphCount = is_array($paragraphs) ? count($paragraphs) : 0;
+		if ($paragraphCount === 0) {
+			return array('text' => '', 'remaining' => '');
+		}
+
+		for ($paragraphIndex = 0; $paragraphIndex < $paragraphCount; $paragraphIndex++) {
+			$paragraph = trim($paragraphs[$paragraphIndex]);
+			if ($paragraph === '') {
+				if (count($lines) >= $maxLines) {
+					return array('text' => rtrim(implode("\n", $lines)), 'remaining' => $this->buildRemainingText($paragraphs, $paragraphIndex, ''));
+				}
+				$lines[] = '';
+				continue;
+			}
+
+			$words = preg_split('/\s+/', $paragraph, -1, PREG_SPLIT_NO_EMPTY);
+			$line = '';
+			foreach ($words as $wordIndex => $word) {
+				$candidate = ($line === '') ? $word : $line.' '.$word;
+				if ($line === '' || $this->getTextWidth($pdf, $candidate) <= $w) {
+					$line = $candidate;
+					continue;
+				}
+
+				if (count($lines) >= $maxLines) {
+					$remaining = trim($line.' '.implode(' ', array_slice($words, $wordIndex)));
+					return array('text' => rtrim(implode("\n", $lines)), 'remaining' => $this->buildRemainingText($paragraphs, $paragraphIndex, $remaining));
+				}
+
+				$lines[] = $line;
+				$line = $word;
+			}
+
+			if ($line !== '') {
+				if (count($lines) >= $maxLines) {
+					return array('text' => rtrim(implode("\n", $lines)), 'remaining' => $this->buildRemainingText($paragraphs, $paragraphIndex, $line));
+				}
+				$lines[] = $line;
+			}
+
+			if ($paragraphIndex < $paragraphCount - 1) {
+				if (count($lines) >= $maxLines) {
+					return array('text' => rtrim(implode("\n", $lines)), 'remaining' => $this->buildRemainingText($paragraphs, $paragraphIndex, ''));
+				}
+				$lines[] = '';
+			}
+		}
+
+		return array('text' => rtrim(implode("\n", $lines)), 'remaining' => '');
+	}
+
+	/**
+	 * Build remaining text from the current paragraph and the following ones.
+	 *
+	 * @param	array		$paragraphs			Paragraphs
+	 * @param	int			$paragraphIndex		Current paragraph index
+	 * @param	string		$currentText		Current paragraph remaining text
+	 * @return	string
+	 */
+	private function buildRemainingText($paragraphs, $paragraphIndex, $currentText)
+	{
+		$remaining = array();
+		if (trim($currentText) !== '') {
+			$remaining[] = trim($currentText);
+		}
+
+		for ($index = $paragraphIndex + 1; $index < count($paragraphs); $index++) {
+			if (trim($paragraphs[$index]) !== '') {
+				$remaining[] = trim($paragraphs[$index]);
+			}
+		}
+
+		return trim(implode("\n", $remaining));
+	}
+
+	/**
+	 * Append or replace the last visible line with the overflow notice.
+	 *
+	 * @param	string		$text		Visible text
+	 * @param	string		$notice		Overflow notice
+	 * @param	int			$maxLines	Maximum number of lines
+	 * @return	string
+	 */
+	private function appendOverflowNotice($text, $notice, $maxLines)
+	{
+		if ($maxLines <= 0) {
+			return '';
+		}
+
+		$lines = ($text === '') ? array() : explode("\n", $text);
+		if (count($lines) >= $maxLines) {
+			$lines = array_slice($lines, 0, $maxLines);
+			$lines[$maxLines - 1] = $notice;
+			return implode("\n", $lines);
+		}
+
+		$lines[] = $notice;
+		return implode("\n", $lines);
+	}
+
+	/**
+	 * Return the number of text lines available in a fixed height.
+	 *
+	 * @param	float|int	$h				Height
+	 * @param	float|int	$lineHeight		Line height
+	 * @return	int
+	 */
+	private function maxLinesForHeight($h, $lineHeight)
+	{
+		if ($h <= 0 || $lineHeight <= 0) {
+			return 0;
+		}
+
+		return (int) floor($h / $lineHeight);
+	}
+
+	/**
+	 * Return text width with a conservative fallback.
+	 *
+	 * @param	TCPDF		$pdf	PDF object
+	 * @param	string		$text	Text
+	 * @return	float|int
+	 */
+	private function getTextWidth(&$pdf, $text)
+	{
+		if (method_exists($pdf, 'GetStringWidth')) {
+			return $pdf->GetStringWidth($text);
+		}
+		if (method_exists($pdf, 'getStringWidth')) {
+			return $pdf->getStringWidth($text);
+		}
+
+		return strlen($text) * 1.8;
+	}
+
+	/**
+	 * Use a Dolibarr native label when available, with a module fallback.
+	 *
+	 * @param	Translate	$outputlangs	Output language
+	 * @param	string		$nativeKey		Native translation key
+	 * @param	string		$fallbackKey	Module fallback key
+	 * @return	string
+	 */
+	private function transNativeOrCustom($outputlangs, $nativeKey, $fallbackKey)
+	{
+		$label = $outputlangs->transnoentities($nativeKey);
+		if ($label === '' || $label === $nativeKey) {
+			$label = $outputlangs->transnoentities($fallbackKey);
+		}
+
+		return $label;
 	}
 
 	/**
