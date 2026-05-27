@@ -204,6 +204,18 @@ JpsunProduitsCompatibles_help=Select compatible product(s) with this product (no
 jpsun_ProductDet =Details
 jpsun_ProductDet_help =Miscellaneous characteristics which will not appear on quotes/orders/invoices.
 
+JpsunProductSheetName=JPSUN product sheet
+DocModelJpsunProductSheetDescription=One-page PDF product sheet template by JPSUN.
+JpsunProductSheetTitle=Product sheet
+JpsunProductSheetFeatures=Features
+JpsunProductSheetNoDescription=No description provided.
+JpsunProductSheetNoImage=No image
+JpsunProductSheetPublicNotes=Notes
+JpsunProductSheetDimensions=Dimensions
+JpsunProductSheetCountryOrigin=Country of origin
+JpsunProductSheetCustomsCode=Customs code
+JpsunProductSheetMoreFields=More fields not displayed.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Projects
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

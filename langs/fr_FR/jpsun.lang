@@ -208,6 +208,18 @@ JpsunProduitsCompatibles_help = Sélectionnez le(s) produit(s) compatible(s) ave
 jpsun_ProductDet = Détails
 jpsun_ProductDet_help = Caractéristiques diverses qui n'apparaitront pas sur les devis/commandes/factures.
 
+JpsunProductSheetName = Fiche produit JPSUN
+DocModelJpsunProductSheetDescription = Modele PDF fiche produit one-pager par JPSUN.
+JpsunProductSheetTitle = Fiche produit
+JpsunProductSheetFeatures = Caracteristiques
+JpsunProductSheetNoDescription = Aucune description renseignee.
+JpsunProductSheetNoImage = Aucune image
+JpsunProductSheetPublicNotes = Notes
+JpsunProductSheetDimensions = Dimensions
+JpsunProductSheetCountryOrigin = Pays d'origine
+JpsunProductSheetCustomsCode = Code douanier
+JpsunProductSheetMoreFields = Autres caracteristiques non affichees.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Projets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
