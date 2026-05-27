@@ -299,11 +299,9 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$sheetBottomY = min($this->page_hauteur - $this->marge_basse - 17, 270);
 		$categoriesHeight = $this->getCategoriesTableHeight($pdf, $categories, $outputlangs, $default_font_size, $bodyW, 48);
 		$featuresHeight = empty($categories) ? 68 : 58;
-		$notesHeight = ($publicNotes === '') ? 0 : 24;
 		$categoriesY = $sheetBottomY - $categoriesHeight;
 		$featuresY = $categoriesY - ($categoriesHeight > 0 ? $tableGap : 0) - $featuresHeight;
-		$notesY = ($notesHeight > 0) ? $featuresY - $tableGap - $notesHeight : 0;
-		$descriptionBottomY = (($notesHeight > 0) ? $notesY : $featuresY) - $tableGap;
+		$descriptionBottomY = $featuresY - $tableGap;
 		$descriptionBodyY = 48;
 		$descriptionBelowImageY = $mainImageBottomY + 5;
 		$descriptionZones = array();
@@ -312,6 +310,21 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		}
 		if ($descriptionBottomY > $descriptionBelowImageY) {
 			$descriptionZones[] = array('x' => $bodyX, 'y' => $descriptionBelowImageY, 'w' => $bodyW, 'h' => $descriptionBottomY - $descriptionBelowImageY);
+		}
+
+		$descriptionText = $this->getDescriptionTextForPdf($text['description'], $outputlangs);
+		$pdf->SetFont('', '', $default_font_size - 1);
+		$descriptionExtent = $this->measureFlowingPlainText($pdf, $descriptionText, $descriptionZones, 4.4, true);
+		$descriptionEndY = empty($descriptionExtent['used']) ? $descriptionBodyY : $descriptionExtent['endY'];
+		$notesY = 0;
+		$notesHeight = 0;
+		if ($publicNotes !== '') {
+			$notesY = max($descriptionEndY + $tableGap, $mainImageBottomY + $tableGap);
+			$notesAvailableHeight = $featuresY - $tableGap - $notesY;
+			if ($notesAvailableHeight > 8) {
+				$notesNeededHeight = $this->getPublicNotesBlockHeight($pdf, $publicNotes, $default_font_size, $bodyW);
+				$notesHeight = min($notesNeededHeight, $notesAvailableHeight);
+			}
 		}
 
 		$this->renderVisualColumn($pdf, $secondaryImages, 12, 68, 23, 23, 9);
@@ -837,14 +850,28 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetXY($x, $y);
 		$pdf->MultiCell(84, 8, $outputlangs->transnoentities('Description'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
 
+		$description = $this->getDescriptionTextForPdf($description, $outputlangs);
+
+		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
+		$pdf->SetFont('', '', $default_font_size - 1);
+		$this->renderFlowingPlainText($pdf, $description, $outputlangs, $zones, 4.4, true);
+	}
+
+	/**
+	 * Return product description as plain text ready for PDF output.
+	 *
+	 * @param	string		$description	Product description
+	 * @param	Translate	$outputlangs	Output language
+	 * @return	string
+	 */
+	private function getDescriptionTextForPdf($description, $outputlangs)
+	{
 		$description = $this->plainTextForPdf($description);
 		if ($description === '') {
 			$description = $outputlangs->transnoentities('JpsunProductSheetNoDescription');
 		}
 
-		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
-		$pdf->SetFont('', '', $default_font_size - 1);
-		$this->renderFlowingPlainText($pdf, $description, $outputlangs, $zones, 4.4, true);
+		return $description;
 	}
 
 	/**
@@ -890,6 +917,28 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	}
 
 	/**
+	 * Return the compact height needed to render the public notes block.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$notes					Public notes
+	 * @param	int			$default_font_size		Default font size
+	 * @param	float|int	$w						Width
+	 * @return	float|int
+	 */
+	private function getPublicNotesBlockHeight(&$pdf, $notes, $default_font_size, $w)
+	{
+		if ($notes === '') {
+			return 0;
+		}
+
+		$pdf->SetFont('', '', $default_font_size - 2);
+		$split = $this->splitTextForBox($pdf, $notes, $w - 4, 1000, 4.1);
+		$textHeight = max(4.1, $this->countTextLines($split['text']) * 4.1);
+
+		return 7 + 2 + $textHeight;
+	}
+
+	/**
 	 * Render plain text across a list of bounded zones.
 	 *
 	 * @param	TCPDF		$pdf					PDF object
@@ -928,6 +977,52 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$pdf->SetXY($zone['x'], $zone['y']);
 			$pdf->MultiCell($zone['w'], $lineHeight, $outputlangs->convToOutputCharset($textToPrint), 0, 'L', false, 1, '', '', true, 0, false, true, $zone['h'], 'T', false);
 		}
+	}
+
+	/**
+	 * Measure the vertical extent used by plain text across bounded zones.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$text					Text to measure
+	 * @param	array		$zones					Text zones
+	 * @param	float|int	$lineHeight				Line height
+	 * @param	bool		$showOverflowNotice	Show an overflow notice in the last zone
+	 * @return	array{used:bool,endY:float|int}
+	 */
+	private function measureFlowingPlainText(&$pdf, $text, $zones, $lineHeight, $showOverflowNotice)
+	{
+		$remaining = trim((string) $text);
+		$zoneCount = count($zones);
+		$used = false;
+		$endY = 0;
+
+		foreach ($zones as $index => $zone) {
+			if ($remaining === '') {
+				break;
+			}
+			if (empty($zone['w']) || empty($zone['h']) || $zone['w'] <= 0 || $zone['h'] <= 0) {
+				continue;
+			}
+
+			$split = $this->splitTextForBox($pdf, $remaining, $zone['w'], $zone['h'], $lineHeight);
+			$textToPrint = $split['text'];
+			$remaining = $split['remaining'];
+
+			if ($index === $zoneCount - 1 && $showOverflowNotice && $remaining !== '') {
+				$textToPrint = $this->appendOverflowNotice($textToPrint, '...', $this->maxLinesForHeight($zone['h'], $lineHeight));
+				$remaining = '';
+			}
+
+			if ($textToPrint === '') {
+				continue;
+			}
+
+			$used = true;
+			$usedHeight = min($zone['h'], $this->countTextLines($textToPrint) * $lineHeight);
+			$endY = $zone['y'] + $usedHeight;
+		}
+
+		return array('used' => $used, 'endY' => $endY);
 	}
 
 	/**
@@ -1048,6 +1143,22 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 
 		$lines[] = $notice;
 		return implode("\n", $lines);
+	}
+
+	/**
+	 * Count visible text lines.
+	 *
+	 * @param	string		$text	Text
+	 * @return	int
+	 */
+	private function countTextLines($text)
+	{
+		$text = (string) $text;
+		if ($text === '') {
+			return 0;
+		}
+
+		return count(explode("\n", $text));
 	}
 
 	/**
