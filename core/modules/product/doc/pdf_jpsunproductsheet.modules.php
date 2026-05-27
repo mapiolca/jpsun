@@ -24,6 +24,7 @@
 require_once DOL_DOCUMENT_ROOT.'/core/modules/product/modules_product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
@@ -293,9 +294,9 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$mainImageW = 76;
 		$mainImageH = 76;
 		$mainImageBottomY = $mainImageY + $mainImageH;
-		$tableGap = 5;
+		$tableGap = 2;
 		$sheetBottomY = min($this->page_hauteur - $this->marge_basse - 17, 270);
-		$categoriesHeight = empty($categories) ? 0 : 26;
+		$categoriesHeight = $this->getCategoriesTableHeight($pdf, $categories, $outputlangs, $default_font_size, $bodyW, 48);
 		$featuresHeight = empty($categories) ? 68 : 58;
 		$notesHeight = ($publicNotes === '') ? 0 : 24;
 		$categoriesY = $sheetBottomY - $categoriesHeight;
@@ -369,8 +370,6 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	{
 		global $conf;
 
-		$images = array();
-		$alreadyseen = array();
 		$pdir = array();
 
 		if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
@@ -392,28 +391,74 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 				continue;
 			}
 
+			$firstPhotos = $object->liste_photos($dir, 1);
+			if (empty($firstPhotos)) {
+				continue;
+			}
+
+			$images = array();
+			$alreadyseen = array();
+			foreach ($firstPhotos as $photo) {
+				$image = $this->buildProductImagePath($dir, $photo);
+				if (!empty($image['photo'])) {
+					$sourcepath = $image['source'];
+					unset($image['source']);
+					$images[] = $image;
+					$alreadyseen[$sourcepath] = 1;
+					break;
+				}
+			}
+
+			if (empty($images)) {
+				continue;
+			}
+
 			$photos = $object->liste_photos($dir);
 			foreach ($photos as $photo) {
-				if (empty($photo['photo'])) {
+				if (empty($photo['photo']) || !empty($alreadyseen[$dir.$photo['photo']])) {
 					continue;
 				}
 
-				$photopath = $dir.$photo['photo'];
-				if (!is_readable($photopath) || !empty($alreadyseen[$photopath])) {
+				$image = $this->buildProductImagePath($dir, $photo);
+				if (empty($image['photo'])) {
 					continue;
 				}
 
-				$thumbpath = $photopath;
-				if (!empty($photo['photo_vignette']) && is_readable($dir.$photo['photo_vignette'])) {
-					$thumbpath = $dir.$photo['photo_vignette'];
-				}
-
-				$images[] = array('photo' => $photopath, 'thumb' => $thumbpath);
-				$alreadyseen[$photopath] = 1;
+				$sourcepath = $image['source'];
+				unset($image['source']);
+				$images[] = $image;
+				$alreadyseen[$sourcepath] = 1;
 			}
+
+			return $images;
 		}
 
-		return $images;
+		return array();
+	}
+
+	/**
+	 * Build the product image path according to the same quality rule as JPSUN quote/order PDFs.
+	 *
+	 * @param	string	$dir		Product image directory
+	 * @param	array	$photo		Photo metadata returned by liste_photos()
+	 * @return	array{photo:string,thumb:string,source:string}
+	 */
+	private function buildProductImagePath($dir, $photo)
+	{
+		if (empty($photo['photo'])) {
+			return array('photo' => '', 'thumb' => '', 'source' => '');
+		}
+
+		$sourcepath = $dir.$photo['photo'];
+		$displaypath = $sourcepath;
+		if (!getDolGlobalInt('CAT_HIGH_QUALITY_IMAGES') && !empty($photo['photo_vignette']) && is_readable($dir.$photo['photo_vignette'])) {
+			$displaypath = $dir.$photo['photo_vignette'];
+		}
+		if (!is_readable($displaypath)) {
+			return array('photo' => '', 'thumb' => '', 'source' => '');
+		}
+
+		return array('photo' => $displaypath, 'thumb' => $displaypath, 'source' => $sourcepath);
 	}
 
 	/**
@@ -437,8 +482,85 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('Barcode'), isset($object->barcode) ? $object->barcode : '');
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetCountryOrigin'), $this->formatCountryOrigin($object, $outputlangs));
 		$this->addFeatureRow($rows, $outputlangs->transnoentities('JpsunProductSheetCustomsCode'), isset($object->customcode) ? $object->customcode : '');
+		$this->addPrintableExtrafieldRows($rows, $object, $outputlangs);
 
 		return $rows;
+	}
+
+	/**
+	 * Add non-empty product extrafields flagged as printable.
+	 *
+	 * @param	array<int,array{label:string,value:string}>	$rows			Feature rows
+	 * @param	Product										$object			Product object
+	 * @param	Translate									$outputlangs	Output language
+	 * @return	void
+	 */
+	private function addPrintableExtrafieldRows(&$rows, $object, $outputlangs)
+	{
+		$extrafields = new ExtraFields($this->db);
+		$extralabels = $extrafields->fetch_name_optionals_label('product');
+		if (empty($extralabels) || empty($extrafields->attributes['product']['label'])) {
+			return;
+		}
+
+		if (method_exists($object, 'fetch_optionals')) {
+			$object->fetch_optionals();
+		}
+
+		$attributes = $extrafields->attributes['product'];
+		$keys = array_keys($extralabels);
+		usort($keys, function ($a, $b) use ($attributes) {
+			$posA = isset($attributes['pos'][$a]) ? (int) $attributes['pos'][$a] : 0;
+			$posB = isset($attributes['pos'][$b]) ? (int) $attributes['pos'][$b] : 0;
+			if ($posA === $posB) {
+				return strcmp($a, $b);
+			}
+
+			return ($posA < $posB) ? -1 : 1;
+		});
+
+		foreach ($keys as $key) {
+			if (empty($attributes['printable'][$key])) {
+				continue;
+			}
+
+			$optionKey = 'options_'.$key;
+			if (!isset($object->array_options[$optionKey]) || $object->array_options[$optionKey] === '') {
+				continue;
+			}
+
+			$value = $extrafields->showOutputField($key, $object->array_options[$optionKey], '', 'product', $outputlangs, $object);
+			$value = $this->plainTextForPdf($value);
+			if ($value === '') {
+				continue;
+			}
+
+			$label = $this->getExtrafieldLabel($attributes, $key, $outputlangs);
+			$this->addFeatureRow($rows, $label, $value);
+		}
+	}
+
+	/**
+	 * Return a translated extrafield label when possible.
+	 *
+	 * @param	array		$attributes		Extrafield attributes for products
+	 * @param	string		$key			Extrafield key
+	 * @param	Translate	$outputlangs	Output language
+	 * @return	string
+	 */
+	private function getExtrafieldLabel($attributes, $key, $outputlangs)
+	{
+		if (!empty($attributes['langfile'][$key])) {
+			$outputlangs->load($attributes['langfile'][$key]);
+		}
+
+		$label = isset($attributes['label'][$key]) ? $attributes['label'][$key] : $key;
+		$translated = $outputlangs->transnoentities($label);
+		if ($translated !== '' && $translated !== $label) {
+			return $translated;
+		}
+
+		return $label;
 	}
 
 	/**
@@ -731,7 +853,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', 'B', $default_font_size + 1);
 		$pdf->SetXY($x, $y);
-		$pdf->MultiCell($w, 5, $this->transNativeOrCustom($outputlangs, 'NotePublic', 'JpsunProductSheetPublicNotes'), 0, 'L', false, 1);
+		$pdf->MultiCell($w, 5, $this->transNativeOrCustom($outputlangs, 'Notes', 'JpsunProductSheetPublicNotes'), 0, 'L', false, 1);
 
 		$bodyY = $y + 7;
 		$bodyH = $h - 7;
@@ -1058,6 +1180,38 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$currentY += $rowHeight;
 			$index++;
 		}
+	}
+
+	/**
+	 * Calculate the compact category table height.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string[]	$categories				Category labels
+	 * @param	Translate	$outputlangs			Output language
+	 * @param	int			$default_font_size		Default font size
+	 * @param	float|int	$w						Width
+	 * @param	float|int	$maxH					Maximum height
+	 * @return	float|int
+	 */
+	private function getCategoriesTableHeight(&$pdf, $categories, $outputlangs, $default_font_size, $w, $maxH)
+	{
+		if (empty($categories) || $maxH <= 0) {
+			return 0;
+		}
+
+		$height = 7;
+		$pdf->SetFont('', '', $default_font_size - 2);
+		foreach (array_values($categories) as $category) {
+			$category = $outputlangs->convToOutputCharset((string) $category);
+			$rowHeight = max(6, $this->getStringHeight($pdf, $w - 4, $category) + 2);
+			if ($height + $rowHeight > $maxH) {
+				return $maxH;
+			}
+
+			$height += $rowHeight;
+		}
+
+		return $height;
 	}
 
 	/**
