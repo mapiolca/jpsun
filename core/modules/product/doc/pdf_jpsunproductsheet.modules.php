@@ -1007,9 +1007,12 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$overflow = false;
 		$lastZoneUsed = null;
 
-		foreach ($blocks as $blockIndex => $block) {
-			$block = trim((string) $block);
+		$blockIndex = 0;
+		while ($blockIndex < count($blocks)) {
+			$hasMoreBlocks = ($blockIndex < count($blocks) - 1);
+			$block = trim((string) $blocks[$blockIndex]);
 			if ($block === '') {
+				$blockIndex++;
 				continue;
 			}
 
@@ -1044,19 +1047,52 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 					$endY = $currentY;
 					$lastZoneUsed = $zone;
 					$placed = true;
+					$blockIndex++;
 					break;
 				}
 
-				if ($currentY > $zone['y'] && $zoneIndex < $zoneCount - 1) {
-					$zoneIndex++;
-					$currentY = null;
-					continue;
+				if ($this->isSplittableHtmlBlock($block) && $availableHeight >= $lineHeight) {
+					$split = $this->splitHtmlBlockForBox($pdf, $block, $zone['w'], $zone['x'], $currentY, $availableHeight, $lineHeight);
+					if (!empty($split['html'])) {
+						$splitHeight = min($availableHeight, max($lineHeight, $this->getHtmlCellHeight($pdf, $split['html'], $zone['w'], $zone['x'], $currentY, $lineHeight)));
+						if ($render) {
+							$this->renderBoundedHtmlCell($pdf, $split['html'], $zone['x'], $currentY, $zone['w'], $splitHeight);
+						}
+						$used = true;
+						$currentY += $splitHeight;
+						$endY = $currentY;
+						$lastZoneUsed = $zone;
+						$placed = true;
+
+						if (!empty($split['remaining'])) {
+							$blocks[$blockIndex] = $split['remaining'];
+							$zoneIndex++;
+							$currentY = null;
+						} else {
+							$blockIndex++;
+						}
+						break;
+					}
 				}
 
 				if ($zoneIndex < $zoneCount - 1) {
+					if ($currentY > $zone['y'] || $this->isSplittableHtmlBlock($block)) {
+						$zoneIndex++;
+						$currentY = null;
+						continue;
+					}
+
+					if ($render) {
+						$this->renderBoundedHtmlCell($pdf, $block, $zone['x'], $currentY, $zone['w'], $availableHeight);
+					}
+					$used = true;
+					$endY = $zoneBottomY;
+					$lastZoneUsed = $zone;
+					$blockIndex++;
 					$zoneIndex++;
 					$currentY = null;
-					continue;
+					$placed = true;
+					break;
 				}
 
 				if ($render) {
@@ -1065,8 +1101,9 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 				$used = true;
 				$endY = $zoneBottomY;
 				$lastZoneUsed = $zone;
-				$overflow = true;
+				$overflow = $hasMoreBlocks || $blockHeight > $availableHeight;
 				$placed = true;
+				$blockIndex++;
 				break;
 			}
 
@@ -1075,7 +1112,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 				break;
 			}
 
-			if ($blockIndex < count($blocks) - 1 && $zoneIndex >= $zoneCount) {
+			if ($blockIndex < count($blocks) && $zoneIndex >= $zoneCount) {
 				$overflow = true;
 				break;
 			}
@@ -1089,6 +1126,225 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		}
 
 		return array('used' => $used, 'endY' => $endY);
+	}
+
+	/**
+	 * Split a splittable HTML block into a fitting fragment and its remaining HTML.
+	 *
+	 * @param	TCPDF		$pdf			PDF object
+	 * @param	string		$html			HTML block
+	 * @param	float|int	$w				Width
+	 * @param	float|int	$x				X
+	 * @param	float|int	$y				Y
+	 * @param	float|int	$h				Available height
+	 * @param	float|int	$lineHeight		Fallback line height
+	 * @return	array{html:string,remaining:string}
+	 */
+	private function splitHtmlBlockForBox(&$pdf, $html, $w, $x, $y, $h, $lineHeight)
+	{
+		$html = trim((string) $html);
+		if ($html === '' || $w <= 0 || $h <= 0 || !$this->isSplittableHtmlBlock($html)) {
+			return array('html' => '', 'remaining' => $html);
+		}
+
+		$units = $this->tokenizeHtmlForSplit($html);
+		$unitCount = count($units);
+		if ($unitCount < 2) {
+			return array('html' => '', 'remaining' => $html);
+		}
+
+		$low = 1;
+		$high = $unitCount - 1;
+		$bestIndex = 0;
+		$bestHtml = '';
+		while ($low <= $high) {
+			$mid = (int) floor(($low + $high) / 2);
+			$candidate = $this->buildBalancedHtmlFragment($units, 0, $mid);
+			if (!$this->hasRenderableHtmlContent($candidate)) {
+				$low = $mid + 1;
+				continue;
+			}
+
+			$candidateHeight = max($lineHeight, $this->getHtmlCellHeight($pdf, $candidate, $w, $x, $y, $lineHeight));
+			if ($candidateHeight <= $h) {
+				$bestIndex = $mid;
+				$bestHtml = $candidate;
+				$low = $mid + 1;
+			} else {
+				$high = $mid - 1;
+			}
+		}
+
+		if ($bestIndex <= 0 || $bestHtml === '') {
+			return array('html' => '', 'remaining' => $html);
+		}
+
+		$remaining = $this->buildBalancedHtmlFragment($units, $bestIndex, $unitCount);
+		if (!$this->hasRenderableHtmlContent($remaining)) {
+			$remaining = '';
+		}
+
+		return array('html' => $bestHtml, 'remaining' => $remaining);
+	}
+
+	/**
+	 * Return whether a block can be split without duplicating non-text content.
+	 *
+	 * @param	string	$html	HTML block
+	 * @return	bool
+	 */
+	private function isSplittableHtmlBlock($html)
+	{
+		if (preg_match('/<(img|table)\b/i', (string) $html)) {
+			return false;
+		}
+
+		return $this->hasRenderableHtmlContent($html);
+	}
+
+	/**
+	 * Tokenize HTML into tags, words and spaces.
+	 *
+	 * @param	string	$html	HTML
+	 * @return	array<int,string>
+	 */
+	private function tokenizeHtmlForSplit($html)
+	{
+		$parts = preg_split('~(<[^>]+>)~', (string) $html, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		if (!is_array($parts)) {
+			return array((string) $html);
+		}
+
+		$units = array();
+		foreach ($parts as $part) {
+			if ($part === '') {
+				continue;
+			}
+			if ($part[0] === '<') {
+				$units[] = $part;
+				continue;
+			}
+
+			$textParts = preg_split('/(\s+)/u', $part, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+			if (!is_array($textParts)) {
+				$units[] = $part;
+				continue;
+			}
+			foreach ($textParts as $textPart) {
+				$units[] = $textPart;
+			}
+		}
+
+		return $units;
+	}
+
+	/**
+	 * Build a valid HTML fragment from token boundaries.
+	 *
+	 * @param	array<int,string>	$units	HTML units
+	 * @param	int					$start	Start index
+	 * @param	int					$end	End index
+	 * @return	string
+	 */
+	private function buildBalancedHtmlFragment($units, $start, $end)
+	{
+		$start = max(0, (int) $start);
+		$end = min(count($units), (int) $end);
+		if ($start >= $end) {
+			return '';
+		}
+
+		$prefixStack = array();
+		for ($i = 0; $i < $start; $i++) {
+			$this->updateHtmlTagStack($prefixStack, $units[$i]);
+		}
+
+		$activeStack = $prefixStack;
+		$html = '';
+		foreach ($prefixStack as $tag) {
+			$html .= $tag['html'];
+		}
+
+		for ($i = $start; $i < $end; $i++) {
+			$html .= $units[$i];
+			$this->updateHtmlTagStack($activeStack, $units[$i]);
+		}
+
+		for ($i = count($activeStack) - 1; $i >= 0; $i--) {
+			$html .= '</'.$activeStack[$i]['name'].'>';
+		}
+
+		return trim($html);
+	}
+
+	/**
+	 * Update the open tag stack for one HTML token.
+	 *
+	 * @param	array<int,array{name:string,html:string}>	$stack	Open tags
+	 * @param	string										$token	HTML token
+	 * @return	void
+	 */
+	private function updateHtmlTagStack(&$stack, $token)
+	{
+		$token = trim((string) $token);
+		if ($token === '' || $token[0] !== '<') {
+			return;
+		}
+
+		if (preg_match('/^<\s*\/\s*([a-z][a-z0-9]*)\b/i', $token, $matches)) {
+			$name = strtolower($matches[1]);
+			for ($i = count($stack) - 1; $i >= 0; $i--) {
+				if ($stack[$i]['name'] === $name) {
+					array_splice($stack, $i);
+					break;
+				}
+			}
+			return;
+		}
+
+		if (!preg_match('/^<\s*([a-z][a-z0-9]*)\b/i', $token, $matches)) {
+			return;
+		}
+
+		$name = strtolower($matches[1]);
+		if ($this->isSelfClosingHtmlToken($token, $name)) {
+			return;
+		}
+
+		$stack[] = array('name' => $name, 'html' => $token);
+	}
+
+	/**
+	 * Return whether a token opens no content.
+	 *
+	 * @param	string	$token	HTML token
+	 * @param	string	$name	Tag name
+	 * @return	bool
+	 */
+	private function isSelfClosingHtmlToken($token, $name)
+	{
+		if (preg_match('/\/\s*>$/', (string) $token)) {
+			return true;
+		}
+
+		$voidTags = array(
+			'area' => true,
+			'base' => true,
+			'br' => true,
+			'col' => true,
+			'embed' => true,
+			'hr' => true,
+			'img' => true,
+			'input' => true,
+			'link' => true,
+			'meta' => true,
+			'param' => true,
+			'source' => true,
+			'track' => true,
+			'wbr' => true
+		);
+
+		return !empty($voidTags[strtolower((string) $name)]);
 	}
 
 	/**
