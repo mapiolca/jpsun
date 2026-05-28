@@ -312,9 +312,13 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 			$descriptionZones[] = array('x' => $bodyX, 'y' => $descriptionBelowImageY, 'w' => $bodyW, 'h' => $descriptionBottomY - $descriptionBelowImageY);
 		}
 
-		$descriptionText = $this->getDescriptionTextForPdf($text['description'], $outputlangs);
 		$pdf->SetFont('', '', $default_font_size - 1);
-		$descriptionExtent = $this->measureFlowingPlainText($pdf, $descriptionText, $descriptionZones, 4.4, true);
+		if ($this->hasHtmlMarkup($text['description']) && $this->hasRenderableHtmlContent($text['description'])) {
+			$descriptionExtent = $this->measureFlowingHtml($pdf, $this->htmlForPdf($text['description']), $descriptionZones, 4.4, true);
+		} else {
+			$descriptionText = $this->getDescriptionTextForPdf($text['description'], $outputlangs);
+			$descriptionExtent = $this->measureFlowingPlainText($pdf, $descriptionText, $descriptionZones, 4.4, true);
+		}
 		$descriptionEndY = empty($descriptionExtent['used']) ? $descriptionBodyY : $descriptionExtent['endY'];
 		$notesY = 0;
 		$notesHeight = 0;
@@ -622,7 +626,7 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 	 *
 	 * @param	Product		$object			Product object
 	 * @param	Translate	$outputlangs	Output language
-	 * @return	string						Public notes as plain text
+	 * @return	string						Public notes with substitutions applied
 	 */
 	private function getPublicNotesText($object, $outputlangs)
 	{
@@ -637,8 +641,11 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		if (function_exists('convertBackOfficeMediasLinksToPublicLinks')) {
 			$notetoshow = convertBackOfficeMediasLinksToPublicLinks($notetoshow);
 		}
+		if (!$this->hasRenderableHtmlContent($notetoshow)) {
+			return '';
+		}
 
-		return $this->plainTextForPdf($notetoshow);
+		return $notetoshow;
 	}
 
 	/**
@@ -850,11 +857,13 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->SetXY($x, $y);
 		$pdf->MultiCell(84, 8, $outputlangs->transnoentities('Description'), 0, 'L', false, 1, '', '', true, 0, false, true, 18, 'T', true);
 
-		$description = $this->getDescriptionTextForPdf($description, $outputlangs);
-
 		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
 		$pdf->SetFont('', '', $default_font_size - 1);
-		$this->renderFlowingPlainText($pdf, $description, $outputlangs, $zones, 4.4, true);
+		if ($this->hasHtmlMarkup($description) && $this->hasRenderableHtmlContent($description)) {
+			$this->renderFlowingHtml($pdf, $this->htmlForPdf($description), $outputlangs, $zones, 4.4, true);
+		} else {
+			$this->renderFlowingPlainText($pdf, $this->getDescriptionTextForPdf($description, $outputlangs), $outputlangs, $zones, 4.4, true);
+		}
 	}
 
 	/**
@@ -906,14 +915,12 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		$pdf->Rect($x, $bodyY, $w, $bodyH, 'F');
 		$pdf->SetTextColor($dark[0], $dark[1], $dark[2]);
 		$pdf->SetFont('', '', $default_font_size - 2);
-		$this->renderFlowingPlainText(
-			$pdf,
-			$notes,
-			$outputlangs,
-			array(array('x' => $x + 2, 'y' => $bodyY + 1, 'w' => $w - 4, 'h' => $bodyH - 2)),
-			4.1,
-			true
-		);
+		$zones = array(array('x' => $x + 2, 'y' => $bodyY + 1, 'w' => $w - 4, 'h' => $bodyH - 2));
+		if ($this->hasHtmlMarkup($notes) && $this->hasRenderableHtmlContent($notes)) {
+			$this->renderFlowingHtml($pdf, $this->htmlForPdf($notes), $outputlangs, $zones, 4.1, true);
+		} else {
+			$this->renderFlowingPlainText($pdf, $this->plainTextForPdf($notes), $outputlangs, $zones, 4.1, true);
+		}
 	}
 
 	/**
@@ -932,10 +939,368 @@ class pdf_jpsunproductsheet extends ModelePDFProduct
 		}
 
 		$pdf->SetFont('', '', $default_font_size - 2);
-		$split = $this->splitTextForBox($pdf, $notes, $w - 4, 1000, 4.1);
-		$textHeight = max(4.1, $this->countTextLines($split['text']) * 4.1);
+		if ($this->hasHtmlMarkup($notes) && $this->hasRenderableHtmlContent($notes)) {
+			$textHeight = max(4.1, $this->getHtmlCellHeight($pdf, $this->htmlForPdf($notes), $w - 4, 0, 0, 4.1));
+		} else {
+			$split = $this->splitTextForBox($pdf, $this->plainTextForPdf($notes), $w - 4, 1000, 4.1);
+			$textHeight = max(4.1, $this->countTextLines($split['text']) * 4.1);
+		}
 
 		return 7 + 2 + $textHeight;
+	}
+
+	/**
+	 * Render HTML across a list of bounded zones.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$html					HTML to render
+	 * @param	Translate	$outputlangs			Output language
+	 * @param	array		$zones					Text zones
+	 * @param	float|int	$lineHeight				Fallback line height
+	 * @param	bool		$showOverflowNotice	Show an overflow notice in the last zone
+	 * @return	void
+	 */
+	private function renderFlowingHtml(&$pdf, $html, $outputlangs, $zones, $lineHeight, $showOverflowNotice)
+	{
+		$this->flowHtmlBlocks($pdf, $html, $outputlangs, $zones, $lineHeight, $showOverflowNotice, true);
+	}
+
+	/**
+	 * Measure the vertical extent used by HTML across bounded zones.
+	 *
+	 * @param	TCPDF		$pdf					PDF object
+	 * @param	string		$html					HTML to measure
+	 * @param	array		$zones					Text zones
+	 * @param	float|int	$lineHeight				Fallback line height
+	 * @param	bool		$showOverflowNotice	Show an overflow notice in the last zone
+	 * @return	array{used:bool,endY:float|int}
+	 */
+	private function measureFlowingHtml(&$pdf, $html, $zones, $lineHeight, $showOverflowNotice)
+	{
+		return $this->flowHtmlBlocks($pdf, $html, null, $zones, $lineHeight, $showOverflowNotice, false);
+	}
+
+	/**
+	 * Flow already prepared HTML blocks into fixed PDF zones.
+	 *
+	 * @param	TCPDF			$pdf					PDF object
+	 * @param	string			$html					Prepared HTML
+	 * @param	Translate|null	$outputlangs			Output language
+	 * @param	array			$zones					Text zones
+	 * @param	float|int		$lineHeight				Fallback line height
+	 * @param	bool			$showOverflowNotice	Show an overflow notice in the last zone
+	 * @param	bool			$render					Render when true, only measure when false
+	 * @return	array{used:bool,endY:float|int}
+	 */
+	private function flowHtmlBlocks(&$pdf, $html, $outputlangs, $zones, $lineHeight, $showOverflowNotice, $render)
+	{
+		$blocks = $this->splitHtmlIntoFlowBlocks($html);
+		if (empty($blocks) || empty($zones)) {
+			return array('used' => false, 'endY' => 0);
+		}
+
+		$zoneCount = count($zones);
+		$zoneIndex = 0;
+		$currentY = null;
+		$used = false;
+		$endY = 0;
+		$overflow = false;
+		$lastZoneUsed = null;
+
+		foreach ($blocks as $blockIndex => $block) {
+			$block = trim((string) $block);
+			if ($block === '') {
+				continue;
+			}
+
+			$placed = false;
+			while ($zoneIndex < $zoneCount) {
+				$zone = $zones[$zoneIndex];
+				if (empty($zone['w']) || empty($zone['h']) || $zone['w'] <= 0 || $zone['h'] <= 0) {
+					$zoneIndex++;
+					$currentY = null;
+					continue;
+				}
+
+				if ($currentY === null || $currentY < $zone['y']) {
+					$currentY = $zone['y'];
+				}
+
+				$zoneBottomY = $zone['y'] + $zone['h'];
+				$availableHeight = $zoneBottomY - $currentY;
+				if ($availableHeight <= 0) {
+					$zoneIndex++;
+					$currentY = null;
+					continue;
+				}
+
+				$blockHeight = max($lineHeight, $this->getHtmlCellHeight($pdf, $block, $zone['w'], $zone['x'], $currentY, $lineHeight));
+				if ($blockHeight <= $availableHeight) {
+					if ($render) {
+						$this->renderBoundedHtmlCell($pdf, $block, $zone['x'], $currentY, $zone['w'], $blockHeight);
+					}
+					$used = true;
+					$currentY += $blockHeight;
+					$endY = $currentY;
+					$lastZoneUsed = $zone;
+					$placed = true;
+					break;
+				}
+
+				if ($currentY > $zone['y'] && $zoneIndex < $zoneCount - 1) {
+					$zoneIndex++;
+					$currentY = null;
+					continue;
+				}
+
+				if ($zoneIndex < $zoneCount - 1) {
+					$zoneIndex++;
+					$currentY = null;
+					continue;
+				}
+
+				if ($render) {
+					$this->renderBoundedHtmlCell($pdf, $block, $zone['x'], $currentY, $zone['w'], $availableHeight);
+				}
+				$used = true;
+				$endY = $zoneBottomY;
+				$lastZoneUsed = $zone;
+				$overflow = true;
+				$placed = true;
+				break;
+			}
+
+			if (!$placed || $overflow) {
+				$overflow = true;
+				break;
+			}
+
+			if ($blockIndex < count($blocks) - 1 && $zoneIndex >= $zoneCount) {
+				$overflow = true;
+				break;
+			}
+		}
+
+		if ($render && $overflow && $showOverflowNotice && is_object($outputlangs)) {
+			if ($lastZoneUsed === null) {
+				$lastZoneUsed = $zones[$zoneCount - 1];
+			}
+			$this->renderOverflowNotice($pdf, $outputlangs, $lastZoneUsed, $lineHeight);
+		}
+
+		return array('used' => $used, 'endY' => $endY);
+	}
+
+	/**
+	 * Split an HTML fragment into display blocks that TCPDF can measure.
+	 *
+	 * @param	string	$html	HTML fragment
+	 * @return	array<int,string>
+	 */
+	private function splitHtmlIntoFlowBlocks($html)
+	{
+		$html = trim((string) $html);
+		if ($html === '') {
+			return array();
+		}
+
+		$blocks = array();
+		$offset = 0;
+		$pattern = '~<(p|div|h[1-6]|ul|ol|table|blockquote|pre|dl|address|center)\b[^>]*>.*?</\1\s*>|<img\b[^>]*\/?>|<br\s*\/?>~is';
+		while (preg_match($pattern, $html, $matches, PREG_OFFSET_CAPTURE, $offset)) {
+			$match = $matches[0][0];
+			$matchOffset = $matches[0][1];
+			$this->appendInlineHtmlBlocks($blocks, substr($html, $offset, $matchOffset - $offset));
+			$blocks[] = $match;
+			$offset = $matchOffset + strlen($match);
+		}
+		$this->appendInlineHtmlBlocks($blocks, substr($html, $offset));
+
+		return array_values(array_filter($blocks, function ($block) {
+			return trim((string) $block) !== '';
+		}));
+	}
+
+	/**
+	 * Append inline HTML chunks as flow blocks.
+	 *
+	 * @param	array<int,string>	$blocks	Blocks
+	 * @param	string				$html	Inline HTML
+	 * @return	void
+	 */
+	private function appendInlineHtmlBlocks(&$blocks, $html)
+	{
+		$html = trim((string) $html);
+		if ($html === '') {
+			return;
+		}
+
+		$parts = preg_split('~(<br\s*\/?>)~i', $html, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		if (!is_array($parts) || empty($parts)) {
+			$blocks[] = $html;
+			return;
+		}
+
+		$current = '';
+		foreach ($parts as $part) {
+			$current .= $part;
+			if (preg_match('~^<br\s*\/?>$~i', trim($part))) {
+				$blocks[] = $current;
+				$current = '';
+			}
+		}
+		if (trim($current) !== '') {
+			$blocks[] = $current;
+		}
+	}
+
+	/**
+	 * Return HTML prepared the same way as Dolibarr standard PDF models.
+	 *
+	 * @param	string	$html	HTML or plain text
+	 * @return	string
+	 */
+	private function htmlForPdf($html)
+	{
+		return dol_htmlentitiesbr((string) $html);
+	}
+
+	/**
+	 * Detect whether text contains HTML markup.
+	 *
+	 * @param	string	$text	Text
+	 * @return	bool
+	 */
+	private function hasHtmlMarkup($text)
+	{
+		return (bool) preg_match('/<\s*\/?\s*[a-z][a-z0-9]*(?:\s+[^>]*)?\/?\s*>/i', (string) $text);
+	}
+
+	/**
+	 * Detect whether an HTML fragment has visible content for the PDF.
+	 *
+	 * @param	string	$html	HTML fragment
+	 * @return	bool
+	 */
+	private function hasRenderableHtmlContent($html)
+	{
+		if ($this->plainTextForPdf($html) !== '') {
+			return true;
+		}
+
+		return (bool) preg_match('/<(img|table|ul|ol|li)\b/i', (string) $html);
+	}
+
+	/**
+	 * Measure an HTML cell height with a conservative plain-text fallback.
+	 *
+	 * @param	TCPDF		$pdf			PDF object
+	 * @param	string		$html			Prepared HTML
+	 * @param	float|int	$w				Width
+	 * @param	float|int	$x				X
+	 * @param	float|int	$y				Y
+	 * @param	float|int	$lineHeight		Fallback line height
+	 * @return	float|int
+	 */
+	private function getHtmlCellHeight(&$pdf, $html, $w, $x, $y, $lineHeight)
+	{
+		$html = trim((string) $html);
+		if ($html === '' || $w <= 0) {
+			return 0;
+		}
+
+		if (method_exists($pdf, 'startTransaction') && method_exists($pdf, 'rollbackTransaction')) {
+			$pageBefore = method_exists($pdf, 'getPage') ? $pdf->getPage() : 0;
+			$xBefore = method_exists($pdf, 'GetX') ? $pdf->GetX() : $x;
+			$yBefore = method_exists($pdf, 'GetY') ? $pdf->GetY() : $y;
+			$pdf->startTransaction();
+			$this->setPdfAutoPageBreak($pdf, false);
+			$pdf->SetXY($x, $y);
+			$pdf->writeHTMLCell($w, 0, $x, $y, $html, 0, 1, false, true, '', true);
+			$pageAfter = method_exists($pdf, 'getPage') ? $pdf->getPage() : $pageBefore;
+			$endY = method_exists($pdf, 'GetY') ? $pdf->GetY() : $y;
+			$pdf->rollbackTransaction(true);
+			if ($pageBefore > 0 && method_exists($pdf, 'setPage')) {
+				$pdf->setPage($pageBefore);
+			}
+			$pdf->SetXY($xBefore, $yBefore);
+			$this->setPdfAutoPageBreak($pdf, true);
+
+			if ($pageBefore > 0 && $pageAfter > $pageBefore) {
+				return $this->page_hauteur;
+			}
+
+			return max($lineHeight, $endY - $y);
+		}
+
+		$text = $this->plainTextForPdf($html);
+		$split = $this->splitTextForBox($pdf, $text, $w, 1000, $lineHeight);
+		return max($lineHeight, $this->countTextLines($split['text']) * $lineHeight);
+	}
+
+	/**
+	 * Render HTML in a clipped cell to keep the current layout fixed.
+	 *
+	 * @param	TCPDF		$pdf	PDF object
+	 * @param	string		$html	HTML
+	 * @param	float|int	$x		X
+	 * @param	float|int	$y		Y
+	 * @param	float|int	$w		Width
+	 * @param	float|int	$h		Height
+	 * @return	void
+	 */
+	private function renderBoundedHtmlCell(&$pdf, $html, $x, $y, $w, $h)
+	{
+		if ($html === '' || $w <= 0 || $h <= 0) {
+			return;
+		}
+
+		$this->setPdfAutoPageBreak($pdf, false);
+		if (method_exists($pdf, 'StartTransform') && method_exists($pdf, 'StopTransform')) {
+			$pdf->StartTransform();
+			$pdf->Rect($x, $y, $w, $h, 'CNZ');
+			$pdf->SetXY($x, $y);
+			$pdf->writeHTMLCell($w, $h, $x, $y, $html, 0, 1, false, true, '', true);
+			$pdf->StopTransform();
+		} else {
+			$pdf->SetXY($x, $y);
+			$pdf->writeHTMLCell($w, $h, $x, $y, $html, 0, 1, false, true, '', true);
+		}
+		$this->setPdfAutoPageBreak($pdf, true);
+	}
+
+	/**
+	 * Render the overflow notice inside the last available zone.
+	 *
+	 * @param	TCPDF		$pdf			PDF object
+	 * @param	Translate	$outputlangs	Output language
+	 * @param	array		$zone			Zone
+	 * @param	float|int	$lineHeight		Line height
+	 * @return	void
+	 */
+	private function renderOverflowNotice(&$pdf, $outputlangs, $zone, $lineHeight)
+	{
+		if (empty($zone['w']) || empty($zone['h']) || $zone['w'] <= 0 || $zone['h'] <= 0) {
+			return;
+		}
+
+		$noticeY = max($zone['y'], $zone['y'] + $zone['h'] - $lineHeight);
+		$pdf->SetXY($zone['x'], $noticeY);
+		$pdf->MultiCell($zone['w'], $lineHeight, $outputlangs->convToOutputCharset($outputlangs->transnoentities('JpsunProductSheetMoreFields')), 0, 'L', false, 1, '', '', true, 0, false, true, $lineHeight, 'T', false);
+	}
+
+	/**
+	 * Toggle PDF auto page breaks with the margin used by this model.
+	 *
+	 * @param	TCPDF	$pdf	PDF object
+	 * @param	bool	$enabled	Enable page breaks
+	 * @return	void
+	 */
+	private function setPdfAutoPageBreak(&$pdf, $enabled)
+	{
+		if (method_exists($pdf, 'setAutoPageBreak')) {
+			$pdf->setAutoPageBreak($enabled, 0);
+		}
 	}
 
 	/**
