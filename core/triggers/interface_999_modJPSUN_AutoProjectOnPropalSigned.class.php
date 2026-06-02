@@ -23,6 +23,7 @@
 
 dol_include_once('/core/triggers/dolibarrtriggers.class.php');
 require_once dirname(__DIR__, 2).'/lib/jpsun_delivery.lib.php';
+require_once dirname(__DIR__, 2).'/lib/jpsun_powerplantpv.lib.php';
 
 /**
  *	\class		InterfaceAutoProjectOnPropalSigned
@@ -94,7 +95,7 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
+	    if (!jpsunIsPowerPlantPVEnabled() && ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE')) {
             if ($object->element == 'propal') {
                 global $db;
                 $pc = '0';

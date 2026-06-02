@@ -3,6 +3,7 @@
 
 require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/dolgraph.class.php';
+dol_include_once('/jpsun/lib/jpsun_powerplantpv.lib.php');
 
 class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 {
@@ -11,6 +12,7 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	public $boxlabel = 'JpsunWidgetPuissanceCreteHebdoTitle';
 	public $depends = array('commande');
 	public $lang = 'jpsun@jpsun';
+	public $hidden = false;
 
 	public function __construct($db, $param = '')
 	{
@@ -22,6 +24,13 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 	public function loadBox($max = 5)
 	{
 		global $conf, $langs;
+		if ($this->isDisabledByPowerPlantPV()) {
+			$this->hidden = true;
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			return;
+		}
+
 		$langs->loadLangs(array('jpsun@jpsun'));
 
 		$y = (int) dol_print_date(dol_now(), '%Y');
@@ -69,7 +78,16 @@ class jpsun_graph_puissancecrete_hebdomadaire extends ModeleBoxes
 
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		if ($this->isDisabledByPowerPlantPV()) {
+			return '';
+		}
+
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
+	}
+
+	private function isDisabledByPowerPlantPV()
+	{
+		return function_exists('jpsunIsPowerPlantPVEnabled') && jpsunIsPowerPlantPVEnabled();
 	}
 
 	private function fetchByWeek($db, $year)

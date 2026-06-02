@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 27/05/2026
+- Dernière mise à jour : 03/06/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.19
+- Version : 1.20
 - PHP : 8.2
 - Compatibilité : Dolibarr 21+
 
@@ -24,6 +24,7 @@
 
 - Ajout de fonctionnalités diverses pour JPSUN.
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue.
+- Integration du modele contrat JPSUN PRO avec le module Centrale PV.
 
 ## Traductions
 

@@ -261,6 +261,12 @@ JpsunContractSiteAddress =Site address
 jpsunWorkSiteAddress=Work site address
 JpsunContractSiteRepresentative1 =Representative site 1
 JpsunContractSiteRepresentative2 =Representative site 2
+JpsunContractProModelDescription=JPSUN contract template for professionals.
+JpsunPowerPlantPVRequiredForContractPro=The PowerPlantPV module must be enabled to generate the JPSUN PRO model.
+JpsunPowerPlantPVPermissionDenied=You do not have permission to read the PV power plants linked to this contract.
+JpsunContractProNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the JPSUN PRO model.
+JpsunContractProTemplateMissing=The JPSUN PRO PDF background is missing: %s
+JpsunContractProPowerPlantAnnex=Power plant %s / %s
 
 //# ENEDIS section
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

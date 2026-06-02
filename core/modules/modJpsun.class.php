@@ -24,6 +24,7 @@
  *      \brief      Description and activation file for module modJpsun
  */
 include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
+require_once dirname(__DIR__, 2).'/lib/jpsun_powerplantpv.lib.php';
 
 /**
  * 		\class      modJpsun
@@ -54,7 +55,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.19';
+		$this->version = '1.20';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -126,27 +127,28 @@ class modJpsun extends DolibarrModules
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
-		$this->boxes = array(
-			array(
-					'file' => 'jpsun_graph_puissancecrete_totaleannee.php@jpsun',
+		$this->boxes = array();
+		if (!jpsunIsPowerPlantPVEnabled()) {
+			$this->boxes[] = array(
+				'file' => 'jpsun_graph_puissancecrete_totaleannee.php@jpsun',
 				'note' => 'BoxPuissanceCreteTotal',
 				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_puissancecrete_mensuelle.php@jpsun',
+			);
+			$this->boxes[] = array(
+				'file' => 'jpsun_graph_puissancecrete_mensuelle.php@jpsun',
 				'note' => 'BoxPuissanceCreteMensuel',
 				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
+			);
+			$this->boxes[] = array(
+				'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
 				'note' => 'BoxPuissanceCreteHebdo',
 				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
-				'note' => 'BoxCamembertCategorieCa',
-				'enabledbydefaulton' => 'Home'
-			)
+			);
+		}
+		$this->boxes[] = array(
+			'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
+			'note' => 'BoxCamembertCategorieCa',
+			'enabledbydefaulton' => 'Home'
 		);			// List of boxes
 
         // Permissions provided by this module
@@ -358,7 +360,7 @@ class modJpsun extends DolibarrModules
 			'computed' => '',
 			'entity' => 0,
 			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
+			'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
 			'totalizable' => 1,
 			'printable' => 1,
 		);
@@ -387,7 +389,7 @@ class modJpsun extends DolibarrModules
 			'computed' => '',
 			'entity' => 0,
 			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
+			'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
 			'totalizable' => 1,
 			'printable' => 1,
 		);
@@ -527,7 +529,7 @@ class modJpsun extends DolibarrModules
 			'computed' => '',
 			'entity' => 0,
 			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
+			'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
 			'totalizable' => 1,
 			'printable' => 1,
 		);

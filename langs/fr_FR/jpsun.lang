@@ -267,6 +267,12 @@ JpsunContractSiteAddress = Adresse du site
 jpsunWorkSiteAddress=Adresse du chantier
 JpsunContractSiteRepresentative1 = Représentant du site 1
 JpsunContractSiteRepresentative2 = Représentant du site 2
+JpsunContractProModelDescription = Modèle de contrat JPSUN pour les pro
+JpsunPowerPlantPVRequiredForContractPro = Le module Centrale PV doit être activé pour générer le modèle JPSUN PRO.
+JpsunPowerPlantPVPermissionDenied = Vous n'avez pas le droit de lire les centrales PV liées à ce contrat.
+JpsunContractProNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle JPSUN PRO.
+JpsunContractProTemplateMissing = Le fond PDF du modèle JPSUN PRO est introuvable : %s
+JpsunContractProPowerPlantAnnex = Centrale %s / %s
 
 //#Partie ENEDIS
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

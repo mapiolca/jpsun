@@ -16,6 +16,7 @@
  */
 
 include_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+dol_include_once('/jpsun/lib/jpsun_powerplantpv.lib.php');
 
 class box_jpsun_pc_install extends ModeleBoxes
 {
@@ -29,6 +30,13 @@ class box_jpsun_pc_install extends ModeleBoxes
 	public function loadBox($max = 5)
 	{
 		global $db, $langs;
+
+		if ($this->isDisabledByPowerPlantPV()) {
+			$this->hidden = true;
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			return;
+		}
 
 		$langs->loadLangs(array('jpsun@jpsun'));
 
@@ -130,5 +138,19 @@ class box_jpsun_pc_install extends ModeleBoxes
 		}
 
 		return implode(' ', $points);
+	}
+
+	public function showBox($head = null, $contents = null, $nooutput = 0)
+	{
+		if ($this->isDisabledByPowerPlantPV()) {
+			return '';
+		}
+
+		return parent::showBox($head, $contents, $nooutput);
+	}
+
+	private function isDisabledByPowerPlantPV()
+	{
+		return function_exists('jpsunIsPowerPlantPVEnabled') && jpsunIsPowerPlantPVEnabled();
 	}
 }

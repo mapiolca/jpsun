@@ -2,6 +2,7 @@
 /* Copyright (C) 2026	Pierre Ardoin	<developpeur@lesmetiersdubatiment.fr> */
 
 require_once DOL_DOCUMENT_ROOT.'/core/boxes/modules_boxes.php';
+dol_include_once('/jpsun/lib/jpsun_powerplantpv.lib.php');
 
 class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 {
@@ -10,6 +11,7 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 	public $boxlabel = 'JpsunWidgetPuissanceCreteTotalTitle';
 	public $depends = array('commande');
 	public $lang = 'jpsun@jpsun';
+	public $hidden = false;
 
 	public function __construct($db, $param = '')
 	{
@@ -21,6 +23,13 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 	public function loadBox($max = 5)
 	{
 		global $langs;
+		if ($this->isDisabledByPowerPlantPV()) {
+			$this->hidden = true;
+			$this->info_box_head = array();
+			$this->info_box_contents = array();
+			return;
+		}
+
 		$langs->loadLangs(array('jpsun@jpsun'));
 		$yearCurrent = (int) dol_print_date(dol_now(), '%Y');
 		$totalCurrentYear = $this->fetchTotalYear($this->db, $yearCurrent);
@@ -44,7 +53,16 @@ class jpsun_graph_puissancecrete_totaleannee extends ModeleBoxes
 
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{
+		if ($this->isDisabledByPowerPlantPV()) {
+			return '';
+		}
+
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
+	}
+
+	private function isDisabledByPowerPlantPV()
+	{
+		return function_exists('jpsunIsPowerPlantPVEnabled') && jpsunIsPowerPlantPVEnabled();
 	}
 
 	private function fetchTotalYear($db, $year)

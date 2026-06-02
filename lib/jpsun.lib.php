@@ -23,6 +23,8 @@
  *				Put some comments here
  */
 
+require_once __DIR__.'/jpsun_powerplantpv.lib.php';
+
 function jpsunAdminPrepareHead()
 {
     global $langs, $conf, $object;
@@ -525,6 +527,10 @@ function jpsunRecomputeInstalledPeakPowerFromProductLines($db)
 {
 	$updated = 0;
 	$error = '';
+
+	if (jpsunIsPowerPlantPVEnabled()) {
+		return array('result' => 0, 'updated' => 0, 'error' => '');
+	}
 
 	$queries = array(
 		"UPDATE ".MAIN_DB_PREFIX."propal_extrafields pef
