@@ -512,7 +512,6 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Préambule');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client et le Prestataire sont individuellement dénommés une Partie et collectivement les Parties.');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.');
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Le présent document est intégralement généré par Dolibarr à partir du contrat, des lignes de service, de la zone géographique du contrat et des centrales PV liées.');
 	}
 
 	/**
@@ -1245,7 +1244,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (strlen($this->digitsOnly($legaldata['siret'] ?? '')) !== 14) {
 			$missing[] = 'SIRET à 14 chiffres';
 		}
-		foreach (array('formula' => 'formule de maintenance', 'zone' => 'zone géographique du contrat') as $key => $label) {
+		foreach (array('formula' => 'libellé des services du contrat', 'zone' => 'zone géographique du contrat') as $key => $label) {
 			if (empty($subscriptiondata[$key])) {
 				$missing[] = $label;
 			}
@@ -1497,30 +1496,28 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
-	 * Return selected formula labels from contract lines.
+	 * Return service labels from contract lines.
 	 *
 	 * @param Contrat $object Contract object
 	 * @return string
 	 */
 	private function getSoleilAquitainFormulaLabel($object)
 	{
-		$preferred = array();
-		$fallback = array();
+		$labels = array();
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
-				$label = $this->normalizeTableText($this->getContractLineRawLabel($line));
+				if (isset($line->total_ht) && is_numeric($line->total_ht) && (float) $line->total_ht < 0) {
+					continue;
+				}
+
+				$label = $this->normalizeTableText($this->getContractLineServiceLabel($line));
 				if ($label === '') {
 					continue;
 				}
-				if (preg_match('/essentiel|confort|premium/i', $label)) {
-					$preferred[] = $label;
-				} elseif (empty($line->total_ht) || (float) $line->total_ht >= 0) {
-					$fallback[] = $label;
-				}
+				$labels[] = $label;
 			}
 		}
 
-		$labels = !empty($preferred) ? $preferred : $fallback;
 		return implode("\n", array_values(array_unique($labels)));
 	}
 
@@ -2317,6 +2314,103 @@ class pdf_soleilaquitain extends ModelePDFContract
 		}
 
 		return '';
+	}
+
+	/**
+	 * Return the service label for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return string
+	 */
+	private function getContractLineServiceLabel($line)
+	{
+		if (!$this->isServiceLineType($line)) {
+			return '';
+		}
+
+		if (!empty($line->product_label)) {
+			return trim((string) $line->product_label);
+		}
+
+		$productid = !empty($line->fk_product) ? (int) $line->fk_product : 0;
+		if ($productid > 0) {
+			$label = $this->getProductServiceLabel($productid);
+			if ($label !== '') {
+				return $label;
+			}
+		}
+
+		foreach (array('libelle', 'label') as $property) {
+			if (!empty($line->{$property})) {
+				return trim((string) $line->{$property});
+			}
+		}
+
+		if ($productid <= 0) {
+			foreach (array('desc', 'ref') as $property) {
+				if (!empty($line->{$property})) {
+					return trim((string) $line->{$property});
+				}
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Return true when a contract line is a service line or has no explicit product type.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return bool
+	 */
+	private function isServiceLineType($line)
+	{
+		$serviceType = $this->getDolibarrServiceProductType();
+		foreach (array('product_type', 'fk_product_type') as $property) {
+			if (isset($line->{$property}) && (string) $line->{$property} !== '') {
+				return (int) $line->{$property} === $serviceType;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return a Dolibarr service product label from id.
+	 *
+	 * @param string|int $productid Product id
+	 * @return string
+	 */
+	private function getProductServiceLabel($productid)
+	{
+		$productid = (int) $productid;
+		if ($productid <= 0) {
+			return '';
+		}
+
+		$product = new Product($this->db);
+		if ($product->fetch($productid) <= 0) {
+			return '';
+		}
+
+		$serviceType = $this->getDolibarrServiceProductType();
+		foreach (array('type', 'fk_product_type') as $property) {
+			if (isset($product->{$property}) && (string) $product->{$property} !== '' && (int) $product->{$property} !== $serviceType) {
+				return '';
+			}
+		}
+
+		return trim($this->firstNonEmpty($product->label ?? '', $product->ref ?? ''));
+	}
+
+	/**
+	 * Return Dolibarr service product type value.
+	 *
+	 * @return int
+	 */
+	private function getDolibarrServiceProductType()
+	{
+		return defined('Product::TYPE_SERVICE') ? (int) Product::TYPE_SERVICE : 1;
 	}
 
 	/**
