@@ -8,6 +8,11 @@
 - Separation des reglages JPSUN en onglets admin dedies.
 - Ajout d'annexes PDF configurables par entite, jointes aux devis et contrats JPSUN selon ordre et activation.
 - Le contrat `JPSUN PRO` ajoute le specimen du modele natif Interventions configure en annexe PDF.
+- Amelioration du rendu des descriptions HTML des lignes et ajout du detail de TVA par taux dans les totaux du contrat `JPSUN PRO`.
+- Correction du positionnement des blocs Client / Prestataire en premiere page du contrat `JPSUN PRO`.
+- Correction de la section Signature du contrat `JPSUN PRO` pour placer le contact tiers dans la case Pour le Client.
+- Les PDF joints au contrat `JPSUN PRO` sont maintenant introduits comme annexes numerotees apres l'Annexe 2.
+- Le specimen d'intervention joint au contrat `JPSUN PRO` force le watermark SPECIMEN et reprend le tiers du contrat.
 
 ## 1.19 (27/05/2026)
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue Dolibarr.

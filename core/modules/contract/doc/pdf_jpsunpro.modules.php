@@ -132,7 +132,7 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->marge_basse = getDolGlobalInt('MAIN_PDF_MARGIN_BOTTOM', 10);
 		$this->corner_radius = getDolGlobalInt('MAIN_PDF_FRAME_CORNER_RADIUS', 0);
 		$this->option_logo = 1;
-		$this->option_tva = 0;
+		$this->option_tva = 1; // Manage VAT totals.
 		$this->option_modereg = 0;
 		$this->option_condreg = 0;
 		$this->option_multilang = 0;
@@ -263,8 +263,8 @@ class pdf_jpsunpro extends ModelePDFContract
 
 		$contactdata = $this->getContractContactData($object, $outputlangs, $dataset['powerplants'][0]);
 		$this->renderNativeContract($pdf, $object, $dataset['powerplants'], $contactdata, $outputlangs);
-		jpsunPdfAppendConfiguredAttachments($pdf, 'contract', $object->entity);
-		jpsunPdfAppendFichinterSpecimen($pdf, $this->db, $outputlangs);
+		$nextannexnumber = $this->appendConfiguredPdfAnnexes($pdf, $object, $outputlangs, 3);
+		$this->appendFichinterSpecimenAnnex($pdf, $object, $outputlangs, $nextannexnumber);
 
 		$pdf->Close();
 		$pdf->Output($file, 'F');
@@ -467,7 +467,7 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->renderKeyValueTable($pdf, $object, $outputlangs, $scopeRows, array(50, $this->contentWidth() - 50));
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Montant de la prestation');
-		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Désignation', 'Montant HT'), $this->getContractLineRows($object, $outputlangs), array($this->contentWidth() - 42, 42));
+		$this->renderContractAmountTable($pdf, $object, $outputlangs);
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Site et interlocuteurs');
 		$this->renderPowerPlantSiteTables($pdf, $object, $powerplants, $outputlangs);
@@ -534,18 +534,18 @@ class pdf_jpsunpro extends ModelePDFContract
 	 */
 	private function renderSignaturePage(&$pdf, $object, $contactdata, $outputlangs)
 	{
-		$this->ensureSpace($pdf, $object, $outputlangs, 62, 'Signatures');
+		$this->ensureSpace($pdf, $object, $outputlangs, 68, 'Signatures');
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Signatures');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Fait en deux exemplaires originaux. Le Client reconnaît avoir pris connaissance du présent contrat et de ses annexes.');
 		$pdf->Ln(4);
 
 		$startY = $pdf->GetY();
 		$w = ($this->contentWidth() - 8) / 2;
-		$providername = $this->firstNonEmpty($this->formatContactLine($contactdata['SALESSIGNATORY']), $this->emetteur->name);
-		$clientname = $this->firstNonEmpty($this->formatContactLine($contactdata['CLIENTSIGNATORY']), is_object($object->thirdparty) ? $object->thirdparty->name : '');
+		$providername = $this->formatSignatureContactBlock($contactdata['SALESSIGNATORY'], $this->emetteur->name);
+		$clientname = $this->formatSignatureContactBlock($contactdata['CLIENTSIGNATORY'], is_object($object->thirdparty) ? $object->thirdparty->name : '');
 		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche, $startY, $w, 'Pour le Prestataire', $providername);
 		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche + $w + 8, $startY, $w, 'Pour le Client', $clientname);
-		$pdf->SetY($startY + 48);
+		$pdf->SetY($startY + 54);
 	}
 
 	/**
@@ -750,6 +750,129 @@ class pdf_jpsunpro extends ModelePDFContract
 			array('Nettoyage panneaux', 'Sur devis'),
 		);
 		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Tarifs', 'Prix'), $rows, array($this->contentWidth() - 48, 48));
+	}
+
+	/**
+	 * Append configured PDF attachments as numbered annexes.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param int $startnumber First annex number
+	 * @return int Next annex number
+	 */
+	private function appendConfiguredPdfAnnexes(&$pdf, $object, $outputlangs, $startnumber)
+	{
+		$annexnumber = (int) $startnumber;
+		foreach (jpsunPdfAttachmentFilesForTarget('contract', $object->entity) as $item) {
+			$title = $outputlangs->transnoentities((string) $item['label']);
+			if ($title === (string) $item['label']) {
+				$title = (string) $item['label'];
+			}
+
+			$result = $this->appendPdfFileAnnex($pdf, $object, $outputlangs, $annexnumber, $title, (string) $item['path'], 'JpsunPdfAttachmentAppendError');
+			if ($result > 0) {
+				$annexnumber++;
+			}
+		}
+
+		return $annexnumber;
+	}
+
+	/**
+	 * Append the native intervention specimen as a numbered annex.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param int $annexnumber Annex number
+	 * @return int Next annex number
+	 */
+	private function appendFichinterSpecimenAnnex(&$pdf, $object, $outputlangs, $annexnumber)
+	{
+		$errorcode = 0;
+		$path = jpsunPdfFichinterSpecimenPath($this->db, $outputlangs, $errorcode, $object);
+		if ($path === '') {
+			return $annexnumber;
+		}
+
+		$title = 'Fiche d’intervention';
+		$result = $this->appendPdfFileAnnex($pdf, $object, $outputlangs, $annexnumber, $title, $path, 'JpsunPdfAttachmentFichinterAppendError');
+		if ($result > 0) {
+			$annexnumber++;
+		}
+
+		return $annexnumber;
+	}
+
+	/**
+	 * Append one external PDF as a numbered annex.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param int $annexnumber Annex number
+	 * @param string $title Annex title
+	 * @param string $path PDF path
+	 * @param string $warningkey Warning translation key
+	 * @return int Page count if OK, <0 if KO
+	 */
+	private function appendPdfFileAnnex(&$pdf, $object, $outputlangs, $annexnumber, $title, $path, $warningkey)
+	{
+		if (!$this->canAppendPdfFile($pdf, $path, $title)) {
+			jpsunPdfAttachmentWarn($warningkey, $title);
+			return -1;
+		}
+
+		$this->renderPdfAnnexReferencePage($pdf, $object, $outputlangs, $annexnumber, $title);
+		$result = jpsunPdfAppendPdfFileAsPages($pdf, $path, $title);
+		if ($result < 0) {
+			jpsunPdfAttachmentWarn($warningkey, $title);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Return whether a PDF can be imported without creating an empty annex page.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param string $path PDF path
+	 * @param string $label Log label
+	 * @return bool
+	 */
+	private function canAppendPdfFile(&$pdf, $path, $label)
+	{
+		if ($path === '' || !is_readable($path) || strtolower(pathinfo($path, PATHINFO_EXTENSION)) !== 'pdf') {
+			return false;
+		}
+		if (!method_exists($pdf, 'setSourceFile') || !method_exists($pdf, 'importPage')) {
+			return false;
+		}
+
+		try {
+			return ((int) $pdf->setSourceFile($path) > 0);
+		} catch (Exception $e) {
+			dol_syslog('JPSUN PDF attachment '.$label.' cannot be preflighted: '.$e->getMessage(), LOG_WARNING);
+			return false;
+		}
+	}
+
+	/**
+	 * Render the reference page that introduces an appended PDF annex.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param int $annexnumber Annex number
+	 * @param string $title Annex title
+	 * @return void
+	 */
+	private function renderPdfAnnexReferencePage(&$pdf, $object, $outputlangs, $annexnumber, $title)
+	{
+		$this->addPage($pdf, $object, $outputlangs, 'Annexe '.$annexnumber);
+		$this->renderMainTitle($pdf, $outputlangs, 'Annexe '.$annexnumber.' : '.$title);
+		$this->renderParagraph($pdf, $object, $outputlangs, 'Le document PDF joint à cette annexe est intégré aux pages suivantes.');
 	}
 
 	/**
@@ -1074,14 +1197,18 @@ class pdf_jpsunpro extends ModelePDFContract
 	private function renderSmallCard(&$pdf, $outputlangs, $x, $y, $w, $h, $rows)
 	{
 		$this->drawRect($pdf, $x, $y, $w, $h, array(255, 255, 255), array(210, 216, 222));
-		$pdf->SetXY($x + 3, $y + 3);
+		$innerX = $x + 3;
+		$innerW = $w - 6;
+		$pdf->SetXY($innerX, $y + 3);
 		foreach ($rows as $row) {
 			$pdf->SetFont('', 'B', $this->defaultFontSize);
 			$pdf->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
-			$pdf->MultiCell($w - 6, 4, $outputlangs->convToOutputCharset($row['label']), 0, 'L');
+			$pdf->SetX($innerX);
+			$pdf->MultiCell($innerW, 4, $outputlangs->convToOutputCharset($row['label']), 0, 'L');
 			$pdf->SetFont('', '', $this->defaultFontSize - 1);
 			$pdf->SetTextColor(0, 0, 0);
-			$pdf->MultiCell($w - 6, 4, $outputlangs->convToOutputCharset($row['value']), 0, 'L');
+			$pdf->SetX($innerX);
+			$pdf->MultiCell($innerW, 4, $outputlangs->convToOutputCharset($row['value']), 0, 'L');
 			$pdf->Ln(1);
 		}
 	}
@@ -1205,6 +1332,146 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Render the contract amount table with HTML-capable line descriptions.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderContractAmountTable(&$pdf, $object, $outputlangs)
+	{
+		$headers = array('Désignation', 'Montant HT');
+		$widths = array($this->contentWidth() - 42, 42);
+		$rows = $this->getContractAmountRows($object, $outputlangs);
+
+		$this->ensureSpace($pdf, $object, $outputlangs, 14, 'Tableau');
+		$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array(1));
+
+		foreach ($rows as $row) {
+			$rowType = isset($row['type']) ? $row['type'] : 'line';
+			$height = $this->getContractAmountRowHeight($pdf, $row, $widths);
+
+			if ($pdf->GetY() + $height > $this->contentBottom) {
+				$this->addPage($pdf, $object, $outputlangs, 'Tableau');
+				$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array(1));
+			}
+
+			$x = $this->marge_gauche;
+			$y = $pdf->GetY();
+			$bold = ($rowType === 'total');
+
+			if ($rowType === 'line') {
+				$this->renderContractAmountHtmlCell($pdf, $x, $y, $widths[0], $height, isset($row['html']) ? $row['html'] : '', $outputlangs);
+			} else {
+				$pdf->SetXY($x, $y);
+				$this->renderTableCell($pdf, $widths[0], $height, $outputlangs->convToOutputCharset((string) $row['label']), $bold, false, 'L', false);
+			}
+
+			$pdf->SetXY($x + $widths[0], $y);
+			$this->renderTableCell($pdf, $widths[1], $height, $outputlangs->convToOutputCharset((string) $row['amount']), $bold, false, 'R', true);
+		}
+
+		$pdf->Ln(2);
+	}
+
+	/**
+	 * Return height for one amount table row.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param array<string,string> $row Row data
+	 * @param array<int,float> $widths Column widths
+	 * @return float
+	 */
+	private function getContractAmountRowHeight(&$pdf, $row, $widths)
+	{
+		$height = 7;
+		if ((isset($row['type']) ? $row['type'] : 'line') === 'line') {
+			$height = max($height, $this->getHtmlCellHeight($pdf, isset($row['html']) ? $row['html'] : '', $widths[0] - 4, $this->marge_gauche + 2, $pdf->GetY() + 1.5, 4) + 3);
+		} else {
+			$height = max($height, $this->getTextHeight($pdf, $widths[0] - 4, isset($row['label']) ? (string) $row['label'] : '') + 3);
+		}
+		$height = max($height, $this->getTextHeight($pdf, $widths[1] - 4, isset($row['amount']) ? (string) $row['amount'] : '') + 3);
+
+		return $height;
+	}
+
+	/**
+	 * Render one HTML-enabled designation cell.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param float $x X
+	 * @param float $y Y
+	 * @param float $w Width
+	 * @param float $h Height
+	 * @param string $html Prepared HTML
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderContractAmountHtmlCell(&$pdf, $x, $y, $w, $h, $html, $outputlangs)
+	{
+		$pdf->SetFillColor(255, 255, 255);
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetDrawColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+		$pdf->SetFont('', '', $this->defaultFontSize - 1);
+		$pdf->Rect($x, $y, $w, $h, 'D');
+
+		if (method_exists($pdf, 'writeHTMLCell')) {
+			$pdf->writeHTMLCell($w - 4, $h - 3, $x + 2, $y + 1.5, $outputlangs->convToOutputCharset($html), 0, 0, false, true, 'L', true);
+		} else {
+			$text = $outputlangs->convToOutputCharset($this->normalizeTableText($html));
+			$pdf->SetXY($x + 2, $y + 1.5);
+			$pdf->MultiCell($w - 4, 4, $text, 0, 'L', false, 0, '', '', true, 0, false, true, $h - 3, 'T', false);
+		}
+
+		$pdf->SetTextColor(0, 0, 0);
+	}
+
+	/**
+	 * Measure an HTML cell height with a plain-text fallback.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param string $html Prepared HTML
+	 * @param float $w Width
+	 * @param float $x X
+	 * @param float $y Y
+	 * @param float $lineHeight Fallback line height
+	 * @return float
+	 */
+	private function getHtmlCellHeight(&$pdf, $html, $w, $x, $y, $lineHeight)
+	{
+		$html = trim((string) $html);
+		if ($html === '' || $w <= 0) {
+			return $lineHeight;
+		}
+
+		if (method_exists($pdf, 'writeHTMLCell') && method_exists($pdf, 'startTransaction') && method_exists($pdf, 'rollbackTransaction')) {
+			$pageBefore = method_exists($pdf, 'getPage') ? $pdf->getPage() : 0;
+			$xBefore = $pdf->GetX();
+			$yBefore = $pdf->GetY();
+
+			$pdf->startTransaction();
+			$pdf->SetXY($x, $y);
+			$pdf->writeHTMLCell($w, 0, $x, $y, $html, 0, 1, false, true, 'L', true);
+			$pageAfter = method_exists($pdf, 'getPage') ? $pdf->getPage() : $pageBefore;
+			$endY = $pdf->GetY();
+			$pdf->rollbackTransaction(true);
+			if ($pageBefore > 0 && method_exists($pdf, 'setPage')) {
+				$pdf->setPage($pageBefore);
+			}
+			$pdf->SetXY($xBefore, $yBefore);
+
+			if ($pageBefore > 0 && $pageAfter > $pageBefore) {
+				return max($lineHeight, $this->contentBottom - $y);
+			}
+
+			return max($lineHeight, $endY - $y);
+		}
+
+		return max($lineHeight, $this->getTextHeight($pdf, $w, $this->normalizeTableText($html)));
+	}
+
+	/**
 	 * Ensure enough vertical space.
 	 *
 	 * @param TCPDF $pdf PDF instance
@@ -1258,17 +1525,19 @@ class pdf_jpsunpro extends ModelePDFContract
 	 */
 	private function renderSignatureBox(&$pdf, $outputlangs, $x, $y, $w, $title, $name)
 	{
-		$this->drawRect($pdf, $x, $y, $w, 44, array(255, 255, 255), array(180, 188, 195));
-		$pdf->SetXY($x + 4, $y + 4);
+		$innerX = $x + 4;
+		$innerW = $w - 8;
+		$this->drawRect($pdf, $x, $y, $w, 50, array(255, 255, 255), array(180, 188, 195));
+		$pdf->SetXY($innerX, $y + 4);
 		$pdf->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
 		$pdf->SetFont('', 'B', $this->defaultFontSize);
-		$pdf->MultiCell($w - 8, 5, $outputlangs->convToOutputCharset($title), 0, 'L');
+		$pdf->MultiCell($innerW, 5, $outputlangs->convToOutputCharset($title), 0, 'L');
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', '', $this->defaultFontSize - 1);
-		$pdf->MultiCell($w - 8, 5, $outputlangs->convToOutputCharset($name), 0, 'L');
-		$pdf->SetY($y + 25);
-		$pdf->SetX($x + 4);
-		$pdf->MultiCell($w - 8, 5, $outputlangs->convToOutputCharset('Lu et approuvé, date et signature'), 0, 'L');
+		$pdf->SetX($innerX);
+		$pdf->MultiCell($innerW, 4, $outputlangs->convToOutputCharset($name), 0, 'L');
+		$pdf->SetXY($innerX, $y + 34);
+		$pdf->MultiCell($innerW, 5, $outputlangs->convToOutputCharset('Lu et approuvé, date et signature'), 0, 'L');
 	}
 
 	/**
@@ -1276,47 +1545,140 @@ class pdf_jpsunpro extends ModelePDFContract
 	 *
 	 * @param Contrat $object Contract object
 	 * @param Translate $outputlangs Output language
-	 * @return array<int,array<int,string>>
+	 * @return array<int,array<string,string>>
 	 */
-	private function getContractLineRows($object, $outputlangs)
+	private function getContractAmountRows($object, $outputlangs)
 	{
 		global $conf;
 
 		$rows = array();
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
-				$label = '';
-				if (!empty($line->desc)) {
-					$label = $this->normalizeTableText($line->desc);
-				} elseif (!empty($line->libelle)) {
-					$label = $this->normalizeTableText($line->libelle);
-				} elseif (!empty($line->label)) {
-					$label = $this->normalizeTableText($line->label);
-				} elseif (!empty($line->ref)) {
-					$label = $this->normalizeTableText($line->ref);
-				}
+				$label = $this->getContractLineRawLabel($line);
 				$amount = '';
 				if (isset($line->total_ht) && is_numeric($line->total_ht)) {
 					$amount = price($line->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency);
 				}
 				if ($label !== '') {
-					$rows[] = array($label, $amount);
+					$rows[] = array(
+						'type' => 'line',
+						'html' => $this->prepareContractLineDescriptionHtml($label),
+						'amount' => $amount,
+					);
 				}
 			}
 		}
 
 		if (empty($rows)) {
-			$rows[] = array('Contrat maintenance annuelle', '');
-			$rows[] = array('Gestion des alarmes', '');
+			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Contrat maintenance annuelle'), 'amount' => '');
+			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Gestion des alarmes'), 'amount' => '');
 		}
 		if (isset($object->total_ht) && is_numeric($object->total_ht) && (float) $object->total_ht != 0.0) {
-			$rows[] = array('Total HT', price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency));
+			$rows[] = array('type' => 'total', 'label' => 'Total HT', 'amount' => price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency));
+		}
+		foreach ($this->getContractVatRows($object) as $vatRow) {
+			$rate = isset($vatRow['rate']) ? (string) $vatRow['rate'] : '';
+			$reverseChargeMarker = (strpos($rate, '*') !== false) ? '*' : '';
+			$rateForDisplay = str_replace('*', '', $rate);
+			$label = ($rateForDisplay === '') ? 'TVA' : 'TVA '.vatrate($rateForDisplay, true).$reverseChargeMarker;
+			if (!empty($vatRow['vatcode'])) {
+				$label .= ' ('.$vatRow['vatcode'].')';
+			}
+			$rows[] = array('type' => 'vat', 'label' => $label, 'amount' => price($vatRow['amount'], 0, $outputlangs, 1, -1, -1, $conf->currency));
 		}
 		if (isset($object->total_ttc) && is_numeric($object->total_ttc) && (float) $object->total_ttc != 0.0) {
-			$rows[] = array('Total TTC', price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency));
+			$rows[] = array('type' => 'total', 'label' => 'Total TTC', 'amount' => price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency));
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Return a raw label/description for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return string
+	 */
+	private function getContractLineRawLabel($line)
+	{
+		foreach (array('desc', 'libelle', 'label', 'ref') as $property) {
+			if (!empty($line->{$property})) {
+				return trim((string) $line->{$property});
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Return VAT totals grouped by rate and VAT code.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function getContractVatRows($object)
+	{
+		$vatRows = array();
+		if (!empty($object->lines) && is_array($object->lines)) {
+			foreach ($object->lines as $line) {
+				$vatAmount = 0;
+				if (isset($line->total_tva) && is_numeric($line->total_tva)) {
+					$vatAmount = (float) price2num($line->total_tva, 'MT');
+				} elseif (isset($line->total_ht, $line->tva_tx) && is_numeric($line->total_ht) && is_numeric($line->tva_tx)) {
+					$vatAmount = (float) price2num(((float) $line->total_ht * (float) $line->tva_tx) / 100, 'MT');
+				}
+
+				if (abs($vatAmount) < 0.00001) {
+					continue;
+				}
+
+				$rate = isset($line->tva_tx) && is_numeric($line->tva_tx) ? (string) price2num($line->tva_tx, 'MU') : '';
+				if (isset($line->info_bits) && (($line->info_bits & 0x01) == 0x01)) {
+					$rate .= '*';
+				}
+				$vatcode = empty($line->vat_src_code) ? '' : (string) $line->vat_src_code;
+				$key = $rate.'|'.$vatcode;
+				if (!isset($vatRows[$key])) {
+					$vatRows[$key] = array(
+						'rate' => $rate,
+						'vatcode' => $vatcode,
+						'amount' => 0,
+					);
+				}
+				$vatRows[$key]['amount'] += $vatAmount;
+			}
+		}
+
+		if (empty($vatRows) && isset($object->total_tva) && is_numeric($object->total_tva) && abs((float) $object->total_tva) >= 0.00001) {
+			$vatRows[] = array('rate' => '', 'vatcode' => '', 'amount' => (float) price2num($object->total_tva, 'MT'));
+		}
+
+		return array_values($vatRows);
+	}
+
+	/**
+	 * Prepare a line description for TCPDF HTML rendering.
+	 *
+	 * @param string $text Raw description
+	 * @return string
+	 */
+	private function prepareContractLineDescriptionHtml($text)
+	{
+		$text = (string) $text;
+		$text = preg_replace('#<\s*(script|style)[^>]*>.*?<\s*/\s*\1\s*>#is', '', $text);
+		$html = dol_htmlentitiesbr($text, 1);
+		$html = str_replace(array('&nbsp;', "\xc2\xa0"), ' ', $html);
+		$html = preg_replace('/<\s*p[^>]*>\s*/i', '', $html);
+		$html = preg_replace('/<\/\s*p\s*>/i', '<br>', $html);
+		$html = preg_replace('/<\s*div[^>]*>\s*/i', '', $html);
+		$html = preg_replace('/<\/\s*div\s*>/i', '<br>', $html);
+		$html = preg_replace('/<\s*li[^>]*>\s*/i', '<br>&bull; ', $html);
+		$html = preg_replace('/<\/\s*li\s*>/i', '', $html);
+		$html = preg_replace('/<\s*\/?\s*(ul|ol)[^>]*>/i', '', $html);
+		$html = preg_replace('/(<br\s*\/?>\s*){3,}/i', '<br><br>', $html);
+		$html = preg_replace('/^(<br\s*\/?>\s*)+/i', '', $html);
+
+		return trim((string) $html);
 	}
 
 	/**
@@ -1328,13 +1690,18 @@ class pdf_jpsunpro extends ModelePDFContract
 	private function normalizeTableText($text)
 	{
 		$text = (string) $text;
+		$text = preg_replace('#<\s*(script|style)[^>]*>.*?<\s*/\s*\1\s*>#is', '', $text);
 		$text = preg_replace('/<\s*br\s*\/?\s*>/i', "\n", $text);
+		$text = preg_replace('/<\s*\/?\s*(ul|ol)[^>]*>/i', "\n", $text);
 		$text = preg_replace('/<\s*li[^>]*>/i', "\n- ", $text);
 		$text = preg_replace('/<\/\s*(p|div|li|tr|h[1-6])\s*>/i', "\n", $text);
-		$text = dol_string_nohtmltag($text);
+		$text = preg_replace('/<\s*(p|div|tr|h[1-6])[^>]*>/i', '', $text);
+		$text = strip_tags($text);
 		$text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$text = str_replace("\xc2\xa0", ' ', $text);
 		$text = str_replace(array("\r\n", "\r"), "\n", $text);
 		$text = preg_replace('/[ \t]+/', ' ', $text);
+		$text = preg_replace('/[ \t]*\n[ \t]*/', "\n", $text);
 		$text = preg_replace('/^[ \t]*(?:[\x{2022}\x{00B7}\x{25CF}]|[-*])\s*/mu', '- ', $text);
 		$text = preg_replace('/\n{3,}/', "\n\n", $text);
 
@@ -1455,6 +1822,29 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Format signature contact data on separate lines.
+	 *
+	 * @param array<string,string> $contact Contact
+	 * @param string $fallback Fallback text
+	 * @return string
+	 */
+	private function formatSignatureContactBlock($contact, $fallback = '')
+	{
+		$lines = array();
+		foreach (array('fullname', 'job', 'phone', 'email') as $key) {
+			if (!empty($contact[$key])) {
+				$lines[] = (string) $contact[$key];
+			}
+		}
+
+		if (empty($lines) && $fallback !== '') {
+			$lines[] = $fallback;
+		}
+
+		return implode("\n", $lines);
+	}
+
+	/**
 	 * Return normalized data for a contract contact list row.
 	 *
 	 * @param array<string,mixed> $contact Contact row from liste_contact
@@ -1544,14 +1934,25 @@ class pdf_jpsunpro extends ModelePDFContract
 			'CLIENTSIGNATORY' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
 			'SALESSIGNATORY' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
 		);
+		$firstExternalContact = array('fullname' => '', 'job' => '', 'phone' => '', 'email' => '');
 
 		$contactlist = $object->liste_contact(-1, 'external');
 		foreach ($contactlist as $contact) {
+			if ($firstExternalContact['fullname'] === '') {
+				$firstExternalContact = $this->getListContactData($contact, 'external', $outputlangs);
+			}
+
 			$contactcode = '';
 			if (!empty($contact['code'])) {
 				$contactcode = $contact['code'];
 			} elseif (!empty($contact['typecode'])) {
 				$contactcode = $contact['typecode'];
+			}
+			if ($contactcode === 'SALESSIGNATORY') {
+				if ($contactdata['CLIENTSIGNATORY']['fullname'] === '') {
+					$contactdata['CLIENTSIGNATORY'] = $this->getListContactData($contact, 'external', $outputlangs);
+				}
+				continue;
 			}
 			if ($contactcode !== '' && isset($contactdata[$contactcode])) {
 				$contactstatic = new Contact($this->db);
@@ -1571,6 +1972,9 @@ class pdf_jpsunpro extends ModelePDFContract
 			if ($contactdata['CLIENTSIGNATORY']['fullname'] === '' && $this->contractContactMatchesRole($contact, 'client_signatory')) {
 				$contactdata['CLIENTSIGNATORY'] = $this->getListContactData($contact, 'external', $outputlangs);
 			}
+		}
+		if ($contactdata['CLIENTSIGNATORY']['fullname'] === '' && $firstExternalContact['fullname'] !== '') {
+			$contactdata['CLIENTSIGNATORY'] = $firstExternalContact;
 		}
 
 		$internalcontactlist = $object->liste_contact(-1, 'internal');

@@ -262,11 +262,40 @@ function jpsunPdfAppendPdfFileAsPages(&$pdf, $filepath, $label = '')
  * @param	TCPDF		$pdf			PDF instance
  * @param	DoliDB		$db				Database handler
  * @param	Translate	$outputlangs	Output language
+ * @param	CommonObject|null	$sourceobject	Source object used to contextualize specimen
  * @return	int							>0 if OK, 0 if skipped, <0 if KO
  */
-function jpsunPdfAppendFichinterSpecimen(&$pdf, $db, $outputlangs)
+function jpsunPdfAppendFichinterSpecimen(&$pdf, $db, $outputlangs, $sourceobject = null)
+{
+	$errorcode = 0;
+	$path = jpsunPdfFichinterSpecimenPath($db, $outputlangs, $errorcode, $sourceobject);
+	if ($path === '') {
+		return $errorcode;
+	}
+
+	$result = jpsunPdfAppendPdfFileAsPages($pdf, $path, 'InterventionCard');
+	if ($result < 0) {
+		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterAppendError');
+		return -2;
+	}
+
+	return $result;
+}
+
+/**
+ * Generate and return the native intervention specimen PDF path.
+ *
+ * @param	DoliDB		$db				Database handler
+ * @param	Translate	$outputlangs	Output language
+ * @param	int			$errorcode		Output error code
+ * @param	CommonObject|null	$sourceobject	Source object used to contextualize specimen
+ * @return	string						Readable PDF path, empty if skipped/KO
+ */
+function jpsunPdfFichinterSpecimenPath($db, $outputlangs, &$errorcode = 0, $sourceobject = null)
 {
 	global $conf;
+
+	$errorcode = 0;
 
 	$interventionenabled = true;
 	if (function_exists('isModEnabled')) {
@@ -274,11 +303,11 @@ function jpsunPdfAppendFichinterSpecimen(&$pdf, $db, $outputlangs)
 	}
 	if (!$interventionenabled || empty($conf->ficheinter->dir_output)) {
 		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterUnavailable');
-		return 0;
+		return '';
 	}
 	if (!file_exists(DOL_DOCUMENT_ROOT.'/fichinter/class/fichinter.class.php') || !file_exists(DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php')) {
 		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterUnavailable');
-		return 0;
+		return '';
 	}
 
 	require_once DOL_DOCUMENT_ROOT.'/fichinter/class/fichinter.class.php';
@@ -287,24 +316,104 @@ function jpsunPdfAppendFichinterSpecimen(&$pdf, $db, $outputlangs)
 	$fichinter = new Fichinter($db);
 	if (!method_exists($fichinter, 'initAsSpecimen')) {
 		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterUnavailable');
-		return 0;
+		return '';
 	}
 
 	$fichinter->initAsSpecimen();
-	$result = fichinter_create($db, $fichinter, getDolGlobalString('FICHEINTER_ADDON_PDF'), $outputlangs);
+	jpsunPdfPrepareFichinterSpecimenFromSource($fichinter, $sourceobject);
+
+	$oldwatermark = getDolGlobalString('FICHINTER_DRAFT_WATERMARK');
+	$hadwatermark = isset($conf->global->FICHINTER_DRAFT_WATERMARK);
+	$conf->global->FICHINTER_DRAFT_WATERMARK = 'SPECIMEN';
+	try {
+		$result = fichinter_create($db, $fichinter, getDolGlobalString('FICHEINTER_ADDON_PDF'), $outputlangs);
+	} catch (Throwable $e) {
+		if ($hadwatermark) {
+			$conf->global->FICHINTER_DRAFT_WATERMARK = $oldwatermark;
+		} else {
+			unset($conf->global->FICHINTER_DRAFT_WATERMARK);
+		}
+		dol_syslog('JPSUN intervention specimen generation failed: '.$e->getMessage(), LOG_WARNING);
+		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterGenerationError');
+		$errorcode = -1;
+		return '';
+	}
+	if ($hadwatermark) {
+		$conf->global->FICHINTER_DRAFT_WATERMARK = $oldwatermark;
+	} else {
+		unset($conf->global->FICHINTER_DRAFT_WATERMARK);
+	}
 	if ($result <= 0) {
 		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterGenerationError');
-		return -1;
+		$errorcode = -1;
+		return '';
 	}
 
 	$path = rtrim($conf->ficheinter->dir_output, '/').'/SPECIMEN.pdf';
-	$result = jpsunPdfAppendPdfFileAsPages($pdf, $path, 'InterventionCard');
-	if ($result < 0) {
-		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterAppendError');
-		return -2;
+	if (!is_readable($path)) {
+		jpsunPdfAttachmentWarn('JpsunPdfAttachmentFichinterGenerationError');
+		$errorcode = -1;
+		return '';
 	}
 
-	return $result;
+	return $path;
+}
+
+/**
+ * Apply source object context to a native intervention specimen.
+ *
+ * @param	Fichinter	$fichinter		Intervention specimen
+ * @param	CommonObject|null	$sourceobject	Source object, usually a contract
+ * @return	void
+ */
+function jpsunPdfPrepareFichinterSpecimenFromSource(&$fichinter, $sourceobject = null)
+{
+	if (!is_object($sourceobject)) {
+		return;
+	}
+
+	if (method_exists($sourceobject, 'fetch_thirdparty')) {
+		$sourceobject->fetch_thirdparty();
+	}
+
+	$socid = 0;
+	if (!empty($sourceobject->socid)) {
+		$socid = (int) $sourceobject->socid;
+	} elseif (!empty($sourceobject->fk_soc)) {
+		$socid = (int) $sourceobject->fk_soc;
+	} elseif (!empty($sourceobject->thirdparty) && !empty($sourceobject->thirdparty->id)) {
+		$socid = (int) $sourceobject->thirdparty->id;
+	}
+	if ($socid > 0) {
+		$fichinter->socid = $socid;
+		$fichinter->fk_soc = $socid;
+	}
+	if (!empty($sourceobject->thirdparty)) {
+		$fichinter->thirdparty = $sourceobject->thirdparty;
+	}
+	if (!empty($sourceobject->entity)) {
+		$fichinter->entity = (int) $sourceobject->entity;
+	}
+	if (!empty($sourceobject->id)) {
+		$fichinter->fk_contrat = (int) $sourceobject->id;
+	}
+	if (!empty($sourceobject->fk_project)) {
+		$fichinter->fk_project = (int) $sourceobject->fk_project;
+	} elseif (!empty($sourceobject->fk_projet)) {
+		$fichinter->fk_project = (int) $sourceobject->fk_projet;
+	}
+	if (!empty($sourceobject->ref_client)) {
+		$fichinter->ref_client = (string) $sourceobject->ref_client;
+	} elseif (!empty($sourceobject->ref)) {
+		$fichinter->ref_client = (string) $sourceobject->ref;
+	}
+	if (defined('Fichinter::STATUS_DRAFT')) {
+		$fichinter->statut = Fichinter::STATUS_DRAFT;
+		$fichinter->status = Fichinter::STATUS_DRAFT;
+	} else {
+		$fichinter->statut = 0;
+		$fichinter->status = 0;
+	}
 }
 
 /**
