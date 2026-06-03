@@ -297,6 +297,23 @@ JpsunPowerPlantPVPermissionDenied = Vous n'avez pas le droit de lire les central
 JpsunContractProNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle JPSUN PRO.
 JpsunContractProTemplateMissing = Le fond PDF du modèle JPSUN PRO est introuvable : %s
 JpsunContractProPowerPlantAnnex = Centrale %s / %s
+JpsunSoleilAquitainContractModelDescription = Modèle de contrat SOLEIL AQUITAIN pour la maintenance photovoltaïque
+JpsunPowerPlantPVRequiredForSoleilAquitainContract = Le module Centrale PV doit être activé pour générer le modèle Contrat SOLEIL AQUITAIN.
+JpsunSoleilAquitainNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle Contrat SOLEIL AQUITAIN.
+JpsunSoleilAquitainMissingRequiredData = Le modèle Contrat SOLEIL AQUITAIN ne peut pas être généré. Données obligatoires manquantes ou invalides : %s
+JpsunSoleilAquitainContractSettings = Contrat SOLEIL AQUITAIN
+JPSUN_SOLEIL_AQUITAIN_RC_PRO = Assurance responsabilité civile professionnelle
+JPSUN_SOLEIL_AQUITAIN_RC_PRO_HELP = Exemple : assureur, numéro de contrat et zone de couverture.
+JPSUN_SOLEIL_AQUITAIN_DECENNALE = Assurance décennale
+JPSUN_SOLEIL_AQUITAIN_DECENNALE_HELP = Exemple : assureur, numéro de contrat, activités couvertes et zone de couverture.
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR = Médiateur de la consommation
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR_HELP = Coordonnées complètes du médiateur à imprimer dans les conditions générales.
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL = URL de rétractation en ligne
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL_HELP = Laisser vide si aucun parcours de rétractation en ligne n'est disponible.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE = Mode de paiement par défaut
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE_HELP = Exemple : Prélèvement SEPA mensuel le 5 de chaque mois.
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY = Durée de validité de l'offre
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY_HELP = Exemple : 30 jours.
 
 //#Partie ENEDIS
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

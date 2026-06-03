@@ -1,23 +1,24 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.20 (03/06/2026)
-- Integration optionnelle avec le module Centrale PV / PowerPlantPV.
-- Masquage des widgets historiques de puissance crete et de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
-- Ajout du modele PDF contrat `JPSUN PRO`, base sur le contrat PRO V4, avec generation d'une Annexe 1 par centrale PV liee au contrat.
-- Recuperation des donnees centrales PV, composants, tiers et contacts via les mecanismes Dolibarr natifs, avec controle des droits et filtrage par entite.
-- Separation des reglages JPSUN en onglets admin dedies.
-- Ajout d'annexes PDF configurables par entite, jointes aux devis et contrats JPSUN selon ordre et activation.
-- Le contrat `JPSUN PRO` ajoute le specimen du modele natif Interventions configure en annexe PDF.
-- Amelioration du rendu des descriptions HTML des lignes et ajout du detail de TVA par taux dans les totaux du contrat `JPSUN PRO`.
-- Correction du positionnement des blocs Client / Prestataire en premiere page du contrat `JPSUN PRO`.
+- Ajout du modèle PDF contrat `Contrat SOLEIL AQUITAIN`, généré nativement par Dolibarr avec annexes centrales PV, formulaire de rétractation, mentions légales configurables et signature en ligne dédiée.
+- Intégration optionnelle avec le module Centrale PV / PowerPlantPV.
+- Masquage des widgets historiques de puissance crête et de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
+- Ajout du modèle PDF contrat `JPSUN PRO`, basé sur le contrat PRO V4, avec génération d'une Annexe 1 par centrale PV liée au contrat.
+- Récupération des données centrales PV, composants, tiers et contacts via les mécanismes Dolibarr natifs, avec contrôle des droits et filtrage par entité.
+- Séparation des réglages JPSUN en onglets admin dédiés.
+- Ajout d'annexes PDF configurables par entité, jointes aux devis et contrats JPSUN selon ordre et activation.
+- Le contrat `JPSUN PRO` ajoute le spécimen du modèle natif Interventions configuré en annexe PDF.
+- Amélioration du rendu des descriptions HTML des lignes et ajout du détail de TVA par taux dans les totaux du contrat `JPSUN PRO`.
+- Correction du positionnement des blocs Client / Prestataire en première page du contrat `JPSUN PRO`.
 - Correction de la section Signature du contrat `JPSUN PRO` pour placer le contact tiers dans la case Pour le Client.
-- Les PDF joints au contrat `JPSUN PRO` sont maintenant introduits comme annexes numerotees apres l'Annexe 2.
-- Le specimen d'intervention joint au contrat `JPSUN PRO` force le watermark SPECIMEN et reprend le tiers du contrat.
-- La premiere page du contrat `JPSUN PRO` affiche le signataire du contrat client uniquement si ce contact est declare.
-- Ajout de l'annexe PDF configurable `Certifications`, placee apres la Garantie Decennale dans les reglages et l'ordre par defaut.
-- Le contrat `JPSUN PRO` affiche les consignes d'acces des centrales PV liees et masque les extrafields site historiques du contrat lorsque PowerPlantPV est actif.
-- La generation du contrat `JPSUN PRO` produit desormais un PDF contrat principal et un PDF separe pour les annexes.
-- La signature en ligne du contrat `JPSUN PRO` est placee dans la case Pour le Client de la section Signatures.
+- Les PDF joints au contrat `JPSUN PRO` sont maintenant introduits comme annexes numérotées après l'Annexe 2.
+- Le spécimen d'intervention joint au contrat `JPSUN PRO` force le watermark SPECIMEN et reprend le tiers du contrat.
+- La première page du contrat `JPSUN PRO` affiche le signataire du contrat client uniquement si ce contact est déclaré.
+- Ajout de l'annexe PDF configurable `Certifications`, placée après la Garantie Décennale dans les réglages et l'ordre par défaut.
+- Le contrat `JPSUN PRO` affiche les consignes d'accès des centrales PV liées et masque les extrafields site historiques du contrat lorsque PowerPlantPV est actif.
+- La génération du contrat `JPSUN PRO` produit désormais un PDF contrat principal et un PDF séparé pour les annexes.
+- La signature en ligne du contrat `JPSUN PRO` est placée dans la case Pour le Client de la section Signatures.
 
 ## 1.19 (27/05/2026)
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue Dolibarr.

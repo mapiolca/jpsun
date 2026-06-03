@@ -28,6 +28,15 @@ setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
 setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
 jpsunPdfPrintAttachmentSetupRows();
 
+// Contrat SOLEIL AQUITAIN
+setup_print_title($langs->trans("JpsunSoleilAquitainContractSettings"));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_RC_PRO', false, '', array('size' => '80'));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DECENNALE', false, '', array('size' => '80'));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_MEDIATOR', false, '', array('size' => '80'));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL', false, '', array('size' => '80'));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE', false, '', array('size' => '80'));
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY', false, '', array('size' => '30'));
+
 // Workflow
 setup_print_title($langs->trans("Workflow"));
 setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');

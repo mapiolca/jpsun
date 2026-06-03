@@ -291,6 +291,23 @@ JpsunPowerPlantPVPermissionDenied=You do not have permission to read the PV powe
 JpsunContractProNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the JPSUN PRO model.
 JpsunContractProTemplateMissing=The JPSUN PRO PDF background is missing: %s
 JpsunContractProPowerPlantAnnex=Power plant %s / %s
+JpsunSoleilAquitainContractModelDescription=SOLEIL AQUITAIN photovoltaic maintenance contract template.
+JpsunPowerPlantPVRequiredForSoleilAquitainContract=The PowerPlantPV module must be enabled to generate the SOLEIL AQUITAIN contract model.
+JpsunSoleilAquitainNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the SOLEIL AQUITAIN contract model.
+JpsunSoleilAquitainMissingRequiredData=The SOLEIL AQUITAIN contract model cannot be generated. Required data is missing or invalid: %s
+JpsunSoleilAquitainContractSettings=SOLEIL AQUITAIN contract
+JPSUN_SOLEIL_AQUITAIN_RC_PRO=Professional liability insurance
+JPSUN_SOLEIL_AQUITAIN_RC_PRO_HELP=Example: insurer, policy number and coverage area.
+JPSUN_SOLEIL_AQUITAIN_DECENNALE=Ten-year liability insurance
+JPSUN_SOLEIL_AQUITAIN_DECENNALE_HELP=Example: insurer, policy number, covered activities and coverage area.
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR=Consumer mediator
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR_HELP=Full mediator contact details printed in the terms and conditions.
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL=Online withdrawal URL
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL_HELP=Leave empty when no online withdrawal flow is available.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE=Default payment mode
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE_HELP=Example: monthly SEPA direct debit on the 5th of each month.
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY=Offer validity period
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY_HELP=Example: 30 days.
 
 //# ENEDIS section
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
