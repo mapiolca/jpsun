@@ -427,8 +427,11 @@ class pdf_jpsunpro extends ModelePDFContract
 		$pdf->Ln(6);
 		$left = array(
 			array('label' => 'Le Client', 'value' => $this->formatThirdpartyBlock($object, $outputlangs)),
-			array('label' => 'Interlocuteur site', 'value' => $this->formatPowerPlantContacts($powerplants[0])),
 		);
+		$clientSignatory = $this->formatDeclaredClientSignatoryBlock($contactdata);
+		if ($clientSignatory !== '') {
+			$left[] = array('label' => 'Signataire du contrat', 'value' => $clientSignatory);
+		}
 		$right = array(
 			array('label' => 'Le Prestataire', 'value' => $this->formatEmitterBlock($object, $outputlangs)),
 			array('label' => 'Prestation', 'value' => "Maintenance préventive annuelle\nMaintenance curative selon demande\nGestion des alarmes si prévue au contrat"),
@@ -1845,6 +1848,21 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Format only the explicitly declared customer contract signatory.
+	 *
+	 * @param array<string,array<string,string>> $contactdata Contact data
+	 * @return string
+	 */
+	private function formatDeclaredClientSignatoryBlock($contactdata)
+	{
+		if (empty($contactdata['CLIENTSIGNATORY']) || empty($contactdata['CLIENTSIGNATORY']['_declared'])) {
+			return '';
+		}
+
+		return $this->formatSignatureContactBlock($contactdata['CLIENTSIGNATORY']);
+	}
+
+	/**
 	 * Return normalized data for a contract contact list row.
 	 *
 	 * @param array<string,mixed> $contact Contact row from liste_contact
@@ -1951,6 +1969,7 @@ class pdf_jpsunpro extends ModelePDFContract
 			if ($contactcode === 'SALESSIGNATORY') {
 				if ($contactdata['CLIENTSIGNATORY']['fullname'] === '') {
 					$contactdata['CLIENTSIGNATORY'] = $this->getListContactData($contact, 'external', $outputlangs);
+					$contactdata['CLIENTSIGNATORY']['_declared'] = '1';
 				}
 				continue;
 			}
@@ -1966,11 +1985,15 @@ class pdf_jpsunpro extends ModelePDFContract
 					$contactdata[$contactcode]['town'] = !empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
 				} else {
 					$contactdata[$contactcode] = $this->getListContactData($contact, 'external', $outputlangs);
+					if ($contactcode === 'CLIENTSIGNATORY') {
+						$contactdata[$contactcode]['_declared'] = '1';
+					}
 				}
 			}
 
 			if ($contactdata['CLIENTSIGNATORY']['fullname'] === '' && $this->contractContactMatchesRole($contact, 'client_signatory')) {
 				$contactdata['CLIENTSIGNATORY'] = $this->getListContactData($contact, 'external', $outputlangs);
+				$contactdata['CLIENTSIGNATORY']['_declared'] = '1';
 			}
 		}
 		if ($contactdata['CLIENTSIGNATORY']['fullname'] === '' && $firstExternalContact['fullname'] !== '') {
