@@ -31,6 +31,7 @@ require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_signature.lib.php';
 
 /**
  * Class to build JPSUN PRO contract documents.
@@ -336,6 +337,8 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->addPage($pdf, $object, $outputlangs, 'Conditions contractuelles');
 		$this->renderPrestationScope($pdf, $object, $powerplants, $contactdata, $outputlangs);
 		$this->renderFixedSections($pdf, $object, $outputlangs);
+
+		$this->addPage($pdf, $object, $outputlangs, 'Signatures');
 		$this->renderSignaturePage($pdf, $object, $contactdata, $outputlangs);
 	}
 
@@ -574,7 +577,7 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
-	 * Render signatures on a dedicated page when needed.
+	 * Render signatures on the dedicated final page.
 	 *
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
@@ -584,18 +587,15 @@ class pdf_jpsunpro extends ModelePDFContract
 	 */
 	private function renderSignaturePage(&$pdf, $object, $contactdata, $outputlangs)
 	{
-		$this->ensureSpace($pdf, $object, $outputlangs, 68, 'Signatures');
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Signatures');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Fait en deux exemplaires originaux. Le Client reconnaît avoir pris connaissance du présent contrat et de ses annexes.');
-		$pdf->Ln(4);
 
-		$startY = $pdf->GetY();
-		$w = ($this->contentWidth() - 8) / 2;
+		$layout = jpsunPdfJpsunProSignatureLayout($this->page_largeur, $this->page_hauteur, $this->marge_gauche, $this->marge_droite);
 		$providername = $this->formatSignatureContactBlock($contactdata['SALESSIGNATORY'], $this->emetteur->name);
 		$clientname = $this->formatSignatureContactBlock($contactdata['CLIENTSIGNATORY'], is_object($object->thirdparty) ? $object->thirdparty->name : '');
-		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche, $startY, $w, 'Pour le Prestataire', $providername);
-		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche + $w + 8, $startY, $w, 'Pour le Client', $clientname);
-		$pdf->SetY($startY + 54);
+		$this->renderSignatureBox($pdf, $outputlangs, $layout['provider_box_x'], $layout['box_y'], $layout['box_w'], $layout['box_h'], 'Pour le Prestataire', $providername);
+		$this->renderSignatureBox($pdf, $outputlangs, $layout['client_box_x'], $layout['box_y'], $layout['box_w'], $layout['box_h'], 'Pour le Client', $clientname);
+		$pdf->SetY($layout['box_y'] + $layout['box_h'] + 4);
 	}
 
 	/**
@@ -1573,15 +1573,16 @@ class pdf_jpsunpro extends ModelePDFContract
 	 * @param float $x X
 	 * @param float $y Y
 	 * @param float $w Width
+	 * @param float $h Height
 	 * @param string $title Title
 	 * @param string $name Name
 	 * @return void
 	 */
-	private function renderSignatureBox(&$pdf, $outputlangs, $x, $y, $w, $title, $name)
+	private function renderSignatureBox(&$pdf, $outputlangs, $x, $y, $w, $h, $title, $name)
 	{
 		$innerX = $x + 4;
 		$innerW = $w - 8;
-		$this->drawRect($pdf, $x, $y, $w, 50, array(255, 255, 255), array(180, 188, 195));
+		$this->drawRect($pdf, $x, $y, $w, $h, array(255, 255, 255), array(180, 188, 195));
 		$pdf->SetXY($innerX, $y + 4);
 		$pdf->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
 		$pdf->SetFont('', 'B', $this->defaultFontSize);
@@ -1589,9 +1590,26 @@ class pdf_jpsunpro extends ModelePDFContract
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetFont('', '', $this->defaultFontSize - 1);
 		$pdf->SetX($innerX);
-		$pdf->MultiCell($innerW, 4, $outputlangs->convToOutputCharset($name), 0, 'L');
-		$pdf->SetXY($innerX, $y + 34);
+		$pdf->MultiCell($innerW, 4, $outputlangs->convToOutputCharset($this->limitSignatureContactBlock($name)), 0, 'L');
+		$pdf->SetXY($innerX, $y + 38);
 		$pdf->MultiCell($innerW, 5, $outputlangs->convToOutputCharset('Lu et approuvé, date et signature'), 0, 'L');
+	}
+
+	/**
+	 * Limit contact text so it cannot overlap the reserved signature area.
+	 *
+	 * @param string $name Contact block
+	 * @return string
+	 */
+	private function limitSignatureContactBlock($name)
+	{
+		$lines = preg_split('/\R/', trim((string) $name));
+		if (!is_array($lines)) {
+			return trim((string) $name);
+		}
+
+		$lines = array_filter(array_map('trim', $lines), 'strlen');
+		return implode("\n", array_slice($lines, 0, 4));
 	}
 
 	/**
