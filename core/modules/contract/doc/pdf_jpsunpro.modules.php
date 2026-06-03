@@ -28,6 +28,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
 
 /**
@@ -299,9 +300,9 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->renderCover($pdf, $object, $powerplants, $contactdata, $outputlangs);
 
 		$this->addPage($pdf, $object, $outputlangs, 'Conditions contractuelles');
-		$this->renderPrestationScope($pdf, $object, $contactdata, $outputlangs);
+		$this->renderPrestationScope($pdf, $object, $powerplants, $contactdata, $outputlangs);
 		$this->renderFixedSections($pdf, $object, $outputlangs);
-		$this->renderSignaturePage($pdf, $object, $outputlangs);
+		$this->renderSignaturePage($pdf, $object, $contactdata, $outputlangs);
 
 		$totalplants = count($powerplants);
 		$plantindex = 1;
@@ -424,7 +425,7 @@ class pdf_jpsunpro extends ModelePDFContract
 		$pdf->Ln(6);
 		$left = array(
 			array('label' => 'Le Client', 'value' => $this->formatThirdpartyBlock($object, $outputlangs)),
-			array('label' => 'Interlocuteur site', 'value' => $this->formatSiteContacts($contactdata)),
+			array('label' => 'Interlocuteur site', 'value' => $this->formatPowerPlantContacts($powerplants[0])),
 		);
 		$right = array(
 			array('label' => 'Le Prestataire', 'value' => $this->formatEmitterBlock($object, $outputlangs)),
@@ -444,11 +445,12 @@ class pdf_jpsunpro extends ModelePDFContract
 	 *
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
+	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
 	 * @param array<string,array<string,string>> $contactdata Contact data
 	 * @param Translate $outputlangs Output language
 	 * @return void
 	 */
-	private function renderPrestationScope(&$pdf, $object, $contactdata, $outputlangs)
+	private function renderPrestationScope(&$pdf, $object, $powerplants, $contactdata, $outputlangs)
 	{
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Prestation');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le présent contrat fixe les modalités de maintenance préventive et, le cas échéant, de maintenance curative assurées par le Prestataire pour le compte du Client.');
@@ -466,12 +468,35 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Désignation', 'Montant HT'), $this->getContractLineRows($object, $outputlangs), array($this->contentWidth() - 42, 42));
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Site et interlocuteurs');
-		$siteRows = array(
-			array('Adresse du site', trim($contactdata['SITEADDRESS']['address']."\n".$contactdata['SITEADDRESS']['zip'].' '.$contactdata['SITEADDRESS']['town'])),
-			array('Représentant 1', $this->formatContactLine($contactdata['SITEREPRESANT1'])),
-			array('Représentant 2', $this->formatContactLine($contactdata['SITEREPRESANT2'])),
-		);
-		$this->renderKeyValueTable($pdf, $object, $outputlangs, $siteRows, array(48, $this->contentWidth() - 48));
+		$this->renderPowerPlantSiteTables($pdf, $object, $powerplants, $outputlangs);
+	}
+
+	/**
+	 * Render one site/contact table per linked PowerPlantPV power plant.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderPowerPlantSiteTables(&$pdf, $object, $powerplants, $outputlangs)
+	{
+		$index = 1;
+		foreach ($powerplants as $powerplant) {
+			$site = $this->firstNonEmpty($powerplant['site_name'], $powerplant['ref']);
+			$this->renderSubTitle($pdf, $object, $outputlangs, 'Site '.$index.' : '.$site);
+
+			$technical = isset($powerplant['technical_contact']) && is_array($powerplant['technical_contact']) ? $powerplant['technical_contact'] : array();
+			$administrative = isset($powerplant['administrative_contact']) && is_array($powerplant['administrative_contact']) ? $powerplant['administrative_contact'] : array();
+			$siteRows = array(
+				array('Adresse du site', isset($powerplant['full_address']) ? (string) $powerplant['full_address'] : ''),
+				array('Représentant 1 - Contact technique client', $this->formatContactLine($technical)),
+				array('Représentant 2 - Contact administratif client', $this->formatContactLine($administrative)),
+			);
+			$this->renderKeyValueTable($pdf, $object, $outputlangs, $siteRows, array(66, $this->contentWidth() - 66));
+			$index++;
+		}
 	}
 
 	/**
@@ -501,10 +526,11 @@ class pdf_jpsunpro extends ModelePDFContract
 	 *
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
+	 * @param array<string,array<string,string>> $contactdata Contact data
 	 * @param Translate $outputlangs Output language
 	 * @return void
 	 */
-	private function renderSignaturePage(&$pdf, $object, $outputlangs)
+	private function renderSignaturePage(&$pdf, $object, $contactdata, $outputlangs)
 	{
 		$this->ensureSpace($pdf, $object, $outputlangs, 62, 'Signatures');
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Signatures');
@@ -513,8 +539,10 @@ class pdf_jpsunpro extends ModelePDFContract
 
 		$startY = $pdf->GetY();
 		$w = ($this->contentWidth() - 8) / 2;
-		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche, $startY, $w, 'Pour le Prestataire', $this->emetteur->name);
-		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche + $w + 8, $startY, $w, 'Pour le Client', is_object($object->thirdparty) ? $object->thirdparty->name : '');
+		$providername = $this->firstNonEmpty($this->formatContactLine($contactdata['SALESSIGNATORY']), $this->emetteur->name);
+		$clientname = $this->firstNonEmpty($this->formatContactLine($contactdata['CLIENTSIGNATORY']), is_object($object->thirdparty) ? $object->thirdparty->name : '');
+		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche, $startY, $w, 'Pour le Prestataire', $providername);
+		$this->renderSignatureBox($pdf, $outputlangs, $this->marge_gauche + $w + 8, $startY, $w, 'Pour le Client', $clientname);
 		$pdf->SetY($startY + 48);
 	}
 
@@ -539,15 +567,13 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->renderMainTitle($pdf, $outputlangs, $title);
 
 		$site = $this->firstNonEmpty($powerplant['site_name'], $this->getExtraOption($object, 'jpsun_site_name'));
-		$address = $this->firstNonEmpty($powerplant['full_address'], trim($contactdata['SITEADDRESS']['address']."\n".$contactdata['SITEADDRESS']['zip'].' '.$contactdata['SITEADDRESS']['town']));
-		$modulelabel = $this->firstNonEmpty($powerplant['modules_label'], $this->getProductLabel($this->getExtraOption($object, 'jpsun_pv_module_product')));
-		$inverterlabel = $this->firstNonEmpty($powerplant['inverters_label'], $this->getProductLabel($this->getExtraOption($object, 'jpsun_inverter_product')));
-		$moduleqty = $this->firstNonEmpty($this->formatQty($powerplant['modules_qty']), $this->getExtraOption($object, 'jpsun_pv_module_qty'));
-		$inverterqty = $this->firstNonEmpty($this->formatQty($powerplant['inverters_qty']), $this->getExtraOption($object, 'jpsun_inverter_qty'));
-		$dcboxesqty = $this->firstNonEmpty($this->formatQty($powerplant['dc_boxes_qty']), $this->getExtraOption($object, 'jpsun_dc_boxes_qty'));
-		$acboxesqty = $this->firstNonEmpty($this->formatQty($powerplant['ac_boxes_qty']), $this->getExtraOption($object, 'jpsun_ac_boxes_qty'));
-		$installedpower = $this->firstNonEmpty($this->formatNumber($powerplant['installed_power'], 2), $this->formatNumber($this->getExtraOption($object, 'jpsun_installed_power_kwc'), 2));
-		$pdl = $this->firstNonEmpty($powerplant['prm_pdl_number'], $this->getExtraOption($object, 'jpsun_pdl_number'));
+		$address = isset($powerplant['full_address']) ? (string) $powerplant['full_address'] : '';
+		$moduleqty = $this->formatQty($powerplant['modules_qty']);
+		$inverterqty = $this->formatQty($powerplant['inverters_qty']);
+		$dcboxesqty = $this->formatQty($powerplant['dc_boxes_qty']);
+		$acboxesqty = $this->formatQty($powerplant['ac_boxes_qty']);
+		$installedpower = $this->formatNumber($powerplant['installed_power'], 2);
+		$pdl = isset($powerplant['prm_pdl_number']) ? (string) $powerplant['prm_pdl_number'] : '';
 
 		$siteRows = array(
 			array('Référence centrale', $powerplant['ref']),
@@ -565,21 +591,41 @@ class pdf_jpsunpro extends ModelePDFContract
 		);
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Informations site');
 		$this->renderKeyValueTable($pdf, $object, $outputlangs, $siteRows, array(58, $this->contentWidth() - 58));
+		$this->renderPowerPlantImage($pdf, $object, $powerplant, $outputlangs);
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Matériel');
 		$equipmentRows = array(
-			array('Panneaux (marque / puissance)', $modulelabel),
-			array('Nombre panneaux', $moduleqty),
-			array('Onduleur (marque / puissance)', $inverterlabel),
+			array('Nombre de modules PV', $moduleqty),
 			array('Nombre d’onduleurs', $inverterqty),
-			array('Hauteur installation onduleurs (m)', $this->formatNumber($this->getExtraOption($object, 'jpsun_inverter_install_height_m'), 2)),
 			array('Nombre coffrets DC', $dcboxesqty),
-			array('Hauteur installation coffret DC (m)', $this->formatNumber($this->getExtraOption($object, 'jpsun_dc_box_install_height_m'), 2)),
 			array('Nombre coffrets AC', $acboxesqty),
-			array('Hauteur installation coffret AC (m)', $this->formatNumber($this->getExtraOption($object, 'jpsun_ac_box_install_height_m'), 2)),
-			array('Codes d’accès', $this->getExtraOption($object, 'jpsun_access_code')),
 		);
+		$inverterheight = $this->formatNumber($this->firstNonEmpty($powerplant['inverter_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_inverter_install_height_m')), 2);
+		$dcboxheight = $this->formatNumber($this->firstNonEmpty($powerplant['dc_box_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_dc_box_install_height_m')), 2);
+		$acboxheight = $this->formatNumber($this->firstNonEmpty($powerplant['ac_box_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_ac_box_install_height_m')), 2);
+		if ($inverterheight !== '') {
+			$equipmentRows[] = array('Hauteur installation onduleurs (m)', $inverterheight);
+		}
+		if ($dcboxheight !== '') {
+			$equipmentRows[] = array('Hauteur installation coffret DC (m)', $dcboxheight);
+		}
+		if ($acboxheight !== '') {
+			$equipmentRows[] = array('Hauteur installation coffret AC (m)', $acboxheight);
+		}
+		if ($this->getExtraOption($object, 'jpsun_access_code') !== '') {
+			$equipmentRows[] = array('Codes d’accès', $this->getExtraOption($object, 'jpsun_access_code'));
+		}
 		$this->renderKeyValueTable($pdf, $object, $outputlangs, $equipmentRows, array(68, $this->contentWidth() - 68));
+
+		if (!empty($powerplant['modules_rows'])) {
+			$this->renderSubTitle($pdf, $object, $outputlangs, 'Modules PV');
+			$this->renderSimpleTable($pdf, $object, $outputlangs, array('Modules PV', 'Puissance', 'Nombre'), $this->getModuleMaterialRows($powerplant['modules_rows']), array($this->contentWidth() - 66, 40, 26), array(2));
+		}
+
+		if (!empty($powerplant['inverters_rows'])) {
+			$this->renderSubTitle($pdf, $object, $outputlangs, 'Onduleurs');
+			$this->renderSimpleTable($pdf, $object, $outputlangs, array('Onduleurs', 'Puissance', 'Nombre'), $this->getInverterMaterialRows($powerplant['inverters_rows']), array($this->contentWidth() - 70, 44, 26), array(2));
+		}
 
 		if (!empty($powerplant['components'])) {
 			$this->renderSectionTitle($pdf, $object, $outputlangs, 'Composants liés à la centrale');
@@ -592,8 +638,93 @@ class pdf_jpsunpro extends ModelePDFContract
 					$component['serial_number'],
 				);
 			}
-			$this->renderSimpleTable($pdf, $object, $outputlangs, array('Catégorie', 'Produit', 'Qté', 'N° série'), $componentRows, array(38, 88, 18, $this->contentWidth() - 144));
+			$this->renderSimpleTable($pdf, $object, $outputlangs, array('Catégorie', 'Produit', 'Qté', 'N° série'), $componentRows, array(38, 88, 18, $this->contentWidth() - 144), array(2));
 		}
+	}
+
+	/**
+	 * Render the first image attached to a PowerPlantPV power plant.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param array<string,mixed> $powerplant Power plant data
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderPowerPlantImage(&$pdf, $object, $powerplant, $outputlangs)
+	{
+		$image = isset($powerplant['first_image']) ? (string) $powerplant['first_image'] : '';
+		if ($image === '' || !is_readable($image)) {
+			return;
+		}
+
+		$maxW = min(110, $this->contentWidth());
+		$maxH = 58;
+		$imgW = $maxW;
+		$imgH = 45;
+		$size = @getimagesize($image);
+		if (is_array($size) && !empty($size[0]) && !empty($size[1])) {
+			$ratio = min($maxW / (float) $size[0], $maxH / (float) $size[1]);
+			$imgW = (float) $size[0] * $ratio;
+			$imgH = (float) $size[1] * $ratio;
+		}
+
+		$blockH = $imgH + 14;
+		$this->ensureSpace($pdf, $object, $outputlangs, $blockH + 4, 'Annexe 1');
+		$this->renderSubTitle($pdf, $object, $outputlangs, 'Photo du site');
+
+		$x = $this->marge_gauche;
+		$y = $pdf->GetY();
+		$this->drawRect($pdf, $x, $y, $imgW + 8, $imgH + 8, array(255, 255, 255), array(210, 216, 222));
+		$pdf->Image($image, $x + 4, $y + 4, $imgW, $imgH);
+		$pdf->SetY($y + $imgH + 10);
+	}
+
+	/**
+	 * Return material table rows for PV modules.
+	 *
+	 * @param array<int,array<string,mixed>> $modules Component groups
+	 * @return array<int,array<int,string>>
+	 */
+	private function getModuleMaterialRows($modules)
+	{
+		$rows = array();
+		foreach ($modules as $module) {
+			$rows[] = array(
+				(string) $module['label'],
+				$this->formatPowerWithUnit($module['pmax'], 'Wc', 2),
+				$this->formatQty($module['qty']),
+			);
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Return material table rows for inverters.
+	 *
+	 * @param array<int,array<string,mixed>> $inverters Component groups
+	 * @return array<int,array<int,string>>
+	 */
+	private function getInverterMaterialRows($inverters)
+	{
+		$rows = array();
+		foreach ($inverters as $inverter) {
+			$power = array();
+			if (!empty($inverter['ac_nominal_power'])) {
+				$power[] = 'Nom. '.$this->formatPowerWithUnit($inverter['ac_nominal_power'], 'kVA', 2);
+			}
+			if (!empty($inverter['ac_max_power'])) {
+				$power[] = 'Max. '.$this->formatPowerWithUnit($inverter['ac_max_power'], 'kVA', 2);
+			}
+			$rows[] = array(
+				(string) $inverter['label'],
+				implode("\n", $power),
+				$this->formatQty($inverter['qty']),
+			);
+		}
+
+		return $rows;
 	}
 
 	/**
@@ -787,6 +918,24 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Render a compact subsection title.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param string $title Title
+	 * @return void
+	 */
+	private function renderSubTitle(&$pdf, $object, $outputlangs, $title)
+	{
+		$this->ensureSpace($pdf, $object, $outputlangs, 10, $title);
+		$pdf->SetTextColor($this->primaryColor[0], $this->primaryColor[1], $this->primaryColor[2]);
+		$pdf->SetFont('', 'B', $this->defaultFontSize);
+		$pdf->MultiCell($this->contentWidth(), 5, $outputlangs->convToOutputCharset($title), 0, 'L');
+		$pdf->SetTextColor(0, 0, 0);
+	}
+
+	/**
 	 * Render a paragraph.
 	 *
 	 * @param TCPDF $pdf PDF instance
@@ -803,7 +952,7 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->ensureSpace($pdf, $object, $outputlangs, $height + 2, 'Conditions contractuelles');
 		$pdf->SetFont('', '', $this->defaultFontSize);
 		$pdf->SetTextColor(35, 35, 35);
-		$pdf->MultiCell($w, 5, $text, 0, 'J', false, 1);
+		$pdf->MultiCell($w, 5, $text, 0, 'L', false, 1);
 		$pdf->Ln(1);
 	}
 
@@ -881,10 +1030,31 @@ class pdf_jpsunpro extends ModelePDFContract
 		$gap = 6;
 		$w = ($this->contentWidth() - $gap) / 2;
 		$y = $pdf->GetY();
-		$h = 58;
+		$h = max(58, $this->getSmallCardHeight($pdf, $left, $w), $this->getSmallCardHeight($pdf, $right, $w));
 		$this->renderSmallCard($pdf, $outputlangs, $this->marge_gauche, $y, $w, $h, $left);
 		$this->renderSmallCard($pdf, $outputlangs, $this->marge_gauche + $w + $gap, $y, $w, $h, $right);
 		$pdf->SetY($y + $h);
+	}
+
+	/**
+	 * Measure a small card height from its rows.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param array<int,array{label:string,value:string}> $rows Rows
+	 * @param float $w Width
+	 * @return float
+	 */
+	private function getSmallCardHeight(&$pdf, $rows, $w)
+	{
+		$height = 6;
+		foreach ($rows as $row) {
+			$pdf->SetFont('', 'B', $this->defaultFontSize);
+			$height += max(4, $this->getTextHeight($pdf, $w - 6, (string) $row['label']));
+			$pdf->SetFont('', '', $this->defaultFontSize - 1);
+			$height += max(4, $this->getTextHeight($pdf, $w - 6, (string) $row['value'])) + 1;
+		}
+
+		return $height + 3;
 	}
 
 	/**
@@ -952,12 +1122,18 @@ class pdf_jpsunpro extends ModelePDFContract
 	 * @param array<int,string> $headers Headers
 	 * @param array<int,array<int,string>> $rows Rows
 	 * @param array<int,float> $widths Column widths
+	 * @param int[]|null $rightAlignedColumns Columns to right-align
 	 * @return void
 	 */
-	private function renderSimpleTable(&$pdf, $object, $outputlangs, $headers, $rows, $widths)
+	private function renderSimpleTable(&$pdf, $object, $outputlangs, $headers, $rows, $widths, $rightAlignedColumns = null)
 	{
+		if ($rightAlignedColumns === null) {
+			$rightAlignedColumns = array(count($headers) - 1);
+		}
+		$rightAlignedColumns = array_flip($rightAlignedColumns);
+
 		$this->ensureSpace($pdf, $object, $outputlangs, 14, 'Tableau');
-		$this->renderTableHeader($pdf, $outputlangs, $headers, $widths);
+		$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array_keys($rightAlignedColumns));
 		foreach ($rows as $row) {
 			$height = 7;
 			foreach ($row as $index => $value) {
@@ -965,11 +1141,11 @@ class pdf_jpsunpro extends ModelePDFContract
 			}
 			if ($pdf->GetY() + $height > $this->contentBottom) {
 				$this->addPage($pdf, $object, $outputlangs, 'Tableau');
-				$this->renderTableHeader($pdf, $outputlangs, $headers, $widths);
+				$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array_keys($rightAlignedColumns));
 			}
 			$last = count($row) - 1;
 			foreach ($row as $index => $value) {
-				$this->renderTableCell($pdf, $widths[$index], $height, $outputlangs->convToOutputCharset((string) $value), false, false, ($index === $last ? 'R' : 'L'), $index === $last);
+				$this->renderTableCell($pdf, $widths[$index], $height, $outputlangs->convToOutputCharset((string) $value), false, false, (isset($rightAlignedColumns[$index]) ? 'R' : 'L'), $index === $last);
 			}
 		}
 		$pdf->Ln(2);
@@ -982,14 +1158,16 @@ class pdf_jpsunpro extends ModelePDFContract
 	 * @param Translate $outputlangs Output language
 	 * @param array<int,string> $headers Headers
 	 * @param array<int,float> $widths Widths
+	 * @param int[] $rightAlignedColumns Columns to right-align
 	 * @return void
 	 */
-	private function renderTableHeader(&$pdf, $outputlangs, $headers, $widths)
+	private function renderTableHeader(&$pdf, $outputlangs, $headers, $widths, $rightAlignedColumns = array())
 	{
 		$height = 7;
+		$rightAlignedColumns = array_flip($rightAlignedColumns);
 		$last = count($headers) - 1;
 		foreach ($headers as $index => $header) {
-			$this->renderTableCell($pdf, $widths[$index], $height, $outputlangs->convToOutputCharset($header), true, true, ($index === $last ? 'R' : 'L'), $index === $last, true);
+			$this->renderTableCell($pdf, $widths[$index], $height, $outputlangs->convToOutputCharset($header), true, true, (isset($rightAlignedColumns[$index]) ? 'R' : 'L'), $index === $last, true);
 		}
 	}
 
@@ -1020,7 +1198,7 @@ class pdf_jpsunpro extends ModelePDFContract
 			$pdf->SetTextColor(0, 0, 0);
 		}
 		$pdf->SetFont('', $bold ? 'B' : '', $this->defaultFontSize - 1);
-		$pdf->MultiCell($w, $h, $text, 1, $align, $fill || $darkHeader, $ln ? 1 : 0, '', '', true, 0, false, true, $h, 'M', true);
+		$pdf->MultiCell($w, $h, $text, 1, $align, $fill || $darkHeader, $ln ? 1 : 0, '', '', true, 0, false, true, $h, $darkHeader ? 'M' : 'T', false);
 		$pdf->SetTextColor(0, 0, 0);
 	}
 
@@ -1107,13 +1285,13 @@ class pdf_jpsunpro extends ModelePDFContract
 			foreach ($object->lines as $line) {
 				$label = '';
 				if (!empty($line->desc)) {
-					$label = dol_string_nohtmltag($line->desc);
+					$label = $this->normalizeTableText($line->desc);
 				} elseif (!empty($line->libelle)) {
-					$label = $line->libelle;
+					$label = $this->normalizeTableText($line->libelle);
 				} elseif (!empty($line->label)) {
-					$label = $line->label;
+					$label = $this->normalizeTableText($line->label);
 				} elseif (!empty($line->ref)) {
-					$label = $line->ref;
+					$label = $this->normalizeTableText($line->ref);
 				}
 				$amount = '';
 				if (isset($line->total_ht) && is_numeric($line->total_ht)) {
@@ -1137,6 +1315,28 @@ class pdf_jpsunpro extends ModelePDFContract
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Normalize table text while preserving useful line breaks and bullets.
+	 *
+	 * @param string $text Raw text
+	 * @return string
+	 */
+	private function normalizeTableText($text)
+	{
+		$text = (string) $text;
+		$text = preg_replace('/<\s*br\s*\/?\s*>/i', "\n", $text);
+		$text = preg_replace('/<\s*li[^>]*>/i', "\n- ", $text);
+		$text = preg_replace('/<\/\s*(p|div|li|tr|h[1-6])\s*>/i', "\n", $text);
+		$text = dol_string_nohtmltag($text);
+		$text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$text = str_replace(array("\r\n", "\r"), "\n", $text);
+		$text = preg_replace('/[ \t]+/', ' ', $text);
+		$text = preg_replace('/^[ \t]*(?:[\x{2022}\x{00B7}\x{25CF}]|[-*])\s*/mu', '- ', $text);
+		$text = preg_replace('/\n{3,}/', "\n\n", $text);
+
+		return trim((string) $text);
 	}
 
 	/**
@@ -1211,6 +1411,30 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Format technical and administrative contacts for one power plant.
+	 *
+	 * @param array<string,mixed> $powerplant Power plant data
+	 * @return string
+	 */
+	private function formatPowerPlantContacts($powerplant)
+	{
+		$lines = array();
+		$technical = isset($powerplant['technical_contact']) && is_array($powerplant['technical_contact']) ? $powerplant['technical_contact'] : array();
+		$administrative = isset($powerplant['administrative_contact']) && is_array($powerplant['administrative_contact']) ? $powerplant['administrative_contact'] : array();
+
+		$line = $this->formatContactLine($technical);
+		if ($line !== '') {
+			$lines[] = 'Technique : '.$line;
+		}
+		$line = $this->formatContactLine($administrative);
+		if ($line !== '') {
+			$lines[] = 'Administratif : '.$line;
+		}
+
+		return implode("\n", $lines);
+	}
+
+	/**
 	 * Format one contact line.
 	 *
 	 * @param array<string,string> $contact Contact
@@ -1229,6 +1453,79 @@ class pdf_jpsunpro extends ModelePDFContract
 	}
 
 	/**
+	 * Return normalized data for a contract contact list row.
+	 *
+	 * @param array<string,mixed> $contact Contact row from liste_contact
+	 * @param string $source Contact source
+	 * @param Translate $outputlangs Output language
+	 * @return array<string,string>
+	 */
+	private function getListContactData($contact, $source, $outputlangs)
+	{
+		$data = array('fullname' => '', 'job' => '', 'phone' => '', 'email' => '');
+		$id = !empty($contact['id']) ? (int) $contact['id'] : 0;
+
+		if ($source === 'external' && $id > 0) {
+			$contactstatic = new Contact($this->db);
+			if ($contactstatic->fetch($id) > 0) {
+				$data['fullname'] = $contactstatic->getFullName($outputlangs, 1);
+				$data['job'] = (string) $contactstatic->poste;
+				$data['phone'] = (string) $this->firstNonEmpty($contactstatic->phone_pro, $contactstatic->phone_mobile);
+				$data['email'] = (string) $contactstatic->email;
+			}
+		} elseif ($source === 'internal' && $id > 0) {
+			$userstatic = new User($this->db);
+			if ($userstatic->fetch($id) > 0) {
+				$data['fullname'] = $userstatic->getFullName($outputlangs);
+				$data['job'] = !empty($userstatic->job) ? (string) $userstatic->job : '';
+				$data['phone'] = (string) $this->firstNonEmpty($userstatic->office_phone, $userstatic->user_mobile);
+				$data['email'] = (string) $userstatic->email;
+			}
+		}
+
+		if ($data['fullname'] === '') {
+			$data['fullname'] = trim((isset($contact['firstname']) ? $contact['firstname'] : '').' '.(isset($contact['lastname']) ? $contact['lastname'] : ''));
+		}
+		if ($data['job'] === '') {
+			$data['job'] = isset($contact['poste']) ? (string) $contact['poste'] : '';
+		}
+		if ($data['phone'] === '') {
+			$data['phone'] = (string) $this->firstNonEmpty($contact['phone'] ?? '', $contact['phone_pro'] ?? '', $contact['phone_mobile'] ?? '');
+		}
+		if ($data['email'] === '') {
+			$data['email'] = isset($contact['email']) ? (string) $contact['email'] : '';
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Check if a contract contact row matches a signatory role.
+	 *
+	 * @param array<string,mixed> $contact Contact row from liste_contact
+	 * @param string $role Role
+	 * @return bool
+	 */
+	private function contractContactMatchesRole($contact, $role)
+	{
+		$text = jpsunPowerPlantPVNormalizeMatchText(implode(' ', array(
+			$contact['code'] ?? '',
+			$contact['typecode'] ?? '',
+			$contact['label'] ?? '',
+			$contact['libelle'] ?? '',
+		)));
+
+		if ($role === 'client_signatory') {
+			return ((strpos($text, 'client') !== false || strpos($text, 'customer') !== false) && (strpos($text, 'signataire') !== false || strpos($text, 'signatory') !== false || strpos($text, 'sign') !== false));
+		}
+		if ($role === 'sales_signatory') {
+			return ((strpos($text, 'commercial') !== false || strpos($text, 'sales') !== false) && (strpos($text, 'signataire') !== false || strpos($text, 'signatory') !== false || strpos($text, 'sign') !== false));
+		}
+
+		return false;
+	}
+
+	/**
 	 * Load external contract contacts used by the template.
 	 *
 	 * @param Contrat $object Contract object
@@ -1242,6 +1539,8 @@ class pdf_jpsunpro extends ModelePDFContract
 			'SITEADDRESS' => array('address' => '', 'zip' => '', 'town' => ''),
 			'SITEREPRESANT1' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
 			'SITEREPRESANT2' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
+			'CLIENTSIGNATORY' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
+			'SALESSIGNATORY' => array('fullname' => '', 'job' => '', 'phone' => '', 'email' => ''),
 		);
 
 		$contactlist = $object->liste_contact(-1, 'external');
@@ -1252,30 +1551,31 @@ class pdf_jpsunpro extends ModelePDFContract
 			} elseif (!empty($contact['typecode'])) {
 				$contactcode = $contact['typecode'];
 			}
-			if ($contactcode === '' || !isset($contactdata[$contactcode])) {
-				continue;
+			if ($contactcode !== '' && isset($contactdata[$contactcode])) {
+				$contactstatic = new Contact($this->db);
+				if (!empty($contact['id'])) {
+					$contactstatic->fetch((int) $contact['id']);
+				}
+
+				if ($contactcode === 'SITEADDRESS') {
+					$contactdata[$contactcode]['address'] = !empty($contactstatic->address) ? $contactstatic->address : (isset($contact['address']) ? $contact['address'] : '');
+					$contactdata[$contactcode]['zip'] = !empty($contactstatic->zip) ? $contactstatic->zip : (isset($contact['zip']) ? $contact['zip'] : '');
+					$contactdata[$contactcode]['town'] = !empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
+				} else {
+					$contactdata[$contactcode] = $this->getListContactData($contact, 'external', $outputlangs);
+				}
 			}
 
-			$contactstatic = new Contact($this->db);
-			if (!empty($contact['id'])) {
-				$contactstatic->fetch((int) $contact['id']);
+			if ($contactdata['CLIENTSIGNATORY']['fullname'] === '' && $this->contractContactMatchesRole($contact, 'client_signatory')) {
+				$contactdata['CLIENTSIGNATORY'] = $this->getListContactData($contact, 'external', $outputlangs);
 			}
+		}
 
-			if ($contactcode === 'SITEADDRESS') {
-				$contactdata[$contactcode]['address'] = !empty($contactstatic->address) ? $contactstatic->address : (isset($contact['address']) ? $contact['address'] : '');
-				$contactdata[$contactcode]['zip'] = !empty($contactstatic->zip) ? $contactstatic->zip : (isset($contact['zip']) ? $contact['zip'] : '');
-				$contactdata[$contactcode]['town'] = !empty($contactstatic->town) ? $contactstatic->town : (isset($contact['town']) ? $contact['town'] : '');
-				continue;
+		$internalcontactlist = $object->liste_contact(-1, 'internal');
+		foreach ($internalcontactlist as $contact) {
+			if ($contactdata['SALESSIGNATORY']['fullname'] === '' && $this->contractContactMatchesRole($contact, 'sales_signatory')) {
+				$contactdata['SALESSIGNATORY'] = $this->getListContactData($contact, 'internal', $outputlangs);
 			}
-
-			$fullname = $contactstatic->getFullName($outputlangs, 1);
-			if ($fullname === '') {
-				$fullname = trim((isset($contact['firstname']) ? $contact['firstname'] : '').' '.(isset($contact['lastname']) ? $contact['lastname'] : ''));
-			}
-			$contactdata[$contactcode]['fullname'] = $fullname;
-			$contactdata[$contactcode]['job'] = !empty($contactstatic->poste) ? $contactstatic->poste : (isset($contact['poste']) ? $contact['poste'] : '');
-			$contactdata[$contactcode]['phone'] = !empty($contactstatic->phone_pro) ? $contactstatic->phone_pro : (isset($contact['phone']) ? $contact['phone'] : '');
-			$contactdata[$contactcode]['email'] = !empty($contactstatic->email) ? $contactstatic->email : (isset($contact['email']) ? $contact['email'] : '');
 		}
 
 		if ($contactdata['SITEADDRESS']['address'] === '' && !empty($fallbackpowerplant['address'])) {
@@ -1344,6 +1644,24 @@ class pdf_jpsunpro extends ModelePDFContract
 		}
 
 		return rtrim(rtrim(sprintf('%.'.$precision.'F', (float) $value), '0'), '.');
+	}
+
+	/**
+	 * Format a numeric power value with a unit.
+	 *
+	 * @param string|int|float $value Value
+	 * @param string $unit Unit
+	 * @param int $precision Precision
+	 * @return string
+	 */
+	private function formatPowerWithUnit($value, $unit, $precision)
+	{
+		$formatted = $this->formatNumber($value, $precision);
+		if ($formatted === '') {
+			return '';
+		}
+
+		return $formatted.' '.$unit;
 	}
 
 	/**

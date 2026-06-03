@@ -244,11 +244,15 @@ function jpsunPowerPlantPVFetchComponents($db, $powerplantid)
  */
 function jpsunPowerPlantPVFilterComponentsByCategory($components, $categorycodes)
 {
-	$categorycodes = array_flip($categorycodes);
+	$normalizedcodes = array();
+	foreach ($categorycodes as $categorycode) {
+		$normalizedcodes[strtoupper((string) $categorycode)] = true;
+	}
+
 	$filtered = array();
 	foreach ($components as $component) {
-		$code = isset($component['category_code']) ? (string) $component['category_code'] : '';
-		if ($code !== '' && isset($categorycodes[$code])) {
+		$code = isset($component['category_code']) ? strtoupper((string) $component['category_code']) : '';
+		if ($code !== '' && isset($normalizedcodes[$code])) {
 			$filtered[] = $component;
 		}
 	}
@@ -284,19 +288,7 @@ function jpsunPowerPlantPVFormatComponentSummary($components, $powerfield = '', 
 {
 	$labels = array();
 	foreach ($components as $component) {
-		$label = trim((string) ($component['product_ref'] ?? ''));
-		$productlabel = trim((string) ($component['product_label'] ?? ''));
-		if ($label !== '' && $productlabel !== '') {
-			$label .= ' - '.$productlabel;
-		} elseif ($label === '') {
-			$label = $productlabel;
-		}
-		if ($label === '') {
-			$label = (string) ($component['category_label'] ?? '');
-		}
-		if ($label === '') {
-			$label = (string) ($component['fk_product'] ?? '');
-		}
+		$label = jpsunPowerPlantPVBuildComponentLabel($component);
 
 		if ($powerfield !== '' && !empty($component[$powerfield])) {
 			$label .= ' ('.rtrim(rtrim(sprintf('%.2F', (float) $component[$powerfield]), '0'), '.').' '.$unit.')';
@@ -308,6 +300,289 @@ function jpsunPowerPlantPVFormatComponentSummary($components, $powerfield = '', 
 	}
 
 	return implode("\n", $labels);
+}
+
+/**
+ * Build a display label for one PowerPlantPV component.
+ *
+ * @param array<string,mixed> $component Component data
+ * @return string
+ */
+function jpsunPowerPlantPVBuildComponentLabel($component)
+{
+	$label = trim((string) ($component['product_ref'] ?? ''));
+	$productlabel = trim((string) ($component['product_label'] ?? ''));
+	if ($label !== '' && $productlabel !== '') {
+		$label .= ' - '.$productlabel;
+	} elseif ($label === '') {
+		$label = $productlabel;
+	}
+	if ($label === '') {
+		$label = (string) ($component['category_label'] ?? '');
+	}
+	if ($label === '') {
+		$label = (string) ($component['fk_product'] ?? '');
+	}
+
+	return $label;
+}
+
+/**
+ * Group components by product and power characteristics for PDF material tables.
+ *
+ * @param array<int,array<string,mixed>> $components Components
+ * @param string[] $categorycodes Category codes
+ * @param string[] $powerfields Power fields to expose
+ * @return array<int,array<string,mixed>>
+ */
+function jpsunPowerPlantPVGroupComponentsByProduct($components, $categorycodes, $powerfields = array())
+{
+	$filtered = jpsunPowerPlantPVFilterComponentsByCategory($components, $categorycodes);
+	$groups = array();
+
+	foreach ($filtered as $component) {
+		$powerparts = array();
+		foreach ($powerfields as $powerfield) {
+			$powerparts[] = isset($component[$powerfield]) ? (string) $component[$powerfield] : '';
+		}
+
+		$key = implode('|', array(
+			(string) ($component['fk_product'] ?? ''),
+			jpsunPowerPlantPVBuildComponentLabel($component),
+			implode('|', $powerparts),
+		));
+
+		if (!isset($groups[$key])) {
+			$groups[$key] = array(
+				'label' => jpsunPowerPlantPVBuildComponentLabel($component),
+				'qty' => 0.0,
+				'category_code' => (string) ($component['category_code'] ?? ''),
+				'category_label' => (string) ($component['category_label'] ?? ''),
+				'pmax' => isset($component['pmax']) ? (float) $component['pmax'] : 0.0,
+				'ac_nominal_power' => isset($component['ac_nominal_power']) ? (float) $component['ac_nominal_power'] : 0.0,
+				'ac_max_power' => isset($component['ac_max_power']) ? (float) $component['ac_max_power'] : 0.0,
+			);
+		}
+
+		$groups[$key]['qty'] += isset($component['qty']) ? (float) $component['qty'] : 0.0;
+	}
+
+	return array_values($groups);
+}
+
+/**
+ * Normalize text for robust type/contact matching.
+ *
+ * @param string $text Text
+ * @return string
+ */
+function jpsunPowerPlantPVNormalizeMatchText($text)
+{
+	$text = strtolower((string) $text);
+	$text = strtr($text, array(
+		'á' => 'a', 'à' => 'a', 'â' => 'a', 'ä' => 'a', 'ã' => 'a', 'å' => 'a',
+		'ç' => 'c',
+		'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+		'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+		'ñ' => 'n',
+		'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'ö' => 'o', 'õ' => 'o',
+		'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+		'ý' => 'y', 'ÿ' => 'y',
+		'æ' => 'ae', 'œ' => 'oe',
+	));
+	$text = preg_replace('/[^a-z0-9]+/', ' ', $text);
+
+	return trim((string) $text);
+}
+
+/**
+ * Check if a contact type row matches a PowerPlantPV site role.
+ *
+ * @param array<string,string> $contact Contact row
+ * @param string $role Role code
+ * @return bool
+ */
+function jpsunPowerPlantPVContactMatchesSiteRole($contact, $role)
+{
+	$text = jpsunPowerPlantPVNormalizeMatchText(implode(' ', array(
+		$contact['code'] ?? '',
+		$contact['typecode'] ?? '',
+		$contact['libelle'] ?? '',
+		$contact['label'] ?? '',
+	)));
+
+	if ($role === 'technical') {
+		return (strpos($text, 'technique') !== false || strpos($text, 'technical') !== false || strpos($text, 'technic') !== false || strpos($text, 'tech ') !== false);
+	}
+	if ($role === 'administrative') {
+		return (strpos($text, 'administratif') !== false || strpos($text, 'administrative') !== false || strpos($text, 'admin') !== false);
+	}
+
+	return false;
+}
+
+/**
+ * Build a normalized contact data array.
+ *
+ * @param object $obj SQL contact row
+ * @return array<string,string>
+ */
+function jpsunPowerPlantPVBuildContactData($obj)
+{
+	$fullname = trim((string) $obj->firstname.' '.(string) $obj->lastname);
+	if ($fullname === '') {
+		$fullname = (string) $obj->lastname;
+	}
+
+	return array(
+		'fullname' => $fullname,
+		'job' => (string) $obj->poste,
+		'phone' => (string) ($obj->phone_pro ?: $obj->phone_mobile),
+		'email' => (string) $obj->email,
+		'code' => (string) $obj->code,
+		'label' => (string) $obj->libelle,
+	);
+}
+
+/**
+ * Fetch PowerPlantPV customer technical and administrative contacts.
+ *
+ * @param DoliDB $db Database handler
+ * @param int $powerplantid Power plant id
+ * @return array{technical:array<string,string>,administrative:array<string,string>}
+ */
+function jpsunPowerPlantPVFetchSiteContacts($db, $powerplantid)
+{
+	$empty = array('fullname' => '', 'job' => '', 'phone' => '', 'email' => '', 'code' => '', 'label' => '');
+	$contacts = array('technical' => $empty, 'administrative' => $empty);
+	$powerplantid = (int) $powerplantid;
+	if ($powerplantid <= 0) {
+		return $contacts;
+	}
+
+	$sql = "SELECT ec.rowid, tc.code, tc.libelle, tc.source, sp.lastname, sp.firstname, sp.poste,";
+	$sql .= " sp.phone as phone_pro, sp.phone_mobile, sp.email";
+	$sql .= " FROM ".MAIN_DB_PREFIX."element_contact as ec";
+	$sql .= " INNER JOIN ".MAIN_DB_PREFIX."c_type_contact as tc ON tc.rowid = ec.fk_c_type_contact";
+	$sql .= " INNER JOIN ".MAIN_DB_PREFIX."socpeople as sp ON sp.rowid = ec.fk_socpeople";
+	$sql .= " WHERE ec.element_id = ".$powerplantid;
+	$sql .= " AND tc.element IN ('powerplant', 'powerplant@powerplantpv', 'powerplantpv_powerplant')";
+	$sql .= " AND tc.source = 'external'";
+	$sql .= " AND tc.active = 1";
+	$sql .= " AND sp.entity IN (".jpsunPowerPlantPVGetEntitySql('contact').")";
+	$sql .= " ORDER BY tc.position ASC, ec.rowid ASC";
+
+	$resql = $db->query($sql);
+	if (!$resql) {
+		return $contacts;
+	}
+
+	while ($obj = $db->fetch_object($resql)) {
+		$row = array(
+			'code' => (string) $obj->code,
+			'typecode' => (string) $obj->code,
+			'libelle' => (string) $obj->libelle,
+			'label' => (string) $obj->libelle,
+		);
+		if ($contacts['technical']['fullname'] === '' && jpsunPowerPlantPVContactMatchesSiteRole($row, 'technical')) {
+			$contacts['technical'] = jpsunPowerPlantPVBuildContactData($obj);
+		}
+		if ($contacts['administrative']['fullname'] === '' && jpsunPowerPlantPVContactMatchesSiteRole($row, 'administrative')) {
+			$contacts['administrative'] = jpsunPowerPlantPVBuildContactData($obj);
+		}
+	}
+	$db->free($resql);
+
+	return $contacts;
+}
+
+/**
+ * Return the PowerPlantPV document upload directory for a power plant row.
+ *
+ * @param array<string,mixed> $powerplant Power plant data
+ * @return string
+ */
+function jpsunPowerPlantPVGetDocumentUploadDir($powerplant)
+{
+	global $conf;
+
+	if (function_exists('dol_include_once')) {
+		@include_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+		@dol_include_once('/powerplantpv/lib/powerplantpv_powerplant.lib.php');
+	}
+
+	$ref = isset($powerplant['ref']) ? (string) $powerplant['ref'] : '';
+	if ($ref === '') {
+		return '';
+	}
+
+	$object = new stdClass();
+	$object->ref = $ref;
+	$object->entity = isset($powerplant['entity']) ? (int) $powerplant['entity'] : (isset($conf->entity) ? (int) $conf->entity : 1);
+
+	if (function_exists('powerplantGetDocumentUploadDir')) {
+		return powerplantGetDocumentUploadDir($object);
+	}
+
+	$base = '';
+	if (!empty($conf->powerplantpv->multidir_output[$object->entity])) {
+		$base = $conf->powerplantpv->multidir_output[$object->entity];
+	} elseif (!empty($conf->powerplantpv->dir_output)) {
+		$base = $conf->powerplantpv->dir_output;
+	}
+	if ($base === '') {
+		return '';
+	}
+
+	return $base.'/powerplant/'.dol_sanitizeFileName($ref);
+}
+
+/**
+ * Return the first image attached to a PowerPlantPV power plant, sorted by filename.
+ *
+ * @param array<string,mixed> $powerplant Power plant data
+ * @return string
+ */
+function jpsunPowerPlantPVGetFirstImagePath($powerplant)
+{
+	$upload_dir = jpsunPowerPlantPVGetDocumentUploadDir($powerplant);
+	if ($upload_dir === '' || !is_dir($upload_dir)) {
+		return '';
+	}
+
+	$imagepattern = '\.(jpe?g|png|gif|webp)$';
+	$excludepattern = '(\.meta|_preview.*\.png)$';
+	if (function_exists('dol_dir_list')) {
+		$files = dol_dir_list($upload_dir, 'files', 0, $imagepattern, $excludepattern, 'name', SORT_ASC, 1);
+		if (is_array($files)) {
+			foreach ($files as $file) {
+				$path = !empty($file['fullname']) ? $file['fullname'] : $upload_dir.'/'.(isset($file['name']) ? $file['name'] : '');
+				if ($path !== '' && is_readable($path)) {
+					return $path;
+				}
+			}
+		}
+	}
+
+	$names = @scandir($upload_dir);
+	if (!is_array($names)) {
+		return '';
+	}
+	natcasesort($names);
+	foreach ($names as $name) {
+		if ($name === '.' || $name === '..') {
+			continue;
+		}
+		if (!preg_match('/\.(jpe?g|png|gif|webp)$/i', $name) || preg_match('/(\.meta|_preview.*\.png)$/i', $name)) {
+			continue;
+		}
+		$path = $upload_dir.'/'.$name;
+		if (is_readable($path)) {
+			return $path;
+		}
+	}
+
+	return '';
 }
 
 /**
@@ -336,16 +611,24 @@ function jpsunPowerPlantPVBuildContractDataset($db, $contract, $user = null)
 		$inverters = jpsunPowerPlantPVFilterComponentsByCategory($components, array('ONDULE'));
 		$dcboxes = jpsunPowerPlantPVFilterComponentsByCategory($components, array('COFFDC'));
 		$acboxes = jpsunPowerPlantPVFilterComponentsByCategory($components, array('COFFAC'));
+		$sitecontacts = jpsunPowerPlantPVFetchSiteContacts($db, (int) $powerplant['id']);
 
 		$result['powerplants'][$key]['components'] = $components;
 		$result['powerplants'][$key]['site_name'] = trim((string) $powerplant['label']) !== '' ? (string) $powerplant['label'] : (string) $powerplant['ref'];
 		$result['powerplants'][$key]['full_address'] = trim((string) $powerplant['address']."\n".trim((string) $powerplant['zip'].' '.(string) $powerplant['town']));
 		$result['powerplants'][$key]['modules_label'] = jpsunPowerPlantPVFormatComponentSummary($modules, 'pmax', 'Wc');
 		$result['powerplants'][$key]['modules_qty'] = jpsunPowerPlantPVSumComponentQty($modules);
+		$result['powerplants'][$key]['modules_rows'] = jpsunPowerPlantPVGroupComponentsByProduct($components, array('MODULE'), array('pmax'));
 		$result['powerplants'][$key]['inverters_label'] = jpsunPowerPlantPVFormatComponentSummary($inverters, 'ac_nominal_power', 'kVA');
 		$result['powerplants'][$key]['inverters_qty'] = jpsunPowerPlantPVSumComponentQty($inverters);
+		$result['powerplants'][$key]['inverters_rows'] = jpsunPowerPlantPVGroupComponentsByProduct($components, array('ONDULE'), array('ac_nominal_power', 'ac_max_power'));
 		$result['powerplants'][$key]['dc_boxes_qty'] = jpsunPowerPlantPVSumComponentQty($dcboxes);
+		$result['powerplants'][$key]['dc_box_rows'] = jpsunPowerPlantPVGroupComponentsByProduct($components, array('COFFDC'));
 		$result['powerplants'][$key]['ac_boxes_qty'] = jpsunPowerPlantPVSumComponentQty($acboxes);
+		$result['powerplants'][$key]['ac_box_rows'] = jpsunPowerPlantPVGroupComponentsByProduct($components, array('COFFAC'));
+		$result['powerplants'][$key]['technical_contact'] = $sitecontacts['technical'];
+		$result['powerplants'][$key]['administrative_contact'] = $sitecontacts['administrative'];
+		$result['powerplants'][$key]['first_image'] = jpsunPowerPlantPVGetFirstImagePath($result['powerplants'][$key]);
 	}
 
 	return $result;
