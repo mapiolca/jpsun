@@ -1,289 +1,52 @@
 <?php
-/* <one line to give the program's name and a brief idea of what it does.>
- * Copyright (C) 2015 ATM Consulting <support@atm-consulting.fr>
+/* Copyright (C) 2026 Pierre Ardoin <developpeur@lesmetiersdubatiment.fr>
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * 	\file		admin/setup.php
- * 	\ingroup	jpsun
- * 	\brief		This file is an example module setup page
- * 				Put some comments here
+ *	\file		admin/setup.php
+ *	\ingroup	jpsun
+ *	\brief		Main JPSUN setup page.
  */
-// Dolibarr environment
-$res = @include("../../main.inc.php"); // From htdocs directory
-if (! $res) {
-    $res = @include("../../../main.inc.php"); // From "custom" directory
+
+require_once __DIR__.'/_setup_common.php';
+
+jpsunHandleAdminSetupActions(true);
+jpsunPrintAdminSetupHeader('setup');
+
+// Global
+setup_print_title($langs->trans("Global"));
+setup_print_on_off('MAIN_DISABLE_TRUNC');
+
+// Documents PDF
+setup_print_title($langs->trans("JpsunPdfDocuments"));
+setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
+setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
+jpsunPdfPrintAttachmentSetupRows();
+
+// Workflow
+setup_print_title($langs->trans("Workflow"));
+setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', false, '', array('type' => 'number', 'min' => '1', 'step' => '1', 'value' => getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5)));
+setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
+setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
+setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
+if (!jpsunIsPowerPlantPVEnabled()) {
+	print '<tr>';
+	print '<td>'.$langs->trans('JpsunRecomputePeakPowerLabel').'<br><small>'.$langs->trans('JpsunRecomputePeakPowerDesc').'</small></td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="300">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="jpsun_recompute_peak_power">';
+	print '<input type="submit" class="button button-edit" value="'.$langs->trans('JpsunRecomputePeakPowerButton').'">';
+	print '</form>';
+	print '</td>';
+	print '</tr>';
 }
 
-// Libraries
-require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-require_once '../lib/jpsun.lib.php';
-require_once '../lib/jpsun_powerplantpv.lib.php';
-//dol_include_once('../../abricot/includes/lib/admin.lib.php');
-dol_include_once('../lib/admin.lib.php');
-
-// Translations
-$langs->load("jpsun@jpsun");
-
-// Access control
-if (! $user->admin) {
-    accessforbidden();
-}
-
-// Parameters
-$action = GETPOST('action', 'alpha');
-
-/*
- * Actions
- */
-if (preg_match('/set_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
-    {
-        header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
-}
-
-if (preg_match('/del_(.*)/',$action,$reg))
-{
-    $code=$reg[1];
-    if (dolibarr_del_const($db, $code, 0) > 0)
-    {
-        Header("Location: ".$_SERVER["PHP_SELF"]);
-        exit;
-    }
-    else
-    {
-        dol_print_error($db);
-    }
-}
-
-if ($action === 'jpsun_recompute_peak_power' && !jpsunIsPowerPlantPVEnabled()) {
-	$result = jpsunRecomputeInstalledPeakPowerFromProductLines($db);
-	if ($result['result'] > 0) {
-		setEventMessages($langs->trans('JpsunPeakPowerRecomputeSuccess', $result['updated']), null, 'mesgs');
-	} else {
-		setEventMessages($langs->trans('JpsunPeakPowerRecomputeError'), array($result['error']), 'errors');
-	}
-}
-
-/*
- * View
- */
-$page_name = "JpsunSetup";
-llxHeader('', $langs->trans($page_name));
-
-// Subheader
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
-    . $langs->trans("BackToModuleList") . '</a>';
-    print_fiche_titre($langs->trans($page_name), $linkback, 'tools');
-
-    // Configuration header
-    $head = jpsunAdminPrepareHead();
-    dol_fiche_head(
-        $head,
-        'setup',
-        $langs->trans("Module999999Desc"),
-        -1,
-        "jpsun@jpsun"
-        );
-
-
-
-    print '<table class="noborder" width="100%">';
-    
-    // Documents PDF
-    setup_print_title($langs->trans("JpsunPdfDocuments"));
-    setup_print_on_off('PDF_SHOW_PROJECT_TITLE');
-    setup_print_on_off('PRODUIT_PDF_MERGE_PROPAL');
-
-
-    // GLOBAL
-    setup_print_title($langs->trans("Global"));
-    
-    setup_print_on_off('MAIN_DISABLE_TRUNC');
-    
-    // THIRDPARTIES
-    setup_print_title($langs->trans("Thirdparty"));
-    
-    setup_print_on_off('MAIN_ALL_TO_UPPER');
-    
-    // PRODUCTS
-    setup_print_title($langs->trans("Products"));
-
-    setup_print_on_off('PRODUCT_USE_UNITS');
-    setup_print_on_off('MAIN_SEARCH_PRODUCT_BY_FOURN_REF');
-
-    //setup_print_on_off('BTP_SIMPLE_DISPLAY'); // je ne sais pas a quoi sert cette conf j'ai fait une recherche, utilisé par workstation
-/**
-    if(floatval(DOL_VERSION) >= 8){
-        setup_print_on_off('MAIN_ENABLE_IMPORT_LINKED_OBJECT_LINES', false, '', 'MAIN_ENABLE_IMPORT_LINKED_OBJECT_LINES_HELP');
-    }
-
-
-    if(floatval(DOL_VERSION) >= 10){
-        setup_print_on_off('INVOICE_KEEP_DISCOUNT_LINES_AS_IN_ORIGIN', false, '', 'INVOICE_KEEP_DISCOUNT_LINES_AS_IN_ORIGIN_HELP');
-    }
-**/
-
-	// CUSTOMER PROPAL
-	setup_print_title($langs->trans("JpsunCustomerProposal"));
-
-    if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT');
-        }
-    if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN');
-        }
-
-	// WORKFLOW
-	setup_print_title($langs->trans("Workflow"));
-	setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
-	setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', false, '', array('type' => 'number', 'min' => '1', 'step' => '1', 'value' => getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5)));
-	setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
-	setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
-	setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
-	if (!jpsunIsPowerPlantPVEnabled()) {
-		print '<tr>';
-		print '<td>'.$langs->trans('JpsunRecomputePeakPowerLabel').'<br><small>'.$langs->trans('JpsunRecomputePeakPowerDesc').'</small></td>';
-		print '<td align="center" width="20">&nbsp;</td>';
-		print '<td align="right" width="300">';
-		print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-		print '<input type="hidden" name="token" value="'.newToken().'">';
-		print '<input type="hidden" name="action" value="jpsun_recompute_peak_power">';
-		print '<input type="submit" class="button button-edit" value="'.$langs->trans('JpsunRecomputePeakPowerButton').'">';
-		print '</form>';
-		print '</td>';
-		print '</tr>';
-	}
-
-	// CUSTOMER ORDER
-    
-    setup_print_title($langs->trans("CustomerOrder"));
-
-    if(floatval(DOL_VERSION) >= 7.0){
-        setup_print_on_off('MAIN_USE_PROPAL_REFCLIENT_FOR_ORDER');
-        }
-
-    // INVOICE_USE_SITUATION
-    setup_print_title($langs->trans("SetupSituationTitle"));
-
-    // FORCE reload page
-    $ajaxConstantOnOffInput = array(
-        	'set' => array('INVOICE_USE_SITUATION' => 2)
-        );    
-    setup_print_on_off('INVOICE_USE_SITUATION', false, '', false, 300, true, $ajaxConstantOnOffInput);
-    $ajaxConstantOnOffInput = '';
-    if(getDolGlobalInt('INVOICE_USE_SITUATION')) {
-        if(intval(DOL_VERSION) >= 11
-            || file_exists(DOL_DOCUMENT_ROOT . '/admin/facture_situation.php') 
-		|| file_exists(DOL_DOCUMENT_ROOT . '/admin/invoice_situation.php') // For X.x_btp compatible branch
-        )
-        {
-		if(intval(DOL_VERSION) >= 20) $link = dol_buildpath('admin/invoice_situation.php',1);
-		else $link =dol_buildpath('admin/facture_situation.php',1);
-            print '<tr>';
-            print '<td colspan="3">'.$langs->trans('SituationParamsAvailablesHere').' <a href="'.$link.'" >'.$langs->trans("SetupSituationTitle").'</a></td>'."\n";
-            print '</tr>';
-        }
-        elseif(intval(DOL_VERSION) >= 8){
-            setup_print_on_off('INVOICE_USE_SITUATION_CREDIT_NOTE');
-        }
-    }
-
-        // SUPPLIER PROPOSAL
-        setup_print_title($langs->trans("SupplierProposals"));
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_ADD_BILLING_CONTACT');
-        }
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_AUTOADD_USER_CONTACT');
-        }
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD');
-        }
-
-        // SUPPLIER ORDER
-        setup_print_title($langs->trans("SupplierOrder"));
-
-        if(floatval(DOL_VERSION) >= 20.0){
-        setup_print_on_off('SUPPLIER_ORDER_AUTOADD_USER_CONTACT');
-        }
-        
-        if(floatval(DOL_VERSION) >= 10.0){
-        setup_print_on_off('MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER');
-        }
-        
-         
-
-    //
-/**
-	if(floatval(DOL_VERSION) >= 9){
-		setup_print_on_off('INVOICE_USE_DEFAULT_DOCUMENT');
-	}
-**/
-/**
-	if(floatval(DOL_VERSION) >= 15.0){
-		setup_print_on_off('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS');
-	}
-**/
-	if(floatval(DOL_VERSION) >= 13.0){
-		setup_print_title($langs->trans("Project"));
-		if (getDolGlobalInt('SHOW_DEPRECATED_FEATURES')) {
-			setup_print_on_off('JPSUN_PROJECT_SHOW_FORECAST_PROFIT_BOARD');
-		}
-		setup_print_input_form_part('JPSUN_PROJECT_FORECAST_DEFAULT_THM');
-		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_PROPOSAL');
-		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_ORDER');
-		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_FICHINTER');
-		setup_print_on_off('JPSUN_PROJECTSYNTHESIS_SHOW_STOCKTRANSFER');
-	}
-	
-	// SUPPLIER ORDER
-        setup_print_title($langs->trans("Tickets"));
-
-        if(floatval(DOL_VERSION) >= 20.0){
-            
-        $ajaxConstantOnOffInput = array(
-        	'set' => array('TICKET_ADD_AUTHOR_AS_CONTACT' => 2)
-        );    
-            
-        setup_print_on_off('TICKET_ADD_AUTHOR_AS_CONTACT', false, '', false, 300, false, $ajaxConstantOnOffInput);
-        $ajaxConstantOnOffInput = '';
-        }
-        
-        if(floatval(DOL_VERSION) >= 10.0){
-            
-        setup_print_on_off('TICKET_SHOW_MESSAGES_ON_CARD');
-        }
-
-
-    print '</table>';
-
-    llxFooter();
-
-    $db->close();
-
-
+jpsunPrintAdminSetupFooter();

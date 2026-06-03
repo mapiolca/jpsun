@@ -24,6 +24,7 @@
  */
 
 require_once __DIR__.'/jpsun_powerplantpv.lib.php';
+require_once __DIR__.'/jpsun_pdf_attachments.lib.php';
 
 function jpsunAdminPrepareHead()
 {
@@ -35,8 +36,43 @@ function jpsunAdminPrepareHead()
     $head = array();
 
     $head[$h][0] = dol_buildpath("/jpsun/admin/setup.php", 1);
-    $head[$h][1] = $langs->trans("Setup");
+    $head[$h][1] = $langs->trans("JpsunSetupTabMain");
     $head[$h][2] = 'setup';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/tiers.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabThirdparties");
+    $head[$h][2] = 'thirdparties';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/produits.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProducts");
+    $head[$h][2] = 'products';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/devis.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProposals");
+    $head[$h][2] = 'proposals';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/commandes.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabOrders");
+    $head[$h][2] = 'orders';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/factures.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabInvoices");
+    $head[$h][2] = 'invoices';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/projets.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProjects");
+    $head[$h][2] = 'projects';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/tickets.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabTickets");
+    $head[$h][2] = 'tickets';
     $h++;
 /**
     $head[$h][0] = dol_buildpath("/jpsun/admin/about.php", 1);
@@ -55,6 +91,97 @@ function jpsunAdminPrepareHead()
     complete_head_from_modules($conf, $langs, $object, $head, $h, 'jpsun');
 
     return $head;
+}
+
+/**
+ * Handle shared setup actions.
+ *
+ * @param	bool	$allowPeakPowerRecompute	Whether the current page may run peak power recompute
+ * @return	void
+ */
+function jpsunHandleAdminSetupActions($allowPeakPowerRecompute = false)
+{
+	global $db, $conf, $langs;
+
+	$action = GETPOST('action', 'alpha');
+	if ($action === '') {
+		return;
+	}
+
+	if (function_exists('checkToken')) {
+		checkToken();
+	}
+
+	if (jpsunPdfHandleAttachmentAdminAction($db)) {
+		header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	}
+
+	if (preg_match('/set_(.*)/', $action, $reg)) {
+		$code = $reg[1];
+		if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0) {
+			header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		dol_print_error($db);
+	}
+
+	if (preg_match('/del_(.*)/', $action, $reg)) {
+		$code = $reg[1];
+		if (dolibarr_del_const($db, $code, $conf->entity) > 0) {
+			header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		dol_print_error($db);
+	}
+
+	if ($allowPeakPowerRecompute && $action === 'jpsun_recompute_peak_power' && !jpsunIsPowerPlantPVEnabled()) {
+		$result = jpsunRecomputeInstalledPeakPowerFromProductLines($db);
+		if ($result['result'] > 0) {
+			setEventMessages($langs->trans('JpsunPeakPowerRecomputeSuccess', $result['updated']), null, 'mesgs');
+		} else {
+			setEventMessages($langs->trans('JpsunPeakPowerRecomputeError'), array($result['error']), 'errors');
+		}
+		header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	}
+}
+
+/**
+ * Print the common admin setup header and open the settings table.
+ *
+ * @param	string	$activeTab	Active tab id
+ * @return	void
+ */
+function jpsunPrintAdminSetupHeader($activeTab)
+{
+	global $langs;
+
+	$page_name = "JpsunSetup";
+	llxHeader('', $langs->trans($page_name));
+
+	$linkback = '<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
+	print_fiche_titre($langs->trans($page_name), $linkback, 'tools');
+
+	$head = jpsunAdminPrepareHead();
+	dol_fiche_head($head, $activeTab, $langs->trans("Module999999Desc"), -1, "jpsun@jpsun");
+
+	print '<table class="noborder" width="100%">';
+}
+
+/**
+ * Print the common admin setup footer.
+ *
+ * @return	void
+ */
+function jpsunPrintAdminSetupFooter()
+{
+	global $db;
+
+	print '</table>';
+	dol_fiche_end();
+	llxFooter();
+	$db->close();
 }
 
 

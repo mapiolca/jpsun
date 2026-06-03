@@ -30,6 +30,7 @@ require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
 
 /**
  * Class to build JPSUN PRO contract documents.
@@ -262,6 +263,8 @@ class pdf_jpsunpro extends ModelePDFContract
 
 		$contactdata = $this->getContractContactData($object, $outputlangs, $dataset['powerplants'][0]);
 		$this->renderNativeContract($pdf, $object, $dataset['powerplants'], $contactdata, $outputlangs);
+		jpsunPdfAppendConfiguredAttachments($pdf, 'contract', $object->entity);
+		jpsunPdfAppendFichinterSpecimen($pdf, $this->db, $outputlangs);
 
 		$pdf->Close();
 		$pdf->Output($file, 'F');
@@ -314,7 +317,6 @@ class pdf_jpsunpro extends ModelePDFContract
 
 		$this->addPage($pdf, $object, $outputlangs, 'Annexes');
 		$this->renderServicePriceAnnex($pdf, $object, $outputlangs);
-		$this->renderPlaceholderAnnexes($pdf, $object, $outputlangs);
 	}
 
 	/**

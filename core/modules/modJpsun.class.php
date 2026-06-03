@@ -100,7 +100,16 @@ class modJpsun extends DolibarrModules
 		$r=0;
 
 		// Config pages. Put here list of php page names stored in admmin directory used to setup module.
-		$this->config_page_url = array('setup.php@jpsun');
+		$this->config_page_url = array(
+			'setup.php@jpsun',
+			'tiers.php@jpsun',
+			'produits.php@jpsun',
+			'devis.php@jpsun',
+			'commandes.php@jpsun',
+			'factures.php@jpsun',
+			'projets.php@jpsun',
+			'tickets.php@jpsun',
+		);
 
 		// Dependencies
 		$this->depends = array('modProjet', 'modAgenda');		// List of modules id that must be enabled if this module is enabled

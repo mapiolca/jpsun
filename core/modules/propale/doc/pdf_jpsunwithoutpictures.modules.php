@@ -35,6 +35,7 @@ require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
 
 
 /**
@@ -882,8 +883,9 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 					$pdf->AliasNbPages();
 				}
 				
-				// Add terms to sale
-				if (getDolGlobalString('MAIN_INFO_PROPAL_TERMSOFSALE') && getDolGlobalInt('MAIN_PDF_ADD_TERMSOFSALE_PROPAL')) {
+				// Add terms to sale unless the JPSUN terms attachment replaces it.
+				$jpsunTermsOfSaleAvailable = jpsunPdfAttachmentIsAvailableForTarget('TERMS_OF_SALE', 'propal', $object->entity);
+				if (!$jpsunTermsOfSaleAvailable && getDolGlobalString('MAIN_INFO_PROPAL_TERMSOFSALE') && getDolGlobalInt('MAIN_PDF_ADD_TERMSOFSALE_PROPAL')) {
 					$termsofsalefilename = getDolGlobalString('MAIN_INFO_PROPAL_TERMSOFSALE');
 					$termsofsale = $conf->propal->dir_output.'/'.$termsofsalefilename;
 					if (!empty($conf->propal->multidir_output[$object->entity])) {
@@ -903,6 +905,7 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 						}
 					}
 				}
+				jpsunPdfAppendConfiguredAttachments($pdf, 'propal', $object->entity);
 				//If propal merge product PDF is active
 				if (getDolGlobalString('PRODUIT_PDF_MERGE_PROPAL')) {
 					require_once DOL_DOCUMENT_ROOT.'/product/class/propalmergepdfproduct.class.php';

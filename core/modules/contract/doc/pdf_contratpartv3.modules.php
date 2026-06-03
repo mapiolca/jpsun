@@ -36,6 +36,7 @@ require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
 
 /**
  *	Class to generate the supplier orders with the JPSUN model
@@ -619,6 +620,8 @@ class pdf_contratpartv3 extends ModelePDFContract
 				if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
 
 				//Contenu
+
+				jpsunPdfAppendConfiguredAttachments($pdf, 'contract', $object->entity);
 
 			// Fermture Formulaire
 				$pdf->Close();

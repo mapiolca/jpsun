@@ -5,6 +5,9 @@
 - Masquage des widgets historiques de puissance crete et de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
 - Ajout du modele PDF contrat `JPSUN PRO`, base sur le contrat PRO V4, avec generation d'une Annexe 1 par centrale PV liee au contrat.
 - Recuperation des donnees centrales PV, composants, tiers et contacts via les mecanismes Dolibarr natifs, avec controle des droits et filtrage par entite.
+- Separation des reglages JPSUN en onglets admin dedies.
+- Ajout d'annexes PDF configurables par entite, jointes aux devis et contrats JPSUN selon ordre et activation.
+- Le contrat `JPSUN PRO` ajoute le specimen du modele natif Interventions configure en annexe PDF.
 
 ## 1.19 (27/05/2026)
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue Dolibarr.
