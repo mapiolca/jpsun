@@ -579,6 +579,7 @@ class pdf_jpsunpro extends ModelePDFContract
 		$acboxesqty = $this->formatQty($powerplant['ac_boxes_qty']);
 		$installedpower = $this->formatNumber($powerplant['installed_power'], 2);
 		$pdl = isset($powerplant['prm_pdl_number']) ? (string) $powerplant['prm_pdl_number'] : '';
+		$accessinstructions = isset($powerplant['access_instructions']) ? $this->normalizeTableText((string) $powerplant['access_instructions']) : '';
 
 		$siteRows = array(
 			array('Référence centrale', $powerplant['ref']),
@@ -594,6 +595,9 @@ class pdf_jpsunpro extends ModelePDFContract
 			array('N° contrat d’achat', $powerplant['buyback_contract_number']),
 			array('Tarif d’achat', $this->formatNumber($powerplant['buyback_tariff'], 6)),
 		);
+		if ($accessinstructions !== '') {
+			array_splice($siteRows, 3, 0, array(array('Consignes d’accès', $accessinstructions)));
+		}
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Informations site');
 		$this->renderKeyValueTable($pdf, $object, $outputlangs, $siteRows, array(58, $this->contentWidth() - 58));
 		$this->renderPowerPlantImage($pdf, $object, $powerplant, $outputlangs);

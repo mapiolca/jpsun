@@ -904,6 +904,31 @@ class modJpsun extends DolibarrModules
 			),
 		);
 
+		// EN: Hide legacy contract site fields when PowerPlantPV owns the site data.
+		// FR: Masquer les champs site historiques du contrat lorsque Centrale PV porte ces donnees.
+		$powerPlantPVContractExtraFields = array(
+			'jpsun_site_name',
+			'jpsun_distance_company_km',
+			'jpsun_installed_power_kwc',
+			'jpsun_revaluation_index_sn',
+			'jpsun_pv_module_product',
+			'jpsun_pv_module_qty',
+			'jpsun_inverter_product',
+			'jpsun_inverter_qty',
+			'jpsun_inverter_install_height_m',
+			'jpsun_dc_boxes_qty',
+			'jpsun_dc_box_install_height_m',
+			'jpsun_ac_boxes_qty',
+			'jpsun_ac_box_install_height_m',
+			'jpsun_access_code',
+			'jpsun_pdl_number',
+		);
+		foreach ($powerPlantPVContractExtraFields as $attrname) {
+			if (isset($fields[$attrname])) {
+				$fields[$attrname]['enabled'] = '$conf->jpsun->enabled && !isModEnabled("powerplantpv")';
+			}
+		}
+
 		// EN: Create or update extrafields to keep setup idempotent.
 		// FR: Créer ou mettre à jour les extrafields pour garantir l'idempotence.
 		foreach ($fields as $attrname => $field) {

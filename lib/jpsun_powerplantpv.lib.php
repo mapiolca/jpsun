@@ -76,6 +76,39 @@ function jpsunPowerPlantPVGetEntitySql($element)
 }
 
 /**
+ * Check if an optional PowerPlantPV table column exists.
+ *
+ * @param DoliDB $db Database handler
+ * @param string $table Table name without prefix
+ * @param string $column Column name
+ * @return bool
+ */
+function jpsunPowerPlantPVColumnExists($db, $table, $column)
+{
+	static $cache = array();
+
+	$table = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $table);
+	$column = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $column);
+	if ($table === '' || $column === '') {
+		return false;
+	}
+
+	$key = $table.'.'.$column;
+	if (!array_key_exists($key, $cache)) {
+		$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX.$table." LIKE '".$db->escape($column)."'";
+		$resql = $db->query($sql);
+		if ($resql) {
+			$cache[$key] = ($db->num_rows($resql) > 0);
+			$db->free($resql);
+		} else {
+			$cache[$key] = false;
+		}
+	}
+
+	return $cache[$key];
+}
+
+/**
  * Build a quoted SQL string list.
  *
  * @param DoliDB $db Database handler
@@ -121,12 +154,16 @@ function jpsunPowerPlantPVFetchLinkedPowerPlants($db, $contract, $user = null)
 
 	$powerplanttypes = array('powerplant@powerplantpv', 'powerplantpv_powerplant', 'powerplant');
 	$contracttypes = array('contrat', 'contract');
+	$hasaccessinstructions = jpsunPowerPlantPVColumnExists($db, 'powerplantpv_powerplant', 'access_instructions');
 
 	$sql = "SELECT DISTINCT p.rowid, p.ref, p.label, p.entity, p.commissioning_date, p.prm_pdl_number,";
 	$sql .= " p.address, p.zip, p.town, p.fk_country, p.installed_power, p.connection_contract_power,";
 	$sql .= " p.connection_type, p.enedis_commissioning_date, p.connection_request_number,";
 	$sql .= " p.t0_obtention_date, p.buyback_contract_number, p.buyback_tariff, p.fk_soc, p.fk_project,";
 	$sql .= " p.description, p.note_public, p.status";
+	if ($hasaccessinstructions) {
+		$sql .= ", p.access_instructions";
+	}
 	$sql .= " FROM ".MAIN_DB_PREFIX."element_element as ee";
 	$sql .= " INNER JOIN ".MAIN_DB_PREFIX."powerplantpv_powerplant as p ON (";
 	$sql .= " (ee.fk_source = ".$contractid." AND ee.sourcetype IN (".jpsunPowerPlantPVSqlStringList($db, $contracttypes).")";
@@ -169,6 +206,7 @@ function jpsunPowerPlantPVFetchLinkedPowerPlants($db, $contract, $user = null)
 			'description' => (string) $obj->description,
 			'note_public' => (string) $obj->note_public,
 			'status' => (int) $obj->status,
+			'access_instructions' => ($hasaccessinstructions && isset($obj->access_instructions)) ? (string) $obj->access_instructions : '',
 		);
 	}
 	$db->free($resql);

@@ -15,6 +15,7 @@
 - Le specimen d'intervention joint au contrat `JPSUN PRO` force le watermark SPECIMEN et reprend le tiers du contrat.
 - La premiere page du contrat `JPSUN PRO` affiche le signataire du contrat client uniquement si ce contact est declare.
 - Ajout de l'annexe PDF configurable `Certifications`, placee apres la Garantie Decennale dans les reglages et l'ordre par defaut.
+- Le contrat `JPSUN PRO` affiche les consignes d'acces des centrales PV liees et masque les extrafields site historiques du contrat lorsque PowerPlantPV est actif.
 
 ## 1.19 (27/05/2026)
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue Dolibarr.
