@@ -26,7 +26,6 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
@@ -170,7 +169,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(array('main', 'dict', 'companies', 'contracts', 'products', 'categories', 'jpsun@jpsun', 'powerplantpv@powerplantpv'));
+		$outputlangs->loadLangs(array('main', 'dict', 'companies', 'contracts', 'products', 'jpsun@jpsun', 'powerplantpv@powerplantpv'));
 
 		if ($object->status == $object::STATUS_DRAFT && getDolGlobalString('CONTRACT_DRAFT_WATERMARK')) {
 			$this->watermark = getDolGlobalString('CONTRACT_DRAFT_WATERMARK');
@@ -513,7 +512,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Préambule');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client et le Prestataire sont individuellement dénommés une Partie et collectivement les Parties.');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.');
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Le présent document est intégralement généré par Dolibarr à partir du contrat, des lignes de service, des catégories de zone et des centrales PV liées.');
+		$this->renderParagraph($pdf, $object, $outputlangs, 'Le présent document est intégralement généré par Dolibarr à partir du contrat, des lignes de service, de la zone géographique du contrat et des centrales PV liées.');
 	}
 
 	/**
@@ -563,6 +562,8 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Formule choisie', $subscriptiondata['formula']),
 			array('Zone géographique', $subscriptiondata['zone']),
 			array('Mode de paiement', $subscriptiondata['payment_mode']),
+			array('Récurrence', $subscriptiondata['recurrence']),
+			array('Jour de paiement', $subscriptiondata['payment_day']),
 			array('Date de prise d’effet', $subscriptiondata['start_date']),
 			array('Première visite', $subscriptiondata['first_visit']),
 			array('Validité de l’offre', $subscriptiondata['offer_validity']),
@@ -629,6 +630,8 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Tarif TTC', $subscriptiondata['total_ttc']),
 			array('Engagement', '12 mois'),
 			array('Mode de paiement', $subscriptiondata['payment_mode']),
+			array('Récurrence', $subscriptiondata['recurrence']),
+			array('Jour de paiement', $subscriptiondata['payment_day']),
 			array('Date de prise d’effet', $subscriptiondata['start_date']),
 			array('Première visite', $subscriptiondata['first_visit']),
 			array('Durée de validité de l’offre', $subscriptiondata['offer_validity']),
@@ -1167,7 +1170,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
-	 * Build selected formula, category zone and price data.
+	 * Build selected formula, contract zone and price data.
 	 *
 	 * @param Contrat $object Contract object
 	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
@@ -1197,8 +1200,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 		return array(
 			'formula' => $this->getSoleilAquitainFormulaLabel($object),
 			'zone' => $this->getSoleilAquitainZoneLabel($object),
-			'payment_mode' => $this->firstNonEmpty(getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE'), 'Prélèvement SEPA / virement selon accord'),
-			'offer_validity' => $this->firstNonEmpty(getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY'), '30 jours'),
+			'payment_mode' => $this->getSoleilAquitainDefaultPaymentModeLabel($outputlangs),
+			'recurrence' => $this->getSoleilAquitainRecurrenceLabel($object, $outputlangs),
+			'payment_day' => $this->getSoleilAquitainPaymentDayLabel($object, $outputlangs),
+			'offer_validity' => $this->getSoleilAquitainOfferValidityLabel($outputlangs),
 			'start_date' => $this->getSoleilAquitainContractStartDate($object, $outputlangs),
 			'first_visit' => 'À planifier avec le Client',
 			'site_address' => implode("\n\n", array_unique($siteaddresses)),
@@ -1240,13 +1245,124 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (strlen($this->digitsOnly($legaldata['siret'] ?? '')) !== 14) {
 			$missing[] = 'SIRET à 14 chiffres';
 		}
-		foreach (array('formula' => 'formule de maintenance', 'zone' => 'zone géographique') as $key => $label) {
+		foreach (array('formula' => 'formule de maintenance', 'zone' => 'zone géographique du contrat') as $key => $label) {
 			if (empty($subscriptiondata[$key])) {
 				$missing[] = $label;
 			}
 		}
 
 		return array_values(array_unique($missing));
+	}
+
+	/**
+	 * Return configured default payment mode label from Dolibarr dictionary.
+	 *
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getSoleilAquitainDefaultPaymentModeLabel($outputlangs)
+	{
+		$value = getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE');
+		if ($value === '') {
+			return '';
+		}
+		if (!ctype_digit((string) $value)) {
+			return (string) $value;
+		}
+
+		$sql = "SELECT code, libelle";
+		$sql .= " FROM ".MAIN_DB_PREFIX."c_paiement";
+		$sql .= " WHERE id = ".((int) $value);
+
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$obj = $this->db->fetch_object($resql);
+			$this->db->free($resql);
+			if ($obj) {
+				$label = $outputlangs->transnoentitiesnoconv('PaymentType'.$obj->code);
+				if ($label === 'PaymentType'.$obj->code) {
+					$label = (string) $obj->libelle;
+				}
+				return $label;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Return billing recurrence label from contract extrafield or default setup.
+	 *
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getSoleilAquitainRecurrenceLabel($object, $outputlangs)
+	{
+		$value = $this->getExtraOption($object, 'jpsun_contract_recurrence');
+		if ($value === '') {
+			$value = getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE');
+		}
+
+		$options = array(
+			'annual' => 'JpsunRecurrenceAnnual',
+			'monthly' => 'JpsunRecurrenceMonthly',
+		);
+
+		if (isset($options[$value])) {
+			return $outputlangs->transnoentitiesnoconv($options[$value]);
+		}
+
+		return '';
+	}
+
+	/**
+	 * Return payment day label from contract extrafield or default setup.
+	 *
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getSoleilAquitainPaymentDayLabel($object, $outputlangs)
+	{
+		$value = trim((string) $this->getExtraOption($object, 'jpsun_contract_payment_day'));
+		if ($value === '') {
+			$value = trim((string) getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY'));
+		}
+		if (!ctype_digit($value)) {
+			return '';
+		}
+
+		$day = (int) $value;
+		if ($day < 1 || $day > 31) {
+			return '';
+		}
+
+		return $outputlangs->transnoentitiesnoconv('JpsunPaymentDayOfBillingMonth', $day);
+	}
+
+	/**
+	 * Return offer validity label, falling back to native proposal validity duration.
+	 *
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getSoleilAquitainOfferValidityLabel($outputlangs)
+	{
+		$days = getDolGlobalInt('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY');
+		if ($days <= 0) {
+			$days = getDolGlobalInt('PROPALE_VALIDITY_DURATION');
+		}
+		if ($days <= 0) {
+			return '';
+		}
+
+		$langcode = !empty($outputlangs->defaultlang) ? (string) $outputlangs->defaultlang : '';
+		if (stripos($langcode, 'en_') === 0 || stripos($langcode, 'en-') === 0) {
+			return $days.' '.($days > 1 ? 'days' : 'day');
+		}
+
+		return $days.' jour'.($days > 1 ? 's' : '');
 	}
 
 	/**
@@ -1409,123 +1525,35 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
-	 * Return selected zone label from contract categories, then linked proposal categories.
+	 * Return selected zone label from the contract extrafield.
 	 *
 	 * @param Contrat $object Contract object
 	 * @return string
 	 */
 	private function getSoleilAquitainZoneLabel($object)
 	{
-		$zone = $this->selectSoleilAquitainZoneLabel($this->getCategoryLabelsForObject((int) $object->id, array('contract', 'contrat')));
-		if ($zone !== '') {
-			return $zone;
+		$value = $this->getExtraOption($object, 'jpsun_contract_zone');
+		if ($value === '') {
+			return '';
+		}
+		if (!ctype_digit((string) $value)) {
+			return (string) $value;
 		}
 
-		foreach ($this->getLinkedProposalIds($object) as $propalid) {
-			$zone = $this->selectSoleilAquitainZoneLabel($this->getCategoryLabelsForObject((int) $propalid, array('propal', 'proposal', 'propale')));
-			if ($zone !== '') {
-				return $zone;
+		$sql = "SELECT label";
+		$sql .= " FROM ".MAIN_DB_PREFIX."c_jpsun_contract_zone";
+		$sql .= " WHERE rowid = ".((int) $value);
+
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$obj = $this->db->fetch_object($resql);
+			$this->db->free($resql);
+			if ($obj && !empty($obj->label)) {
+				return (string) $obj->label;
 			}
 		}
 
 		return '';
-	}
-
-	/**
-	 * Return labels of categories linked to an object.
-	 *
-	 * @param int $id Object id
-	 * @param string[] $types Candidate category object types
-	 * @return string[]
-	 */
-	private function getCategoryLabelsForObject($id, $types)
-	{
-		$labels = array();
-		if ($id <= 0 || !class_exists('Categorie')) {
-			return $labels;
-		}
-
-		foreach ($types as $type) {
-			try {
-				$categorie = new Categorie($this->db);
-				$categories = $categorie->containing($id, $type, 'object');
-				if (!is_array($categories)) {
-					continue;
-				}
-				foreach ($categories as $category) {
-					if (is_object($category)) {
-						$label = $this->firstNonEmpty($category->fulllabel ?? '', $category->label ?? '');
-						if ($label !== '') {
-							$labels[] = $label;
-						}
-					} elseif ((string) $category !== '') {
-						$labels[] = (string) $category;
-					}
-				}
-			} catch (Throwable $e) {
-				dol_syslog(__METHOD__.' category lookup failed for type '.$type.' id '.$id.' : '.$e->getMessage(), LOG_DEBUG);
-			}
-		}
-
-		return array_values(array_unique($labels));
-	}
-
-	/**
-	 * Return linked proposal ids for a contract.
-	 *
-	 * @param Contrat $object Contract object
-	 * @return int[]
-	 */
-	private function getLinkedProposalIds($object)
-	{
-		$ids = array();
-		if (!empty($object->origin) && in_array((string) $object->origin, array('propal', 'proposal', 'propale'), true) && !empty($object->origin_id)) {
-			$ids[] = (int) $object->origin_id;
-		}
-
-		$contractid = !empty($object->id) ? (int) $object->id : (int) ($object->rowid ?? 0);
-		if ($contractid <= 0) {
-			return array_values(array_unique($ids));
-		}
-
-		$contracttypes = array('contract', 'contrat');
-		$proposaltypes = array('propal', 'proposal', 'propale');
-		$sql = "SELECT fk_source, sourcetype, fk_target, targettype";
-		$sql .= " FROM ".MAIN_DB_PREFIX."element_element";
-		$sql .= " WHERE (fk_source = ".$contractid." AND sourcetype IN (".jpsunPowerPlantPVSqlStringList($this->db, $contracttypes).") AND targettype IN (".jpsunPowerPlantPVSqlStringList($this->db, $proposaltypes)."))";
-		$sql .= " OR (fk_target = ".$contractid." AND targettype IN (".jpsunPowerPlantPVSqlStringList($this->db, $contracttypes).") AND sourcetype IN (".jpsunPowerPlantPVSqlStringList($this->db, $proposaltypes)."))";
-
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			while ($obj = $this->db->fetch_object($resql)) {
-				if (in_array((string) $obj->sourcetype, $proposaltypes, true)) {
-					$ids[] = (int) $obj->fk_source;
-				}
-				if (in_array((string) $obj->targettype, $proposaltypes, true)) {
-					$ids[] = (int) $obj->fk_target;
-				}
-			}
-			$this->db->free($resql);
-		}
-
-		return array_values(array_unique(array_filter($ids)));
-	}
-
-	/**
-	 * Select the best zone label from category labels.
-	 *
-	 * @param string[] $labels Category labels
-	 * @return string
-	 */
-	private function selectSoleilAquitainZoneLabel($labels)
-	{
-		foreach ($labels as $label) {
-			if (preg_match('/zone\s*[123]|0\s*[-àa]\s*30|31\s*[-àa]\s*50|51\s*[-àa]\s*70|au[- ]delà|70\s*km/i', $label)) {
-				return (string) $label;
-			}
-		}
-
-		return !empty($labels) ? (string) reset($labels) : '';
 	}
 
 	/**

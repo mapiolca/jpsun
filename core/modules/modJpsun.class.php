@@ -124,8 +124,19 @@ class modJpsun extends DolibarrModules
 		); 
 		
 
-        // Dictionnaries
-        $this->dictionnaries = array();
+		$this->dictionaries = array(
+			'langs' => 'jpsun@jpsun',
+			'tabname' => array('c_jpsun_contract_zone'),
+			'tablib' => array('JpsunContractZoneDictionary'),
+			'tabsql' => array('SELECT f.rowid as rowid, f.code, f.label, f.active, f.position FROM '.$this->db->prefix().'c_jpsun_contract_zone as f'),
+			'tabsqlsort' => array('f.position ASC, f.label ASC'),
+			'tabfield' => array('code,label,position'),
+			'tabfieldvalue' => array('code,label,position'),
+			'tabfieldinsert' => array('code,label,position'),
+			'tabrowid' => array('rowid'),
+			'tabcond' => array(isModEnabled('jpsun')),
+			'tabhelp' => array(array('code' => $langs->trans('CodeTooltipHelp'))),
+		);
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
@@ -587,6 +598,69 @@ class modJpsun extends DolibarrModules
 		// FR: Charger les extrafields contrats et assurer une installation idempotente.
 		$ext->fetch_name_optionals_label('contrat');
 		$fields = array(
+			'jpsun_contract_zone' => array(
+				'label' => 'JpsunContractZone',
+				'type' => 'sellist',
+				'pos' => 95,
+				'size' => '',
+				'elementtype' => 'contrat',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => serialize(array('options' => array('c_jpsun_contract_zone:label:rowid::(active:=:1)' => null))),
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => 1,
+				'help' => 'JpsunContractZoneHelp',
+				'computed' => '',
+				'entity' => 0,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled',
+				'totalizable' => 0,
+				'printable' => 0,
+			),
+			'jpsun_contract_recurrence' => array(
+				'label' => 'JpsunContractRecurrence',
+				'type' => 'select',
+				'pos' => 96,
+				'size' => '',
+				'elementtype' => 'contrat',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => serialize(array('options' => array('annual' => 'JpsunRecurrenceAnnual', 'monthly' => 'JpsunRecurrenceMonthly'))),
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => 1,
+				'help' => 'JpsunContractRecurrenceHelp',
+				'computed' => '',
+				'entity' => 0,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled',
+				'totalizable' => 0,
+				'printable' => 0,
+			),
+			'jpsun_contract_payment_day' => array(
+				'label' => 'JpsunContractPaymentDay',
+				'type' => 'int',
+				'pos' => 97,
+				'size' => 2,
+				'elementtype' => 'contrat',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => '',
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => 1,
+				'help' => 'JpsunContractPaymentDayHelp',
+				'computed' => '',
+				'entity' => 0,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled',
+				'totalizable' => 0,
+				'printable' => 0,
+			),
 			'jpsun_site_name' => array(
 				'label' => 'JpsunContractSiteName',
 				'type' => 'varchar',

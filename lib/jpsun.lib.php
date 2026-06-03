@@ -645,6 +645,167 @@ function setup_print_input_form_part($confkey, $title = false, $desc ='', $metas
 }
 
 /**
+ * Print a setup row selecting a Dolibarr payment mode from the native dictionary.
+ *
+ * @param	string	$confkey	Constant key
+ * @param	bool|string	$title	Displayed title
+ * @param	string	$desc		Description translation key
+ * @param	int		$width		Right cell width
+ * @return	void
+ */
+function jpsunSetupPrintPaymentModeSelect($confkey, $title = false, $desc = '', $width = 300)
+{
+	global $var, $langs, $conf, $db, $form;
+	$var = !$var;
+
+	if (empty($form) || !is_object($form)) {
+		$form = new Form($db);
+	}
+
+	$help = '';
+	if (!empty($langs->tab_translate[$confkey.'_HELP'])) {
+		$help = $confkey.'_HELP';
+	}
+
+	print '<tr>';
+	print '<td>';
+	if (!empty($help)) {
+		print $form->textwithtooltip(($title ? $title : $langs->trans($confkey)), $langs->trans($help), 2, 1, img_help(1, ''));
+	} else {
+		print $title ? $title : $langs->trans($confkey);
+	}
+	if (!empty($desc)) {
+		print '<br><small>'.$langs->trans($desc).'</small>';
+	}
+	print '</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="'.$width.'">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+
+	$options = jpsunGetPaymentModeOptions();
+	$selected = getDolGlobalString($confkey);
+	if (is_object($form) && method_exists($form, 'selectarray')) {
+		print $form->selectarray($confkey, $options, $selected, 1, 0, 0, '', 0, 0, 0, '', 'flat minwidth300', 1);
+	} else {
+		print '<select class="flat minwidth300" name="'.dol_escape_htmltag($confkey).'" id="'.dol_escape_htmltag($confkey).'">';
+		print '<option value=""></option>';
+		foreach ($options as $key => $label) {
+			print '<option value="'.((int) $key).'"'.(((string) $key === (string) $selected) ? ' selected' : '').'>'.dol_escape_htmltag($label).'</option>';
+		}
+		print '</select>';
+	}
+
+	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+	print '</form>';
+	print '</td></tr>';
+}
+
+/**
+ * Return active payment modes from Dolibarr native dictionary.
+ *
+ * @return	array<int,string>
+ */
+function jpsunGetPaymentModeOptions()
+{
+	global $db, $langs;
+
+	$options = array();
+	$sql = "SELECT id, code, libelle";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_paiement";
+	$sql .= " WHERE active = 1";
+	$sql .= " ORDER BY libelle ASC";
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		while ($obj = $db->fetch_object($resql)) {
+			$label = $langs->transnoentitiesnoconv('PaymentType'.$obj->code);
+			if ($label === 'PaymentType'.$obj->code) {
+				$label = (string) $obj->libelle;
+			}
+			$options[(int) $obj->id] = $label;
+		}
+		$db->free($resql);
+	}
+
+	return $options;
+}
+
+/**
+ * Print a setup row selecting the default billing recurrence.
+ *
+ * @param	string	$confkey	Constant key
+ * @param	bool|string	$title	Displayed title
+ * @param	string	$desc		Description translation key
+ * @param	int		$width		Right cell width
+ * @return	void
+ */
+function jpsunSetupPrintRecurrenceSelect($confkey, $title = false, $desc = '', $width = 300)
+{
+	global $var, $langs, $db, $form;
+	$var = !$var;
+
+	if (empty($form) || !is_object($form)) {
+		$form = new Form($db);
+	}
+
+	$help = '';
+	if (!empty($langs->tab_translate[$confkey.'_HELP'])) {
+		$help = $confkey.'_HELP';
+	}
+
+	print '<tr>';
+	print '<td>';
+	if (!empty($help)) {
+		print $form->textwithtooltip(($title ? $title : $langs->trans($confkey)), $langs->trans($help), 2, 1, img_help(1, ''));
+	} else {
+		print $title ? $title : $langs->trans($confkey);
+	}
+	if (!empty($desc)) {
+		print '<br><small>'.$langs->trans($desc).'</small>';
+	}
+	print '</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="'.$width.'">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+
+	$options = jpsunGetRecurrenceOptions();
+	$selected = getDolGlobalString($confkey);
+	if (is_object($form) && method_exists($form, 'selectarray')) {
+		print $form->selectarray($confkey, $options, $selected, 1, 0, 0, '', 0, 0, 0, '', 'flat minwidth300', 1);
+	} else {
+		print '<select class="flat minwidth300" name="'.dol_escape_htmltag($confkey).'" id="'.dol_escape_htmltag($confkey).'">';
+		print '<option value=""></option>';
+		foreach ($options as $key => $label) {
+			print '<option value="'.dol_escape_htmltag($key).'"'.(((string) $key === (string) $selected) ? ' selected' : '').'>'.dol_escape_htmltag($label).'</option>';
+		}
+		print '</select>';
+	}
+
+	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+	print '</form>';
+	print '</td></tr>';
+}
+
+/**
+ * Return billing recurrence options.
+ *
+ * @return	array<string,string>
+ */
+function jpsunGetRecurrenceOptions()
+{
+	global $langs;
+
+	return array(
+		'annual' => $langs->trans('JpsunRecurrenceAnnual'),
+		'monthly' => $langs->trans('JpsunRecurrenceMonthly'),
+	);
+}
+
+/**
  * Recompute installed peak power extrafields on proposals, orders and invoices.
  *
  * @param	DoliDB	$db		Database handler

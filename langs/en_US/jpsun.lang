@@ -28,7 +28,7 @@ DocModelJPSUNDescription=Supplier proposal template by JPSUN.
 DocModelJPSUNwithpricesName=JPSUN with prices
 DocModelJPSUNwithpricesDescription=Supplier proposal template by JPSUN, showing supplier prices already in the database.
 
-StandardContractsTemplatebyJpsun=Contract template by JPSUN.
+StandardContractsTemplatebyJpsun=JPSUN standard contract template.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Users
@@ -105,6 +105,7 @@ JpsunPdfAttachmentAppendError=JPSUN PDF attachment was not added (protected or i
 JpsunPdfAttachmentFichinterUnavailable=Interventions module unavailable or document directory not configured: the intervention card specimen was not added.
 JpsunPdfAttachmentFichinterGenerationError=Unable to generate the intervention card specimen.
 JpsunPdfAttachmentFichinterAppendError=Unable to add the intervention card specimen to the final PDF.
+JpsunContractZoneDictionary=Contract geographical zones dictionary
 SupplierProposals =Supplier proposals
 PDF_SHOW_PROJECT_TITLE=PDF documents show the project title
 PRODUIT_PDF_MERGE_PROPAL=When generating the proposal PDF, all PDFs linked to products are also included in the final PDF.
@@ -285,7 +286,17 @@ JpsunContractSiteAddress =Site address
 jpsunWorkSiteAddress=Work site address
 JpsunContractSiteRepresentative1 =Representative site 1
 JpsunContractSiteRepresentative2 =Representative site 2
-JpsunContractProModelDescription=JPSUN contract template for professionals.
+JpsunContractZone=Geographical zone
+JpsunContractZoneHelp=Geographical zone used by the SOLEIL AQUITAIN contract template.
+JpsunContractRecurrence=Recurrence
+JpsunContractRecurrenceHelp=Contract billing recurrence. When empty, the template uses the default recurrence from the JPSUN settings.
+JpsunContractPaymentDay=Payment day
+JpsunContractPaymentDayHelp=Day of the billing month. When empty, the template uses the default payment day from the JPSUN settings.
+JpsunRecurrenceAnnual=Annual
+JpsunRecurrenceMonthly=Monthly
+JpsunPaymentDayOfBillingMonth=Day %s of the billing month
+JpsunContratParticulierV3Description=JPSUN private customer maintenance contract V3 template.
+JpsunContractProModelDescription=JPSUN PRO maintenance contract template.
 JpsunPowerPlantPVRequiredForContractPro=The PowerPlantPV module must be enabled to generate the JPSUN PRO model.
 JpsunPowerPlantPVPermissionDenied=You do not have permission to read the PV power plants linked to this contract.
 JpsunContractProNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the JPSUN PRO model.
@@ -304,10 +315,14 @@ JPSUN_SOLEIL_AQUITAIN_MEDIATOR=Consumer mediator
 JPSUN_SOLEIL_AQUITAIN_MEDIATOR_HELP=Full mediator contact details printed in the terms and conditions.
 JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL=Online withdrawal URL
 JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL_HELP=Leave empty when no online withdrawal flow is available.
-JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE=Default payment mode
-JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE_HELP=Example: monthly SEPA direct debit on the 5th of each month.
-JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY=Offer validity period
-JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY_HELP=Example: 30 days.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE=Default payment mode for contracts
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE_HELP=Payment mode from the native Dolibarr payment modes dictionary.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE=Default recurrence
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE_HELP=Default recurrence used when the contract does not specify a recurrence.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY=Default payment day
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY_HELP=Day of the billing month, for example 5 for the 5th day.
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY=Default validity delay (in days)
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY_HELP=When empty, the template uses the default validity delay from the native customer proposals module.
 
 //# ENEDIS section
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

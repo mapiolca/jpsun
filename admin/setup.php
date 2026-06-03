@@ -34,8 +34,23 @@ setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_RC_PRO', false, '', array('si
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DECENNALE', false, '', array('size' => '80'));
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_MEDIATOR', false, '', array('size' => '80'));
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL', false, '', array('size' => '80'));
-setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE', false, '', array('size' => '80'));
-setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY', false, '', array('size' => '30'));
+jpsunSetupPrintPaymentModeSelect('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE', false, '', 300);
+jpsunSetupPrintRecurrenceSelect('JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE', false, '', 300);
+$soleilAquitainPaymentDay = getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY');
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY', false, '', array(
+	'type' => 'number',
+	'min' => '1',
+	'max' => '31',
+	'step' => '1',
+	'value' => (ctype_digit((string) $soleilAquitainPaymentDay) && (int) $soleilAquitainPaymentDay >= 1 && (int) $soleilAquitainPaymentDay <= 31) ? (string) $soleilAquitainPaymentDay : '',
+), 'input', false, 120);
+$soleilAquitainOfferValidity = getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY');
+setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY', false, '', array(
+	'type' => 'number',
+	'min' => '1',
+	'step' => '1',
+	'value' => (ctype_digit((string) $soleilAquitainOfferValidity) && (int) $soleilAquitainOfferValidity > 0) ? (string) $soleilAquitainOfferValidity : '',
+), 'input', false, 120);
 
 // Workflow
 setup_print_title($langs->trans("Workflow"));
