@@ -35,6 +35,10 @@ function jpsunPdfAttachmentDefinitions()
 			'label' => 'JpsunPdfAttachmentDecennialWarranty',
 			'default_order' => 30,
 		),
+		'CERTIFICATIONS' => array(
+			'label' => 'JpsunPdfAttachmentCertifications',
+			'default_order' => 35,
+		),
 		'PROJECT_PLANNING' => array(
 			'label' => 'JpsunPdfAttachmentProjectPlanning',
 			'default_order' => 40,
