@@ -206,10 +206,12 @@ class pdf_jpsunpro extends ModelePDFContract
 		if ($object->specimen) {
 			$dir = getMultidirOutput($object);
 			$file = $dir.'/SPECIMEN.pdf';
+			$annexfile = $dir.'/SPECIMEN_annexes.pdf';
 		} else {
 			$objectref = dol_sanitizeFileName($object->ref);
 			$dir = getMultidirOutput($object).'/'.$objectref;
 			$file = $dir.'/'.$objectref.'.pdf';
+			$annexfile = $dir.'/'.$objectref.'_annexes.pdf';
 		}
 
 		if (!file_exists($dir) && dol_mkdir($dir) < 0) {
@@ -226,7 +228,13 @@ class pdf_jpsunpro extends ModelePDFContract
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(array('pdfgeneration'));
-		$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
+		$parameters = array(
+			'file' => $file,
+			'annexfile' => $annexfile,
+			'generated_files' => array($file, $annexfile),
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+		);
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action);
 		if ($reshook < 0) {
 			$this->error = $hookmanager->error;
@@ -234,6 +242,52 @@ class pdf_jpsunpro extends ModelePDFContract
 			return 0;
 		}
 
+		$contactdata = $this->getContractContactData($object, $outputlangs, $dataset['powerplants'][0]);
+
+		$pdf = $this->initPdfDocument($object, $outputlangs, $user, $outputlangs->transnoentities('Contract'), (string) $object->ref);
+		$this->renderContractPages($pdf, $object, $dataset['powerplants'], $contactdata, $outputlangs);
+
+		$pdf->Close();
+		$pdf->Output($file, 'F');
+		dolChmod($file);
+
+		$annexpdf = $this->initPdfDocument($object, $outputlangs, $user, 'Annexes', (string) $object->ref.' - Annexes');
+		$this->renderAnnexPages($annexpdf, $object, $dataset['powerplants'], $contactdata, $outputlangs);
+
+		$annexpdf->Close();
+		$annexpdf->Output($annexfile, 'F');
+		dolChmod($annexfile);
+
+		$this->result = array('fullpath' => $file, 'annexes_fullpath' => $annexfile);
+
+		$hookmanager->initHooks(array('pdfgeneration'));
+		$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
+		if ($reshook < 0) {
+			$this->error = $hookmanager->error;
+			$this->errors = $hookmanager->errors;
+			return 0;
+		}
+
+		if (getDolGlobalString('MAIN_UMASK')) {
+			@chmod($file, octdec(getDolGlobalString('MAIN_UMASK')));
+			@chmod($annexfile, octdec(getDolGlobalString('MAIN_UMASK')));
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Initialize one PDF document with shared JPSUN PRO settings.
+	 *
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param User $user Current user
+	 * @param string $subject PDF subject
+	 * @param string $title PDF title
+	 * @return TCPDF PDF instance
+	 */
+	private function initPdfDocument($object, $outputlangs, $user, $subject, $title)
+	{
 		$pdf = pdf_getInstance($this->format);
 		$this->defaultFontSize = pdf_getPDFFontSize($outputlangs);
 		$this->contentTop = max(32, $this->marge_haute + 20);
@@ -248,11 +302,11 @@ class pdf_jpsunpro extends ModelePDFContract
 		$pdf->Open();
 		$pdf->SetDrawColor(190, 198, 205);
 		$pdf->SetLineWidth(0.15);
-		$pdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
-		$pdf->SetSubject($outputlangs->transnoentities('Contract'));
+		$pdf->SetTitle($outputlangs->convToOutputCharset($title));
+		$pdf->SetSubject($outputlangs->convToOutputCharset($subject));
 		$pdf->SetCreator('Dolibarr '.DOL_VERSION);
 		$pdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref).' '.$outputlangs->transnoentities('Contract'));
+		$pdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref).' '.$outputlangs->convToOutputCharset($subject));
 		if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) {
 			$pdf->SetCompression(false);
 		}
@@ -261,34 +315,11 @@ class pdf_jpsunpro extends ModelePDFContract
 			$pdf->AliasNbPages();
 		}
 
-		$contactdata = $this->getContractContactData($object, $outputlangs, $dataset['powerplants'][0]);
-		$this->renderNativeContract($pdf, $object, $dataset['powerplants'], $contactdata, $outputlangs);
-		$nextannexnumber = $this->appendConfiguredPdfAnnexes($pdf, $object, $outputlangs, 3);
-		$this->appendFichinterSpecimenAnnex($pdf, $object, $outputlangs, $nextannexnumber);
-
-		$pdf->Close();
-		$pdf->Output($file, 'F');
-		dolChmod($file);
-		$this->result = array('fullpath' => $file);
-
-		$hookmanager->initHooks(array('pdfgeneration'));
-		$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
-		$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
-		if ($reshook < 0) {
-			$this->error = $hookmanager->error;
-			$this->errors = $hookmanager->errors;
-			return 0;
-		}
-
-		if (getDolGlobalString('MAIN_UMASK')) {
-			@chmod($file, octdec(getDolGlobalString('MAIN_UMASK')));
-		}
-
-		return 1;
+		return $pdf;
 	}
 
 	/**
-	 * Render all native contract pages.
+	 * Render contract pages without annexes.
 	 *
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
@@ -297,7 +328,7 @@ class pdf_jpsunpro extends ModelePDFContract
 	 * @param Translate $outputlangs Output language
 	 * @return void
 	 */
-	private function renderNativeContract(&$pdf, $object, $powerplants, $contactdata, $outputlangs)
+	private function renderContractPages(&$pdf, $object, $powerplants, $contactdata, $outputlangs)
 	{
 		$this->addPage($pdf, $object, $outputlangs, 'Contrat de maintenance');
 		$this->renderCover($pdf, $object, $powerplants, $contactdata, $outputlangs);
@@ -306,7 +337,20 @@ class pdf_jpsunpro extends ModelePDFContract
 		$this->renderPrestationScope($pdf, $object, $powerplants, $contactdata, $outputlangs);
 		$this->renderFixedSections($pdf, $object, $outputlangs);
 		$this->renderSignaturePage($pdf, $object, $contactdata, $outputlangs);
+	}
 
+	/**
+	 * Render all annex pages in a separate PDF.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
+	 * @param array<string,array<string,string>> $contactdata Contact data
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderAnnexPages(&$pdf, $object, $powerplants, $contactdata, $outputlangs)
+	{
 		$totalplants = count($powerplants);
 		$plantindex = 1;
 		foreach ($powerplants as $powerplant) {
@@ -315,8 +359,11 @@ class pdf_jpsunpro extends ModelePDFContract
 			$plantindex++;
 		}
 
-		$this->addPage($pdf, $object, $outputlangs, 'Annexes');
+		$this->addPage($pdf, $object, $outputlangs, 'Annexe 2');
 		$this->renderServicePriceAnnex($pdf, $object, $outputlangs);
+
+		$nextannexnumber = $this->appendConfiguredPdfAnnexes($pdf, $object, $outputlangs, 3);
+		$this->appendFichinterSpecimenAnnex($pdf, $object, $outputlangs, $nextannexnumber);
 	}
 
 	/**
