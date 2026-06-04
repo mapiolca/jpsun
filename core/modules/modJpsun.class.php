@@ -293,9 +293,77 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_date_devis_fourn', 'jpsun_date_devis_fourn', 'date', 5, '', 'commande_fournisseur', 0, 0, '', '', 1, '', '-1', 'jpsun_date_devis_fourn_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled', '', 2);
 
 		//Produits
-		
+
+			$ext->fetch_name_optionals_label('product');
 		    $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_module_pv_pc', 'jpsun_module_pv_pc', 'int', 1, '4', 'product', 0, 0, '', '', 1, '', '($object->finished == 2 ? -1:0)', 'jpsun_module_pv_pc_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$productPeakPowerField = array(
+				'label' => 'jpsun_module_pv_pc',
+				'type' => 'int',
+				'pos' => 1,
+				'size' => '4',
+				'elementtype' => 'product',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => '',
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => '($object->finished == 2 ? -1:0)',
+				'help' => 'jpsun_module_pv_pc_help',
+				'computed' => '',
+				'entity' => $conf->entity,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
+				'totalizable' => 0,
+				'printable' => 0,
+			);
+			if (empty($ext->attributes['product']['label']['jpsun_module_pv_pc'])) {
+				$ext->addExtraField(
+					'jpsun_module_pv_pc',
+					$productPeakPowerField['label'],
+					$productPeakPowerField['type'],
+					$productPeakPowerField['pos'],
+					$productPeakPowerField['size'],
+					$productPeakPowerField['elementtype'],
+					$productPeakPowerField['unique'],
+					$productPeakPowerField['required'],
+					$productPeakPowerField['default_value'],
+					$productPeakPowerField['param'],
+					$productPeakPowerField['alwayseditable'],
+					$productPeakPowerField['perms'],
+					$productPeakPowerField['list'],
+					$productPeakPowerField['help'],
+					$productPeakPowerField['computed'],
+					$productPeakPowerField['entity'],
+					$productPeakPowerField['langfile'],
+					$productPeakPowerField['enabled'],
+					$productPeakPowerField['totalizable'],
+					$productPeakPowerField['printable']
+				);
+			} else {
+				$ext->update(
+					'jpsun_module_pv_pc',
+					$productPeakPowerField['label'],
+					$productPeakPowerField['type'],
+					$productPeakPowerField['size'],
+					$productPeakPowerField['elementtype'],
+					$productPeakPowerField['unique'],
+					$productPeakPowerField['required'],
+					$productPeakPowerField['pos'],
+					$productPeakPowerField['param'],
+					$productPeakPowerField['alwayseditable'],
+					$productPeakPowerField['perms'],
+					$productPeakPowerField['list'],
+					$productPeakPowerField['help'],
+					$productPeakPowerField['default_value'],
+					$productPeakPowerField['computed'],
+					$productPeakPowerField['entity'],
+					$productPeakPowerField['langfile'],
+					$productPeakPowerField['enabled'],
+					$productPeakPowerField['totalizable'],
+					$productPeakPowerField['printable']
+				);
+			}
 		    $ext->addExtraField('jpsun_productdet', 'jpsun_ProductDet', 'html', 1, '2000', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_ProductDet_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
 		//Projets 
