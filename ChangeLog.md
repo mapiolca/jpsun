@@ -4,7 +4,7 @@
 - Ajout du modèle PDF contrat `Contrat SOLEIL AQUITAIN`, généré nativement par Dolibarr avec annexes centrales PV, formulaire de rétractation, mentions légales configurables et signature en ligne dédiée.
 - Ajustement des réglages `Contrat SOLEIL AQUITAIN` : mode de paiement via le dictionnaire Mode de règlements, délai de validité en jours avec repli sur le paramètre natif des devis clients, et restauration des mentions d'assurances RC Pro et décennale.
 - Ajout des réglages `Récurrence par défaut` et `Jour de paiement par défaut`, avec extrafields contrat éditables par le commercial et reprise dans le modèle `Contrat SOLEIL AQUITAIN`.
-- Ajout du dictionnaire de zones géographiques et de l'extrafield contrat `Zone géographique`, utilisé par le modèle `Contrat SOLEIL AQUITAIN`.
+- Remplacement du dictionnaire JPSUN de zones géographiques et de l'extrafield contrat `Zone géographique` par les catégories de contrat fournies par `lmdbzoning` pour le modèle `Contrat SOLEIL AQUITAIN`.
 - Intégration optionnelle avec le module Centrale PV / PowerPlantPV.
 - Masquage des widgets historiques de puissance crête et de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
 - Ajout du modèle PDF contrat `JPSUN PRO`, basé sur le contrat PRO V4, avec génération d'une Annexe 1 par centrale PV liée au contrat.

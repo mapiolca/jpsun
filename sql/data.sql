@@ -182,11 +182,3 @@ INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module, 
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT1', 'Représentant du site 1', 1, NULL);
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT2', 'Représentant du site 2', 1, NULL);
 
--- SOLEIL AQUITAIN contract geographical zones
-
-INSERT IGNORE INTO llx_c_jpsun_contract_zone (code, label, position, active) VALUES ('ZONE_1', 'Zone 1 (0-30 km)', 10, 1);
-INSERT IGNORE INTO llx_c_jpsun_contract_zone (code, label, position, active) VALUES ('ZONE_2', 'Zone 2 (31-50 km)', 20, 1);
-INSERT IGNORE INTO llx_c_jpsun_contract_zone (code, label, position, active) VALUES ('ZONE_3', 'Zone 3 (51-70 km)', 30, 1);
-INSERT IGNORE INTO llx_c_jpsun_contract_zone (code, label, position, active) VALUES ('ZONE_70_PLUS', 'Au-delà de 70 km', 40, 1);
-
-

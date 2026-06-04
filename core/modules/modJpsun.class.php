@@ -124,19 +124,7 @@ class modJpsun extends DolibarrModules
 		); 
 		
 
-		$this->dictionaries = array(
-			'langs' => 'jpsun@jpsun',
-			'tabname' => array('c_jpsun_contract_zone'),
-			'tablib' => array('JpsunContractZoneDictionary'),
-			'tabsql' => array('SELECT f.rowid as rowid, f.code, f.label, f.active, f.position FROM '.$this->db->prefix().'c_jpsun_contract_zone as f'),
-			'tabsqlsort' => array('f.position ASC, f.label ASC'),
-			'tabfield' => array('code,label,position'),
-			'tabfieldvalue' => array('code,label,position'),
-			'tabfieldinsert' => array('code,label,position'),
-			'tabrowid' => array('rowid'),
-			'tabcond' => array(isModEnabled('jpsun')),
-			'tabhelp' => array(array('code' => $langs->trans('CodeTooltipHelp'))),
-		);
+		$this->dictionaries = array();
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
@@ -597,28 +585,14 @@ class modJpsun extends DolibarrModules
 		// EN: Load contract extrafields and ensure idempotent setup.
 		// FR: Charger les extrafields contrats et assurer une installation idempotente.
 		$ext->fetch_name_optionals_label('contrat');
+		$result = $this->deleteObsoleteContractExtraFieldIfExists($ext, 'jpsun_contract_zone');
+		if ($result < 0) {
+			$this->error = $ext->error;
+			$this->errors = $ext->errors;
+			return 0;
+		}
+		$ext->fetch_name_optionals_label('contrat');
 		$fields = array(
-			'jpsun_contract_zone' => array(
-				'label' => 'JpsunContractZone',
-				'type' => 'sellist',
-				'pos' => 95,
-				'size' => '',
-				'elementtype' => 'contrat',
-				'unique' => 0,
-				'required' => 0,
-				'default_value' => '',
-				'param' => serialize(array('options' => array('c_jpsun_contract_zone:label:rowid::(active:=:1)' => null))),
-				'alwayseditable' => 1,
-				'perms' => '',
-				'list' => 1,
-				'help' => 'JpsunContractZoneHelp',
-				'computed' => '',
-				'entity' => 0,
-				'langfile' => 'jpsun@jpsun',
-				'enabled' => '$conf->jpsun->enabled',
-				'totalizable' => 0,
-				'printable' => 0,
-			),
 			'jpsun_contract_recurrence' => array(
 				'label' => 'JpsunContractRecurrence',
 				'type' => 'select',
@@ -1056,6 +1030,7 @@ class modJpsun extends DolibarrModules
 		}
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
+		$sql[] = "DROP TABLE IF EXISTS ".MAIN_DB_PREFIX."c_jpsun_contract_zone";
 		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
 
@@ -1097,6 +1072,61 @@ class modJpsun extends DolibarrModules
 			$ext->error = $db->lasterror();
 			$ext->errors[] = $ext->error;
 			dol_syslog(__METHOD__.' unable to clean obsolete project extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
+			return -1;
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Delete an obsolete contract extrafield only when its physical column exists.
+	 *
+	 * @param	ExtraFields	$ext		Extrafields manager
+	 * @param	string		$attrname	Extrafield code
+	 * @return	int					>=0 if OK, <0 if KO
+	 */
+	private function deleteObsoleteContractExtraFieldIfExists($ext, $attrname)
+	{
+		global $db;
+
+		$attrname = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $attrname);
+		if ($attrname === '') {
+			return 0;
+		}
+
+		$sql = "SHOW TABLES LIKE '".$db->escape(MAIN_DB_PREFIX."contrat_extrafields")."'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' unable to inspect contract extrafields table : '.$db->lasterror(), LOG_WARNING);
+		}
+		$hasExtraFieldTable = ($resql && $db->num_rows($resql) > 0);
+		if ($resql) {
+			$db->free($resql);
+		}
+
+		if ($hasExtraFieldTable) {
+			$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."contrat_extrafields LIKE '".$db->escape($attrname)."'";
+			$resql = $db->query($sql);
+			if (!$resql) {
+				dol_syslog(__METHOD__.' unable to inspect contract extrafield column '.$attrname.' : '.$db->lasterror(), LOG_WARNING);
+			}
+			$hasExtraFieldColumn = ($resql && $db->num_rows($resql) > 0);
+			if ($resql) {
+				$db->free($resql);
+			}
+			if ($hasExtraFieldColumn) {
+				return $ext->delete($attrname, 'contrat');
+			}
+		}
+
+		$sql = "DELETE FROM ".MAIN_DB_PREFIX."extrafields";
+		$sql .= " WHERE name = '".$db->escape($attrname)."'";
+		$sql .= " AND elementtype = 'contrat'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			$ext->error = $db->lasterror();
+			$ext->errors[] = $ext->error;
+			dol_syslog(__METHOD__.' unable to clean obsolete contract extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
 			return -1;
 		}
 

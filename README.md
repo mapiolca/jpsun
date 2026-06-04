@@ -25,7 +25,7 @@
 - Ajout de fonctionnalités diverses pour JPSUN.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.
 - Intégration du modèle contrat JPSUN PRO avec le module Centrale PV.
-- Intégration du modèle contrat SOLEIL AQUITAIN avec centrales PV liées, annexes natives et mentions légales configurables.
+- Intégration du modèle contrat SOLEIL AQUITAIN avec centrales PV liées, annexes natives, mentions légales configurables et zone issue des catégories de contrat `lmdbzoning`.
 
 ## Traductions
 

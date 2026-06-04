@@ -29,6 +29,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_lmdbzoning.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_signature.lib.php';
@@ -1522,35 +1523,14 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
-	 * Return selected zone label from the contract extrafield.
+	 * Return selected zone label from the lmdbzoning contract category.
 	 *
 	 * @param Contrat $object Contract object
 	 * @return string
 	 */
 	private function getSoleilAquitainZoneLabel($object)
 	{
-		$value = $this->getExtraOption($object, 'jpsun_contract_zone');
-		if ($value === '') {
-			return '';
-		}
-		if (!ctype_digit((string) $value)) {
-			return (string) $value;
-		}
-
-		$sql = "SELECT label";
-		$sql .= " FROM ".MAIN_DB_PREFIX."c_jpsun_contract_zone";
-		$sql .= " WHERE rowid = ".((int) $value);
-
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$obj = $this->db->fetch_object($resql);
-			$this->db->free($resql);
-			if ($obj && !empty($obj->label)) {
-				return (string) $obj->label;
-			}
-		}
-
-		return '';
+		return jpsunLmdbZoningGetContractZoneLabel($this->db, $object);
 	}
 
 	/**
