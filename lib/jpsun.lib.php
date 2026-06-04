@@ -23,6 +23,8 @@
  *				Put some comments here
  */
 
+require_once __DIR__.'/jpsun_pdf_attachments.lib.php';
+
 function jpsunAdminPrepareHead()
 {
     global $langs, $conf, $object;
@@ -33,8 +35,43 @@ function jpsunAdminPrepareHead()
     $head = array();
 
     $head[$h][0] = dol_buildpath("/jpsun/admin/setup.php", 1);
-    $head[$h][1] = $langs->trans("Setup");
+    $head[$h][1] = $langs->trans("JpsunSetupTabMain");
     $head[$h][2] = 'setup';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/tiers.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabThirdparties");
+    $head[$h][2] = 'thirdparties';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/produits.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProducts");
+    $head[$h][2] = 'products';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/devis.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProposals");
+    $head[$h][2] = 'proposals';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/commandes.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabOrders");
+    $head[$h][2] = 'orders';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/factures.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabInvoices");
+    $head[$h][2] = 'invoices';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/projets.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabProjects");
+    $head[$h][2] = 'projects';
+    $h++;
+
+    $head[$h][0] = dol_buildpath("/jpsun/admin/tickets.php", 1);
+    $head[$h][1] = $langs->trans("JpsunSetupTabTickets");
+    $head[$h][2] = 'tickets';
     $h++;
 /**
     $head[$h][0] = dol_buildpath("/jpsun/admin/about.php", 1);
@@ -53,6 +90,85 @@ function jpsunAdminPrepareHead()
     complete_head_from_modules($conf, $langs, $object, $head, $h, 'jpsun');
 
     return $head;
+}
+
+/**
+ * Handle shared setup actions.
+ *
+ * @return	void
+ */
+function jpsunHandleAdminSetupActions()
+{
+	global $db, $conf, $langs;
+
+	$action = GETPOST('action', 'alpha');
+	if ($action === '') {
+		return;
+	}
+
+	if (function_exists('checkToken')) {
+		checkToken();
+	}
+
+	if (jpsunPdfHandleAttachmentAdminAction($db)) {
+		header("Location: ".$_SERVER["PHP_SELF"]);
+		exit;
+	}
+
+	if (preg_match('/set_(.*)/', $action, $reg)) {
+		$code = $reg[1];
+		if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0) {
+			header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		dol_print_error($db);
+	}
+
+	if (preg_match('/del_(.*)/', $action, $reg)) {
+		$code = $reg[1];
+		if (dolibarr_del_const($db, $code, $conf->entity) > 0) {
+			header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		dol_print_error($db);
+	}
+}
+
+/**
+ * Print the common admin setup header and open the settings table.
+ *
+ * @param	string	$activeTab	Active tab id
+ * @return	void
+ */
+function jpsunPrintAdminSetupHeader($activeTab)
+{
+	global $langs;
+
+	$page_name = "JpsunSetup";
+	llxHeader('', $langs->trans($page_name));
+
+	$linkback = '<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
+	print_fiche_titre($langs->trans($page_name), $linkback, 'tools');
+
+	$head = jpsunAdminPrepareHead();
+	dol_fiche_head($head, $activeTab, $langs->trans("Module999999Desc"), -1, "jpsun@jpsun");
+
+	print '<table class="noborder" width="100%">';
+}
+
+/**
+ * Print the common admin setup footer.
+ *
+ * @return	void
+ */
+function jpsunPrintAdminSetupFooter()
+{
+	global $db;
+
+	print '</table>';
+	dol_fiche_end();
+	llxFooter();
+	$db->close();
 }
 
 
@@ -516,62 +632,162 @@ function setup_print_input_form_part($confkey, $title = false, $desc ='', $metas
 }
 
 /**
- * Recompute installed peak power extrafields on proposals, orders and invoices.
+ * Print a setup row selecting a Dolibarr payment mode from the native dictionary.
  *
- * @param	DoliDB	$db		Database handler
- * @return	array{result:int,updated:int,error:string}
+ * @param	string	$confkey	Constant key
+ * @param	bool|string	$title	Displayed title
+ * @param	string	$desc		Description translation key
+ * @param	int		$width		Right cell width
+ * @return	void
  */
-function jpsunRecomputeInstalledPeakPowerFromProductLines($db)
+function jpsunSetupPrintPaymentModeSelect($confkey, $title = false, $desc = '', $width = 300)
 {
-	$updated = 0;
-	$error = '';
+	global $var, $langs, $conf, $db, $form;
+	$var = !$var;
 
-	$queries = array(
-		"UPDATE ".MAIN_DB_PREFIX."propal_extrafields pef
-		INNER JOIN (
-			SELECT pd.fk_propal AS fk_object, COALESCE(SUM(pd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."propaldet pd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = pd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY pd.fk_propal
-		) src ON src.fk_object = pef.fk_object
-		SET pef.jpsun_pc_install = src.pc_kwc",
-		"UPDATE ".MAIN_DB_PREFIX."commande_extrafields cef
-		INNER JOIN (
-			SELECT cd.fk_commande AS fk_object, COALESCE(SUM(cd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."commandedet cd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = cd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY cd.fk_commande
-		) src ON src.fk_object = cef.fk_object
-		SET cef.jpsun_pc_install = src.pc_kwc",
-		"UPDATE ".MAIN_DB_PREFIX."facture_extrafields fef
-		INNER JOIN (
-			SELECT fd.fk_facture AS fk_object, COALESCE(SUM(fd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."facturedet fd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = fd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY fd.fk_facture
-		) src ON src.fk_object = fef.fk_object
-		SET fef.jpsun_pc_install = src.pc_kwc"
-	);
-
-	$db->begin();
-
-	foreach ($queries as $sql) {
-		$resql = $db->query($sql);
-		if (! $resql) {
-			$error = $db->lasterror();
-			$db->rollback();
-			return array('result' => -1, 'updated' => $updated, 'error' => $error);
-		}
-		$updated += (int) $db->affected_rows($resql);
+	if (empty($form) || !is_object($form)) {
+		$form = new Form($db);
 	}
 
-	$db->commit();
+	$help = '';
+	if (!empty($langs->tab_translate[$confkey.'_HELP'])) {
+		$help = $confkey.'_HELP';
+	}
 
-	return array('result' => 1, 'updated' => $updated, 'error' => $error);
+	print '<tr>';
+	print '<td>';
+	if (!empty($help)) {
+		print $form->textwithtooltip(($title ? $title : $langs->trans($confkey)), $langs->trans($help), 2, 1, img_help(1, ''));
+	} else {
+		print $title ? $title : $langs->trans($confkey);
+	}
+	if (!empty($desc)) {
+		print '<br><small>'.$langs->trans($desc).'</small>';
+	}
+	print '</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="'.$width.'">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+
+	$options = jpsunGetPaymentModeOptions();
+	$selected = getDolGlobalString($confkey);
+	if (is_object($form) && method_exists($form, 'selectarray')) {
+		print $form->selectarray($confkey, $options, $selected, 1, 0, 0, '', 0, 0, 0, '', 'flat minwidth300', 1);
+	} else {
+		print '<select class="flat minwidth300" name="'.dol_escape_htmltag($confkey).'" id="'.dol_escape_htmltag($confkey).'">';
+		print '<option value=""></option>';
+		foreach ($options as $key => $label) {
+			print '<option value="'.((int) $key).'"'.(((string) $key === (string) $selected) ? ' selected' : '').'>'.dol_escape_htmltag($label).'</option>';
+		}
+		print '</select>';
+	}
+
+	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+	print '</form>';
+	print '</td></tr>';
+}
+
+/**
+ * Return active payment modes from Dolibarr native dictionary.
+ *
+ * @return	array<int,string>
+ */
+function jpsunGetPaymentModeOptions()
+{
+	global $db, $langs;
+
+	$options = array();
+	$sql = "SELECT id, code, libelle";
+	$sql .= " FROM ".MAIN_DB_PREFIX."c_paiement";
+	$sql .= " WHERE active = 1";
+	$sql .= " ORDER BY libelle ASC";
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		while ($obj = $db->fetch_object($resql)) {
+			$label = $langs->transnoentitiesnoconv('PaymentType'.$obj->code);
+			if ($label === 'PaymentType'.$obj->code) {
+				$label = (string) $obj->libelle;
+			}
+			$options[(int) $obj->id] = $label;
+		}
+		$db->free($resql);
+	}
+
+	return $options;
+}
+
+/**
+ * Print a setup row selecting the default billing recurrence.
+ *
+ * @param	string	$confkey	Constant key
+ * @param	bool|string	$title	Displayed title
+ * @param	string	$desc		Description translation key
+ * @param	int		$width		Right cell width
+ * @return	void
+ */
+function jpsunSetupPrintRecurrenceSelect($confkey, $title = false, $desc = '', $width = 300)
+{
+	global $var, $langs, $db, $form;
+	$var = !$var;
+
+	if (empty($form) || !is_object($form)) {
+		$form = new Form($db);
+	}
+
+	$help = '';
+	if (!empty($langs->tab_translate[$confkey.'_HELP'])) {
+		$help = $confkey.'_HELP';
+	}
+
+	print '<tr>';
+	print '<td>';
+	if (!empty($help)) {
+		print $form->textwithtooltip(($title ? $title : $langs->trans($confkey)), $langs->trans($help), 2, 1, img_help(1, ''));
+	} else {
+		print $title ? $title : $langs->trans($confkey);
+	}
+	if (!empty($desc)) {
+		print '<br><small>'.$langs->trans($desc).'</small>';
+	}
+	print '</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="'.$width.'">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+
+	$options = jpsunGetRecurrenceOptions();
+	$selected = getDolGlobalString($confkey);
+	if (is_object($form) && method_exists($form, 'selectarray')) {
+		print $form->selectarray($confkey, $options, $selected, 1, 0, 0, '', 0, 0, 0, '', 'flat minwidth300', 1);
+	} else {
+		print '<select class="flat minwidth300" name="'.dol_escape_htmltag($confkey).'" id="'.dol_escape_htmltag($confkey).'">';
+		print '<option value=""></option>';
+		foreach ($options as $key => $label) {
+			print '<option value="'.dol_escape_htmltag($key).'"'.(((string) $key === (string) $selected) ? ' selected' : '').'>'.dol_escape_htmltag($label).'</option>';
+		}
+		print '</select>';
+	}
+
+	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+	print '</form>';
+	print '</td></tr>';
+}
+
+/**
+ * Return billing recurrence options.
+ *
+ * @return	array<string,string>
+ */
+function jpsunGetRecurrenceOptions()
+{
+	global $langs;
+
+	return array(
+		'annual' => $langs->trans('JpsunRecurrenceAnnual'),
+		'monthly' => $langs->trans('JpsunRecurrenceMonthly'),
+	);
 }

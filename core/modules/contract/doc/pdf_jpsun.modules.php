@@ -38,6 +38,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
 
 
 /**
@@ -485,6 +486,8 @@ class pdf_jpsun extends ModelePDFContract
 				if (method_exists($pdf, 'AliasNbPages')) {
 					$pdf->AliasNbPages();  // @phan-suppress-current-line PhanUndeclaredMethod
 				}
+
+				jpsunPdfAppendConfiguredAttachments($pdf, 'contract', $object->entity);
 
 				$pdf->Close();
 

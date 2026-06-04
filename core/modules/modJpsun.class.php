@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.19';
+		$this->version = '1.20';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -99,10 +99,12 @@ class modJpsun extends DolibarrModules
 		$r=0;
 
 		// Config pages. Put here list of php page names stored in admmin directory used to setup module.
-		$this->config_page_url = array('setup.php@jpsun');
+		$this->config_page_url = array(
+			'setup.php@jpsun',
+		);
 
 		// Dependencies
-		$this->depends = array('modProjet', 'modAgenda');		// List of modules id that must be enabled if this module is enabled
+		$this->depends = array('modProjet', 'modAgenda', 'modLmdbZoning', 'modPriceList');		// List of modules id that must be enabled if this module is enabled
 		$this->conflictwith = array();
 		$this->phpmin = array(8,0);					// Minimum version of PHP required by module
 		$this->need_dolibarr_version = array(20,0);	// Minimum version of Dolibarr required by module
@@ -121,32 +123,15 @@ class modJpsun extends DolibarrModules
 		); 
 		
 
-        // Dictionnaries
-        $this->dictionnaries = array();
+		$this->dictionaries = array();
 
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
-		$this->boxes = array(
-			array(
-					'file' => 'jpsun_graph_puissancecrete_totaleannee.php@jpsun',
-				'note' => 'BoxPuissanceCreteTotal',
-				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_puissancecrete_mensuelle.php@jpsun',
-				'note' => 'BoxPuissanceCreteMensuel',
-				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
-				'note' => 'BoxPuissanceCreteHebdo',
-				'enabledbydefaulton' => 'Home'
-			),
-			array(
-					'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
-				'note' => 'BoxCamembertCategorieCa',
-				'enabledbydefaulton' => 'Home'
-			)
+		$this->boxes = array();
+		$this->boxes[] = array(
+			'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
+			'note' => 'BoxCamembertCategorieCa',
+			'enabledbydefaulton' => 'Home'
 		);			// List of boxes
 
         // Permissions provided by this module
@@ -161,11 +146,6 @@ class modJpsun extends DolibarrModules
 		$this->rights[$r][5] = 'read';
 		$r++;
 
-		$this->rights[$r][0] = $this->numero . sprintf('%02d', ($o * 10) + 2);
-		$this->rights[$r][1] = 'EditerPuissancesCretesManuellement';
-		$this->rights[$r][4] = 'pcinstall';
-		$this->rights[$r][5] = 'write';
-		$r++;
 		/*
 		
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
@@ -313,9 +293,77 @@ class modJpsun extends DolibarrModules
 		    $ext->addExtraField('jpsun_date_devis_fourn', 'jpsun_date_devis_fourn', 'date', 5, '', 'commande_fournisseur', 0, 0, '', '', 1, '', '-1', 'jpsun_date_devis_fourn_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled', '', 2);
 
 		//Produits
-		
+
+			$ext->fetch_name_optionals_label('product');
 		    $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_module_pv_pc', 'jpsun_module_pv_pc', 'int', 1, '4', 'product', 0, 0, '', '', 1, '', '($object->finished == 2 ? -1:0)', 'jpsun_module_pv_pc_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			$productPeakPowerField = array(
+				'label' => 'jpsun_module_pv_pc',
+				'type' => 'int',
+				'pos' => 1,
+				'size' => '4',
+				'elementtype' => 'product',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => '',
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => '($object->finished == 2 ? -1:0)',
+				'help' => 'jpsun_module_pv_pc_help',
+				'computed' => '',
+				'entity' => $conf->entity,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
+				'totalizable' => 0,
+				'printable' => 0,
+			);
+			if (empty($ext->attributes['product']['label']['jpsun_module_pv_pc'])) {
+				$ext->addExtraField(
+					'jpsun_module_pv_pc',
+					$productPeakPowerField['label'],
+					$productPeakPowerField['type'],
+					$productPeakPowerField['pos'],
+					$productPeakPowerField['size'],
+					$productPeakPowerField['elementtype'],
+					$productPeakPowerField['unique'],
+					$productPeakPowerField['required'],
+					$productPeakPowerField['default_value'],
+					$productPeakPowerField['param'],
+					$productPeakPowerField['alwayseditable'],
+					$productPeakPowerField['perms'],
+					$productPeakPowerField['list'],
+					$productPeakPowerField['help'],
+					$productPeakPowerField['computed'],
+					$productPeakPowerField['entity'],
+					$productPeakPowerField['langfile'],
+					$productPeakPowerField['enabled'],
+					$productPeakPowerField['totalizable'],
+					$productPeakPowerField['printable']
+				);
+			} else {
+				$ext->update(
+					'jpsun_module_pv_pc',
+					$productPeakPowerField['label'],
+					$productPeakPowerField['type'],
+					$productPeakPowerField['size'],
+					$productPeakPowerField['elementtype'],
+					$productPeakPowerField['unique'],
+					$productPeakPowerField['required'],
+					$productPeakPowerField['pos'],
+					$productPeakPowerField['param'],
+					$productPeakPowerField['alwayseditable'],
+					$productPeakPowerField['perms'],
+					$productPeakPowerField['list'],
+					$productPeakPowerField['help'],
+					$productPeakPowerField['default_value'],
+					$productPeakPowerField['computed'],
+					$productPeakPowerField['entity'],
+					$productPeakPowerField['langfile'],
+					$productPeakPowerField['enabled'],
+					$productPeakPowerField['totalizable'],
+					$productPeakPowerField['printable']
+				);
+			}
 		    $ext->addExtraField('jpsun_productdet', 'jpsun_ProductDet', 'html', 1, '2000', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_ProductDet_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
 		//Projets 
@@ -339,106 +387,17 @@ class modJpsun extends DolibarrModules
 	    
 	        $ext->addExtraField('jpsun_user_monogramme', 'jpsun_user_monogramme', 'varchar', 100, '2', 'user', 0, 0, '', '', 1, '', '-4', 'jpsun_user_monogramme_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 
-		// Customer proposals
-		$ext->fetch_name_optionals_label('propal');
-		$proposalPcInstallField = array(
-			'label' => 'jpsun_pc_install',
-			'type' => 'double',
-			'pos' => 190,
-			'size' => '24,8',
-			'elementtype' => 'propal',
-			'unique' => 0,
-			'required' => 0,
-			'default_value' => '',
-			'param' => '',
-			'alwayseditable' => 1,
-			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -1,
-			'help' => 'jpsun_pc_install_help',
-			'computed' => '',
-			'entity' => 0,
-			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
-			'totalizable' => 1,
-			'printable' => 1,
-		);
-		if (empty($ext->attributes['propal']['label']['jpsun_pc_install'])) {
-			$ext->addExtraField('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['pos'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['default_value'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
-		} else {
-			$ext->update('jpsun_pc_install', $proposalPcInstallField['label'], $proposalPcInstallField['type'], $proposalPcInstallField['size'], $proposalPcInstallField['elementtype'], $proposalPcInstallField['unique'], $proposalPcInstallField['required'], $proposalPcInstallField['pos'], $proposalPcInstallField['param'], $proposalPcInstallField['alwayseditable'], $proposalPcInstallField['perms'], $proposalPcInstallField['list'], $proposalPcInstallField['help'], $proposalPcInstallField['default_value'], $proposalPcInstallField['computed'], $proposalPcInstallField['entity'], $proposalPcInstallField['langfile'], $proposalPcInstallField['enabled'], $proposalPcInstallField['totalizable'], $proposalPcInstallField['printable']);
+		foreach (array('propal', 'facture', 'commande') as $obsoletePeakPowerElementType) {
+			$result = $this->deleteObsoleteExtraFieldIfExists($ext, 'jpsun_pc_install', $obsoletePeakPowerElementType);
+			if ($result < 0) {
+				$this->error = $ext->error;
+				$this->errors = $ext->errors;
+				return 0;
+			}
 		}
 
 		// Invoice
 		$ext->fetch_name_optionals_label('facture');
-		$invoicePcInstallField = array(
-			'label' => 'jpsun_pc_install',
-			'type' => 'double',
-			'pos' => 190,
-			'size' => '24,8',
-			'elementtype' => 'facture',
-			'unique' => 0,
-			'required' => 0,
-			'default_value' => '',
-			'param' => '',
-			'alwayseditable' => 1,
-			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -2,
-			'help' => 'jpsun_pc_install_help',
-			'computed' => '',
-			'entity' => 0,
-			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
-			'totalizable' => 1,
-			'printable' => 1,
-		);
-		if (empty($ext->attributes['facture']['label']['jpsun_pc_install'])) {
-			$ext->addExtraField(
-				'jpsun_pc_install',
-				$invoicePcInstallField['label'],
-				$invoicePcInstallField['type'],
-				$invoicePcInstallField['pos'],
-				$invoicePcInstallField['size'],
-				$invoicePcInstallField['elementtype'],
-				$invoicePcInstallField['unique'],
-				$invoicePcInstallField['required'],
-				$invoicePcInstallField['default_value'],
-				$invoicePcInstallField['param'],
-				$invoicePcInstallField['alwayseditable'],
-				$invoicePcInstallField['perms'],
-				$invoicePcInstallField['list'],
-				$invoicePcInstallField['help'],
-				$invoicePcInstallField['computed'],
-				$invoicePcInstallField['entity'],
-				$invoicePcInstallField['langfile'],
-				$invoicePcInstallField['enabled'],
-				$invoicePcInstallField['totalizable'],
-				$invoicePcInstallField['printable']
-			);
-		} else {
-			$ext->update(
-				'jpsun_pc_install',
-				$invoicePcInstallField['label'],
-				$invoicePcInstallField['type'],
-				$invoicePcInstallField['size'],
-				$invoicePcInstallField['elementtype'],
-				$invoicePcInstallField['unique'],
-				$invoicePcInstallField['required'],
-				$invoicePcInstallField['pos'],
-				$invoicePcInstallField['param'],
-				$invoicePcInstallField['alwayseditable'],
-				$invoicePcInstallField['perms'],
-				$invoicePcInstallField['list'],
-				$invoicePcInstallField['help'],
-				$invoicePcInstallField['default_value'],
-				$invoicePcInstallField['computed'],
-				$invoicePcInstallField['entity'],
-				$invoicePcInstallField['langfile'],
-				$invoicePcInstallField['enabled'],
-				$invoicePcInstallField['totalizable'],
-				$invoicePcInstallField['printable']
-			);
-		}
-
 		$invoiceVatField = array(
 			'label' => 'JpsunTauxTvaFacture',
 			'type' => 'varchar',
@@ -508,81 +467,59 @@ class modJpsun extends DolibarrModules
 			);
 		}
 
-		// Customer orders
-		$ext->fetch_name_optionals_label('commande');
-		$orderPcInstallField = array(
-			'label' => 'jpsun_pc_install',
-			'type' => 'double',
-			'pos' => 190,
-			'size' => '24,8',
-			'elementtype' => 'commande',
-			'unique' => 0,
-			'required' => 0,
-			'default_value' => '',
-			'param' => '',
-			'alwayseditable' => 1,
-			'perms' => '$user->rights->jpsun->pcinstall->write',
-			'list' => -1,
-			'help' => 'jpsun_pc_install_help',
-			'computed' => '',
-			'entity' => 0,
-			'langfile' => 'jpsun@jpsun',
-			'enabled' => '$conf->jpsun->enabled',
-			'totalizable' => 1,
-			'printable' => 1,
-		);
-		if (empty($ext->attributes['commande']['label']['jpsun_pc_install'])) {
-			$ext->addExtraField(
-				'jpsun_pc_install',
-				$orderPcInstallField['label'],
-				$orderPcInstallField['type'],
-				$orderPcInstallField['pos'],
-				$orderPcInstallField['size'],
-				$orderPcInstallField['elementtype'],
-				$orderPcInstallField['unique'],
-				$orderPcInstallField['required'],
-				$orderPcInstallField['default_value'],
-				$orderPcInstallField['param'],
-				$orderPcInstallField['alwayseditable'],
-				$orderPcInstallField['perms'],
-				$orderPcInstallField['list'],
-				$orderPcInstallField['help'],
-				$orderPcInstallField['computed'],
-				$orderPcInstallField['entity'],
-				$orderPcInstallField['langfile'],
-				$orderPcInstallField['enabled'],
-				$orderPcInstallField['totalizable'],
-				$orderPcInstallField['printable']
-			);
-		} else {
-			$ext->update(
-				'jpsun_pc_install',
-				$orderPcInstallField['label'],
-				$orderPcInstallField['type'],
-				$orderPcInstallField['size'],
-				$orderPcInstallField['elementtype'],
-				$orderPcInstallField['unique'],
-				$orderPcInstallField['required'],
-				$orderPcInstallField['pos'],
-				$orderPcInstallField['param'],
-				$orderPcInstallField['alwayseditable'],
-				$orderPcInstallField['perms'],
-				$orderPcInstallField['list'],
-				$orderPcInstallField['help'],
-				$orderPcInstallField['default_value'],
-				$orderPcInstallField['computed'],
-				$orderPcInstallField['entity'],
-				$orderPcInstallField['langfile'],
-				$orderPcInstallField['enabled'],
-				$orderPcInstallField['totalizable'],
-				$orderPcInstallField['printable']
-			);
-		}
-
 		// EN: Load contract extrafields and ensure idempotent setup.
 		// FR: Charger les extrafields contrats et assurer une installation idempotente.
 		$ext->fetch_name_optionals_label('contrat');
+		$result = $this->deleteObsoleteContractExtraFieldIfExists($ext, 'jpsun_contract_zone');
+		if ($result < 0) {
+			$this->error = $ext->error;
+			$this->errors = $ext->errors;
+			return 0;
+		}
+		$ext->fetch_name_optionals_label('contrat');
 		$fields = array(
+			'jpsun_contract_recurrence' => array(
+				'label' => 'JpsunContractRecurrence',
+				'type' => 'select',
+				'pos' => 96,
+				'size' => '',
+				'elementtype' => 'contrat',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => serialize(array('options' => array('annual' => 'JpsunRecurrenceAnnual', 'monthly' => 'JpsunRecurrenceMonthly'))),
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => 1,
+				'help' => 'JpsunContractRecurrenceHelp',
+				'computed' => '',
+				'entity' => 0,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled',
+				'totalizable' => 0,
+				'printable' => 0,
+			),
+			'jpsun_contract_payment_day' => array(
+				'label' => 'JpsunContractPaymentDay',
+				'type' => 'int',
+				'pos' => 97,
+				'size' => 2,
+				'elementtype' => 'contrat',
+				'unique' => 0,
+				'required' => 0,
+				'default_value' => '',
+				'param' => '',
+				'alwayseditable' => 1,
+				'perms' => '',
+				'list' => 1,
+				'help' => 'JpsunContractPaymentDayHelp',
+				'computed' => '',
+				'entity' => 0,
+				'langfile' => 'jpsun@jpsun',
+				'enabled' => '$conf->jpsun->enabled',
+				'totalizable' => 0,
+				'printable' => 0,
+			),
 			'jpsun_site_name' => array(
 				'label' => 'JpsunContractSiteName',
 				'type' => 'varchar',
@@ -590,7 +527,7 @@ class modJpsun extends DolibarrModules
 				'size' => 50,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -611,7 +548,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -632,7 +569,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -653,7 +590,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -674,7 +611,7 @@ class modJpsun extends DolibarrModules
 				'size' => '',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:2)";N;}}',
 				'alwayseditable' => 1,
@@ -695,7 +632,7 @@ class modJpsun extends DolibarrModules
 				'size' => 10,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -716,7 +653,7 @@ class modJpsun extends DolibarrModules
 				'size' => '',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => 'a:1:{s:7:"options";a:1:{s:35:"product:label:rowid::(finished:=:4)";N;}}',
 				'alwayseditable' => 1,
@@ -737,7 +674,7 @@ class modJpsun extends DolibarrModules
 				'size' => 10,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -758,7 +695,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -779,7 +716,7 @@ class modJpsun extends DolibarrModules
 				'size' => 10,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -800,7 +737,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -821,7 +758,7 @@ class modJpsun extends DolibarrModules
 				'size' => 10,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -842,7 +779,7 @@ class modJpsun extends DolibarrModules
 				'size' => '24,8',
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -884,7 +821,7 @@ class modJpsun extends DolibarrModules
 				'size' => 14,
 				'elementtype' => 'contrat',
 				'unique' => 0,
-				'required' => 1,
+				'required' => 0,
 				'default_value' => '',
 				'param' => '',
 				'alwayseditable' => 1,
@@ -899,6 +836,31 @@ class modJpsun extends DolibarrModules
 				'printable' => 0,
 			),
 		);
+
+		// EN: Hide legacy contract site fields when PowerPlantPV owns the site data.
+		// FR: Masquer les champs site historiques du contrat lorsque Centrale PV porte ces donnees.
+		$powerPlantPVContractExtraFields = array(
+			'jpsun_site_name',
+			'jpsun_distance_company_km',
+			'jpsun_installed_power_kwc',
+			'jpsun_revaluation_index_sn',
+			'jpsun_pv_module_product',
+			'jpsun_pv_module_qty',
+			'jpsun_inverter_product',
+			'jpsun_inverter_qty',
+			'jpsun_inverter_install_height_m',
+			'jpsun_dc_boxes_qty',
+			'jpsun_dc_box_install_height_m',
+			'jpsun_ac_boxes_qty',
+			'jpsun_ac_box_install_height_m',
+			'jpsun_access_code',
+			'jpsun_pdl_number',
+		);
+		foreach ($powerPlantPVContractExtraFields as $attrname) {
+			if (isset($fields[$attrname])) {
+				$fields[$attrname]['enabled'] = '$conf->jpsun->enabled && !isModEnabled("powerplantpv")';
+			}
+		}
 
 		// EN: Create or update extrafields to keep setup idempotent.
 		// FR: Créer ou mettre à jour les extrafields pour garantir l'idempotence.
@@ -953,8 +915,12 @@ class modJpsun extends DolibarrModules
 		}
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
-		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
-		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
+		$sql[] = "DROP TABLE IF EXISTS ".MAIN_DB_PREFIX."c_jpsun_contract_zone";
+		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php','jpsun_graph_puissancecrete_totaleannee.php','jpsun_graph_puissancecrete_mensuelle.php','jpsun_graph_puissancecrete_hebdomadaire.php')";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php','jpsun_graph_puissancecrete_totaleannee.php','jpsun_graph_puissancecrete_mensuelle.php','jpsun_graph_puissancecrete_hebdomadaire.php')";
+		$sql[] = "DELETE ur FROM ".MAIN_DB_PREFIX."user_rights as ur INNER JOIN ".MAIN_DB_PREFIX."rights_def as rd ON rd.id = ur.fk_id WHERE rd.module = 'jpsun' AND rd.perms = 'pcinstall' AND rd.subperms = 'write'";
+		$sql[] = "DELETE ugr FROM ".MAIN_DB_PREFIX."usergroup_rights as ugr INNER JOIN ".MAIN_DB_PREFIX."rights_def as rd ON rd.id = ugr.fk_id WHERE rd.module = 'jpsun' AND rd.perms = 'pcinstall' AND rd.subperms = 'write'";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE module = 'jpsun' AND perms = 'pcinstall' AND subperms = 'write'";
 
 		return $this->_init($sql);
 	}
@@ -994,6 +960,119 @@ class modJpsun extends DolibarrModules
 			$ext->error = $db->lasterror();
 			$ext->errors[] = $ext->error;
 			dol_syslog(__METHOD__.' unable to clean obsolete project extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
+			return -1;
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Delete an obsolete contract extrafield only when its physical column exists.
+	 *
+	 * @param	ExtraFields	$ext		Extrafields manager
+	 * @param	string		$attrname	Extrafield code
+	 * @return	int					>=0 if OK, <0 if KO
+	 */
+	private function deleteObsoleteContractExtraFieldIfExists($ext, $attrname)
+	{
+		global $db;
+
+		$attrname = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $attrname);
+		if ($attrname === '') {
+			return 0;
+		}
+
+		$sql = "SHOW TABLES LIKE '".$db->escape(MAIN_DB_PREFIX."contrat_extrafields")."'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' unable to inspect contract extrafields table : '.$db->lasterror(), LOG_WARNING);
+		}
+		$hasExtraFieldTable = ($resql && $db->num_rows($resql) > 0);
+		if ($resql) {
+			$db->free($resql);
+		}
+
+		if ($hasExtraFieldTable) {
+			$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX."contrat_extrafields LIKE '".$db->escape($attrname)."'";
+			$resql = $db->query($sql);
+			if (!$resql) {
+				dol_syslog(__METHOD__.' unable to inspect contract extrafield column '.$attrname.' : '.$db->lasterror(), LOG_WARNING);
+			}
+			$hasExtraFieldColumn = ($resql && $db->num_rows($resql) > 0);
+			if ($resql) {
+				$db->free($resql);
+			}
+			if ($hasExtraFieldColumn) {
+				return $ext->delete($attrname, 'contrat');
+			}
+		}
+
+		$sql = "DELETE FROM ".MAIN_DB_PREFIX."extrafields";
+		$sql .= " WHERE name = '".$db->escape($attrname)."'";
+		$sql .= " AND elementtype = 'contrat'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			$ext->error = $db->lasterror();
+			$ext->errors[] = $ext->error;
+			dol_syslog(__METHOD__.' unable to clean obsolete contract extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
+			return -1;
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Delete an obsolete extrafield only when its physical column exists.
+	 *
+	 * @param	ExtraFields	$ext			Extrafields manager
+	 * @param	string		$attrname		Extrafield code
+	 * @param	string		$elementtype	Dolibarr element type
+	 * @return	int						>=0 if OK, <0 if KO
+	 */
+	private function deleteObsoleteExtraFieldIfExists($ext, $attrname, $elementtype)
+	{
+		global $db;
+
+		$attrname = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $attrname);
+		$elementtype = preg_replace('/[^a-zA-Z0-9_]/', '', (string) $elementtype);
+		if ($attrname === '' || $elementtype === '') {
+			return 0;
+		}
+
+		$extrafieldtable = $elementtype.'_extrafields';
+		$sql = "SHOW TABLES LIKE '".$db->escape(MAIN_DB_PREFIX.$extrafieldtable)."'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' unable to inspect '.$elementtype.' extrafields table : '.$db->lasterror(), LOG_WARNING);
+		}
+		$hasExtraFieldTable = ($resql && $db->num_rows($resql) > 0);
+		if ($resql) {
+			$db->free($resql);
+		}
+
+		if ($hasExtraFieldTable) {
+			$sql = "SHOW COLUMNS FROM ".MAIN_DB_PREFIX.$extrafieldtable." LIKE '".$db->escape($attrname)."'";
+			$resql = $db->query($sql);
+			if (!$resql) {
+				dol_syslog(__METHOD__.' unable to inspect '.$elementtype.' extrafield column '.$attrname.' : '.$db->lasterror(), LOG_WARNING);
+			}
+			$hasExtraFieldColumn = ($resql && $db->num_rows($resql) > 0);
+			if ($resql) {
+				$db->free($resql);
+			}
+			if ($hasExtraFieldColumn) {
+				return $ext->delete($attrname, $elementtype);
+			}
+		}
+
+		$sql = "DELETE FROM ".MAIN_DB_PREFIX."extrafields";
+		$sql .= " WHERE name = '".$db->escape($attrname)."'";
+		$sql .= " AND elementtype = '".$db->escape($elementtype)."'";
+		$resql = $db->query($sql);
+		if (!$resql) {
+			$ext->error = $db->lasterror();
+			$ext->errors[] = $ext->error;
+			dol_syslog(__METHOD__.' unable to clean obsolete '.$elementtype.' extrafield metadata '.$attrname.' : '.$db->lasterror(), LOG_ERR);
 			return -1;
 		}
 

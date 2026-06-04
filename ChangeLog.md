@@ -1,5 +1,29 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.20 (03/06/2026)
+- Ajout du modèle PDF contrat `Contrat SOLEIL AQUITAIN`, généré nativement par Dolibarr avec annexes centrales PV, formulaire de rétractation, mentions légales configurables et signature en ligne dédiée.
+- Ajustement des réglages `Contrat SOLEIL AQUITAIN` : mode de paiement via le dictionnaire Mode de règlements, délai de validité en jours avec repli sur le paramètre natif des devis clients, et restauration des mentions d'assurances RC Pro et décennale.
+- Ajout des réglages `Récurrence par défaut` et `Jour de paiement par défaut`, avec extrafields contrat éditables par le commercial et reprise dans le modèle `Contrat SOLEIL AQUITAIN`.
+- Remplacement du dictionnaire JPSUN de zones géographiques et de l'extrafield contrat `Zone géographique` par les catégories de contrat fournies par `lmdbzoning` pour le modèle `Contrat SOLEIL AQUITAIN`.
+- Intégration optionnelle avec le module Centrale PV / PowerPlantPV.
+- Masquage de l'extrafield produit `jpsun_module_pv_pc` lorsque PowerPlantPV est actif, tout en conservant les données historiques.
+- Suppression des widgets historiques de puissance crête (kWc), de l'extrafield historique de puissance crête sur devis, commandes et factures, ainsi que du recalcul JPSUN associé.
+- Ajout du modèle PDF contrat `JPSUN PRO`, basé sur le contrat PRO V4, avec génération d'une Annexe 1 par centrale PV liée au contrat.
+- Récupération des données centrales PV, composants, tiers et contacts via les mécanismes Dolibarr natifs, avec contrôle des droits et filtrage par entité.
+- Séparation des réglages JPSUN en onglets admin dédiés.
+- Ajout d'annexes PDF configurables par entité, jointes aux devis et contrats JPSUN selon ordre et activation.
+- Le contrat `JPSUN PRO` ajoute le spécimen du modèle natif Interventions configuré en annexe PDF.
+- Amélioration du rendu des descriptions HTML des lignes et ajout du détail de TVA par taux dans les totaux du contrat `JPSUN PRO`.
+- Correction du positionnement des blocs Client / Prestataire en première page du contrat `JPSUN PRO`.
+- Correction de la section Signature du contrat `JPSUN PRO` pour placer le contact tiers dans la case Pour le Client.
+- Les PDF joints au contrat `JPSUN PRO` sont maintenant introduits comme annexes numérotées après l'Annexe 2.
+- Le spécimen d'intervention joint au contrat `JPSUN PRO` force le watermark SPECIMEN et reprend le tiers du contrat.
+- La première page du contrat `JPSUN PRO` affiche le signataire du contrat client uniquement si ce contact est déclaré.
+- Ajout de l'annexe PDF configurable `Certifications`, placée après la Garantie Décennale dans les réglages et l'ordre par défaut.
+- Le contrat `JPSUN PRO` affiche les consignes d'accès des centrales PV liées et masque les extrafields site historiques du contrat lorsque PowerPlantPV est actif.
+- La génération du contrat `JPSUN PRO` produit désormais un PDF contrat principal et un PDF séparé pour les annexes.
+- La signature en ligne du contrat `JPSUN PRO` est placée dans la case Pour le Client de la section Signatures.
+
 ## 1.19 (27/05/2026)
 - Ajout du modele PDF fiche produit JPSUN pour les produits du catalogue Dolibarr.
 - Generation d'une fiche one-page avec image principale, vignettes secondaires, description, notes, caracteristiques, extrafields imprimables et categories liees.
@@ -31,9 +55,9 @@
 
 ## 1.15 (29/04/2026)
 - Ajout des widgets puissance crête (annuel, mensuel, hebdomadaire) et du widget camembert CA par catégorie facture.
-- Ajout/mise à jour idempotente de l'extrafield `jpsun_pc_install` sur devis, factures et commandes.
+- Ajout/mise à jour idempotente de l'ancien extrafield historique de puissance crête sur devis, factures et commandes.
 - Améliorations d'affichage des graphs (unités, légendes, hauteurs harmonisées).
-- Ajout d'un bouton dans les réglages du module pour forcer le recalcul de la puissance crête (`jpsun_pc_install`) des devis, commandes et factures à partir des lignes de produits de type module photovoltaïque et de l'extrafield produit `jpsun_module_pv_pc`.
+- Ajout d'un bouton dans les réglages du module pour forcer le recalcul de l'ancien extrafield historique de puissance crête des devis, commandes et factures à partir des lignes de produits de type module photovoltaïque et de l'extrafield produit `jpsun_module_pv_pc`.
 
 ## 1.14 (01/04/2026)
 - Ajout de la massaction "Modifier la Charge de travail prévue" (Dolibarr `< 24.0`) avec popup de saisie `hh:mm` par tâche, conversion en secondes dans `planned_workload`, contrôles de droits/sécurité et traductions `fr_FR`, `en_US`, `de_DE`, `es_ES`, `it_IT`.

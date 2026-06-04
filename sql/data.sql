@@ -182,4 +182,3 @@ INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module, 
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT1', 'Représentant du site 1', 1, NULL);
 INSERT INTO llx_c_type_contact (element, source, code, libelle, active, module) VALUES ('contrat', 'external', 'SITEREPRESANT2', 'Représentant du site 2', 1, NULL);
 
-

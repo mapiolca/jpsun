@@ -28,7 +28,7 @@ DocModelJPSUNDescription = Modèle de demande de prix pour/par JPSUN.
 DocModelJPSUNwithpricesName = JPSUN avec les prix
 DocModelJPSUNwithpricesDescription = Modèle de demande de prix pour/par JPSUN, laissant apparaître les prix du fournisseur déjà en base de données.
 
-StandardContractsTemplatebyJpsun= Modèle de contrat pour/par JPSUN.
+StandardContractsTemplatebyJpsun=Modèle de contrat standard JPSUN.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Utilisateurs
@@ -81,6 +81,30 @@ JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s tâche(s) mise(s) à jour (
 JpsunMassActionInvalidPlannedWorkloadValue=Valeur de charge de travail prévue invalide pour la tâche ID %s (format attendu hh:mm).
 
 JpsunPdfDocuments= Documents PDF
+JpsunSetupTabMain=General / PDF / Workflow
+JpsunSetupTabThirdparties=Tiers
+JpsunSetupTabProducts=Produits
+JpsunSetupTabProposals=Devis
+JpsunSetupTabOrders=Commandes
+JpsunSetupTabInvoices=Factures
+JpsunSetupTabProjects=Projets
+JpsunSetupTabTickets=Tickets
+JpsunPdfAttachmentCompanyPresentation=Flyer Presentation de la societe
+JpsunPdfAttachmentSponsorship=Flyer Parrainage
+JpsunPdfAttachmentDecennialWarranty=Garantie Décennale
+JpsunPdfAttachmentCertifications=Certifications
+JpsunPdfAttachmentProjectPlanning=Planning projet
+JpsunPdfAttachmentTermsOfSale=Conditions generales de vente
+JpsunPdfAttachmentJoinContracts=Joindre aux contrats
+JpsunPdfAttachmentJoinPropals=Joindre aux devis
+JpsunPdfAttachmentOrder=Ordre
+JpsunPdfAttachmentMissing=fichier introuvable
+JpsunPdfAttachmentPdfOnly=Seuls les fichiers PDF sont acceptes.
+JpsunPdfAttachmentMissingFile=Annexe PDF JPSUN introuvable ou illisible : %s.
+JpsunPdfAttachmentAppendError=Annexe PDF JPSUN non ajoutee (PDF protege ou incompatible) : %s.
+JpsunPdfAttachmentFichinterUnavailable=Module Interventions indisponible ou dossier documents non configure : le specimen de fiche d'intervention n'a pas ete ajoute.
+JpsunPdfAttachmentFichinterGenerationError=Impossible de generer le specimen de fiche d'intervention.
+JpsunPdfAttachmentFichinterAppendError=Impossible d'ajouter le specimen de fiche d'intervention au PDF final.
 SupplierProposals = Devis fournisseur
 PDF_SHOW_PROJECT_TITLE=Les documents PDF affichent le titre du projet
 PRODUIT_PDF_MERGE_PROPAL=Lors de la génération du PDF de proposition, tous les PDF liés aux produits liés à la proposition sont également inclus dans le PDF final.
@@ -137,8 +161,6 @@ JpsunAutoProjectGuardCancelSignature=Annuler la signature
 JpsunAutoProjectGuardInvalidChoice=Le choix de projet est invalide.
 JpsunAutoProjectGuardInvalidProject=Le projet selectionne est invalide ou n'est pas eligible pour ce devis.
 JpsunAutoProjectGuardProjectLinked=Le devis %s a ete rattache au projet %s.
-JpsunPcInstall = Puissance crète (kWc)
-JpsunPcInstall_Help = La puissance crête de l'installation photovoltaïque.
 JpsunTagCategory =  Catégorie
 JpsunTagCategoryHelp = Attribuer une catégorie à ce devis (en attendant la v23 de Dolibarr)
 
@@ -267,6 +289,41 @@ JpsunContractSiteAddress = Adresse du site
 jpsunWorkSiteAddress=Adresse du chantier
 JpsunContractSiteRepresentative1 = Représentant du site 1
 JpsunContractSiteRepresentative2 = Représentant du site 2
+JpsunContractRecurrence = Récurrence
+JpsunContractRecurrenceHelp = Récurrence de facturation du contrat. Si vide, le modèle utilise la récurrence par défaut des réglages JPSUN.
+JpsunContractPaymentDay = Jour de paiement
+JpsunContractPaymentDayHelp = Jour du mois de facturation. Si vide, le modèle utilise le jour de paiement par défaut des réglages JPSUN.
+JpsunRecurrenceAnnual = Annuelle
+JpsunRecurrenceMonthly = Mensuelle
+JpsunPaymentDayOfBillingMonth = %s du mois de facturation
+JpsunContratParticulierV3Description = Modèle de contrat de maintenance particulier V3 JPSUN.
+JpsunContractProModelDescription = Modèle de contrat de maintenance JPSUN PRO.
+JpsunPowerPlantPVRequiredForContractPro = Le module Centrale PV doit être activé pour générer le modèle JPSUN PRO.
+JpsunPowerPlantPVPermissionDenied = Vous n'avez pas le droit de lire les centrales PV liées à ce contrat.
+JpsunContractProNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle JPSUN PRO.
+JpsunContractProTemplateMissing = Le fond PDF du modèle JPSUN PRO est introuvable : %s
+JpsunContractProPowerPlantAnnex = Centrale %s / %s
+JpsunSoleilAquitainContractModelDescription = Modèle de contrat SOLEIL AQUITAIN pour la maintenance photovoltaïque.
+JpsunPowerPlantPVRequiredForSoleilAquitainContract = Le module Centrale PV doit être activé pour générer le modèle Contrat SOLEIL AQUITAIN.
+JpsunSoleilAquitainNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle Contrat SOLEIL AQUITAIN.
+JpsunSoleilAquitainMissingRequiredData = Le modèle Contrat SOLEIL AQUITAIN ne peut pas être généré. Données obligatoires manquantes ou invalides : %s
+JpsunSoleilAquitainContractSettings = Contrat SOLEIL AQUITAIN
+JPSUN_SOLEIL_AQUITAIN_RC_PRO = Assurance responsabilité civile professionnelle
+JPSUN_SOLEIL_AQUITAIN_RC_PRO_HELP = Exemple : assureur, numéro de contrat et zone de couverture.
+JPSUN_SOLEIL_AQUITAIN_DECENNALE = Assurance décennale
+JPSUN_SOLEIL_AQUITAIN_DECENNALE_HELP = Exemple : assureur, numéro de contrat, activités couvertes et zone de couverture.
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR = Médiateur de la consommation
+JPSUN_SOLEIL_AQUITAIN_MEDIATOR_HELP = Coordonnées complètes du médiateur à imprimer dans les conditions générales.
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL = URL de rétractation en ligne
+JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL_HELP = Laisser vide si aucun parcours de rétractation en ligne n'est disponible.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE = Mode de paiement par défaut pour les contrats
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE_HELP = Mode issu du dictionnaire Dolibarr Mode de règlements.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE = Récurrence par défaut
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE_HELP = Récurrence appliquée par défaut lorsque le contrat ne précise pas de récurrence.
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY = Jour de paiement par défaut
+JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_DAY_HELP = Jour du mois de facturation, par exemple 5 pour le 5.
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY = Délai de validité par défaut (en jours)
+JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY_HELP = Si vide, le modèle reprend le délai de validité par défaut du module Devis clients.
 
 //#Partie ENEDIS
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -321,29 +378,11 @@ JpsunMultiples = Multiples
 // # Widgets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-JpsunWidgetPuissanceCrete=Puissance crête installée
-JpsunWidgetPuissanceCreteTitle=Puissance crête posée
-JpsunWidgetPuissanceCreteYearTotal=Total %s facturé : %s kWc
 JpsunWidgetMensuel=Courbe mensuelle
 JpsunWidgetHebdomadaire=Courbe hebdomadaire
-jpsun_pc_install=Puissance crête installée
-jpsun_pc_install_help=Puissance crête installée (kWc).
-JpsunWidgetPuissanceCreteTotalTitle=kWc installés total année en cours
-JpsunWidgetPuissanceCreteMensuelTitle=kWc installés mensuel N / N-1
-JpsunWidgetPuissanceCreteHebdoTitle=kWc installés hebdo. N / N-1
 JpsunWidgetNoData=Aucune donnée
 JpsunWidgetCamembertCategorieCaTitle=CA par catégorie
 BoxCamembertCategorieCa=Graphique CA par catégorie
-BoxPuissanceCreteHebdo=Graphique kWc installés hebdomadaire
-BoxPuissanceCreteTotal=Graphique kWc installés total annuel
-BoxPuissanceCreteMensuel=Graphique kWc installés mensuel
-JpsunRecomputePeakPowerLabel=Recalcul de la puissance crête installée (kWc)
-JpsunRecomputePeakPowerDesc=Force le recalcul des puissances crête des devis, commandes et factures depuis les lignes de modules photovoltaïques.
-JpsunRecomputePeakPowerButton=Recalculer la puissance crête
-JpsunPeakPowerRecomputeSuccess=Recalcul de la puissance crête terminé (%s enregistrements mis à jour).
-JpsunPeakPowerRecomputeError=Erreur lors du recalcul de la puissance crête.
-JpsunWidgetPuissanceCreteInfo=Règle de calcul : puissance crête (jpsun_pc_install) sur les commandes validées, groupée par date_cloture.
-EditerPuissancesCretesManuellement=Éditer les puissances crêtes manuellement.
 JpsunProjectLabelsPdfModel=Étiquettes projet JPSUN
 JpsunProjectLabels=Étiquettes projet
 JpsunProjectLabelFormat=Format d’étiquette

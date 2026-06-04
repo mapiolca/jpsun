@@ -94,67 +94,6 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 			}
 		}
 
-	    if ($action == 'PROPAL_MODIFY' || $action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_MODIFY' || $action == 'LINEPROPAL_DELETE') {
-            if ($object->element == 'propal') {
-                global $db;
-                $pc = '0';
-                // Somme des lignes( extrafield_produit * qty ) / 1000
-                $sql = "SELECT SUM(pd.qty * COALESCE(pe.jpsun_module_pv_pc, 0)) AS s
-                        FROM ".MAIN_DB_PREFIX."propaldet pd
-                        LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields pe
-                               ON pe.fk_object = pd.fk_product
-                        WHERE pd.fk_propal = ".$object->rowid;
-            
-                $resql = $db->query($sql);
-                if ($resql) {
-                    $obj = $db->fetch_object($resql);
-                    $pc = ((float) ($obj->s ?? 0)) / 1000;
-                    
-                    dol_include_once('/comm/propal/class/propal.class.php');
-                    $propal = new Propal($db);
-                    if ($propal->fetch($object->rowid) > 0) {
-                        $propal->fetch_optionals(); // important
-                        $propal->array_options['options_jpsun_pc_install'] = $pc;
-                        $propal->insertExtraFields();
-                    //dol_syslog(__METHOD__." SQL resql: ".$sql, LOG_DEBUG);
-                    }
-                } else {
-                    dol_syslog(__METHOD__." SQL error: ".$db->lasterror(), LOG_ERR);
-                }
-            }
-            
-            if ($object->element === 'propaldet') {
-                global $db;
-                $pc = '0';
-                $fk_propal = (int) ($object->fk_propal ?? 0);
-                if ($fk_propal <= 0) return 0;
-            
-                // Somme des lignes( extrafield_produit * qty ) / 1000
-                $sql = "SELECT SUM(pd.qty * COALESCE(pe.jpsun_module_pv_pc, 0)) AS s
-                        FROM ".MAIN_DB_PREFIX."propaldet pd
-                        LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields pe
-                               ON pe.fk_object = pd.fk_product
-                        WHERE pd.fk_propal = ".$fk_propal;
-            
-                $resql = $db->query($sql);
-                if ($resql) {
-                    $obj = $db->fetch_object($resql);
-                    $pc = ((float) ($obj->s ?? 0)) / 1000;
-            
-                    dol_include_once('/comm/propal/class/propal.class.php');
-                    $propal = new Propal($db);
-                    if ($propal->fetch($fk_propal) > 0) {
-                        $propal->fetch_optionals(); // important
-                        $propal->array_options['options_jpsun_pc_install'] = $pc;
-                        $propal->insertExtraFields();
-                    }
-                    //dol_syslog(__METHOD__." SQL resql: ".$sql, LOG_DEBUG);
-                } else {
-                    dol_syslog(__METHOD__." SQL error: ".$db->lasterror(), LOG_ERR);
-                }
-            }
-        }
-            
 		// EN: Ensure we only handle proposal signature event
 		// FR: S'assurer que l'on traite uniquement la signature du devis
 		if ($action == 'PROPAL_CLOSE_SIGNED') {
