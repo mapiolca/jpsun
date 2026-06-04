@@ -129,23 +129,6 @@ class modJpsun extends DolibarrModules
         // Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
 		$this->boxes = array();
-		if (!jpsunIsPowerPlantPVEnabled()) {
-			$this->boxes[] = array(
-				'file' => 'jpsun_graph_puissancecrete_totaleannee.php@jpsun',
-				'note' => 'BoxPuissanceCreteTotal',
-				'enabledbydefaulton' => 'Home'
-			);
-			$this->boxes[] = array(
-				'file' => 'jpsun_graph_puissancecrete_mensuelle.php@jpsun',
-				'note' => 'BoxPuissanceCreteMensuel',
-				'enabledbydefaulton' => 'Home'
-			);
-			$this->boxes[] = array(
-				'file' => 'jpsun_graph_puissancecrete_hebdomadaire.php@jpsun',
-				'note' => 'BoxPuissanceCreteHebdo',
-				'enabledbydefaulton' => 'Home'
-			);
-		}
 		$this->boxes[] = array(
 			'file' => 'jpsun_graph_camembert_categorieca.php@jpsun',
 			'note' => 'BoxCamembertCategorieCa',
@@ -1031,8 +1014,8 @@ class modJpsun extends DolibarrModules
 
 		//$ext->addExtraField($attrname, 02 $label, 03 $type, 04 $pos, 05 $size, 06 $element, 07 $unique, 08 $required, 09 $default_value, 10 $param, 11 $alwayseditable, 12 $perms, 13 $list, 14 $help, 15 $computed, 16 $entity, 17 $langfile, 18 $enabled, 19 $sommable, 20 $PDF)
 		$sql[] = "DROP TABLE IF EXISTS ".MAIN_DB_PREFIX."c_jpsun_contract_zone";
-		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
-		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php')";
+		$sql[] = "DELETE b FROM ".MAIN_DB_PREFIX."boxes as b INNER JOIN ".MAIN_DB_PREFIX."boxes_def as d ON d.rowid = b.box_id WHERE d.file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php','jpsun_graph_puissancecrete_totaleannee.php','jpsun_graph_puissancecrete_mensuelle.php','jpsun_graph_puissancecrete_hebdomadaire.php')";
+		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."boxes_def WHERE file IN ('box_jpsun_pc_install.php','box_jpsun_pc_total_year.php','box_jpsun_pc_monthly.php','box_jpsun_pc_weekly.php','jpsun_graph_puissancecrete_totaleannee.php','jpsun_graph_puissancecrete_mensuelle.php','jpsun_graph_puissancecrete_hebdomadaire.php')";
 
 		return $this->_init($sql);
 	}
