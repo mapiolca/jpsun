@@ -23,7 +23,6 @@
  *				Put some comments here
  */
 
-require_once __DIR__.'/jpsun_powerplantpv.lib.php';
 require_once __DIR__.'/jpsun_pdf_attachments.lib.php';
 
 function jpsunAdminPrepareHead()
@@ -96,10 +95,9 @@ function jpsunAdminPrepareHead()
 /**
  * Handle shared setup actions.
  *
- * @param	bool	$allowPeakPowerRecompute	Whether the current page may run peak power recompute
  * @return	void
  */
-function jpsunHandleAdminSetupActions($allowPeakPowerRecompute = false)
+function jpsunHandleAdminSetupActions()
 {
 	global $db, $conf, $langs;
 
@@ -133,17 +131,6 @@ function jpsunHandleAdminSetupActions($allowPeakPowerRecompute = false)
 			exit;
 		}
 		dol_print_error($db);
-	}
-
-	if ($allowPeakPowerRecompute && $action === 'jpsun_recompute_peak_power' && !jpsunIsPowerPlantPVEnabled()) {
-		$result = jpsunRecomputeInstalledPeakPowerFromProductLines($db);
-		if ($result['result'] > 0) {
-			setEventMessages($langs->trans('JpsunPeakPowerRecomputeSuccess', $result['updated']), null, 'mesgs');
-		} else {
-			setEventMessages($langs->trans('JpsunPeakPowerRecomputeError'), array($result['error']), 'errors');
-		}
-		header("Location: ".$_SERVER["PHP_SELF"]);
-		exit;
 	}
 }
 
@@ -803,69 +790,4 @@ function jpsunGetRecurrenceOptions()
 		'annual' => $langs->trans('JpsunRecurrenceAnnual'),
 		'monthly' => $langs->trans('JpsunRecurrenceMonthly'),
 	);
-}
-
-/**
- * Recompute installed peak power extrafields on proposals, orders and invoices.
- *
- * @param	DoliDB	$db		Database handler
- * @return	array{result:int,updated:int,error:string}
- */
-function jpsunRecomputeInstalledPeakPowerFromProductLines($db)
-{
-	$updated = 0;
-	$error = '';
-
-	if (jpsunIsPowerPlantPVEnabled()) {
-		return array('result' => 0, 'updated' => 0, 'error' => '');
-	}
-
-	$queries = array(
-		"UPDATE ".MAIN_DB_PREFIX."propal_extrafields pef
-		INNER JOIN (
-			SELECT pd.fk_propal AS fk_object, COALESCE(SUM(pd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."propaldet pd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = pd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY pd.fk_propal
-		) src ON src.fk_object = pef.fk_object
-		SET pef.jpsun_pc_install = src.pc_kwc",
-		"UPDATE ".MAIN_DB_PREFIX."commande_extrafields cef
-		INNER JOIN (
-			SELECT cd.fk_commande AS fk_object, COALESCE(SUM(cd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."commandedet cd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = cd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY cd.fk_commande
-		) src ON src.fk_object = cef.fk_object
-		SET cef.jpsun_pc_install = src.pc_kwc",
-		"UPDATE ".MAIN_DB_PREFIX."facture_extrafields fef
-		INNER JOIN (
-			SELECT fd.fk_facture AS fk_object, COALESCE(SUM(fd.qty * COALESCE(px.jpsun_module_pv_pc, 0)) / 1000, 0) AS pc_kwc
-			FROM ".MAIN_DB_PREFIX."facturedet fd
-			INNER JOIN ".MAIN_DB_PREFIX."product p ON p.rowid = fd.fk_product
-			LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields px ON px.fk_object = p.rowid
-			WHERE p.finished = 2
-			GROUP BY fd.fk_facture
-		) src ON src.fk_object = fef.fk_object
-		SET fef.jpsun_pc_install = src.pc_kwc"
-	);
-
-	$db->begin();
-
-	foreach ($queries as $sql) {
-		$resql = $db->query($sql);
-		if (! $resql) {
-			$error = $db->lasterror();
-			$db->rollback();
-			return array('result' => -1, 'updated' => $updated, 'error' => $error);
-		}
-		$updated += (int) $db->affected_rows($resql);
-	}
-
-	$db->commit();
-
-	return array('result' => 1, 'updated' => $updated, 'error' => $error);
 }

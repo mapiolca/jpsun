@@ -9,7 +9,7 @@
 
 require_once __DIR__.'/_setup_common.php';
 
-jpsunHandleAdminSetupActions(false);
+jpsunHandleAdminSetupActions();
 jpsunPrintAdminSetupHeader('orders');
 
 setup_print_title($langs->trans("CustomerOrder"));

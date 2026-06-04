@@ -15,7 +15,7 @@
 
 require_once __DIR__.'/_setup_common.php';
 
-jpsunHandleAdminSetupActions(true);
+jpsunHandleAdminSetupActions();
 jpsunPrintAdminSetupHeader('setup');
 
 // Global
@@ -59,18 +59,5 @@ setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', false,
 setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
 setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
 setup_print_on_off('JPSUN_PROJECT_CLOSE_FORCE_PROJECT_END_DATE');
-if (!jpsunIsPowerPlantPVEnabled()) {
-	print '<tr>';
-	print '<td>'.$langs->trans('JpsunRecomputePeakPowerLabel').'<br><small>'.$langs->trans('JpsunRecomputePeakPowerDesc').'</small></td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<input type="hidden" name="token" value="'.newToken().'">';
-	print '<input type="hidden" name="action" value="jpsun_recompute_peak_power">';
-	print '<input type="submit" class="button button-edit" value="'.$langs->trans('JpsunRecomputePeakPowerButton').'">';
-	print '</form>';
-	print '</td>';
-	print '</tr>';
-}
 
 jpsunPrintAdminSetupFooter();

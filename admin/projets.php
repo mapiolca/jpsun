@@ -9,7 +9,7 @@
 
 require_once __DIR__.'/_setup_common.php';
 
-jpsunHandleAdminSetupActions(false);
+jpsunHandleAdminSetupActions();
 jpsunPrintAdminSetupHeader('projects');
 
 if (floatval(DOL_VERSION) >= 13.0) {

@@ -6,7 +6,7 @@
 - Ajout des réglages `Récurrence par défaut` et `Jour de paiement par défaut`, avec extrafields contrat éditables par le commercial et reprise dans le modèle `Contrat SOLEIL AQUITAIN`.
 - Remplacement du dictionnaire JPSUN de zones géographiques et de l'extrafield contrat `Zone géographique` par les catégories de contrat fournies par `lmdbzoning` pour le modèle `Contrat SOLEIL AQUITAIN`.
 - Intégration optionnelle avec le module Centrale PV / PowerPlantPV.
-- Suppression des widgets historiques de puissance crête (kWc) et masquage de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
+- Suppression des widgets historiques de puissance crête (kWc), de l'extrafield historique de puissance crête sur devis, commandes et factures, ainsi que du recalcul JPSUN associé.
 - Ajout du modèle PDF contrat `JPSUN PRO`, basé sur le contrat PRO V4, avec génération d'une Annexe 1 par centrale PV liée au contrat.
 - Récupération des données centrales PV, composants, tiers et contacts via les mécanismes Dolibarr natifs, avec contrôle des droits et filtrage par entité.
 - Séparation des réglages JPSUN en onglets admin dédiés.
@@ -54,9 +54,9 @@
 
 ## 1.15 (29/04/2026)
 - Ajout des widgets puissance crête (annuel, mensuel, hebdomadaire) et du widget camembert CA par catégorie facture.
-- Ajout/mise à jour idempotente de l'extrafield `jpsun_pc_install` sur devis, factures et commandes.
+- Ajout/mise à jour idempotente de l'ancien extrafield historique de puissance crête sur devis, factures et commandes.
 - Améliorations d'affichage des graphs (unités, légendes, hauteurs harmonisées).
-- Ajout d'un bouton dans les réglages du module pour forcer le recalcul de la puissance crête (`jpsun_pc_install`) des devis, commandes et factures à partir des lignes de produits de type module photovoltaïque et de l'extrafield produit `jpsun_module_pv_pc`.
+- Ajout d'un bouton dans les réglages du module pour forcer le recalcul de l'ancien extrafield historique de puissance crête des devis, commandes et factures à partir des lignes de produits de type module photovoltaïque et de l'extrafield produit `jpsun_module_pv_pc`.
 
 ## 1.14 (01/04/2026)
 - Ajout de la massaction "Modifier la Charge de travail prévue" (Dolibarr `< 24.0`) avec popup de saisie `hh:mm` par tâche, conversion en secondes dans `planned_workload`, contrôles de droits/sécurité et traductions `fr_FR`, `en_US`, `de_DE`, `es_ES`, `it_IT`.
