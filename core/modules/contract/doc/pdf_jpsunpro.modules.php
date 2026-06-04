@@ -656,18 +656,6 @@ class pdf_jpsunpro extends ModelePDFContract
 			array('Nombre coffrets DC', $dcboxesqty),
 			array('Nombre coffrets AC', $acboxesqty),
 		);
-		$inverterheight = $this->formatNumber($this->firstNonEmpty($powerplant['inverter_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_inverter_install_height_m')), 2);
-		$dcboxheight = $this->formatNumber($this->firstNonEmpty($powerplant['dc_box_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_dc_box_install_height_m')), 2);
-		$acboxheight = $this->formatNumber($this->firstNonEmpty($powerplant['ac_box_install_height_m'] ?? '', $this->getExtraOption($object, 'jpsun_ac_box_install_height_m')), 2);
-		if ($inverterheight !== '') {
-			$equipmentRows[] = array('Hauteur installation onduleurs (m)', $inverterheight);
-		}
-		if ($dcboxheight !== '') {
-			$equipmentRows[] = array('Hauteur installation coffret DC (m)', $dcboxheight);
-		}
-		if ($acboxheight !== '') {
-			$equipmentRows[] = array('Hauteur installation coffret AC (m)', $acboxheight);
-		}
 		if ($this->getExtraOption($object, 'jpsun_access_code') !== '') {
 			$equipmentRows[] = array('Codes d’accès', $this->getExtraOption($object, 'jpsun_access_code'));
 		}
