@@ -6,7 +6,7 @@
 - Ajout des réglages `Récurrence par défaut` et `Jour de paiement par défaut`, avec extrafields contrat éditables par le commercial et reprise dans le modèle `Contrat SOLEIL AQUITAIN`.
 - Remplacement du dictionnaire JPSUN de zones géographiques et de l'extrafield contrat `Zone géographique` par les catégories de contrat fournies par `lmdbzoning` pour le modèle `Contrat SOLEIL AQUITAIN`.
 - Intégration optionnelle avec le module Centrale PV / PowerPlantPV.
-- Masquage des widgets historiques de puissance crête et de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
+- Suppression des widgets historiques de puissance crête (kWc) et masquage de l'extrafield `jpsun_pc_install` sur devis, commandes et factures lorsque PowerPlantPV est actif.
 - Ajout du modèle PDF contrat `JPSUN PRO`, basé sur le contrat PRO V4, avec génération d'une Annexe 1 par centrale PV liée au contrat.
 - Récupération des données centrales PV, composants, tiers et contacts via les mécanismes Dolibarr natifs, avec contrôle des droits et filtrage par entité.
 - Séparation des réglages JPSUN en onglets admin dédiés.
