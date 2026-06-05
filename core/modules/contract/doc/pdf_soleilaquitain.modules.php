@@ -1296,6 +1296,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (!empty($mediator->name)) {
 			$lines[] = (string) $mediator->name;
 		}
+		if (!empty($mediator->name_alias)) {
+			$lines[] = (string) $mediator->name_alias;
+		}
 
 		$address = trim((string) ($mediator->address ?? '')."\n".trim((string) ($mediator->zip ?? '').' '.(string) ($mediator->town ?? '')));
 		if ($address !== '') {
