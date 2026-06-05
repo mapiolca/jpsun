@@ -513,7 +513,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$pdf->Ln(6);
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Préambule');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client et le Prestataire sont individuellement dénommés une Partie et collectivement les Parties.');
-		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.', $legaldata));
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à {{PROVIDER_NAME}}.', $legaldata));
 	}
 
 	/**
@@ -557,7 +557,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Au-delà de 70 km', 'Sur devis', 'Sur devis', 'Sur devis'),
 		);
 		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Zone', 'Essentiel', 'Confort', 'Premium'), $priceRows, array(58, 42, 42, 42), array(1, 2, 3));
-		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('La distance est calculée depuis les locaux de SOLEIL AQUITAIN à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.', $legaldata));
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('La distance est calculée depuis les locaux de {{PROVIDER_NAME}} à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.', $legaldata));
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Récapitulatif contractuel');
 		$summaryRows = array(
@@ -594,7 +594,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 		foreach ($this->getSoleilAquitainContractSections($legaldata) as $section) {
 			$this->renderSectionTitle($pdf, $object, $outputlangs, $section['title']);
 			foreach ($section['paragraphs'] as $paragraph) {
-				if (is_array($paragraph)) {
+				if (is_array($paragraph) && ($paragraph['type'] ?? '') === 'mediator_block') {
+					$this->renderCenteredMediatorBlock($pdf, $object, $outputlangs, $paragraph['value'] ?? '');
+				} elseif (is_array($paragraph)) {
 					$this->renderBulletList($pdf, $object, $outputlangs, $paragraph);
 				} else {
 					$this->renderParagraph($pdf, $object, $outputlangs, $paragraph);
@@ -954,7 +956,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (!empty($legaldata['withdrawal_url'])) {
 			$this->renderParagraph($pdf, $object, $outputlangs, 'Rétractation en ligne : '.$legaldata['withdrawal_url']);
 		}
-		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, SOLEIL AQUITAIN met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.', $legaldata));
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, {{PROVIDER_NAME}} met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.', $legaldata));
 	}
 
 	/**
@@ -1176,15 +1178,15 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function replaceSoleilAquitainProviderName($text, $legaldata)
 	{
-		return str_replace('SOLEIL AQUITAIN', $this->getSoleilAquitainProviderDisplayName($legaldata), (string) $text);
+		return str_replace(array('SOLEIL AQUITAIN', '{{PROVIDER_NAME}}'), $this->getSoleilAquitainProviderDisplayName($legaldata), (string) $text);
 	}
 
 	/**
 	 * Replace provider name in fixed contract sections, including bullet lists.
 	 *
-	 * @param array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}> $sections Contract sections
+	 * @param array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}> $sections Contract sections
 	 * @param array<string,string> $legaldata Legal data
-	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}>
+	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}>
 	 */
 	private function replaceSoleilAquitainProviderNameInContractSections($sections, $legaldata)
 	{
@@ -1512,7 +1514,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * Return corrected fixed contract sections.
 	 *
 	 * @param array<string,string> $legaldata Legal data
-	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}>
+	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}>
 	 */
 	private function getSoleilAquitainContractSections($legaldata)
 	{
@@ -1529,7 +1531,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'paragraphs' => array(
 					'Le contrat est conclu pour une durée initiale de 12 mois à compter de sa signature ou de la date de prise d’effet indiquée dans le bon pour accord.',
 					'Il se reconduit ensuite tacitement pour des périodes successives de 12 mois, sauf résiliation dans les conditions du présent contrat.',
-					'Pour les consommateurs, SOLEIL AQUITAIN informe le Client par écrit de la possibilité de ne pas reconduire le contrat dans les conditions prévues par l’article L215-1 du Code de la consommation.',
+					'Pour les consommateurs, {{PROVIDER_NAME}} informe le Client par écrit de la possibilité de ne pas reconduire le contrat dans les conditions prévues par l’article L215-1 du Code de la consommation.',
 				),
 			),
 			array(
@@ -1560,14 +1562,14 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'title' => 'Article 6 : Intervention toiture et sécurité',
 				'paragraphs' => array(
 					'Les interventions sur toiture sont réalisées sous réserve d’un accès sécurisé, de conditions météorologiques compatibles et du respect des règles de sécurité applicables.',
-					'SOLEIL AQUITAIN peut refuser ou reporter une intervention si les conditions de sécurité ne sont pas réunies. Les moyens d’accès spéciaux, notamment nacelle, échafaudage ou ligne de vie, sont facturés en sus sur devis.',
+					'{{PROVIDER_NAME}} peut refuser ou reporter une intervention si les conditions de sécurité ne sont pas réunies. Les moyens d’accès spéciaux, notamment nacelle, échafaudage ou ligne de vie, sont facturés en sus sur devis.',
 				),
 			),
 			array(
 				'title' => 'Article 7 : Surveillance et monitoring',
 				'paragraphs' => array(
 					'Lorsque la formule ou la prestation le prévoit, l’analyse de production est réalisée à partir des données accessibles lors des visites ou via les accès de monitoring fournis par le Client.',
-					'Le Client autorise SOLEIL AQUITAIN à accéder aux données nécessaires au diagnostic et s’engage à transmettre les identifiants ou autorisations utiles. L’absence ou l’impossibilité d’accès au monitoring limite les obligations de diagnostic à distance du Prestataire.',
+					'Le Client autorise {{PROVIDER_NAME}} à accéder aux données nécessaires au diagnostic et s’engage à transmettre les identifiants ou autorisations utiles. L’absence ou l’impossibilité d’accès au monitoring limite les obligations de diagnostic à distance du Prestataire.',
 				),
 			),
 			array(
@@ -1582,15 +1584,15 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'paragraphs' => array(
 					'Les délais indiqués dans les formules concernent le premier diagnostic à distance par téléphone, visio ou accès monitoring.',
 					'Le délai d’intervention physique et de réparation dépend de la disponibilité des techniciens, des conditions météorologiques, de l’accès sécurisé au site, de la disponibilité des pièces et des garanties fabricant.',
-					'Les interventions sont réalisées pendant les jours et horaires ouvrés de SOLEIL AQUITAIN, sauf accord écrit ou urgence acceptée expressément.',
+					'Les interventions sont réalisées pendant les jours et horaires ouvrés de {{PROVIDER_NAME}}, sauf accord écrit ou urgence acceptée expressément.',
 				),
 			),
 			array(
 				'title' => 'Article 10 : Responsabilité',
 				'paragraphs' => array(
-					'Sous réserve des dispositions légales impératives applicables, la responsabilité de SOLEIL AQUITAIN est limitée aux dommages directs et certains résultant d’une faute prouvée dans l’exécution du contrat.',
+					'Sous réserve des dispositions légales impératives applicables, la responsabilité de {{PROVIDER_NAME}} est limitée aux dommages directs et certains résultant d’une faute prouvée dans l’exécution du contrat.',
 					'Cette limitation ne s’applique pas en cas de faute lourde, faute dolosive, dommage corporel, garantie légale applicable ou obligation d’ordre public.',
-					'SOLEIL AQUITAIN ne peut être tenue responsable des pertes de production indirectes, pannes fabricant, coupures réseau, défauts d’accès, absence de monitoring ou non-conformités d’origine sans lien direct avec une faute prouvée du Prestataire.',
+					'{{PROVIDER_NAME}} ne peut être tenue responsable des pertes de production indirectes, pannes fabricant, coupures réseau, défauts d’accès, absence de monitoring ou non-conformités d’origine sans lien direct avec une faute prouvée du Prestataire.',
 				),
 			),
 			array(
@@ -1611,8 +1613,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array(
 				'title' => 'Article 13 : Médiation et réclamation',
 				'paragraphs' => array(
-					'Toute réclamation peut être adressée par écrit à SOLEIL AQUITAIN aux coordonnées indiquées au présent contrat.',
-					'Conformément à l’article L. 612-1 du Code de la consommation, le Client consommateur peut recourir gratuitement au médiateur de la consommation suivant : '.$legaldata['mediator'],
+					'Toute réclamation peut être adressée par écrit à {{PROVIDER_NAME}} aux coordonnées indiquées au présent contrat.',
+					'Conformément à l’article L. 612-1 du Code de la consommation, le Client consommateur peut recourir gratuitement au médiateur de la consommation suivant :',
+					array('type' => 'mediator_block', 'value' => $legaldata['mediator']),
 					'La saisine du médiateur doit être accompagnée des coordonnées complètes du demandeur, du nom et de l’adresse du professionnel, d’un exposé succinct des faits, de la copie de la réclamation préalable et des pièces justificatives utiles.',
 					'Le recours à la médiation est un droit du consommateur et ne constitue pas un préalable obligatoire à toute action judiciaire.',
 				),
@@ -1892,6 +1895,34 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$pdf->SetTextColor(35, 35, 35);
 		$pdf->MultiCell($w, 5, $text, 0, 'L', false, 1);
 		$pdf->Ln(1);
+	}
+
+	/**
+	 * Render centered consumer mediator details.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param string $text Mediator details
+	 * @return void
+	 */
+	private function renderCenteredMediatorBlock(&$pdf, $object, $outputlangs, $text)
+	{
+		$text = trim((string) $text);
+		if ($text === '') {
+			return;
+		}
+
+		$w = min(120, $this->contentWidth());
+		$x = $this->marge_gauche + (($this->contentWidth() - $w) / 2);
+		$text = $outputlangs->convToOutputCharset($text);
+		$height = max(6, $this->getTextHeight($pdf, $w, $text) + 2);
+		$this->ensureSpace($pdf, $object, $outputlangs, $height + 4, 'Médiateur de la consommation');
+		$pdf->SetFont('', '', $this->defaultFontSize);
+		$pdf->SetTextColor(35, 35, 35);
+		$pdf->SetX($x);
+		$pdf->MultiCell($w, 5, $text, 0, 'C', false, 1);
+		$pdf->Ln(2);
 	}
 
 	/**
