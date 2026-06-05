@@ -28,6 +28,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_lmdbzoning.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
@@ -342,11 +343,11 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function renderContractPages(&$pdf, $object, $powerplants, $contactdata, $outputlangs, $legaldata, $subscriptiondata)
 	{
-		$this->addPage($pdf, $object, $outputlangs, 'Contrat SOLEIL AQUITAIN');
+		$this->addPage($pdf, $object, $outputlangs, 'Contrat '.$this->getSoleilAquitainProviderDisplayName($legaldata));
 		$this->renderCover($pdf, $object, $powerplants, $contactdata, $outputlangs, $legaldata, $subscriptiondata);
 
 		$this->addPage($pdf, $object, $outputlangs, 'Formules et récapitulatif');
-		$this->renderMaintenanceOffer($pdf, $object, $powerplants, $subscriptiondata, $outputlangs);
+		$this->renderMaintenanceOffer($pdf, $object, $powerplants, $legaldata, $subscriptiondata, $outputlangs);
 
 		$this->addPage($pdf, $object, $outputlangs, 'Conditions générales');
 		$this->renderSoleilAquitainTerms($pdf, $object, $legaldata, $outputlangs);
@@ -493,7 +494,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('label' => 'Zone géographique', 'value' => $subscriptiondata['zone']),
 			array('label' => 'Nombre de centrales liées', 'value' => (string) count($powerplants)),
 			array('label' => 'Premier site', 'value' => $this->firstNonEmpty($powerplants[0]['site_name'], $powerplants[0]['ref'])),
-		), 96);
+		), 86);
 
 		$pdf->Ln(6);
 		$left = array(
@@ -512,7 +513,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$pdf->Ln(6);
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Préambule');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client et le Prestataire sont individuellement dénommés une Partie et collectivement les Parties.');
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à {{PROVIDER_NAME}}.', $legaldata));
 	}
 
 	/**
@@ -521,11 +522,12 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
 	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
+	 * @param array<string,string> $legaldata Legal and regulatory data
 	 * @param array<string,string> $subscriptiondata Subscription data
 	 * @param Translate $outputlangs Output language
 	 * @return void
 	 */
-	private function renderMaintenanceOffer(&$pdf, $object, $powerplants, $subscriptiondata, $outputlangs)
+	private function renderMaintenanceOffer(&$pdf, $object, $powerplants, $legaldata, $subscriptiondata, $outputlangs)
 	{
 		$this->renderMainTitle($pdf, $outputlangs, 'Formules de maintenance photovoltaïque');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Les formules ci-dessous s’appliquent aux installations photovoltaïques en surimposition de 1 kWc à 9 kWc. Les installations au-delà de 9 kWc, intégrées au bâti, avec batterie ou système de back-up font l’objet d’un devis spécifique.');
@@ -555,7 +557,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Au-delà de 70 km', 'Sur devis', 'Sur devis', 'Sur devis'),
 		);
 		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Zone', 'Essentiel', 'Confort', 'Premium'), $priceRows, array(58, 42, 42, 42), array(1, 2, 3));
-		$this->renderParagraph($pdf, $object, $outputlangs, 'La distance est calculée depuis les locaux de SOLEIL AQUITAIN à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('La distance est calculée depuis les locaux de {{PROVIDER_NAME}} à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.', $legaldata));
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Récapitulatif contractuel');
 		$summaryRows = array(
@@ -592,7 +594,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 		foreach ($this->getSoleilAquitainContractSections($legaldata) as $section) {
 			$this->renderSectionTitle($pdf, $object, $outputlangs, $section['title']);
 			foreach ($section['paragraphs'] as $paragraph) {
-				if (is_array($paragraph)) {
+				if (is_array($paragraph) && ($paragraph['type'] ?? '') === 'mediator_block') {
+					$this->renderCenteredMediatorBlock($pdf, $object, $outputlangs, $paragraph['value'] ?? '');
+				} elseif (is_array($paragraph)) {
 					$this->renderBulletList($pdf, $object, $outputlangs, $paragraph);
 				} else {
 					$this->renderParagraph($pdf, $object, $outputlangs, $paragraph);
@@ -636,14 +640,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Première visite', $subscriptiondata['first_visit']),
 			array('Durée de validité de l’offre', $subscriptiondata['offer_validity']),
 		);
-		$this->renderKeyValueTable($pdf, $object, $outputlangs, $rows, array(58, $this->contentWidth() - 58));
+		$this->renderAgreementSummaryTable($pdf, $outputlangs, $rows);
 
-		$layout = jpsunPdfJpsunProSignatureLayout($this->page_largeur, $this->page_hauteur, $this->marge_gauche, $this->marge_droite);
-		$boxY = max($pdf->GetY() + 8, $layout['box_y']);
-		if ($boxY + $layout['box_h'] > $this->contentBottom) {
-			$this->addPage($pdf, $object, $outputlangs, 'Bon pour accord');
-			$boxY = $layout['box_y'];
-		}
+		$layout = jpsunPdfSoleilAquitainSignatureLayout($this->page_largeur, $this->page_hauteur, $this->marge_gauche, $this->marge_droite);
+		$boxY = $layout['box_y'];
 
 		$providername = $this->formatSignatureContactBlock($contactdata['SALESSIGNATORY'], $this->firstNonEmpty($legaldata['name'], $this->emetteur->name));
 		$clientname = $this->formatSignatureContactBlock($contactdata['CLIENTSIGNATORY'], is_object($object->thirdparty) ? $object->thirdparty->name : '');
@@ -941,7 +941,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$this->renderMainTitle($pdf, $outputlangs, 'Annexe 2 : Formulaire type de rétractation');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Ce formulaire est à utiliser uniquement par un consommateur souhaitant exercer son droit de rétractation dans les cas prévus par le Code de la consommation.');
 
-		$recipient = $this->firstNonEmpty($legaldata['name'], 'SOLEIL AQUITAIN')."\n".$legaldata['address']."\n".$legaldata['email'];
+		$recipient = $this->getSoleilAquitainProviderDisplayName($legaldata)."\n".$legaldata['address']."\n".$legaldata['email'];
 		$rows = array(
 			array('À l’attention de', $recipient),
 			array('Objet', 'Je vous notifie par la présente ma rétractation du contrat portant sur la prestation de maintenance photovoltaïque.'),
@@ -956,7 +956,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (!empty($legaldata['withdrawal_url'])) {
 			$this->renderParagraph($pdf, $object, $outputlangs, 'Rétractation en ligne : '.$legaldata['withdrawal_url']);
 		}
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, SOLEIL AQUITAIN met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, {{PROVIDER_NAME}} met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.', $legaldata));
 	}
 
 	/**
@@ -1137,10 +1137,11 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if ($capital !== '' && is_numeric($capital) && strpos($capital, '€') === false) {
 			$capital = $this->formatNumber($capital, 2).' €';
 		}
+		$legalform = $this->getSoleilAquitainProviderLegalForm();
 
 		return array(
 			'name' => (string) ($this->emetteur->name ?? ''),
-			'legal_form' => $this->firstNonEmpty($this->emetteur->forme_juridique ?? '', $this->emetteur->forme_juridique_label ?? '', $this->emetteur->forme_juridique_code ?? ''),
+			'legal_form' => $legalform,
 			'capital' => $capital,
 			'address' => $address,
 			'email' => (string) ($this->emetteur->email ?? ''),
@@ -1152,9 +1153,168 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'vat' => $this->firstNonEmpty($this->emetteur->tva_intra ?? '', $this->emetteur->vat_intra ?? '', $this->emetteur->idprof6 ?? '', $this->emetteur->idprof5 ?? '', getDolGlobalString('MAIN_INFO_TVAINTRA')),
 			'rc_pro' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_RC_PRO'),
 			'decennale' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DECENNALE'),
-			'mediator' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_MEDIATOR'),
+			'mediator' => $this->getSoleilAquitainMediatorBlock(),
 			'withdrawal_url' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL'),
 		);
+	}
+
+	/**
+	 * Return the provider display name printed in the contract.
+	 *
+	 * @param array<string,string> $legaldata Legal data
+	 * @return string
+	 */
+	private function getSoleilAquitainProviderDisplayName($legaldata)
+	{
+		return $this->firstNonEmpty($legaldata['name'] ?? '', $this->emetteur->name ?? '', 'le Prestataire');
+	}
+
+	/**
+	 * Replace the historical hardcoded provider name in printable text.
+	 *
+	 * @param string $text Printable text
+	 * @param array<string,string> $legaldata Legal data
+	 * @return string
+	 */
+	private function replaceSoleilAquitainProviderName($text, $legaldata)
+	{
+		return str_replace(array('SOLEIL AQUITAIN', '{{PROVIDER_NAME}}'), $this->getSoleilAquitainProviderDisplayName($legaldata), (string) $text);
+	}
+
+	/**
+	 * Replace provider name in fixed contract sections, including bullet lists.
+	 *
+	 * @param array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}> $sections Contract sections
+	 * @param array<string,string> $legaldata Legal data
+	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}>
+	 */
+	private function replaceSoleilAquitainProviderNameInContractSections($sections, $legaldata)
+	{
+		foreach ($sections as &$section) {
+			if (empty($section['paragraphs']) || !is_array($section['paragraphs'])) {
+				continue;
+			}
+			foreach ($section['paragraphs'] as &$paragraph) {
+				if (is_array($paragraph)) {
+					foreach ($paragraph as &$item) {
+						$item = $this->replaceSoleilAquitainProviderName($item, $legaldata);
+					}
+					unset($item);
+				} else {
+					$paragraph = $this->replaceSoleilAquitainProviderName($paragraph, $legaldata);
+				}
+			}
+			unset($paragraph);
+		}
+		unset($section);
+
+		return $sections;
+	}
+
+	/**
+	 * Return the provider legal form label.
+	 *
+	 * @return string
+	 */
+	private function getSoleilAquitainProviderLegalForm()
+	{
+		$legalformcode = $this->firstNonEmpty($this->emetteur->forme_juridique_code ?? '', getDolGlobalString('MAIN_INFO_SOCIETE_FORME_JURIDIQUE'));
+		if ($legalformcode !== '') {
+			$label = getFormeJuridiqueLabel((string) $legalformcode);
+			if ($this->isDefinedDictionaryLabel($label)) {
+				return $label;
+			}
+		}
+
+		$legalform = $this->firstNonEmpty($this->emetteur->forme_juridique_label ?? '', $this->emetteur->forme_juridique ?? '');
+		if ($legalform !== '' && ctype_digit((string) $legalform)) {
+			$label = getFormeJuridiqueLabel((string) $legalform);
+			if ($this->isDefinedDictionaryLabel($label)) {
+				return $label;
+			}
+			return '';
+		}
+
+		return $legalform;
+	}
+
+	/**
+	 * Return true when a translated dictionary label carries useful data.
+	 *
+	 * @param string $label Dictionary label
+	 * @return bool
+	 */
+	private function isDefinedDictionaryLabel($label)
+	{
+		global $langs;
+
+		$label = trim((string) $label);
+		if ($label === '' || $label === 'NotDefined') {
+			return false;
+		}
+		if (is_object($langs) && ($label === $langs->trans('NotDefined') || $label === $langs->transnoentitiesnoconv('NotDefined'))) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return configured consumer mediator thirdparty details.
+	 *
+	 * @return string
+	 */
+	private function getSoleilAquitainMediatorBlock()
+	{
+		$value = trim((string) getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_MEDIATOR'));
+		if ($value === '') {
+			return '';
+		}
+
+		if (!ctype_digit($value)) {
+			return $value;
+		}
+
+		$mediator = new Societe($this->db);
+		$result = $mediator->fetch((int) $value);
+		if ($result <= 0 || empty($mediator->fournisseur) || (isset($mediator->status) && (int) $mediator->status === 0)) {
+			return '';
+		}
+
+		return $this->formatSoleilAquitainMediatorBlock($mediator);
+	}
+
+	/**
+	 * Format consumer mediator thirdparty details.
+	 *
+	 * @param Societe $mediator Mediator thirdparty
+	 * @return string
+	 */
+	private function formatSoleilAquitainMediatorBlock($mediator)
+	{
+		$lines = array();
+		if (!empty($mediator->name)) {
+			$lines[] = (string) $mediator->name;
+		}
+		if (!empty($mediator->name_alias)) {
+			$lines[] = (string) $mediator->name_alias;
+		}
+
+		$address = trim((string) ($mediator->address ?? '')."\n".trim((string) ($mediator->zip ?? '').' '.(string) ($mediator->town ?? '')));
+		if ($address !== '') {
+			$lines[] = $address;
+		}
+		if (!empty($mediator->phone)) {
+			$lines[] = 'Tél. : '.$mediator->phone;
+		}
+		if (!empty($mediator->email)) {
+			$lines[] = 'Courriel : '.$mediator->email;
+		}
+		if (!empty($mediator->url)) {
+			$lines[] = 'Site : '.$mediator->url;
+		}
+
+		return implode("\n", $lines);
 	}
 
 	/**
@@ -1167,8 +1327,6 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function buildSoleilAquitainSubscriptionData($object, $powerplants, $outputlangs)
 	{
-		global $conf;
-
 		$installedpower = 0.0;
 		$siteaddresses = array();
 		foreach ($powerplants as $powerplant) {
@@ -1180,10 +1338,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			}
 		}
 
-		$totalvat = '';
-		if (isset($object->total_tva) && is_numeric($object->total_tva)) {
-			$totalvat = price($object->total_tva, 0, $outputlangs, 1, -1, -1, $conf->currency);
-		}
+		$totals = $this->getContractAmountTotals($object);
 
 		return array(
 			'formula' => $this->getSoleilAquitainFormulaLabel($object),
@@ -1196,9 +1351,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'first_visit' => 'À planifier avec le Client',
 			'site_address' => implode("\n\n", array_unique($siteaddresses)),
 			'installed_power' => $installedpower > 0 ? $this->formatPowerWithUnit($installedpower, 'kWc', 2) : '',
-			'total_ht' => (isset($object->total_ht) && is_numeric($object->total_ht)) ? price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency) : '',
-			'total_vat' => $totalvat,
-			'total_ttc' => (isset($object->total_ttc) && is_numeric($object->total_ttc)) ? price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency) : '',
+			'total_ht' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_ht'], $outputlangs) : '',
+			'total_vat' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_tva'], $outputlangs) : '',
+			'total_ttc' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_ttc'], $outputlangs) : '',
 		);
 	}
 
@@ -1357,11 +1512,11 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * Return corrected fixed contract sections.
 	 *
 	 * @param array<string,string> $legaldata Legal data
-	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}>
+	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>|array{type:string,value:string}>}>
 	 */
 	private function getSoleilAquitainContractSections($legaldata)
 	{
-		return array(
+		$sections = array(
 			array(
 				'title' => 'Article 1 : Objet du contrat',
 				'paragraphs' => array(
@@ -1374,7 +1529,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'paragraphs' => array(
 					'Le contrat est conclu pour une durée initiale de 12 mois à compter de sa signature ou de la date de prise d’effet indiquée dans le bon pour accord.',
 					'Il se reconduit ensuite tacitement pour des périodes successives de 12 mois, sauf résiliation dans les conditions du présent contrat.',
-					'Pour les consommateurs, SOLEIL AQUITAIN informe le Client par écrit de la possibilité de ne pas reconduire le contrat dans les conditions prévues par l’article L215-1 du Code de la consommation.',
+					'Pour les consommateurs, {{PROVIDER_NAME}} informe le Client par écrit de la possibilité de ne pas reconduire le contrat dans les conditions prévues par l’article L215-1 du Code de la consommation.',
 				),
 			),
 			array(
@@ -1405,14 +1560,14 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'title' => 'Article 6 : Intervention toiture et sécurité',
 				'paragraphs' => array(
 					'Les interventions sur toiture sont réalisées sous réserve d’un accès sécurisé, de conditions météorologiques compatibles et du respect des règles de sécurité applicables.',
-					'SOLEIL AQUITAIN peut refuser ou reporter une intervention si les conditions de sécurité ne sont pas réunies. Les moyens d’accès spéciaux, notamment nacelle, échafaudage ou ligne de vie, sont facturés en sus sur devis.',
+					'{{PROVIDER_NAME}} peut refuser ou reporter une intervention si les conditions de sécurité ne sont pas réunies. Les moyens d’accès spéciaux, notamment nacelle, échafaudage ou ligne de vie, sont facturés en sus sur devis.',
 				),
 			),
 			array(
 				'title' => 'Article 7 : Surveillance et monitoring',
 				'paragraphs' => array(
 					'Lorsque la formule ou la prestation le prévoit, l’analyse de production est réalisée à partir des données accessibles lors des visites ou via les accès de monitoring fournis par le Client.',
-					'Le Client autorise SOLEIL AQUITAIN à accéder aux données nécessaires au diagnostic et s’engage à transmettre les identifiants ou autorisations utiles. L’absence ou l’impossibilité d’accès au monitoring limite les obligations de diagnostic à distance du Prestataire.',
+					'Le Client autorise {{PROVIDER_NAME}} à accéder aux données nécessaires au diagnostic et s’engage à transmettre les identifiants ou autorisations utiles. L’absence ou l’impossibilité d’accès au monitoring limite les obligations de diagnostic à distance du Prestataire.',
 				),
 			),
 			array(
@@ -1427,15 +1582,15 @@ class pdf_soleilaquitain extends ModelePDFContract
 				'paragraphs' => array(
 					'Les délais indiqués dans les formules concernent le premier diagnostic à distance par téléphone, visio ou accès monitoring.',
 					'Le délai d’intervention physique et de réparation dépend de la disponibilité des techniciens, des conditions météorologiques, de l’accès sécurisé au site, de la disponibilité des pièces et des garanties fabricant.',
-					'Les interventions sont réalisées pendant les jours et horaires ouvrés de SOLEIL AQUITAIN, sauf accord écrit ou urgence acceptée expressément.',
+					'Les interventions sont réalisées pendant les jours et horaires ouvrés de {{PROVIDER_NAME}}, sauf accord écrit ou urgence acceptée expressément.',
 				),
 			),
 			array(
 				'title' => 'Article 10 : Responsabilité',
 				'paragraphs' => array(
-					'Sous réserve des dispositions légales impératives applicables, la responsabilité de SOLEIL AQUITAIN est limitée aux dommages directs et certains résultant d’une faute prouvée dans l’exécution du contrat.',
+					'Sous réserve des dispositions légales impératives applicables, la responsabilité de {{PROVIDER_NAME}} est limitée aux dommages directs et certains résultant d’une faute prouvée dans l’exécution du contrat.',
 					'Cette limitation ne s’applique pas en cas de faute lourde, faute dolosive, dommage corporel, garantie légale applicable ou obligation d’ordre public.',
-					'SOLEIL AQUITAIN ne peut être tenue responsable des pertes de production indirectes, pannes fabricant, coupures réseau, défauts d’accès, absence de monitoring ou non-conformités d’origine sans lien direct avec une faute prouvée du Prestataire.',
+					'{{PROVIDER_NAME}} ne peut être tenue responsable des pertes de production indirectes, pannes fabricant, coupures réseau, défauts d’accès, absence de monitoring ou non-conformités d’origine sans lien direct avec une faute prouvée du Prestataire.',
 				),
 			),
 			array(
@@ -1456,8 +1611,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array(
 				'title' => 'Article 13 : Médiation et réclamation',
 				'paragraphs' => array(
-					'Toute réclamation peut être adressée par écrit à SOLEIL AQUITAIN aux coordonnées indiquées au présent contrat.',
-					'Conformément à l’article L. 612-1 du Code de la consommation, le Client consommateur peut recourir gratuitement au médiateur de la consommation suivant : '.$legaldata['mediator'],
+					'Toute réclamation peut être adressée par écrit à {{PROVIDER_NAME}} aux coordonnées indiquées au présent contrat.',
+					'Conformément à l’article L. 612-1 du Code de la consommation, le Client consommateur peut recourir gratuitement au médiateur de la consommation suivant :',
+					array('type' => 'mediator_block', 'value' => $legaldata['mediator']),
 					'La saisine du médiateur doit être accompagnée des coordonnées complètes du demandeur, du nom et de l’adresse du professionnel, d’un exposé succinct des faits, de la copie de la réclamation préalable et des pièces justificatives utiles.',
 					'Le recours à la médiation est un droit du consommateur et ne constitue pas un préalable obligatoire à toute action judiciaire.',
 				),
@@ -1482,6 +1638,8 @@ class pdf_soleilaquitain extends ModelePDFContract
 				),
 			),
 		);
+
+		return $this->replaceSoleilAquitainProviderNameInContractSections($sections, $legaldata);
 	}
 
 	/**
@@ -1738,6 +1896,34 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
+	 * Render centered consumer mediator details.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @param string $text Mediator details
+	 * @return void
+	 */
+	private function renderCenteredMediatorBlock(&$pdf, $object, $outputlangs, $text)
+	{
+		$text = trim((string) $text);
+		if ($text === '') {
+			return;
+		}
+
+		$w = min(120, $this->contentWidth());
+		$x = $this->marge_gauche + (($this->contentWidth() - $w) / 2);
+		$text = $outputlangs->convToOutputCharset($text);
+		$height = max(6, $this->getTextHeight($pdf, $w, $text) + 2);
+		$this->ensureSpace($pdf, $object, $outputlangs, $height + 4, 'Médiateur de la consommation');
+		$pdf->SetFont('', '', $this->defaultFontSize);
+		$pdf->SetTextColor(35, 35, 35);
+		$pdf->SetX($x);
+		$pdf->MultiCell($w, 5, $text, 0, 'C', false, 1);
+		$pdf->Ln(2);
+	}
+
+	/**
 	 * Render bullet list.
 	 *
 	 * @param TCPDF $pdf PDF instance
@@ -1896,6 +2082,100 @@ class pdf_soleilaquitain extends ModelePDFContract
 			$index++;
 		}
 		$pdf->Ln(2);
+	}
+
+	/**
+	 * Render the agreement summary in two compact columns.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Translate $outputlangs Output language
+	 * @param array<int,array{0:string,1:string}> $rows Rows
+	 * @return void
+	 */
+	private function renderAgreementSummaryTable(&$pdf, $outputlangs, $rows)
+	{
+		$columnCount = 2;
+		$gap = 6;
+		$columnW = ($this->contentWidth() - $gap) / $columnCount;
+		$labelW = 32;
+		$valueW = $columnW - $labelW;
+		$split = (int) ceil(count($rows) / $columnCount);
+		$columns = array(array_slice($rows, 0, $split), array_slice($rows, $split));
+		$startY = $pdf->GetY();
+		$endY = $startY;
+
+		foreach ($columns as $columnIndex => $columnRows) {
+			$x = $this->marge_gauche + ($columnIndex * ($columnW + $gap));
+			$y = $startY;
+			$index = 0;
+
+			foreach ($columnRows as $row) {
+				$label = $outputlangs->convToOutputCharset((string) $row[0]);
+				$value = $this->compactAgreementValue((string) $row[1]);
+				if ($value === '') {
+					$value = '-';
+				}
+				$value = $outputlangs->convToOutputCharset($value);
+				$pdf->SetFont('', '', $this->defaultFontSize - 2);
+				$height = max(6, min(12, max($this->getTextHeight($pdf, $labelW - 3, $label), $this->getTextHeight($pdf, $valueW - 3, $value)) + 2));
+				$fill = ($index % 2 === 0);
+
+				$pdf->SetXY($x, $y);
+				$this->renderCompactAgreementCell($pdf, $labelW, $height, $label, true, $fill);
+				$pdf->SetXY($x + $labelW, $y);
+				$this->renderCompactAgreementCell($pdf, $valueW, $height, $value, false, $fill);
+
+				$y += $height;
+				$endY = max($endY, $y);
+				$index++;
+			}
+		}
+
+		$pdf->SetY($endY + 3);
+	}
+
+	/**
+	 * Render one compact agreement cell.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param float $w Width
+	 * @param float $h Height
+	 * @param string $text Text
+	 * @param bool $bold Bold
+	 * @param bool $fill Fill
+	 * @return void
+	 */
+	private function renderCompactAgreementCell(&$pdf, $w, $h, $text, $bold = false, $fill = false)
+	{
+		if ($fill) {
+			$pdf->SetFillColor($this->lightColor[0], $this->lightColor[1], $this->lightColor[2]);
+		} else {
+			$pdf->SetFillColor(255, 255, 255);
+		}
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetFont('', $bold ? 'B' : '', $this->defaultFontSize - 2);
+		$pdf->MultiCell($w, $h, $text, 1, 'L', $fill, 0, '', '', true, 0, false, true, $h, 'M', true);
+	}
+
+	/**
+	 * Limit long agreement values so signature boxes remain on the same page.
+	 *
+	 * @param string $value Raw value
+	 * @return string
+	 */
+	private function compactAgreementValue($value)
+	{
+		$lines = preg_split('/\R+/', trim((string) $value));
+		if (!is_array($lines)) {
+			return trim((string) $value);
+		}
+
+		$lines = array_values(array_filter(array_map('trim', $lines), 'strlen'));
+		if (count($lines) <= 2) {
+			return implode("\n", $lines);
+		}
+
+		return implode("\n", array_slice($lines, 0, 2)).'...';
 	}
 
 	/**
@@ -2223,15 +2503,13 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function getContractAmountRows($object, $outputlangs)
 	{
-		global $conf;
-
 		$rows = array();
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
 				$label = $this->getContractLineRawLabel($line);
 				$amount = '';
 				if (isset($line->total_ht) && is_numeric($line->total_ht)) {
-					$amount = price($line->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$amount = $this->formatContractCurrencyAmount($line->total_ht, $outputlangs);
 				}
 				if ($label !== '') {
 					$rows[] = array(
@@ -2247,8 +2525,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Contrat maintenance annuelle'), 'amount' => '');
 			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Gestion des alarmes'), 'amount' => '');
 		}
-		if (isset($object->total_ht) && is_numeric($object->total_ht) && (float) $object->total_ht != 0.0) {
-			$rows[] = array('type' => 'total', 'label' => 'Total HT', 'amount' => price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency));
+		$totals = $this->getContractAmountTotals($object);
+		if ($totals['has_amounts'] && ($totals['from_lines'] || abs((float) $totals['total_ht']) >= 0.00001)) {
+			$rows[] = array('type' => 'total', 'label' => 'Total HT', 'amount' => $this->formatContractCurrencyAmount($totals['total_ht'], $outputlangs));
 		}
 		foreach ($this->getContractVatRows($object) as $vatRow) {
 			$rate = isset($vatRow['rate']) ? (string) $vatRow['rate'] : '';
@@ -2258,10 +2537,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 			if (!empty($vatRow['vatcode'])) {
 				$label .= ' ('.$vatRow['vatcode'].')';
 			}
-			$rows[] = array('type' => 'vat', 'label' => $label, 'amount' => price($vatRow['amount'], 0, $outputlangs, 1, -1, -1, $conf->currency));
+			$rows[] = array('type' => 'vat', 'label' => $label, 'amount' => $this->formatContractCurrencyAmount($vatRow['amount'], $outputlangs));
 		}
-		if (isset($object->total_ttc) && is_numeric($object->total_ttc) && (float) $object->total_ttc != 0.0) {
-			$rows[] = array('type' => 'total', 'label' => 'Total TTC', 'amount' => price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency));
+		if ($totals['has_amounts'] && ($totals['from_lines'] || abs((float) $totals['total_ttc']) >= 0.00001)) {
+			$rows[] = array('type' => 'total', 'label' => 'Total TTC', 'amount' => $this->formatContractCurrencyAmount($totals['total_ttc'], $outputlangs));
 		}
 
 		return $rows;
@@ -2408,6 +2687,112 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
+	 * Return display totals calculated from contract lines, with object totals as fallback.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return array{has_amounts:bool,from_lines:bool,total_ht:float,total_tva:float,total_ttc:float}
+	 */
+	private function getContractAmountTotals($object)
+	{
+		$totals = $this->getContractLineAmountTotals($object);
+		if ($totals['has_amounts']) {
+			return $totals;
+		}
+
+		$totals['from_lines'] = false;
+		if (isset($object->total_ht) && is_numeric($object->total_ht)) {
+			$totals['total_ht'] = (float) price2num($object->total_ht, 'MT');
+			$totals['has_amounts'] = true;
+		}
+		if (isset($object->total_tva) && is_numeric($object->total_tva)) {
+			$totals['total_tva'] = (float) price2num($object->total_tva, 'MT');
+			$totals['has_amounts'] = true;
+		}
+		if (isset($object->total_ttc) && is_numeric($object->total_ttc)) {
+			$totals['total_ttc'] = (float) price2num($object->total_ttc, 'MT');
+			$totals['has_amounts'] = true;
+		} elseif ($totals['has_amounts']) {
+			$totals['total_ttc'] = $totals['total_ht'] + $totals['total_tva'];
+		}
+
+		return $totals;
+	}
+
+	/**
+	 * Return totals calculated from contract lines.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return array{has_amounts:bool,from_lines:bool,total_ht:float,total_tva:float,total_ttc:float}
+	 */
+	private function getContractLineAmountTotals($object)
+	{
+		$totals = array(
+			'has_amounts' => false,
+			'from_lines' => true,
+			'total_ht' => 0.0,
+			'total_tva' => 0.0,
+			'total_ttc' => 0.0,
+		);
+
+		if (empty($object->lines) || !is_array($object->lines)) {
+			return $totals;
+		}
+
+		foreach ($object->lines as $line) {
+			$lineHt = 0.0;
+			$lineVat = 0.0;
+			$lineTtc = 0.0;
+			$hasHt = false;
+			$hasVat = false;
+			$hasTtc = false;
+
+			if (isset($line->total_ht) && is_numeric($line->total_ht)) {
+				$lineHt = (float) price2num($line->total_ht, 'MT');
+				$hasHt = true;
+			}
+			if (isset($line->total_tva) && is_numeric($line->total_tva)) {
+				$lineVat = (float) price2num($line->total_tva, 'MT');
+				$hasVat = true;
+			} elseif ($hasHt && isset($line->tva_tx) && is_numeric($line->tva_tx)) {
+				$lineVat = (float) price2num(($lineHt * (float) $line->tva_tx) / 100, 'MT');
+				$hasVat = true;
+			}
+			if (isset($line->total_ttc) && is_numeric($line->total_ttc)) {
+				$lineTtc = (float) price2num($line->total_ttc, 'MT');
+				$hasTtc = true;
+			} elseif ($hasHt || $hasVat) {
+				$lineTtc = $lineHt + $lineVat;
+				$hasTtc = true;
+			}
+
+			if (!$hasHt && !$hasVat && !$hasTtc) {
+				continue;
+			}
+
+			$totals['has_amounts'] = true;
+			$totals['total_ht'] += $lineHt;
+			$totals['total_tva'] += $lineVat;
+			$totals['total_ttc'] += $lineTtc;
+		}
+
+		return $totals;
+	}
+
+	/**
+	 * Format a contract monetary amount.
+	 *
+	 * @param string|int|float $amount Amount
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function formatContractCurrencyAmount($amount, $outputlangs)
+	{
+		global $conf;
+
+		return price($amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+	}
+
+	/**
 	 * Return VAT totals grouped by rate and VAT code.
 	 *
 	 * @param Contrat $object Contract object
@@ -2416,13 +2801,20 @@ class pdf_soleilaquitain extends ModelePDFContract
 	private function getContractVatRows($object)
 	{
 		$vatRows = array();
+		$hasLineAmounts = false;
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
 				$vatAmount = 0;
 				if (isset($line->total_tva) && is_numeric($line->total_tva)) {
 					$vatAmount = (float) price2num($line->total_tva, 'MT');
+					$hasLineAmounts = true;
 				} elseif (isset($line->total_ht, $line->tva_tx) && is_numeric($line->total_ht) && is_numeric($line->tva_tx)) {
 					$vatAmount = (float) price2num(((float) $line->total_ht * (float) $line->tva_tx) / 100, 'MT');
+					$hasLineAmounts = true;
+				} elseif (isset($line->total_ht) && is_numeric($line->total_ht)) {
+					$hasLineAmounts = true;
+				} elseif (isset($line->total_ttc) && is_numeric($line->total_ttc)) {
+					$hasLineAmounts = true;
 				}
 
 				if (abs($vatAmount) < 0.00001) {
@@ -2446,7 +2838,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			}
 		}
 
-		if (empty($vatRows) && isset($object->total_tva) && is_numeric($object->total_tva) && abs((float) $object->total_tva) >= 0.00001) {
+		if (empty($vatRows) && !$hasLineAmounts && isset($object->total_tva) && is_numeric($object->total_tva) && abs((float) $object->total_tva) >= 0.00001) {
 			$vatRows[] = array('rate' => '', 'vatcode' => '', 'amount' => (float) price2num($object->total_tva, 'MT'));
 		}
 

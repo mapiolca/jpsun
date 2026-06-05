@@ -117,7 +117,15 @@ function jpsunHandleAdminSetupActions()
 
 	if (preg_match('/set_(.*)/', $action, $reg)) {
 		$code = $reg[1];
-		if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0) {
+		$value = GETPOST($code, 'none');
+		if ($code === 'JPSUN_SOLEIL_AQUITAIN_MEDIATOR') {
+			$value = jpsunNormalizeSoleilAquitainMediatorConfigValue($value);
+			if ($value === false) {
+				setEventMessages($langs->trans('JpsunSoleilAquitainMediatorInvalidSupplier'), null, 'errors');
+				return;
+			}
+		}
+		if (dolibarr_set_const($db, $code, $value, 'chaine', 0, '', $conf->entity) > 0) {
 			header("Location: ".$_SERVER["PHP_SELF"]);
 			exit;
 		}
@@ -629,6 +637,137 @@ function setup_print_input_form_part($confkey, $title = false, $desc ='', $metas
     print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
     print '</form>';
     print '</td></tr>';
+}
+
+/**
+ * Normalize and validate the SOLEIL AQUITAIN mediator setting.
+ *
+ * @param	string	$value	Submitted value
+ * @return	string|false	Normalized value, or false when invalid
+ */
+function jpsunNormalizeSoleilAquitainMediatorConfigValue($value)
+{
+	global $db;
+
+	$value = trim((string) $value);
+	if ($value === '' || $value === '-1') {
+		return '';
+	}
+	if (!ctype_digit($value) || (int) $value <= 0) {
+		return false;
+	}
+
+	$sql = "SELECT s.rowid";
+	$sql .= " FROM ".MAIN_DB_PREFIX."societe as s";
+	$sql .= " WHERE s.rowid = ".((int) $value);
+	$sql .= " AND s.entity IN (".getEntity('societe').")";
+	$sql .= " AND s.fournisseur > 0";
+	$sql .= " AND s.status = 1";
+
+	$resql = $db->query($sql);
+	if (!$resql) {
+		return false;
+	}
+	$found = ($db->num_rows($resql) > 0);
+	$db->free($resql);
+
+	return $found ? (string) ((int) $value) : false;
+}
+
+/**
+ * Print a setup row selecting an active supplier thirdparty.
+ *
+ * @param	string	$confkey	Constant key
+ * @param	bool|string	$title	Displayed title
+ * @param	string	$desc		Description translation key
+ * @param	int		$width		Right cell width
+ * @return	void
+ */
+function jpsunSetupPrintSupplierThirdpartySelect($confkey, $title = false, $desc = '', $width = 360)
+{
+	global $var, $langs, $conf, $db, $form;
+	$var = !$var;
+
+	if (empty($form) || !is_object($form)) {
+		$form = new Form($db);
+	}
+
+	$help = '';
+	if (!empty($langs->tab_translate[$confkey.'_HELP'])) {
+		$help = $confkey.'_HELP';
+	}
+
+	print '<tr>';
+	print '<td>';
+	if (!empty($help)) {
+		print $form->textwithtooltip(($title ? $title : $langs->trans($confkey)), $langs->trans($help), 2, 1, img_help(1, ''));
+	} else {
+		print $title ? $title : $langs->trans($confkey);
+	}
+	if (!empty($desc)) {
+		print '<br><small>'.$langs->trans($desc).'</small>';
+	}
+	print '</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="'.$width.'">';
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+
+	$selected = getDolGlobalString($confkey);
+	if (!ctype_digit((string) $selected)) {
+		$selected = '';
+	}
+	$filter = '(s.fournisseur:=:1) AND (s.status:=:1)';
+	if (is_object($form) && method_exists($form, 'select_thirdparty_list')) {
+		print $form->select_thirdparty_list($selected, $confkey, $filter, 'SelectThirdParty', 1, 0, array(), '', 0, 0, 'flat minwidth300');
+	} else {
+		print jpsunBuildSupplierThirdpartySelectHtml($confkey, $selected);
+	}
+
+	print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+	print '</form>';
+	print '</td></tr>';
+}
+
+/**
+ * Build fallback HTML for a supplier thirdparty select.
+ *
+ * @param	string	$confkey	Constant key
+ * @param	string	$selected	Selected rowid
+ * @return	string
+ */
+function jpsunBuildSupplierThirdpartySelectHtml($confkey, $selected)
+{
+	global $db, $langs;
+
+	$out = '<select class="flat minwidth300" name="'.dol_escape_htmltag($confkey).'" id="'.dol_escape_htmltag($confkey).'">';
+	$out .= '<option value="-1">'.$langs->trans('SelectThirdParty').'</option>';
+
+	$sql = "SELECT s.rowid, s.nom as name, s.code_fournisseur";
+	$sql .= " FROM ".MAIN_DB_PREFIX."societe as s";
+	$sql .= " WHERE s.entity IN (".getEntity('societe').")";
+	$sql .= " AND s.fournisseur > 0";
+	$sql .= " AND s.status = 1";
+	$sql .= " ORDER BY s.nom ASC";
+
+	$resql = $db->query($sql);
+	if ($resql) {
+		while ($obj = $db->fetch_object($resql)) {
+			$label = trim((string) ($obj->code_fournisseur ? $obj->code_fournisseur.' - ' : '').$obj->name);
+			$out .= '<option value="'.((int) $obj->rowid).'"'.(((string) $obj->rowid === (string) $selected) ? ' selected' : '').'>'.dol_escape_htmltag($label).'</option>';
+		}
+		$db->free($resql);
+	}
+	$out .= '</select>';
+	if (!function_exists('ajax_combobox')) {
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/ajax.lib.php';
+	}
+	if (function_exists('ajax_combobox')) {
+		$out .= ajax_combobox($confkey);
+	}
+
+	return $out;
 }
 
 /**
