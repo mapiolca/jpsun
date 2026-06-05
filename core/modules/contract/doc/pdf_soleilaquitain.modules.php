@@ -343,11 +343,11 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function renderContractPages(&$pdf, $object, $powerplants, $contactdata, $outputlangs, $legaldata, $subscriptiondata)
 	{
-		$this->addPage($pdf, $object, $outputlangs, 'Contrat SOLEIL AQUITAIN');
+		$this->addPage($pdf, $object, $outputlangs, 'Contrat '.$this->getSoleilAquitainProviderDisplayName($legaldata));
 		$this->renderCover($pdf, $object, $powerplants, $contactdata, $outputlangs, $legaldata, $subscriptiondata);
 
 		$this->addPage($pdf, $object, $outputlangs, 'Formules et récapitulatif');
-		$this->renderMaintenanceOffer($pdf, $object, $powerplants, $subscriptiondata, $outputlangs);
+		$this->renderMaintenanceOffer($pdf, $object, $powerplants, $legaldata, $subscriptiondata, $outputlangs);
 
 		$this->addPage($pdf, $object, $outputlangs, 'Conditions générales');
 		$this->renderSoleilAquitainTerms($pdf, $object, $legaldata, $outputlangs);
@@ -513,7 +513,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$pdf->Ln(6);
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Préambule');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client et le Prestataire sont individuellement dénommés une Partie et collectivement les Parties.');
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Le Client exploite la ou les installations photovoltaïques décrites en Annexe 1 et souhaite confier leur maintenance à SOLEIL AQUITAIN.', $legaldata));
 	}
 
 	/**
@@ -522,11 +522,12 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * @param TCPDF $pdf PDF instance
 	 * @param Contrat $object Contract object
 	 * @param array<int,array<string,mixed>> $powerplants Linked power plants
+	 * @param array<string,string> $legaldata Legal and regulatory data
 	 * @param array<string,string> $subscriptiondata Subscription data
 	 * @param Translate $outputlangs Output language
 	 * @return void
 	 */
-	private function renderMaintenanceOffer(&$pdf, $object, $powerplants, $subscriptiondata, $outputlangs)
+	private function renderMaintenanceOffer(&$pdf, $object, $powerplants, $legaldata, $subscriptiondata, $outputlangs)
 	{
 		$this->renderMainTitle($pdf, $outputlangs, 'Formules de maintenance photovoltaïque');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Les formules ci-dessous s’appliquent aux installations photovoltaïques en surimposition de 1 kWc à 9 kWc. Les installations au-delà de 9 kWc, intégrées au bâti, avec batterie ou système de back-up font l’objet d’un devis spécifique.');
@@ -556,7 +557,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Au-delà de 70 km', 'Sur devis', 'Sur devis', 'Sur devis'),
 		);
 		$this->renderSimpleTable($pdf, $object, $outputlangs, array('Zone', 'Essentiel', 'Confort', 'Premium'), $priceRows, array(58, 42, 42, 42), array(1, 2, 3));
-		$this->renderParagraph($pdf, $object, $outputlangs, 'La distance est calculée depuis les locaux de SOLEIL AQUITAIN à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('La distance est calculée depuis les locaux de SOLEIL AQUITAIN à Mios. Le prix réellement appliqué au présent contrat est celui des lignes Dolibarr, afin de respecter les tarifs dégressifs et règles de prix du module pricelist.', $legaldata));
 
 		$this->renderSectionTitle($pdf, $object, $outputlangs, 'Récapitulatif contractuel');
 		$summaryRows = array(
@@ -938,7 +939,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$this->renderMainTitle($pdf, $outputlangs, 'Annexe 2 : Formulaire type de rétractation');
 		$this->renderParagraph($pdf, $object, $outputlangs, 'Ce formulaire est à utiliser uniquement par un consommateur souhaitant exercer son droit de rétractation dans les cas prévus par le Code de la consommation.');
 
-		$recipient = $this->firstNonEmpty($legaldata['name'], 'SOLEIL AQUITAIN')."\n".$legaldata['address']."\n".$legaldata['email'];
+		$recipient = $this->getSoleilAquitainProviderDisplayName($legaldata)."\n".$legaldata['address']."\n".$legaldata['email'];
 		$rows = array(
 			array('À l’attention de', $recipient),
 			array('Objet', 'Je vous notifie par la présente ma rétractation du contrat portant sur la prestation de maintenance photovoltaïque.'),
@@ -953,7 +954,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if (!empty($legaldata['withdrawal_url'])) {
 			$this->renderParagraph($pdf, $object, $outputlangs, 'Rétractation en ligne : '.$legaldata['withdrawal_url']);
 		}
-		$this->renderParagraph($pdf, $object, $outputlangs, 'Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, SOLEIL AQUITAIN met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.');
+		$this->renderParagraph($pdf, $object, $outputlangs, $this->replaceSoleilAquitainProviderName('Lorsque le contrat est souscrit en ligne et que la réglementation l’impose, SOLEIL AQUITAIN met à disposition un parcours permettant au consommateur d’exercer sa rétractation en ligne.', $legaldata));
 	}
 
 	/**
@@ -1153,6 +1154,59 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'mediator' => $this->getSoleilAquitainMediatorBlock(),
 			'withdrawal_url' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL'),
 		);
+	}
+
+	/**
+	 * Return the provider display name printed in the contract.
+	 *
+	 * @param array<string,string> $legaldata Legal data
+	 * @return string
+	 */
+	private function getSoleilAquitainProviderDisplayName($legaldata)
+	{
+		return $this->firstNonEmpty($legaldata['name'] ?? '', $this->emetteur->name ?? '', 'le Prestataire');
+	}
+
+	/**
+	 * Replace the historical hardcoded provider name in printable text.
+	 *
+	 * @param string $text Printable text
+	 * @param array<string,string> $legaldata Legal data
+	 * @return string
+	 */
+	private function replaceSoleilAquitainProviderName($text, $legaldata)
+	{
+		return str_replace('SOLEIL AQUITAIN', $this->getSoleilAquitainProviderDisplayName($legaldata), (string) $text);
+	}
+
+	/**
+	 * Replace provider name in fixed contract sections, including bullet lists.
+	 *
+	 * @param array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}> $sections Contract sections
+	 * @param array<string,string> $legaldata Legal data
+	 * @return array<int,array{title:string,paragraphs:array<int,string|array<int,string>>}>
+	 */
+	private function replaceSoleilAquitainProviderNameInContractSections($sections, $legaldata)
+	{
+		foreach ($sections as &$section) {
+			if (empty($section['paragraphs']) || !is_array($section['paragraphs'])) {
+				continue;
+			}
+			foreach ($section['paragraphs'] as &$paragraph) {
+				if (is_array($paragraph)) {
+					foreach ($paragraph as &$item) {
+						$item = $this->replaceSoleilAquitainProviderName($item, $legaldata);
+					}
+					unset($item);
+				} else {
+					$paragraph = $this->replaceSoleilAquitainProviderName($paragraph, $legaldata);
+				}
+			}
+			unset($paragraph);
+		}
+		unset($section);
+
+		return $sections;
 	}
 
 	/**
@@ -1462,7 +1516,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function getSoleilAquitainContractSections($legaldata)
 	{
-		return array(
+		$sections = array(
 			array(
 				'title' => 'Article 1 : Objet du contrat',
 				'paragraphs' => array(
@@ -1583,6 +1637,8 @@ class pdf_soleilaquitain extends ModelePDFContract
 				),
 			),
 		);
+
+		return $this->replaceSoleilAquitainProviderNameInContractSections($sections, $legaldata);
 	}
 
 	/**
