@@ -1327,8 +1327,6 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function buildSoleilAquitainSubscriptionData($object, $powerplants, $outputlangs)
 	{
-		global $conf;
-
 		$installedpower = 0.0;
 		$siteaddresses = array();
 		foreach ($powerplants as $powerplant) {
@@ -1340,10 +1338,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			}
 		}
 
-		$totalvat = '';
-		if (isset($object->total_tva) && is_numeric($object->total_tva)) {
-			$totalvat = price($object->total_tva, 0, $outputlangs, 1, -1, -1, $conf->currency);
-		}
+		$totals = $this->getContractAmountTotals($object);
 
 		return array(
 			'formula' => $this->getSoleilAquitainFormulaLabel($object),
@@ -1356,9 +1351,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'first_visit' => 'À planifier avec le Client',
 			'site_address' => implode("\n\n", array_unique($siteaddresses)),
 			'installed_power' => $installedpower > 0 ? $this->formatPowerWithUnit($installedpower, 'kWc', 2) : '',
-			'total_ht' => (isset($object->total_ht) && is_numeric($object->total_ht)) ? price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency) : '',
-			'total_vat' => $totalvat,
-			'total_ttc' => (isset($object->total_ttc) && is_numeric($object->total_ttc)) ? price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency) : '',
+			'total_ht' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_ht'], $outputlangs) : '',
+			'total_vat' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_tva'], $outputlangs) : '',
+			'total_ttc' => $totals['has_amounts'] ? $this->formatContractCurrencyAmount($totals['total_ttc'], $outputlangs) : '',
 		);
 	}
 
@@ -2508,15 +2503,13 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function getContractAmountRows($object, $outputlangs)
 	{
-		global $conf;
-
 		$rows = array();
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
 				$label = $this->getContractLineRawLabel($line);
 				$amount = '';
 				if (isset($line->total_ht) && is_numeric($line->total_ht)) {
-					$amount = price($line->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency);
+					$amount = $this->formatContractCurrencyAmount($line->total_ht, $outputlangs);
 				}
 				if ($label !== '') {
 					$rows[] = array(
@@ -2532,8 +2525,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Contrat maintenance annuelle'), 'amount' => '');
 			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Gestion des alarmes'), 'amount' => '');
 		}
-		if (isset($object->total_ht) && is_numeric($object->total_ht) && (float) $object->total_ht != 0.0) {
-			$rows[] = array('type' => 'total', 'label' => 'Total HT', 'amount' => price($object->total_ht, 0, $outputlangs, 1, -1, -1, $conf->currency));
+		$totals = $this->getContractAmountTotals($object);
+		if ($totals['has_amounts'] && ($totals['from_lines'] || abs((float) $totals['total_ht']) >= 0.00001)) {
+			$rows[] = array('type' => 'total', 'label' => 'Total HT', 'amount' => $this->formatContractCurrencyAmount($totals['total_ht'], $outputlangs));
 		}
 		foreach ($this->getContractVatRows($object) as $vatRow) {
 			$rate = isset($vatRow['rate']) ? (string) $vatRow['rate'] : '';
@@ -2543,10 +2537,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 			if (!empty($vatRow['vatcode'])) {
 				$label .= ' ('.$vatRow['vatcode'].')';
 			}
-			$rows[] = array('type' => 'vat', 'label' => $label, 'amount' => price($vatRow['amount'], 0, $outputlangs, 1, -1, -1, $conf->currency));
+			$rows[] = array('type' => 'vat', 'label' => $label, 'amount' => $this->formatContractCurrencyAmount($vatRow['amount'], $outputlangs));
 		}
-		if (isset($object->total_ttc) && is_numeric($object->total_ttc) && (float) $object->total_ttc != 0.0) {
-			$rows[] = array('type' => 'total', 'label' => 'Total TTC', 'amount' => price($object->total_ttc, 0, $outputlangs, 1, -1, -1, $conf->currency));
+		if ($totals['has_amounts'] && ($totals['from_lines'] || abs((float) $totals['total_ttc']) >= 0.00001)) {
+			$rows[] = array('type' => 'total', 'label' => 'Total TTC', 'amount' => $this->formatContractCurrencyAmount($totals['total_ttc'], $outputlangs));
 		}
 
 		return $rows;
@@ -2693,6 +2687,112 @@ class pdf_soleilaquitain extends ModelePDFContract
 	}
 
 	/**
+	 * Return display totals calculated from contract lines, with object totals as fallback.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return array{has_amounts:bool,from_lines:bool,total_ht:float,total_tva:float,total_ttc:float}
+	 */
+	private function getContractAmountTotals($object)
+	{
+		$totals = $this->getContractLineAmountTotals($object);
+		if ($totals['has_amounts']) {
+			return $totals;
+		}
+
+		$totals['from_lines'] = false;
+		if (isset($object->total_ht) && is_numeric($object->total_ht)) {
+			$totals['total_ht'] = (float) price2num($object->total_ht, 'MT');
+			$totals['has_amounts'] = true;
+		}
+		if (isset($object->total_tva) && is_numeric($object->total_tva)) {
+			$totals['total_tva'] = (float) price2num($object->total_tva, 'MT');
+			$totals['has_amounts'] = true;
+		}
+		if (isset($object->total_ttc) && is_numeric($object->total_ttc)) {
+			$totals['total_ttc'] = (float) price2num($object->total_ttc, 'MT');
+			$totals['has_amounts'] = true;
+		} elseif ($totals['has_amounts']) {
+			$totals['total_ttc'] = $totals['total_ht'] + $totals['total_tva'];
+		}
+
+		return $totals;
+	}
+
+	/**
+	 * Return totals calculated from contract lines.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return array{has_amounts:bool,from_lines:bool,total_ht:float,total_tva:float,total_ttc:float}
+	 */
+	private function getContractLineAmountTotals($object)
+	{
+		$totals = array(
+			'has_amounts' => false,
+			'from_lines' => true,
+			'total_ht' => 0.0,
+			'total_tva' => 0.0,
+			'total_ttc' => 0.0,
+		);
+
+		if (empty($object->lines) || !is_array($object->lines)) {
+			return $totals;
+		}
+
+		foreach ($object->lines as $line) {
+			$lineHt = 0.0;
+			$lineVat = 0.0;
+			$lineTtc = 0.0;
+			$hasHt = false;
+			$hasVat = false;
+			$hasTtc = false;
+
+			if (isset($line->total_ht) && is_numeric($line->total_ht)) {
+				$lineHt = (float) price2num($line->total_ht, 'MT');
+				$hasHt = true;
+			}
+			if (isset($line->total_tva) && is_numeric($line->total_tva)) {
+				$lineVat = (float) price2num($line->total_tva, 'MT');
+				$hasVat = true;
+			} elseif ($hasHt && isset($line->tva_tx) && is_numeric($line->tva_tx)) {
+				$lineVat = (float) price2num(($lineHt * (float) $line->tva_tx) / 100, 'MT');
+				$hasVat = true;
+			}
+			if (isset($line->total_ttc) && is_numeric($line->total_ttc)) {
+				$lineTtc = (float) price2num($line->total_ttc, 'MT');
+				$hasTtc = true;
+			} elseif ($hasHt || $hasVat) {
+				$lineTtc = $lineHt + $lineVat;
+				$hasTtc = true;
+			}
+
+			if (!$hasHt && !$hasVat && !$hasTtc) {
+				continue;
+			}
+
+			$totals['has_amounts'] = true;
+			$totals['total_ht'] += $lineHt;
+			$totals['total_tva'] += $lineVat;
+			$totals['total_ttc'] += $lineTtc;
+		}
+
+		return $totals;
+	}
+
+	/**
+	 * Format a contract monetary amount.
+	 *
+	 * @param string|int|float $amount Amount
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function formatContractCurrencyAmount($amount, $outputlangs)
+	{
+		global $conf;
+
+		return price($amount, 0, $outputlangs, 1, -1, -1, $conf->currency);
+	}
+
+	/**
 	 * Return VAT totals grouped by rate and VAT code.
 	 *
 	 * @param Contrat $object Contract object
@@ -2701,13 +2801,20 @@ class pdf_soleilaquitain extends ModelePDFContract
 	private function getContractVatRows($object)
 	{
 		$vatRows = array();
+		$hasLineAmounts = false;
 		if (!empty($object->lines) && is_array($object->lines)) {
 			foreach ($object->lines as $line) {
 				$vatAmount = 0;
 				if (isset($line->total_tva) && is_numeric($line->total_tva)) {
 					$vatAmount = (float) price2num($line->total_tva, 'MT');
+					$hasLineAmounts = true;
 				} elseif (isset($line->total_ht, $line->tva_tx) && is_numeric($line->total_ht) && is_numeric($line->tva_tx)) {
 					$vatAmount = (float) price2num(((float) $line->total_ht * (float) $line->tva_tx) / 100, 'MT');
+					$hasLineAmounts = true;
+				} elseif (isset($line->total_ht) && is_numeric($line->total_ht)) {
+					$hasLineAmounts = true;
+				} elseif (isset($line->total_ttc) && is_numeric($line->total_ttc)) {
+					$hasLineAmounts = true;
 				}
 
 				if (abs($vatAmount) < 0.00001) {
@@ -2731,7 +2838,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			}
 		}
 
-		if (empty($vatRows) && isset($object->total_tva) && is_numeric($object->total_tva) && abs((float) $object->total_tva) >= 0.00001) {
+		if (empty($vatRows) && !$hasLineAmounts && isset($object->total_tva) && is_numeric($object->total_tva) && abs((float) $object->total_tva) >= 0.00001) {
 			$vatRows[] = array('rate' => '', 'vatcode' => '', 'amount' => (float) price2num($object->total_tva, 'MT'));
 		}
 
