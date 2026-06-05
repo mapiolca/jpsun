@@ -1,8 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.20.1 (05/06/2026)
+- Ajustement du modèle `Contrat SOLEIL AQUITAIN` : cadre contrat réduit, libellé de forme juridique du prestataire, signatures sur la page Bon pour accord et médiateur issu d'un tiers fournisseur.
+
 ## 1.20 (03/06/2026)
 - Ajout du modèle PDF contrat `Contrat SOLEIL AQUITAIN`, généré nativement par Dolibarr avec annexes centrales PV, formulaire de rétractation, mentions légales configurables et signature en ligne dédiée.
-- Ajustement du modèle `Contrat SOLEIL AQUITAIN` : cadre contrat réduit, libellé de forme juridique du prestataire, signatures sur la page Bon pour accord et médiateur issu d'un tiers fournisseur.
 - Ajustement des réglages `Contrat SOLEIL AQUITAIN` : mode de paiement via le dictionnaire Mode de règlements, délai de validité en jours avec repli sur le paramètre natif des devis clients, et restauration des mentions d'assurances RC Pro et décennale.
 - Ajout des réglages `Récurrence par défaut` et `Jour de paiement par défaut`, avec extrafields contrat éditables par le commercial et reprise dans le modèle `Contrat SOLEIL AQUITAIN`.
 - Remplacement du dictionnaire JPSUN de zones géographiques et de l'extrafield contrat `Zone géographique` par les catégories de contrat fournies par `lmdbzoning` pour le modèle `Contrat SOLEIL AQUITAIN`.
