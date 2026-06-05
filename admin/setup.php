@@ -32,7 +32,7 @@ jpsunPdfPrintAttachmentSetupRows();
 setup_print_title($langs->trans("JpsunSoleilAquitainContractSettings"));
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_RC_PRO', false, '', array('size' => '80'));
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_DECENNALE', false, '', array('size' => '80'));
-setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_MEDIATOR', false, '', array('size' => '80'));
+jpsunSetupPrintSupplierThirdpartySelect('JPSUN_SOLEIL_AQUITAIN_MEDIATOR', false, '', 360);
 setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL', false, '', array('size' => '80'));
 jpsunSetupPrintPaymentModeSelect('JPSUN_SOLEIL_AQUITAIN_DEFAULT_PAYMENT_MODE', false, '', 300);
 jpsunSetupPrintRecurrenceSelect('JPSUN_SOLEIL_AQUITAIN_DEFAULT_RECURRENCE', false, '', 300);

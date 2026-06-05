@@ -28,6 +28,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_lmdbzoning.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
@@ -493,7 +494,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('label' => 'Zone géographique', 'value' => $subscriptiondata['zone']),
 			array('label' => 'Nombre de centrales liées', 'value' => (string) count($powerplants)),
 			array('label' => 'Premier site', 'value' => $this->firstNonEmpty($powerplants[0]['site_name'], $powerplants[0]['ref'])),
-		), 96);
+		), 86);
 
 		$pdf->Ln(6);
 		$left = array(
@@ -636,14 +637,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Première visite', $subscriptiondata['first_visit']),
 			array('Durée de validité de l’offre', $subscriptiondata['offer_validity']),
 		);
-		$this->renderKeyValueTable($pdf, $object, $outputlangs, $rows, array(58, $this->contentWidth() - 58));
+		$this->renderAgreementSummaryTable($pdf, $outputlangs, $rows);
 
-		$layout = jpsunPdfJpsunProSignatureLayout($this->page_largeur, $this->page_hauteur, $this->marge_gauche, $this->marge_droite);
-		$boxY = max($pdf->GetY() + 8, $layout['box_y']);
-		if ($boxY + $layout['box_h'] > $this->contentBottom) {
-			$this->addPage($pdf, $object, $outputlangs, 'Bon pour accord');
-			$boxY = $layout['box_y'];
-		}
+		$layout = jpsunPdfSoleilAquitainSignatureLayout($this->page_largeur, $this->page_hauteur, $this->marge_gauche, $this->marge_droite);
+		$boxY = $layout['box_y'];
 
 		$providername = $this->formatSignatureContactBlock($contactdata['SALESSIGNATORY'], $this->firstNonEmpty($legaldata['name'], $this->emetteur->name));
 		$clientname = $this->formatSignatureContactBlock($contactdata['CLIENTSIGNATORY'], is_object($object->thirdparty) ? $object->thirdparty->name : '');
@@ -1137,10 +1134,11 @@ class pdf_soleilaquitain extends ModelePDFContract
 		if ($capital !== '' && is_numeric($capital) && strpos($capital, '€') === false) {
 			$capital = $this->formatNumber($capital, 2).' €';
 		}
+		$legalform = $this->getSoleilAquitainProviderLegalForm();
 
 		return array(
 			'name' => (string) ($this->emetteur->name ?? ''),
-			'legal_form' => $this->firstNonEmpty($this->emetteur->forme_juridique ?? '', $this->emetteur->forme_juridique_label ?? '', $this->emetteur->forme_juridique_code ?? ''),
+			'legal_form' => $legalform,
 			'capital' => $capital,
 			'address' => $address,
 			'email' => (string) ($this->emetteur->email ?? ''),
@@ -1152,9 +1150,112 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'vat' => $this->firstNonEmpty($this->emetteur->tva_intra ?? '', $this->emetteur->vat_intra ?? '', $this->emetteur->idprof6 ?? '', $this->emetteur->idprof5 ?? '', getDolGlobalString('MAIN_INFO_TVAINTRA')),
 			'rc_pro' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_RC_PRO'),
 			'decennale' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_DECENNALE'),
-			'mediator' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_MEDIATOR'),
+			'mediator' => $this->getSoleilAquitainMediatorBlock(),
 			'withdrawal_url' => getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_WITHDRAWAL_URL'),
 		);
+	}
+
+	/**
+	 * Return the provider legal form label.
+	 *
+	 * @return string
+	 */
+	private function getSoleilAquitainProviderLegalForm()
+	{
+		$legalformcode = $this->firstNonEmpty($this->emetteur->forme_juridique_code ?? '', getDolGlobalString('MAIN_INFO_SOCIETE_FORME_JURIDIQUE'));
+		if ($legalformcode !== '') {
+			$label = getFormeJuridiqueLabel((string) $legalformcode);
+			if ($this->isDefinedDictionaryLabel($label)) {
+				return $label;
+			}
+		}
+
+		$legalform = $this->firstNonEmpty($this->emetteur->forme_juridique_label ?? '', $this->emetteur->forme_juridique ?? '');
+		if ($legalform !== '' && ctype_digit((string) $legalform)) {
+			$label = getFormeJuridiqueLabel((string) $legalform);
+			if ($this->isDefinedDictionaryLabel($label)) {
+				return $label;
+			}
+			return '';
+		}
+
+		return $legalform;
+	}
+
+	/**
+	 * Return true when a translated dictionary label carries useful data.
+	 *
+	 * @param string $label Dictionary label
+	 * @return bool
+	 */
+	private function isDefinedDictionaryLabel($label)
+	{
+		global $langs;
+
+		$label = trim((string) $label);
+		if ($label === '' || $label === 'NotDefined') {
+			return false;
+		}
+		if (is_object($langs) && ($label === $langs->trans('NotDefined') || $label === $langs->transnoentitiesnoconv('NotDefined'))) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return configured consumer mediator thirdparty details.
+	 *
+	 * @return string
+	 */
+	private function getSoleilAquitainMediatorBlock()
+	{
+		$value = trim((string) getDolGlobalString('JPSUN_SOLEIL_AQUITAIN_MEDIATOR'));
+		if ($value === '') {
+			return '';
+		}
+
+		if (!ctype_digit($value)) {
+			return $value;
+		}
+
+		$mediator = new Societe($this->db);
+		$result = $mediator->fetch((int) $value);
+		if ($result <= 0 || empty($mediator->fournisseur) || (isset($mediator->status) && (int) $mediator->status === 0)) {
+			return '';
+		}
+
+		return $this->formatSoleilAquitainMediatorBlock($mediator);
+	}
+
+	/**
+	 * Format consumer mediator thirdparty details.
+	 *
+	 * @param Societe $mediator Mediator thirdparty
+	 * @return string
+	 */
+	private function formatSoleilAquitainMediatorBlock($mediator)
+	{
+		$lines = array();
+		if (!empty($mediator->name)) {
+			$lines[] = (string) $mediator->name;
+		}
+
+		$address = trim((string) ($mediator->address ?? '')."\n".trim((string) ($mediator->zip ?? '').' '.(string) ($mediator->town ?? '')));
+		if ($address !== '') {
+			$lines[] = $address;
+		}
+		if (!empty($mediator->phone)) {
+			$lines[] = 'Tél. : '.$mediator->phone;
+		}
+		if (!empty($mediator->email)) {
+			$lines[] = 'Courriel : '.$mediator->email;
+		}
+		if (!empty($mediator->url)) {
+			$lines[] = 'Site : '.$mediator->url;
+		}
+
+		return implode("\n", $lines);
 	}
 
 	/**
@@ -1896,6 +1997,100 @@ class pdf_soleilaquitain extends ModelePDFContract
 			$index++;
 		}
 		$pdf->Ln(2);
+	}
+
+	/**
+	 * Render the agreement summary in two compact columns.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Translate $outputlangs Output language
+	 * @param array<int,array{0:string,1:string}> $rows Rows
+	 * @return void
+	 */
+	private function renderAgreementSummaryTable(&$pdf, $outputlangs, $rows)
+	{
+		$columnCount = 2;
+		$gap = 6;
+		$columnW = ($this->contentWidth() - $gap) / $columnCount;
+		$labelW = 32;
+		$valueW = $columnW - $labelW;
+		$split = (int) ceil(count($rows) / $columnCount);
+		$columns = array(array_slice($rows, 0, $split), array_slice($rows, $split));
+		$startY = $pdf->GetY();
+		$endY = $startY;
+
+		foreach ($columns as $columnIndex => $columnRows) {
+			$x = $this->marge_gauche + ($columnIndex * ($columnW + $gap));
+			$y = $startY;
+			$index = 0;
+
+			foreach ($columnRows as $row) {
+				$label = $outputlangs->convToOutputCharset((string) $row[0]);
+				$value = $this->compactAgreementValue((string) $row[1]);
+				if ($value === '') {
+					$value = '-';
+				}
+				$value = $outputlangs->convToOutputCharset($value);
+				$pdf->SetFont('', '', $this->defaultFontSize - 2);
+				$height = max(6, min(12, max($this->getTextHeight($pdf, $labelW - 3, $label), $this->getTextHeight($pdf, $valueW - 3, $value)) + 2));
+				$fill = ($index % 2 === 0);
+
+				$pdf->SetXY($x, $y);
+				$this->renderCompactAgreementCell($pdf, $labelW, $height, $label, true, $fill);
+				$pdf->SetXY($x + $labelW, $y);
+				$this->renderCompactAgreementCell($pdf, $valueW, $height, $value, false, $fill);
+
+				$y += $height;
+				$endY = max($endY, $y);
+				$index++;
+			}
+		}
+
+		$pdf->SetY($endY + 3);
+	}
+
+	/**
+	 * Render one compact agreement cell.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param float $w Width
+	 * @param float $h Height
+	 * @param string $text Text
+	 * @param bool $bold Bold
+	 * @param bool $fill Fill
+	 * @return void
+	 */
+	private function renderCompactAgreementCell(&$pdf, $w, $h, $text, $bold = false, $fill = false)
+	{
+		if ($fill) {
+			$pdf->SetFillColor($this->lightColor[0], $this->lightColor[1], $this->lightColor[2]);
+		} else {
+			$pdf->SetFillColor(255, 255, 255);
+		}
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetFont('', $bold ? 'B' : '', $this->defaultFontSize - 2);
+		$pdf->MultiCell($w, $h, $text, 1, 'L', $fill, 0, '', '', true, 0, false, true, $h, 'M', true);
+	}
+
+	/**
+	 * Limit long agreement values so signature boxes remain on the same page.
+	 *
+	 * @param string $value Raw value
+	 * @return string
+	 */
+	private function compactAgreementValue($value)
+	{
+		$lines = preg_split('/\R+/', trim((string) $value));
+		if (!is_array($lines)) {
+			return trim((string) $value);
+		}
+
+		$lines = array_values(array_filter(array_map('trim', $lines), 'strlen'));
+		if (count($lines) <= 2) {
+			return implode("\n", $lines);
+		}
+
+		return implode("\n", array_slice($lines, 0, 2)).'...';
 	}
 
 	/**
