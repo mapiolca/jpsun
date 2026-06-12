@@ -1,7 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.20.1 (05/06/2026)
+## 1.20.2 (12/06/2026)
 - Correction de la modale JPSUN de signature des devis : resynchronisation du hook `propalcard` à l'activation du module et recherche des projets éligibles alignée sur le périmètre natif Dolibarr du tiers.
+  
+## 1.20.1 (05/06/2026)
 - Ajustement du modèle `Contrat SOLEIL AQUITAIN` : cadre contrat réduit, libellé de forme juridique du prestataire, signatures sur la page Bon pour accord et médiateur issu d'un tiers fournisseur.
 - Remplacement des mentions imprimées en dur `SOLEIL AQUITAIN` par le nom de l'entité émettrice dans le modèle de contrat.
 - Amélioration de la présentation du médiateur de la consommation dans les conditions générales du modèle `Contrat SOLEIL AQUITAIN`.
