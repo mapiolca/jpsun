@@ -593,7 +593,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$projectStatic = new Project($db);
 		$projectListFilter = '';
 		if (!$user->hasRight('projet', 'all', 'lire')) {
-			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
+			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, $socid);
 			if (empty($projectsListId)) {
 				return array();
 			}
@@ -603,7 +603,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$sql = "SELECT p.rowid, p.ref, p.title";
 		$sql .= " FROM ".MAIN_DB_PREFIX."projet AS p";
 		$sql .= " WHERE 1 = 1";
-		$sql .= " AND p.fk_soc = ".$socid;
+		$sql .= " AND (p.fk_soc = ".$socid." OR p.fk_soc IS NULL OR p.fk_soc = 0)";
 		$sql .= " AND p.entity IN (".getEntity('project').")";
 		$sql .= $projectListFilter;
 		$sql .= " ORDER BY p.rowid DESC";

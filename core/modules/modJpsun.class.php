@@ -922,7 +922,54 @@ class modJpsun extends DolibarrModules
 		$sql[] = "DELETE ugr FROM ".MAIN_DB_PREFIX."usergroup_rights as ugr INNER JOIN ".MAIN_DB_PREFIX."rights_def as rd ON rd.id = ugr.fk_id WHERE rd.module = 'jpsun' AND rd.perms = 'pcinstall' AND rd.subperms = 'write'";
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE module = 'jpsun' AND perms = 'pcinstall' AND subperms = 'write'";
 
-		return $this->_init($sql);
+		$result = $this->_init($sql);
+		if ($result > 0) {
+			$result = $this->syncModulePartsHooksConst();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Keep the hook declaration in sync when a module update changes contexts.
+	 *
+	 * Dolibarr inserts module part constants on activation but does not replace an
+	 * existing MAIN_MODULE_xxx_HOOKS value. This module temporarily removed the
+	 * propalcard context in an earlier version, so installations updated through
+	 * that version may keep a stale hook list until this value is refreshed.
+	 *
+	 * @return int 1 if OK, <0 if KO
+	 */
+	private function syncModulePartsHooksConst()
+	{
+		global $conf;
+
+		if (empty($this->module_parts['hooks']) || !is_array($this->module_parts['hooks'])) {
+			return 1;
+		}
+
+		if (!function_exists('dolibarr_set_const')) {
+			require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+		}
+
+		$hookvalue = $this->module_parts['hooks'];
+		$entity = (int) $conf->entity;
+		if (isset($hookvalue['data']) && is_array($hookvalue['data'])) {
+			$hookvalue = $hookvalue['data'];
+			if (isset($this->module_parts['hooks']['entity'])) {
+				$entity = (int) $this->module_parts['hooks']['entity'];
+			}
+		}
+
+		return dolibarr_set_const(
+			$this->db,
+			$this->const_name.'_HOOKS',
+			json_encode($hookvalue),
+			'chaine',
+			0,
+			'',
+			$entity
+		);
 	}
 
 	/**
