@@ -593,17 +593,22 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$projectStatic = new Project($db);
 		$projectListFilter = '';
 		if (!$user->hasRight('projet', 'all', 'lire')) {
-			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, $socid);
+			$projectsListId = $projectStatic->getProjectsAuthorizedForUser($user, 0, 1, 0);
 			if (empty($projectsListId)) {
 				return array();
 			}
 			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId).")";
 		}
+		$allowProjectsWithoutThirdparty = getDolGlobalInt('JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY');
 
 		$sql = "SELECT p.rowid, p.ref, p.title";
 		$sql .= " FROM ".MAIN_DB_PREFIX."projet AS p";
 		$sql .= " WHERE 1 = 1";
-		$sql .= " AND (p.fk_soc = ".$socid." OR p.fk_soc IS NULL OR p.fk_soc = 0)";
+		if ($allowProjectsWithoutThirdparty) {
+			$sql .= " AND (p.fk_soc = ".$socid." OR p.fk_soc IS NULL OR p.fk_soc = 0)";
+		} else {
+			$sql .= " AND p.fk_soc = ".$socid;
+		}
 		$sql .= " AND p.entity IN (".getEntity('project').")";
 		$sql .= $projectListFilter;
 		$sql .= " ORDER BY p.rowid DESC";

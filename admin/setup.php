@@ -55,6 +55,7 @@ setup_print_input_form_part('JPSUN_SOLEIL_AQUITAIN_OFFER_VALIDITY', false, '', a
 // Workflow
 setup_print_title($langs->trans("Workflow"));
 setup_print_on_off('JPSUN_AUTOPROJECT_ON_PROPAL_SIGNED');
+setup_print_on_off('JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY');
 setup_print_input_form_part('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', false, '', array('type' => 'number', 'min' => '1', 'step' => '1', 'value' => getDolGlobalInt('JPSUN_AUTOPROJECT_DELIVERY_WINDOW_WORKDAYS', 5)));
 setup_print_on_off('JPSUN_PROJECT_CLOSE_SET_TASK_END_DATE');
 setup_print_on_off('JPSUN_PROJECT_CLOSE_COMPLETE_TASKS');
