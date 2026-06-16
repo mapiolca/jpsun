@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.20.1
+- Version : 1.20.2
 - PHP : 8.2
 - Compatibilité : Dolibarr 21+
 
