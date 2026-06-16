@@ -599,11 +599,16 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			}
 			$projectListFilter = " AND p.rowid IN (".$db->sanitize($projectsListId).")";
 		}
+		$allowProjectsWithoutThirdparty = getDolGlobalInt('JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY');
 
 		$sql = "SELECT p.rowid, p.ref, p.title";
 		$sql .= " FROM ".MAIN_DB_PREFIX."projet AS p";
 		$sql .= " WHERE 1 = 1";
-		$sql .= " AND p.fk_soc = ".$socid;
+		if ($allowProjectsWithoutThirdparty) {
+			$sql .= " AND (p.fk_soc = ".$socid." OR p.fk_soc IS NULL OR p.fk_soc = 0)";
+		} else {
+			$sql .= " AND p.fk_soc = ".$socid;
+		}
 		$sql .= " AND p.entity IN (".getEntity('project').")";
 		$sql .= $projectListFilter;
 		$sql .= " ORDER BY p.rowid DESC";

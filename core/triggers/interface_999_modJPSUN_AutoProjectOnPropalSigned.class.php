@@ -210,6 +210,8 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
         			dol_syslog($langs->trans('JpsunPropalSignedProjectCreateError', $object->ref, $object->id, $this->error), LOG_ERR);
         			return -1;
         		}
+
+				$this->addPropalAuthorAsProjectContributor($project, $object);
         
         		$resLink = $project->update_element('propal', $object->id);
         		if ($resLink < 0) {
@@ -267,6 +269,56 @@ class InterfaceAutoProjectOnPropalSigned extends DolibarrTriggers
 		}
 
 		return 1;
+	}
+
+	/**
+	 * Add proposal author as project contributor without blocking project creation.
+	 *
+	 * @param Project $project Created project
+	 * @param Propal  $propal  Source proposal
+	 * @return int             >0 if added, 0 if ignored/already linked, <0 if failed
+	 */
+	private function addPropalAuthorAsProjectContributor($project, $propal)
+	{
+		$authorId = $this->getPropalAuthorId($propal);
+		if ($authorId <= 0) {
+			dol_syslog(__METHOD__.' no proposal author found for propal id='.(int) $propal->id.' project id='.(int) $project->id, LOG_WARNING);
+			return 0;
+		}
+		if (!method_exists($project, 'add_contact')) {
+			dol_syslog(__METHOD__.' project object has no add_contact method for project id='.(int) $project->id, LOG_WARNING);
+			return 0;
+		}
+
+		$result = $project->add_contact($authorId, 'PROJECTCONTRIBUTOR', 'internal');
+		if ($result < 0) {
+			dol_syslog(__METHOD__.' unable to add proposal author id='.$authorId.' as PROJECTCONTRIBUTOR on project id='.(int) $project->id.' error='.$project->error, LOG_WARNING);
+			return $result;
+		}
+		if ($result > 0) {
+			dol_syslog(__METHOD__.' proposal author id='.$authorId.' added as PROJECTCONTRIBUTOR on project id='.(int) $project->id, LOG_INFO);
+		} else {
+			dol_syslog(__METHOD__.' proposal author id='.$authorId.' already linked or PROJECTCONTRIBUTOR unavailable on project id='.(int) $project->id, LOG_DEBUG);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Return proposal author id with fallbacks for older object shapes.
+	 *
+	 * @param Propal $propal Source proposal
+	 * @return int          User id
+	 */
+	private function getPropalAuthorId($propal)
+	{
+		foreach (array('user_author_id', 'fk_user_author', 'fk_user_creat') as $property) {
+			if (isset($propal->{$property}) && (int) $propal->{$property} > 0) {
+				return (int) $propal->{$property};
+			}
+		}
+
+		return 0;
 	}
 
 	/**

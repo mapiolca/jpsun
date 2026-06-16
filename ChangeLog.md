@@ -1,5 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.20.2 (12/06/2026)
+- Filtrage strict sur le tiers du devis dans la modale JPSUN de signature, avec réglage `JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY` pour inclure explicitement les projets sans tiers.
+- Ajout non bloquant de l'auteur du devis comme contact interne projet `PROJECTCONTRIBUTOR` lors de la création automatique du projet.
+  
 ## 1.20.1 (05/06/2026)
 - Ajustement du modèle `Contrat SOLEIL AQUITAIN` : cadre contrat réduit, libellé de forme juridique du prestataire, signatures sur la page Bon pour accord et médiateur issu d'un tiers fournisseur.
 - Remplacement des mentions imprimées en dur `SOLEIL AQUITAIN` par le nom de l'entité émettrice dans le modèle de contrat.
