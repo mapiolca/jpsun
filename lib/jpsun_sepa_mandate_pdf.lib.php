@@ -124,8 +124,8 @@ class JpsunSepaMandatePdfRenderer
 
 		self::drawBox($pdf, $left, $y, $width, 24.0, $cornerRadius, array(255, 255, 255));
 		self::drawSectionTitle($pdf, $outputlangs, $left + 3, $y + 3, $width - 6, $outputlangs->transnoentitiesnoconv('JpsunSepaPaymentType'), $fontSize, $primaryColor);
-		self::drawCheckbox($pdf, $outputlangs, $left + 6, $y + 13, $outputlangs->transnoentitiesnoconv('ModeRECUR'), $frstrecur === 'RCUR', $fontSize);
-		self::drawCheckbox($pdf, $outputlangs, $left + 76, $y + 13, $outputlangs->transnoentitiesnoconv('ModeFRST'), $frstrecur === 'FRST', $fontSize);
+		self::drawCheckbox($pdf, $outputlangs, $left + 6, $y + 13, $outputlangs->transnoentitiesnoconv('JpsunSepaModeRecur'), $frstrecur === 'RCUR', $fontSize);
+		self::drawCheckbox($pdf, $outputlangs, $left + 76, $y + 13, $outputlangs->transnoentitiesnoconv('JpsunSepaModeFrst'), $frstrecur === 'FRST', $fontSize);
 		if ($frstrecur === '') {
 			$pdf->SetFont('', 'I', $fontSize - 2);
 			$pdf->SetTextColor($mutedColor[0], $mutedColor[1], $mutedColor[2]);
