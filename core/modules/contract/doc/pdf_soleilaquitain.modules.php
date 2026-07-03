@@ -2231,6 +2231,10 @@ class pdf_soleilaquitain extends ModelePDFContract
 		$height = 7;
 		$rightAlignedColumns = array_flip($rightAlignedColumns);
 		$last = count($headers) - 1;
+		$pdf->SetFont('', 'B', $this->defaultFontSize - 1);
+		foreach ($headers as $index => $header) {
+			$height = max($height, $this->getTextHeight($pdf, $widths[$index] - 4, $outputlangs->convToOutputCharset($header)) + 3);
+		}
 		foreach ($headers as $index => $header) {
 			$this->renderTableCell($pdf, $widths[$index], $height, $outputlangs->convToOutputCharset($header), true, true, (isset($rightAlignedColumns[$index]) ? 'R' : 'L'), $index === $last, true);
 		}
@@ -2277,12 +2281,22 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 */
 	private function renderContractAmountTable(&$pdf, $object, $outputlangs)
 	{
-		$headers = array('Désignation', 'Montant HT');
-		$widths = array($this->contentWidth() - 42, 42);
 		$rows = $this->getContractAmountRows($object, $outputlangs);
+		$showDiscountColumn = $this->hasContractAmountPartialDiscount($rows);
+		if ($showDiscountColumn) {
+			$headers = array('Désignation', $outputlangs->transnoentitiesnoconv('JpsunContractAmountQuantityDuration'), $outputlangs->transnoentitiesnoconv('JpsunContractAmountDiscount'), 'Montant HT');
+			$widths = array($this->contentWidth() - 98, 40, 24, 34);
+		} else {
+			$headers = array('Désignation', $outputlangs->transnoentitiesnoconv('JpsunContractAmountQuantityDuration'), 'Montant HT');
+			$widths = array($this->contentWidth() - 78, 44, 34);
+		}
+		$amountColumnIndex = count($widths) - 1;
+		$amountColumnWidth = $widths[$amountColumnIndex];
+		$mergedLabelWidth = array_sum($widths) - $amountColumnWidth;
+		$rightAlignedColumns = $showDiscountColumn ? array(1, 2, 3) : array(1, 2);
 
 		$this->ensureSpace($pdf, $object, $outputlangs, 14, 'Tableau');
-		$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array(1));
+		$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, $rightAlignedColumns);
 
 		foreach ($rows as $row) {
 			$rowType = isset($row['type']) ? $row['type'] : 'line';
@@ -2290,7 +2304,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 
 			if ($pdf->GetY() + $height > $this->contentBottom) {
 				$this->addPage($pdf, $object, $outputlangs, 'Tableau');
-				$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, array(1));
+				$this->renderTableHeader($pdf, $outputlangs, $headers, $widths, $rightAlignedColumns);
 			}
 
 			$x = $this->marge_gauche;
@@ -2299,13 +2313,19 @@ class pdf_soleilaquitain extends ModelePDFContract
 
 			if ($rowType === 'line') {
 				$this->renderContractAmountHtmlCell($pdf, $x, $y, $widths[0], $height, isset($row['html']) ? $row['html'] : '', $outputlangs);
+				$pdf->SetXY($x + $widths[0], $y);
+				$this->renderTableCell($pdf, $widths[1], $height, $outputlangs->convToOutputCharset(isset($row['quantity']) ? (string) $row['quantity'] : ''), false, false, 'R', false);
+				if ($showDiscountColumn) {
+					$pdf->SetXY($x + $widths[0] + $widths[1], $y);
+					$this->renderTableCell($pdf, $widths[2], $height, $outputlangs->convToOutputCharset(isset($row['discount']) ? (string) $row['discount'] : ''), false, false, 'R', false);
+				}
 			} else {
 				$pdf->SetXY($x, $y);
-				$this->renderTableCell($pdf, $widths[0], $height, $outputlangs->convToOutputCharset((string) $row['label']), $bold, false, 'L', false);
+				$this->renderTableCell($pdf, $mergedLabelWidth, $height, $outputlangs->convToOutputCharset((string) $row['label']), $bold, false, 'L', false);
 			}
 
-			$pdf->SetXY($x + $widths[0], $y);
-			$this->renderTableCell($pdf, $widths[1], $height, $outputlangs->convToOutputCharset((string) $row['amount']), $bold, false, 'R', true);
+			$pdf->SetXY($x + $mergedLabelWidth, $y);
+			$this->renderTableCell($pdf, $amountColumnWidth, $height, $outputlangs->convToOutputCharset((string) $row['amount']), $bold, false, 'R', true);
 		}
 
 		$pdf->Ln(2);
@@ -2315,19 +2335,26 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * Return height for one amount table row.
 	 *
 	 * @param TCPDF $pdf PDF instance
-	 * @param array<string,string> $row Row data
+	 * @param array{type:string,html?:string,label?:string,amount:string,quantity?:string,discount?:string,offered?:bool} $row Row data
 	 * @param array<int,float> $widths Column widths
 	 * @return float
 	 */
 	private function getContractAmountRowHeight(&$pdf, $row, $widths)
 	{
 		$height = 7;
+		$amountColumnIndex = count($widths) - 1;
+		$amountColumnWidth = $widths[$amountColumnIndex];
 		if ((isset($row['type']) ? $row['type'] : 'line') === 'line') {
 			$height = max($height, $this->getHtmlCellHeight($pdf, isset($row['html']) ? $row['html'] : '', $widths[0] - 4, $this->marge_gauche + 2, $pdf->GetY() + 1.5, 4) + 3);
+			$height = max($height, $this->getTextHeight($pdf, $widths[1] - 4, isset($row['quantity']) ? (string) $row['quantity'] : '') + 3);
+			if (count($widths) > 3) {
+				$height = max($height, $this->getTextHeight($pdf, $widths[2] - 4, isset($row['discount']) ? (string) $row['discount'] : '') + 3);
+			}
 		} else {
-			$height = max($height, $this->getTextHeight($pdf, $widths[0] - 4, isset($row['label']) ? (string) $row['label'] : '') + 3);
+			$mergedLabelWidth = array_sum($widths) - $amountColumnWidth;
+			$height = max($height, $this->getTextHeight($pdf, $mergedLabelWidth - 4, isset($row['label']) ? (string) $row['label'] : '') + 3);
 		}
-		$height = max($height, $this->getTextHeight($pdf, $widths[1] - 4, isset($row['amount']) ? (string) $row['amount'] : '') + 3);
+		$height = max($height, $this->getTextHeight($pdf, $amountColumnWidth - 4, isset($row['amount']) ? (string) $row['amount'] : '') + 3);
 
 		return $height;
 	}
@@ -2499,7 +2526,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 *
 	 * @param Contrat $object Contract object
 	 * @param Translate $outputlangs Output language
-	 * @return array<int,array<string,string>>
+	 * @return array<int,array{type:string,html?:string,label?:string,amount:string,quantity?:string,discount?:string,offered?:bool}>
 	 */
 	private function getContractAmountRows($object, $outputlangs)
 	{
@@ -2508,22 +2535,35 @@ class pdf_soleilaquitain extends ModelePDFContract
 			foreach ($object->lines as $line) {
 				$label = $this->getContractLineRawLabel($line);
 				$amount = '';
+				$discountPercent = $this->getContractLineDiscountPercent($line);
+				$offered = $this->isContractLineOffered($line);
 				if (isset($line->total_ht) && is_numeric($line->total_ht)) {
 					$amount = $this->formatContractCurrencyAmount($line->total_ht, $outputlangs);
 				}
+				if ($offered) {
+					$amount = $outputlangs->transnoentitiesnoconv('JpsunContractAmountOffered');
+				}
 				if ($label !== '') {
+					$html = $this->prepareContractLineDescriptionHtml($label);
+					$engagementHtml = $this->getContractLineEngagementHtml($line, $outputlangs);
+					if ($engagementHtml !== '') {
+						$html .= ($html !== '' ? '<br>' : '').$engagementHtml;
+					}
 					$rows[] = array(
 						'type' => 'line',
-						'html' => $this->prepareContractLineDescriptionHtml($label),
+						'html' => $html,
+						'quantity' => $this->getContractLineQuantityLabel($line),
+						'discount' => ($discountPercent > 0.00001 && !$offered) ? $this->formatNumber($discountPercent, 2).'%' : '',
 						'amount' => $amount,
+						'offered' => $offered,
 					);
 				}
 			}
 		}
 
 		if (empty($rows)) {
-			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Contrat maintenance annuelle'), 'amount' => '');
-			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Gestion des alarmes'), 'amount' => '');
+			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Contrat maintenance annuelle'), 'quantity' => '', 'discount' => '', 'amount' => '', 'offered' => false);
+			$rows[] = array('type' => 'line', 'html' => $this->prepareContractLineDescriptionHtml('Gestion des alarmes'), 'quantity' => '', 'discount' => '', 'amount' => '', 'offered' => false);
 		}
 		$totals = $this->getContractAmountTotals($object);
 		if ($totals['has_amounts'] && ($totals['from_lines'] || abs((float) $totals['total_ht']) >= 0.00001)) {
@@ -2544,6 +2584,103 @@ class pdf_soleilaquitain extends ModelePDFContract
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Return true when at least one contract amount row has a partial discount.
+	 *
+	 * @param array<int,array{type:string,html?:string,label?:string,amount:string,quantity?:string,discount?:string,offered?:bool}> $rows Rows
+	 * @return bool
+	 */
+	private function hasContractAmountPartialDiscount($rows)
+	{
+		foreach ($rows as $row) {
+			if (($row['type'] ?? '') === 'line' && !empty($row['discount'])) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Return a normalized discount percentage for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return float
+	 */
+	private function getContractLineDiscountPercent($line)
+	{
+		if (!isset($line->remise_percent) || !is_numeric($line->remise_percent)) {
+			return 0.0;
+		}
+
+		return (float) price2num($line->remise_percent, 'MU');
+	}
+
+	/**
+	 * Return true when one contract line is fully discounted.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return bool
+	 */
+	private function isContractLineOffered($line)
+	{
+		return abs($this->getContractLineDiscountPercent($line) - 100.0) < 0.00001;
+	}
+
+	/**
+	 * Return the quantity label for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @return string
+	 */
+	private function getContractLineQuantityLabel($line)
+	{
+		if (!isset($line->qty) || !is_numeric($line->qty)) {
+			return '';
+		}
+
+		return $this->formatNumber($line->qty, 2);
+	}
+
+	/**
+	 * Return engagement dates as HTML for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getContractLineEngagementHtml($line, $outputlangs)
+	{
+		$startDate = '';
+		foreach (array('date_start', 'date_ouverture_prevue') as $field) {
+			if (!empty($line->{$field})) {
+				$startDate = $this->formatDate($line->{$field}, $outputlangs);
+				break;
+			}
+		}
+
+		$endDate = '';
+		foreach (array('date_end', 'date_fin_validite') as $field) {
+			if (!empty($line->{$field})) {
+				$endDate = $this->formatDate($line->{$field}, $outputlangs);
+				break;
+			}
+		}
+
+		$lines = array();
+		if ($startDate !== '') {
+			$lines[] = $outputlangs->transnoentitiesnoconv('JpsunContractLineEngagementStart').' : '.$startDate;
+		}
+		if ($endDate !== '') {
+			$lines[] = $outputlangs->transnoentitiesnoconv('JpsunContractLineEngagementEnd').' : '.$endDate;
+		}
+		if (empty($lines)) {
+			return '';
+		}
+
+		return '<span style="color:#5b6770;">'.dol_htmlentitiesbr(implode("\n", $lines), 1).'</span>';
 	}
 
 	/**

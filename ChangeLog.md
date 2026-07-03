@@ -1,5 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.20.3 (03/07/2026)
+- Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
+
 ## 1.20.2 (12/06/2026)
 - Filtrage strict sur le tiers du devis dans la modale JPSUN de signature, avec réglage `JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY` pour inclure explicitement les projets sans tiers.
 - Ajout non bloquant de l'auteur du devis comme contact interne projet `PROJECTCONTRIBUTOR` lors de la création automatique du projet.
