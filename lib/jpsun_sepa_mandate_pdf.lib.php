@@ -88,7 +88,7 @@ class JpsunSepaMandatePdfRenderer
 		$columnGap = 6.0;
 		$columnWidth = ($width - $columnGap) / 2;
 		$boxTop = $y;
-		$boxHeight = 44.0;
+		$boxHeight = 52.0;
 		self::drawBox($pdf, $left, $boxTop, $columnWidth, $boxHeight, $cornerRadius, $lightColor);
 		self::drawBox($pdf, $left + $columnWidth + $columnGap, $boxTop, $columnWidth, $boxHeight, $cornerRadius, $lightColor);
 		self::drawSectionTitle($pdf, $outputlangs, $left + 3, $boxTop + 3, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('JpsunSepaMandateIdentifiers'), $fontSize, $primaryColor);
@@ -96,12 +96,12 @@ class JpsunSepaMandatePdfRenderer
 
 		$rowY = $boxTop + 12;
 		self::drawLabelValue($pdf, $outputlangs, $left + 3, $rowY, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('RUMLong').' ('.$outputlangs->transnoentitiesnoconv('RUM').')', self::valueOrBlank($rum, 38), $fontSize);
-		self::drawLabelValue($pdf, $outputlangs, $left + 3, $rowY + 13, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('JpsunSepaMandateDate'), self::valueOrBlank($dateRum, 28), $fontSize);
-		self::drawLabelValue($pdf, $outputlangs, $left + 3, $rowY + 26, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('CreditorIdentifier').' ('.$outputlangs->transnoentitiesnoconv('ICS').')', self::valueOrBlank($creditorIdentifier, 32), $fontSize);
+		self::drawLabelValue($pdf, $outputlangs, $left + 3, $rowY + 14, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('JpsunSepaMandateDate'), self::valueOrBlank($dateRum, 28), $fontSize);
+		self::drawLabelValue($pdf, $outputlangs, $left + 3, $rowY + 29, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('CreditorIdentifier').' ('.$outputlangs->transnoentitiesnoconv('ICS').')', self::valueOrBlank($creditorIdentifier, 32), $fontSize);
 
 		$creditorX = $left + $columnWidth + $columnGap + 3;
 		self::drawLabelValue($pdf, $outputlangs, $creditorX, $rowY, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('CreditorName'), self::valueOrBlank($creditorName, 32), $fontSize);
-		self::drawLabelValue($pdf, $outputlangs, $creditorX, $rowY + 13, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('Address'), self::valueOrBlank($creditorAddress, 44), $fontSize - 1, 21);
+		self::drawLabelValue($pdf, $outputlangs, $creditorX, $rowY + 14, $columnWidth - 6, $outputlangs->transnoentitiesnoconv('Address'), self::valueOrBlank($creditorAddress, 44), $fontSize - 1, 27);
 		$y = $boxTop + $boxHeight + 6;
 
 		$legalText = $outputlangs->transnoentitiesnoconv('SEPALegalText', $creditorName, $creditorName);
