@@ -754,7 +754,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			array('Tarif HT', $subscriptiondata['total_ht']),
 			array('TVA', $subscriptiondata['total_vat']),
 			array('Tarif TTC', $subscriptiondata['total_ttc']),
-			array('Engagement', '12 mois'),
+			array('Engagement', $subscriptiondata['engagement']),
 			array('Mode de paiement', $subscriptiondata['payment_mode']),
 			array('Récurrence', $subscriptiondata['recurrence']),
 			array('Jour de paiement', $subscriptiondata['payment_day']),
@@ -1468,6 +1468,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 			'payment_mode' => $this->getSoleilAquitainDefaultPaymentModeLabel($outputlangs),
 			'recurrence' => $this->getSoleilAquitainRecurrenceLabel($object, $outputlangs),
 			'payment_day' => $this->getSoleilAquitainPaymentDayLabel($object, $outputlangs),
+			'engagement' => $this->getContractTotalEngagementLabel($object, $outputlangs),
 			'offer_validity' => $this->getSoleilAquitainOfferValidityLabel($outputlangs),
 			'start_date' => $this->getSoleilAquitainContractStartDate($object, $outputlangs),
 			'first_visit' => 'À planifier avec le Client',
@@ -2769,15 +2770,79 @@ class pdf_soleilaquitain extends ModelePDFContract
 			return '';
 		}
 
-		$unit = '';
-		if (method_exists($line, 'getLabelOfUnit')) {
-			$unit = (string) $line->getLabelOfUnit('short', $outputlangs, 1);
-		}
+		$unit = $this->getContractLineQuantityUnitLabel($line, $outputlangs);
 		if ($unit === '') {
 			return $quantity;
 		}
 
 		return $quantity.' '.$unit;
+	}
+
+	/**
+	 * Return the total engagement label from contract line quantities.
+	 *
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getContractTotalEngagementLabel($object, $outputlangs)
+	{
+		$total = 0.0;
+		$hasQuantity = false;
+		$units = array();
+		if (!empty($object->lines) && is_array($object->lines)) {
+			foreach ($object->lines as $line) {
+				if (!isset($line->qty) || !is_numeric($line->qty)) {
+					continue;
+				}
+				$qty = (float) $line->qty;
+				if ($qty <= 0) {
+					continue;
+				}
+
+				$total += $qty;
+				$hasQuantity = true;
+
+				$unit = $this->getContractLineQuantityUnitLabel($line, $outputlangs);
+				if ($unit !== '') {
+					$units[$unit] = true;
+				}
+			}
+		}
+
+		if (!$hasQuantity) {
+			return '12 '.$outputlangs->transnoentitiesnoconv('JpsunContractTotalEngagementDefaultUnit');
+		}
+
+		$label = $this->formatNumber($total, 2);
+		if ($label === '') {
+			return '';
+		}
+
+		$unit = '';
+		if (count($units) === 1) {
+			$unit = (string) key($units);
+		} elseif (count($units) === 0) {
+			$unit = $outputlangs->transnoentitiesnoconv('JpsunContractTotalEngagementDefaultUnit');
+		}
+
+		return $unit !== '' ? $label.' '.$unit : $label;
+	}
+
+	/**
+	 * Return the quantity unit label for one contract line.
+	 *
+	 * @param CommonObjectLine $line Contract line
+	 * @param Translate $outputlangs Output language
+	 * @return string
+	 */
+	private function getContractLineQuantityUnitLabel($line, $outputlangs)
+	{
+		if (!method_exists($line, 'getLabelOfUnit')) {
+			return '';
+		}
+
+		return trim((string) $line->getLabelOfUnit('short', $outputlangs, 1));
 	}
 
 	/**

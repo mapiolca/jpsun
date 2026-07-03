@@ -309,6 +309,7 @@ JpsunContractAmountDiscount=Discount
 JpsunContractAmountOffered=Free of charge
 JpsunContractLineEngagementStart=Commitment start
 JpsunContractLineEngagementEnd=Commitment end
+JpsunContractTotalEngagementDefaultUnit=months
 JpsunSepaMandateModelLabel=JPSUN SEPA mandate
 JpsunSepaMandateModelDescription=JPSUN SEPA direct debit mandate template.
 JpsunSepaMandateTitle=SEPA direct debit mandate

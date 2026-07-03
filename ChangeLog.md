@@ -2,6 +2,7 @@
 
 ## 1.20.3 (03/07/2026)
 - Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité avec unité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
+- Calcul de l'engagement affiché dans le bon pour accord du modèle `Contrat SOLEIL AQUITAIN` à partir de la somme des durées d'engagement des lignes.
 - Ajout du modèle PDF `jpsunsepamandate` pour les mandats de prélèvement SEPA des tiers, généré nativement sans fond PDF.
 - Ajout automatique d'une page de mandat SEPA à la fin du PDF principal du modèle `Contrat SOLEIL AQUITAIN`, avec statut `Récurrent` affiché par défaut dans ce contexte.
 

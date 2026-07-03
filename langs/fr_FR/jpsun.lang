@@ -313,6 +313,7 @@ JpsunContractAmountDiscount = Réduction
 JpsunContractAmountOffered = Offert
 JpsunContractLineEngagementStart = Début d'engagement
 JpsunContractLineEngagementEnd = Fin d'engagement
+JpsunContractTotalEngagementDefaultUnit = mois
 JpsunSepaMandateModelLabel = Mandat SEPA JPSUN
 JpsunSepaMandateModelDescription = Modèle JPSUN de mandat de prélèvement SEPA.
 JpsunSepaMandateTitle = Mandat de prélèvement SEPA
