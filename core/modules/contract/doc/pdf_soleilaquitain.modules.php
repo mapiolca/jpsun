@@ -2842,7 +2842,12 @@ class pdf_soleilaquitain extends ModelePDFContract
 			return '';
 		}
 
-		return trim((string) $line->getLabelOfUnit('short', $outputlangs, 1));
+		$unit = trim((string) $line->getLabelOfUnit('long', $outputlangs, 1));
+		if ($unit === '') {
+			return '';
+		}
+
+		return function_exists('dol_ucfirst') ? dol_ucfirst($unit) : ucfirst($unit);
 	}
 
 	/**
