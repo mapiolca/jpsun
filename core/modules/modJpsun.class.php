@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.20.2';
+		$this->version = '1.20.3';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -260,6 +260,7 @@ class modJpsun extends DolibarrModules
 	   global $db, $conf, $langs;
 
 		$sql = array();
+		$sql[] = "INSERT IGNORE INTO ".MAIN_DB_PREFIX."document_model (nom, type, entity, libelle) VALUES ('jpsunsepamandate', 'bankaccount', ".((int) $conf->entity).", 'JPSUN SEPA')";
 
 		$result = $this->load_tables('jpsun/sql/');
 

@@ -28,11 +28,13 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/societe/class/companybankaccount.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_lmdbzoning.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_powerplantpv.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_attachments.lib.php';
+require_once dirname(__DIR__, 4).'/lib/jpsun_sepa_mandate_pdf.lib.php';
 require_once dirname(__DIR__, 4).'/lib/jpsun_pdf_signature.lib.php';
 
 /**
@@ -354,6 +356,126 @@ class pdf_soleilaquitain extends ModelePDFContract
 
 		$this->addPage($pdf, $object, $outputlangs, 'Bon pour accord');
 		$this->renderAgreementPage($pdf, $object, $contactdata, $legaldata, $subscriptiondata, $outputlangs);
+
+		$this->addPage($pdf, $object, $outputlangs, 'Mandat SEPA');
+		$this->renderSepaMandatePage($pdf, $object, $outputlangs);
+	}
+
+	/**
+	 * Render the SEPA mandate page appended to the main contract.
+	 *
+	 * @param TCPDF $pdf PDF instance
+	 * @param Contrat $object Contract object
+	 * @param Translate $outputlangs Output language
+	 * @return void
+	 */
+	private function renderSepaMandatePage(&$pdf, $object, $outputlangs)
+	{
+		$bankaccount = $this->getContractSepaMandateBankAccount($object);
+		$thirdparty = $this->getContractSepaMandateThirdparty($object);
+
+		JpsunSepaMandatePdfRenderer::render(
+			$pdf,
+			$this->db,
+			$bankaccount,
+			$thirdparty,
+			$outputlangs,
+			$this->emetteur,
+			array(
+				'marge_gauche' => $this->marge_gauche,
+				'marge_droite' => $this->marge_droite,
+				'page_largeur' => $this->page_largeur,
+				'page_hauteur' => $this->page_hauteur,
+				'top' => $this->contentTop,
+				'bottom' => $this->contentBottom,
+				'corner_radius' => $this->corner_radius,
+				'force_frstrecur' => 'RCUR',
+			)
+		);
+	}
+
+	/**
+	 * Return the bank account to use for the contract mandate.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return CompanyBankAccount
+	 */
+	private function getContractSepaMandateBankAccount($object)
+	{
+		$bankaccount = new CompanyBankAccount($this->db);
+		$bankid = 0;
+		foreach (array('fk_account', 'fk_bank', 'fk_societe_rib', 'fk_companybankaccount') as $property) {
+			if (isset($object->{$property}) && (int) $object->{$property} > 0) {
+				$bankid = (int) $object->{$property};
+				break;
+			}
+		}
+
+		if ($bankid > 0) {
+			$result = $bankaccount->fetch($bankid);
+			if ($result > 0 && !empty($bankaccount->id)) {
+				return $bankaccount;
+			}
+			dol_syslog(__METHOD__.' unable to fetch contract bank account id='.$bankid, LOG_WARNING);
+		}
+
+		$socid = $this->getContractSepaMandateSocid($object);
+		if ($socid > 0) {
+			$result = $bankaccount->fetch(0, '', $socid, 1, 'ban');
+			if ($result > 0 && !empty($bankaccount->id)) {
+				return $bankaccount;
+			}
+		}
+
+		$blank = new CompanyBankAccount($this->db);
+		$blank->socid = $socid;
+		$blank->ref = ($socid > 0) ? $socid.'-mandat-sepa' : 'mandat-sepa';
+
+		return $blank;
+	}
+
+	/**
+	 * Return the thirdparty linked to the contract mandate.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return Societe|null
+	 */
+	private function getContractSepaMandateThirdparty($object)
+	{
+		if (!empty($object->thirdparty) && is_object($object->thirdparty) && !empty($object->thirdparty->id)) {
+			return $object->thirdparty;
+		}
+
+		$socid = $this->getContractSepaMandateSocid($object);
+		if ($socid <= 0) {
+			return null;
+		}
+
+		$thirdparty = new Societe($this->db);
+		$result = $thirdparty->fetch($socid);
+		if ($result > 0) {
+			return $thirdparty;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return contract thirdparty id.
+	 *
+	 * @param Contrat $object Contract object
+	 * @return int
+	 */
+	private function getContractSepaMandateSocid($object)
+	{
+		if (isset($object->socid) && (int) $object->socid > 0) {
+			return (int) $object->socid;
+		}
+		if (!empty($object->thirdparty) && is_object($object->thirdparty) && !empty($object->thirdparty->id)) {
+			return (int) $object->thirdparty->id;
+		}
+
+		return 0;
 	}
 
 	/**
@@ -2552,7 +2674,7 @@ class pdf_soleilaquitain extends ModelePDFContract
 					$rows[] = array(
 						'type' => 'line',
 						'html' => $html,
-						'quantity' => $this->getContractLineQuantityLabel($line),
+						'quantity' => $this->getContractLineQuantityLabel($line, $outputlangs),
 						'discount' => ($discountPercent > 0.00001 && !$offered) ? $this->formatNumber($discountPercent, 2).'%' : '',
 						'amount' => $amount,
 						'offered' => $offered,
@@ -2633,15 +2755,29 @@ class pdf_soleilaquitain extends ModelePDFContract
 	 * Return the quantity label for one contract line.
 	 *
 	 * @param CommonObjectLine $line Contract line
+	 * @param Translate $outputlangs Output language
 	 * @return string
 	 */
-	private function getContractLineQuantityLabel($line)
+	private function getContractLineQuantityLabel($line, $outputlangs)
 	{
 		if (!isset($line->qty) || !is_numeric($line->qty)) {
 			return '';
 		}
 
-		return $this->formatNumber($line->qty, 2);
+		$quantity = $this->formatNumber($line->qty, 2);
+		if ($quantity === '') {
+			return '';
+		}
+
+		$unit = '';
+		if (method_exists($line, 'getLabelOfUnit')) {
+			$unit = (string) $line->getLabelOfUnit('short', $outputlangs, 1);
+		}
+		if ($unit === '') {
+			return $quantity;
+		}
+
+		return $quantity.' '.$unit;
 	}
 
 	/**

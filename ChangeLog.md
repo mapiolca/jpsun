@@ -1,7 +1,9 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.20.3 (03/07/2026)
-- Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
+- Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité avec unité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
+- Ajout du modèle PDF `jpsunsepamandate` pour les mandats de prélèvement SEPA des tiers, généré nativement sans fond PDF.
+- Ajout automatique d'une page de mandat SEPA à la fin du PDF principal du modèle `Contrat SOLEIL AQUITAIN`, avec statut `Récurrent` affiché par défaut dans ce contexte.
 
 ## 1.20.2 (12/06/2026)
 - Filtrage strict sur le tiers du devis dans la modale JPSUN de signature, avec réglage `JPSUN_AUTOPROJECT_GUARD_ALLOW_PROJECTS_WITHOUT_THIRDPARTY` pour inclure explicitement les projets sans tiers.
