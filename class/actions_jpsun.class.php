@@ -125,15 +125,35 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$langs->load('jpsun@jpsun');
 
+		$downloadEndpoint = dol_buildpath('/jpsun/document_download.php', 1);
+		$downloadToken = newToken();
+		$bulkDownloadButtonHtml = dolGetButtonTitle(
+			$langs->transnoentities('JpsunDownloadSelectedDocuments'),
+			'',
+			'fa fa-download',
+			'#',
+			'',
+			1,
+			array(
+				'attr' => array(
+					'class' => 'jpsun-document-bulk-download-button',
+					'data-jpsun-document-bulk-download-button' => '1',
+				),
+			)
+		);
+
 		$scriptPrinted = true;
 		print '<script nonce="'.getNonce().'">
 (function() {
 	"use strict";
 
-		var buttonLabel = "'.dol_escape_js($langs->transnoentities('JpsunDownloadSelectedDocuments')).'";
-		var selectOneLabel = "'.dol_escape_js($langs->transnoentities('JpsunSelectDocumentForDownload')).'";
-		var selectAllLabel = "'.dol_escape_js($langs->transnoentities('JpsunSelectAllDocumentsForDownload')).'";
+	var downloadEndpoint = "'.dol_escape_js($downloadEndpoint).'";
+	var downloadToken = "'.dol_escape_js($downloadToken).'";
+	var buttonLabel = "'.dol_escape_js($langs->transnoentities('JpsunDownloadSelectedDocuments')).'";
+	var selectOneLabel = "'.dol_escape_js($langs->transnoentities('JpsunSelectDocumentForDownload')).'";
+	var selectAllLabel = "'.dol_escape_js($langs->transnoentities('JpsunSelectAllDocumentsForDownload')).'";
 	var downloadLabel = "'.dol_escape_js($langs->transnoentities('Download')).'";
+	var bulkDownloadButtonHtml = "'.dol_escape_js($bulkDownloadButtonHtml).'";
 	var lineDownloadIcon = "'.dol_escape_js(img_picto($langs->trans('Download'), 'download', 'class="paddingrightonly"')).'";
 
 	function findNativeDownloadLink(row) {
@@ -162,8 +182,37 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		return null;
 	}
 
+	function findDocumentTitleRightCell(wrapper) {
+		var node = wrapper;
+		for (var i = 0; i < 8 && node; i++) {
+			node = node.previousElementSibling;
+			if (!node) {
+				break;
+			}
+			if (!node.classList || !node.classList.contains("table-fiche-title") || !node.classList.contains("table-list-of-attached-files")) {
+				continue;
+			}
+
+			var cell = node.querySelector("td.titre_right");
+			if (cell) {
+				return cell;
+			}
+
+			var row = node.querySelector("tr.toptitle");
+			if (!row) {
+				return null;
+			}
+			cell = document.createElement("td");
+			cell.className = "nobordernopadding titre_right wordbreakimp right valignmiddle col-right";
+			row.appendChild(cell);
+			return cell;
+		}
+
+		return null;
+	}
+
 	function addHeaderCell(row, withSelectAll) {
-		var cell = document.createElement("th");
+		var cell = document.createElement(row.querySelector("th") ? "th" : "td");
 		cell.className = "center nowraponall";
 		if (withSelectAll) {
 			var checkbox = document.createElement("input");
@@ -198,6 +247,18 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		row.insertBefore(cell, row.firstChild);
 	}
 
+	function buildForcedDownloadUrl(link) {
+		var nativeUrl = new URL(link.href, window.location.href);
+		var url = new URL(downloadEndpoint, window.location.href);
+		url.searchParams.set("mode", "file");
+		url.searchParams.set("modulepart", nativeUrl.searchParams.get("modulepart") || "");
+		url.searchParams.set("file", nativeUrl.searchParams.get("file") || "");
+		if (nativeUrl.searchParams.has("entity")) {
+			url.searchParams.set("entity", nativeUrl.searchParams.get("entity") || "");
+		}
+		return url.toString();
+	}
+
 	function addLineDownloadButton(row, link) {
 		var actionCell = row.querySelector("td.actionbuttons") || row.lastElementChild;
 		if (!actionCell || actionCell.querySelector(".jpsun-document-line-download")) {
@@ -206,15 +267,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		var downloadLink = document.createElement("a");
 		downloadLink.className = "reposition paddingright marginleftonly jpsun-document-line-download";
-		downloadLink.href = link.href;
+		downloadLink.href = buildForcedDownloadUrl(link);
 		downloadLink.title = downloadLabel;
 		downloadLink.setAttribute("aria-label", downloadLabel);
-		if (link.target) {
-			downloadLink.target = link.target;
-		}
-		if (link.rel) {
-			downloadLink.rel = link.rel;
-		}
 		downloadLink.innerHTML = lineDownloadIcon;
 
 		var editLink = actionCell.querySelector("a.editfilelink");
@@ -230,18 +285,66 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		}
 	}
 
-	function triggerDownload(url, index) {
-		window.setTimeout(function() {
-			var frame = document.createElement("iframe");
+	function base64UrlEncode(value) {
+		return btoa(unescape(encodeURIComponent(value))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+	}
+
+	function encodeDownloadItem(link) {
+		var url = new URL(link.href, window.location.href);
+		return base64UrlEncode(JSON.stringify({
+			modulepart: url.searchParams.get("modulepart") || "",
+			file: url.searchParams.get("file") || "",
+			entity: url.searchParams.get("entity") || ""
+		}));
+	}
+
+	function submitZipDownload(links) {
+		var frameName = "jpsun-document-download-frame";
+		var frame = document.querySelector("iframe[name=\"" + frameName + "\"]");
+		if (!frame) {
+			frame = document.createElement("iframe");
+			frame.name = frameName;
 			frame.style.display = "none";
-			frame.src = url;
 			document.body.appendChild(frame);
-			window.setTimeout(function() {
-				if (frame.parentNode) {
-					frame.parentNode.removeChild(frame);
-				}
-			}, 60000);
-		}, index * 250);
+		}
+
+		var form = document.createElement("form");
+		form.method = "post";
+		form.action = downloadEndpoint + "?mode=zip";
+		form.target = frameName;
+		form.style.display = "none";
+
+		var tokenInput = document.createElement("input");
+		tokenInput.type = "hidden";
+		tokenInput.name = "token";
+		tokenInput.value = downloadToken;
+		form.appendChild(tokenInput);
+
+		links.forEach(function(link) {
+			var itemInput = document.createElement("input");
+			itemInput.type = "hidden";
+			itemInput.name = "items[]";
+			itemInput.value = encodeDownloadItem(link);
+			form.appendChild(itemInput);
+		});
+
+		document.body.appendChild(form);
+		form.submit();
+		document.body.removeChild(form);
+	}
+
+	function createBulkDownloadButton() {
+		var container = document.createElement("span");
+		container.innerHTML = bulkDownloadButtonHtml;
+		var button = container.firstElementChild;
+		if (!button) {
+			button = document.createElement("a");
+			button.href = "#";
+			button.className = "btnTitle jpsun-document-bulk-download-button";
+			button.innerHTML = lineDownloadIcon;
+		}
+		button.setAttribute("aria-label", buttonLabel);
+		return button;
 	}
 
 	function initTable(table) {
@@ -283,17 +386,15 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		});
 
 		var wrapper = table.closest(".div-table-responsive-no-min") || table;
-		var toolbar = document.createElement("div");
-		toolbar.className = "tabsAction jpsun-document-bulk-download-actions";
+		var button = createBulkDownloadButton();
 
-		var button = document.createElement("button");
-		button.type = "button";
-		button.className = "button smallpaddingimp";
-		button.textContent = buttonLabel;
-		button.disabled = true;
-		toolbar.appendChild(button);
-
-		if (wrapper.parentNode) {
+		var titleRightCell = findDocumentTitleRightCell(wrapper);
+		if (titleRightCell) {
+			titleRightCell.appendChild(button);
+		} else if (wrapper.parentNode) {
+			var toolbar = document.createElement("div");
+			toolbar.className = "tabsAction jpsun-document-bulk-download-actions";
+			toolbar.appendChild(button);
 			wrapper.parentNode.insertBefore(toolbar, wrapper);
 		}
 
@@ -310,8 +411,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		function updateState() {
 			var checkboxes = getCheckboxes();
 			var selected = getSelectedCheckboxes();
-			button.disabled = selected.length === 0;
-			button.textContent = selected.length > 0 ? buttonLabel + " (" + selected.length + ")" : buttonLabel;
+			var label = selected.length > 0 ? buttonLabel + " (" + selected.length + ")" : buttonLabel;
+
+			button.title = label;
+			button.setAttribute("aria-label", label);
+			button.setAttribute("aria-disabled", selected.length === 0 ? "true" : "false");
+			button.classList.toggle("refused", selected.length === 0);
 
 			if (selectAllCheckbox) {
 				selectAllCheckbox.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
@@ -334,14 +439,19 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			});
 		}
 
-		button.addEventListener("click", function() {
-			getSelectedCheckboxes().forEach(function(checkbox, index) {
+		button.addEventListener("click", function(event) {
+			event.preventDefault();
+			var links = [];
+			getSelectedCheckboxes().forEach(function(checkbox) {
 				var row = checkbox.closest("tr");
 				var link = row ? findNativeDownloadLink(row) : null;
 				if (link) {
-					triggerDownload(link.href, index);
+					links.push(link);
 				}
 			});
+			if (links.length > 0) {
+				submitZipDownload(links);
+			}
 		});
 
 		updateState();
