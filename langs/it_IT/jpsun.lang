@@ -81,6 +81,9 @@ JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s attività aggiornata/e (car
 JpsunMassActionInvalidPlannedWorkloadValue=Valore carico di lavoro previsto non valido per attività ID %s (formato previsto hh:mm).
 
 JpsunPdfDocuments=Documenti PDF
+JpsunDownloadSelectedDocuments=Scaricare gli elementi selezionati
+JpsunSelectDocumentForDownload=Selezionare questo file per il download
+JpsunSelectAllDocumentsForDownload=Selezionare tutti i file per il download
 SupplierProposals =Preventivi fornitore
 PDF_SHOW_PROJECT_TITLE=I documenti PDF mostrano il titolo del progetto
 PRODUIT_PDF_MERGE_PROPAL=Durante la generazione del PDF della proposta, vengono inclusi i PDF collegati ai prodotti.

@@ -81,6 +81,9 @@ JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s tâche(s) mise(s) à jour (
 JpsunMassActionInvalidPlannedWorkloadValue=Valeur de charge de travail prévue invalide pour la tâche ID %s (format attendu hh:mm).
 
 JpsunPdfDocuments= Documents PDF
+JpsunDownloadSelectedDocuments=Télécharger les éléments sélectionnés
+JpsunSelectDocumentForDownload=Sélectionner ce fichier pour le téléchargement
+JpsunSelectAllDocumentsForDownload=Sélectionner tous les fichiers pour le téléchargement
 JpsunSetupTabMain=General / PDF / Workflow
 JpsunSetupTabThirdparties=Tiers
 JpsunSetupTabProducts=Produits

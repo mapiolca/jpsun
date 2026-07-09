@@ -1,6 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.20.3 (03/07/2026)
+- Ajout d'une sélection multiple sur les onglets Documents Dolibarr via le hook core `showFilesList`, avec téléchargement direct des fichiers sélectionnés par les liens natifs `document.php`.
+- Ajout d'un bouton de téléchargement par ligne dans les listes natives de fichiers joints.
 - Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité avec unité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
 - Calcul de l'engagement affiché dans le bon pour accord du modèle `Contrat SOLEIL AQUITAIN` à partir de la somme des durées d'engagement des lignes.
 - Ajout du modèle PDF `jpsunsepamandate` pour les mandats de prélèvement SEPA des tiers, généré nativement sans fond PDF.
