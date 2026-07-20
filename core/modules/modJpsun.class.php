@@ -192,7 +192,24 @@ class modJpsun extends DolibarrModules
 		/* END MODULEBUILDER TOPMENU */
 
 		/* BEGIN MODULEBUILDER LEFTMENU PLANNING */
-		
+
+		$this->menu[$r++] = array(
+			'fk_menu' => 'fk_mainmenu=accountancy',
+			'type' => 'left',
+			'titre' => 'JpsunUnfinishedProjectsMenu',
+			'prefix' => img_picto('', 'accounting', 'class="pictofixedwidth valignmiddle paddingright"'),
+			'mainmenu' => 'accountancy',
+			'leftmenu' => 'jpsun_unfinished_projects',
+			'url' => '/jpsun/unfinishedprojects.php?mainmenu=accountancy&leftmenu=jpsun_unfinished_projects',
+			'langs' => 'jpsun@jpsun',
+			'position' => 1000 + $r,
+			'enabled' => 'isModEnabled("jpsun") && isModEnabled("project") && isModEnabled("order") && isModEnabled("invoice")',
+			'perms' => 'empty($user->socid) && (!empty($user->admin) || ($user->hasRight("projet", "lire") && ($user->hasRight("compta", "resultat", "lire") || $user->hasRight("accounting", "comptarapport", "lire"))))',
+			'target' => '',
+			'user' => 0,
+			'object' => 'Project',
+		);
+
 		/* END MODULEBUILDER LEFTMENU PLANNING */
 
 		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */

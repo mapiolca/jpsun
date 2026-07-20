@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## Non publié
+- Ajout du rapport comptable des projets non soldés dans le menu Comptabilité.
+- Agrégation des commandes, acomptes facturés, factures clients et fournisseurs, notes de frais payées, paiements divers et temps valorisé, avec filtrage natif des projets et des entités autorisés.
+- Valorisation des mouvements de stock liés aux expéditions selon le réglage courant du module Marges, avec alertes sur les coûts absents et export CSV UTF-8.
+
 ## 1.20.3 (03/07/2026)
 - Ajustement du tableau `Montant de la prestation` du modèle `Contrat SOLEIL AQUITAIN` : quantité avec unité, dates d'engagement, remises partielles et mention `Offert` pour les lignes remisées à 100 %.
 - Calcul de l'engagement affiché dans le bon pour accord du modèle `Contrat SOLEIL AQUITAIN` à partir de la somme des durées d'engagement des lignes.
