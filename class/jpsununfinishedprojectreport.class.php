@@ -94,12 +94,8 @@ class JpsunUnfinishedProjectReport
 			return false;
 		}
 
-		if (!empty($user->admin)) {
-			return true;
-		}
-
-		return $user->hasRight('projet', 'lire')
-			&& ($user->hasRight('compta', 'resultat', 'lire') || $user->hasRight('accounting', 'comptarapport', 'lire'));
+		return $user->hasRight('accounting', 'comptarapport', 'lire')
+			|| $user->hasRight('compta', 'resultat', 'lire');
 	}
 
 	/**
@@ -125,29 +121,27 @@ class JpsunUnfinishedProjectReport
 			$options[$entityId] = (string) $entityId;
 		}
 
-		if (count($entityIds) < 2 || !isModEnabled('multicompany')) {
+		if (empty($entityIds) || !isModEnabled('multicompany')) {
 			return $options;
 		}
 
-		dol_include_once('/multicompany/class/entity.class.php');
-		if (!class_exists('Entity')) {
+		$sql = 'SELECT rowid, label';
+		$sql .= ' FROM '.MAIN_DB_PREFIX.'entity';
+		$sql .= ' WHERE rowid IN ('.implode(',', $entityIds).')';
+		$resql = $this->db->query($sql);
+		if (!$resql) {
+			dol_syslog(__METHOD__.' '.$this->db->lasterror(), LOG_WARNING);
 			return $options;
 		}
 
-		foreach ($entityIds as $entityId) {
-			$entity = new Entity($this->db);
-			if ($entity->fetch($entityId) > 0) {
-				$label = '';
-				if (!empty($entity->label)) {
-					$label = (string) $entity->label;
-				} elseif (!empty($entity->name)) {
-					$label = (string) $entity->name;
-				}
-				if ($label !== '') {
-					$options[$entityId] = $label;
-				}
+		while (is_object($obj = $this->db->fetch_object($resql))) {
+			$entityId = (int) $obj->rowid;
+			$label = isset($obj->label) ? trim((string) $obj->label) : '';
+			if (isset($options[$entityId]) && $label !== '') {
+				$options[$entityId] = $label;
 			}
 		}
+		$this->db->free($resql);
 
 		return $options;
 	}
