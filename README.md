@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 09/07/2026
+- Dernière mise à jour : 20/07/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,9 +11,9 @@
 - 
 ### Version
 
-- Version : 1.21
-- PHP : 8.2
-- Compatibilité : Dolibarr 21+
+- Version : 1.22.0
+- PHP : 8.0+
+- Compatibilité : Dolibarr 20+
 
 ## Liens
 
@@ -23,9 +23,16 @@
 ## Fonctionnalités
 
 - Ajout de fonctionnalités diverses pour JPSUN.
+- Rapport comptable des projets non soldés, avec agrégation des commandes, factures, achats, frais, temps et expéditions valorisées selon le réglage natif du module Marges.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.
 - Intégration du modèle contrat JPSUN PRO avec le module Centrale PV.
 - Intégration du modèle contrat SOLEIL AQUITAIN avec centrales PV liées, annexes natives, mentions légales configurables et zone issue des catégories de contrat `lmdbzoning`.
+
+### Rapport des projets non soldés
+
+Le menu **Comptabilité > Projets non soldés** présente les projets ouverts dont le total HT des commandes valides diffère du total HT des factures clients émises. L'accès nécessite l'un des droits natifs de consultation des rapports comptables, en comptabilité simplifiée ou en partie double. Les restrictions natives de visibilité des projets et des entités restent appliquées aux données affichées.
+
+Les expéditions sont recalculées à partir des mouvements réels de stock et du coût courant fourni par le module Marges (meilleur prix fournisseur, PMP ou prix de revient). Les sources optionnelles désactivées sont signalées comme non disponibles et les coûts ou taux horaires manquants sont valorisés à zéro avec une alerte. La liste filtrée complète peut être exportée en CSV.
 
 ## Traductions
 

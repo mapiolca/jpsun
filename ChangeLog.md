@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.22.0 (20/07/2026)
+- Ajout du rapport comptable des projets non soldés dans le menu Comptabilité.
+- Agrégation des commandes, acomptes facturés, factures clients et fournisseurs, notes de frais payées, paiements divers et temps valorisé, avec filtrage natif des projets et des entités autorisés.
+- Valorisation des mouvements de stock liés aux expéditions selon le réglage courant du module Marges, avec alertes sur les coûts absents et export CSV UTF-8.
+- Alignement du pictogramme et des droits d'accès sur les rapports comptables natifs, avec affichage des libellés Multicompany dans le filtre et les badges d'environnement.
+
 ## 1.21 (09/07/2026)
 - Ajout d'une sélection multiple sur les onglets Documents Dolibarr via le hook core `showFilesList`, avec téléchargement des fichiers sélectionnés dans une archive ZIP forcée en pièce jointe.
 - Ajout d'un bouton de téléchargement par ligne dans les listes natives de fichiers joints, forcé en pièce jointe quel que soit le paramétrage d'affichage de Dolibarr.

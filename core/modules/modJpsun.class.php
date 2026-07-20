@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.21';
+		$this->version = '1.22.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -192,7 +192,24 @@ class modJpsun extends DolibarrModules
 		/* END MODULEBUILDER TOPMENU */
 
 		/* BEGIN MODULEBUILDER LEFTMENU PLANNING */
-		
+
+		$this->menu[$r++] = array(
+			'fk_menu' => 'fk_mainmenu=accountancy',
+			'type' => 'left',
+			'titre' => 'JpsunUnfinishedProjectsMenu',
+			'prefix' => img_picto('', 'accountancy', 'class="paddingright pictofixedwidth"'),
+			'mainmenu' => 'accountancy',
+			'leftmenu' => 'jpsun_unfinished_projects',
+			'url' => '/jpsun/unfinishedprojects.php?mainmenu=accountancy&leftmenu=jpsun_unfinished_projects',
+			'langs' => 'jpsun@jpsun',
+			'position' => 1000 + $r,
+			'enabled' => 'isModEnabled("jpsun") && isModEnabled("project") && isModEnabled("order") && isModEnabled("invoice")',
+			'perms' => '$user->hasRight("accounting", "comptarapport", "lire") || $user->hasRight("compta", "resultat", "lire")',
+			'target' => '',
+			'user' => 0,
+			'object' => 'Project',
+		);
+
 		/* END MODULEBUILDER LEFTMENU PLANNING */
 
 		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */
