@@ -81,6 +81,12 @@ JpsunMassActionProjectTasksPlannedWorkloadUpdated=%s tâche(s) mise(s) à jour (
 JpsunMassActionInvalidPlannedWorkloadValue=Valeur de charge de travail prévue invalide pour la tâche ID %s (format attendu hh:mm).
 
 JpsunPdfDocuments= Documents PDF
+JpsunDownloadSelectedDocuments=Télécharger les éléments sélectionnés au format ZIP
+JpsunSelectDocumentForDownload=Sélectionner ce fichier pour le téléchargement
+JpsunSelectAllDocumentsForDownload=Sélectionner tous les fichiers pour le téléchargement
+JpsunNoDocumentSelected=Aucun document sélectionné.
+JpsunZipArchiveUnavailable=L'extension PHP ZipArchive n'est pas disponible.
+JpsunUnableToCreateZipArchive=Impossible de créer l'archive ZIP.
 JpsunSetupTabMain=General / PDF / Workflow
 JpsunSetupTabThirdparties=Tiers
 JpsunSetupTabProducts=Produits
