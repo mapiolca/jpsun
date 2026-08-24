@@ -86,9 +86,9 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$this->description = $langs->trans('JpsunProjectLabelsPdfModel');
 		$this->type = 'pdf';
 
-		// Force A4 format for the labels sheet.
-		$this->page_largeur = 210;
-		$this->page_hauteur = 297;
+		// Force A4 landscape format for the labels sheet.
+		$this->page_largeur = 297;
+		$this->page_hauteur = 210;
 		$this->format = array($this->page_largeur, $this->page_hauteur);
 		$this->marge_gauche = getDolGlobalInt('MAIN_PDF_MARGIN_LEFT', 10);
 		$this->marge_droite = getDolGlobalInt('MAIN_PDF_MARGIN_RIGHT', 10);
@@ -150,8 +150,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$filename_label = dol_sanitizeFileName($outputlangs->transnoentities('JpsunProjectLabelsFileName'));
 		$file = $dir.'/'.$objectref.' - '.$filename_label.'.pdf';
 
-		// Create a single PDF instance and add exactly one A4 page.
-		$pdf = pdf_getInstance($this->format);
+		// Create a single PDF instance and add exactly one A4 landscape page.
+		$pdf = pdf_getInstance($this->format, 'mm', 'L');
 		$pdf->SetCreator('Dolibarr');
 		$pdf_model_label = $outputlangs->transnoentities('JpsunProjectLabelsPdfModel');
 		$pdf_labels_label = $outputlangs->transnoentities('JpsunProjectLabels');
@@ -160,6 +160,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$pdf->SetSubject($pdf_model_label.' - '.$pdf_format_label);
 		$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);
 		$pdf->SetAutoPageBreak(false, $this->marge_basse);
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
 		$pdf->AddPage();
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->SetDrawColor(80, 80, 80);
@@ -173,15 +175,22 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$logo = $conf->mycompany->dir_output.'/logos/'.$this->emetteur->logo;
 		}
 
-		$startX = 24.5;
-		$startY = 10;
 		$format_caption_height = 8;
 		$formats = array(
 			array('w' => 50, 'h' => 158),
 			array('w' => 25, 'h' => 158),
 			array('w' => 28, 'h' => 185),
 			array('w' => 58, 'h' => 185),
+			array('w' => 52, 'h' => 188),
 		);
+		$total_width = 0;
+		$max_height = 0;
+		foreach ($formats as $format) {
+			$total_width += $format['w'];
+			$max_height = max($max_height, $format['h']);
+		}
+		$startX = ($this->page_largeur - $total_width) / 2;
+		$startY = ($this->page_hauteur - $max_height - $format_caption_height) / 2;
 		$project_address_data = $this->getProjectAddressContact($object);
 		$project_categories = implode(' / ', $this->getProjectCategoryLabels($object));
 
@@ -191,12 +200,6 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			$this->drawProjectLabelFormatCaption($pdf, $outputlangs, $x, $startY + $format['h'], $format['w'], $format['h'], $format_caption_height);
 			$x += $format['w'];
 		}
-
-		$wide_format = array('w' => 188, 'h' => 52);
-		$wide_x = ($this->page_largeur - $wide_format['w']) / 2;
-		$wide_y = $startY + 185 + $format_caption_height + 5;
-		$this->drawProjectLabel($pdf, $object, $outputlangs, $wide_x, $wide_y, $wide_format['w'], $wide_format['h'], $logo, $project_address_data, $project_categories);
-		$this->drawProjectLabelFormatCaption($pdf, $outputlangs, $wide_x, $wide_y + $wide_format['h'], $wide_format['w'], $wide_format['h'], $format_caption_height);
 
 		$pdf->Output($file, 'F');
 		dolChmod($file);
