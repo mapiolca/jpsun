@@ -314,6 +314,7 @@ BoxCamembertCategorieCa=Grafico fatturato per categoria
 
 JpsunProjectLabelsPdfModel=Etichette progetto JPSUN
 JpsunProjectLabels=Etichette progetto
+JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Formato etichetta
 JpsunProjectLabelCompanyLogo=Logo aziendale
 JpsunProjectLabelProjectRef=Riferimento progetto

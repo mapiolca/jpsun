@@ -314,6 +314,7 @@ BoxCamembertCategorieCa=Umsatz nach Kategorie Diagramm
 
 JpsunProjectLabelsPdfModel=JPSUN-Projektetiketten
 JpsunProjectLabels=Projektetiketten
+JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Etikettenformat
 JpsunProjectLabelCompanyLogo=Firmenlogo
 JpsunProjectLabelProjectRef=Projektreferenz

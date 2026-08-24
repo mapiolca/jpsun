@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.22.1 (24/08/2026)
+- Ajout du format d’étiquette de classeur 188 x 52 mm au modèle PDF `jpsun_projectlabels`.
+- Affichage des dimensions sous chaque étiquette générée.
+- Nommage des fichiers selon le format `{REF PROJET} - Etiquettes de classeur.pdf`.
+
 ## 1.22.0 (20/07/2026)
 - Ajout du rapport comptable des projets non soldés dans le menu Comptabilité.
 - Agrégation des commandes, acomptes facturés, factures clients et fournisseurs, notes de frais payées, paiements divers et temps valorisé, avec filtrage natif des projets et des entités autorisés.

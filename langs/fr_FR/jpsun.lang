@@ -412,6 +412,7 @@ JpsunWidgetCamembertCategorieCaTitle=CA par catégorie
 BoxCamembertCategorieCa=Graphique CA par catégorie
 JpsunProjectLabelsPdfModel=Étiquettes projet JPSUN
 JpsunProjectLabels=Étiquettes projet
+JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Format d’étiquette
 JpsunProjectLabelCompanyLogo=Logo de la société
 JpsunProjectLabelProjectRef=Référence projet

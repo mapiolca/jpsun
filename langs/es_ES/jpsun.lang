@@ -314,6 +314,7 @@ BoxCamembertCategorieCa=Grfico de facturacin por categora
 
 JpsunProjectLabelsPdfModel=Etiquetas de proyecto JPSUN
 JpsunProjectLabels=Etiquetas de proyecto
+JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Formato de etiqueta
 JpsunProjectLabelCompanyLogo=Logotipo de la empresa
 JpsunProjectLabelProjectRef=Referencia del proyecto

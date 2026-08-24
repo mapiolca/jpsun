@@ -147,7 +147,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			}
 		}
 
-		$file = $dir.'/'.$objectref.'_LABELS.pdf';
+		$filename_label = dol_sanitizeFileName($outputlangs->transnoentities('JpsunProjectLabelsFileName'));
+		$file = $dir.'/'.$objectref.' - '.$filename_label.'.pdf';
 
 		// Create a single PDF instance and add exactly one A4 page.
 		$pdf = pdf_getInstance($this->format);
@@ -173,7 +174,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		}
 
 		$startX = 24.5;
-		$startY = 30;
+		$startY = 10;
+		$format_caption_height = 8;
 		$formats = array(
 			array('w' => 50, 'h' => 158),
 			array('w' => 25, 'h' => 158),
@@ -181,12 +183,20 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 			array('w' => 58, 'h' => 185),
 		);
 		$project_address_data = $this->getProjectAddressContact($object);
+		$project_categories = implode(' / ', $this->getProjectCategoryLabels($object));
 
 		$x = $startX;
 		foreach ($formats as $format) {
-			$this->drawProjectLabel($pdf, $object, $outputlangs, $x, $startY, $format['w'], $format['h'], $logo, $project_address_data);
+			$this->drawProjectLabel($pdf, $object, $outputlangs, $x, $startY, $format['w'], $format['h'], $logo, $project_address_data, $project_categories);
+			$this->drawProjectLabelFormatCaption($pdf, $outputlangs, $x, $startY + $format['h'], $format['w'], $format['h'], $format_caption_height);
 			$x += $format['w'];
 		}
+
+		$wide_format = array('w' => 188, 'h' => 52);
+		$wide_x = ($this->page_largeur - $wide_format['w']) / 2;
+		$wide_y = $startY + 185 + $format_caption_height + 5;
+		$this->drawProjectLabel($pdf, $object, $outputlangs, $wide_x, $wide_y, $wide_format['w'], $wide_format['h'], $logo, $project_address_data, $project_categories);
+		$this->drawProjectLabelFormatCaption($pdf, $outputlangs, $wide_x, $wide_y + $wide_format['h'], $wide_format['w'], $wide_format['h'], $format_caption_height);
 
 		$pdf->Output($file, 'F');
 		dolChmod($file);
@@ -275,9 +285,10 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 	 * @param float     $h           Label height
 	 * @param string    $logo        Logo path
 	 * @param array     $project_address_data Project address fields
+	 * @param string    $project_categories   Project category labels
 	 * @return void
 	 */
-	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo, $project_address_data)
+	private function drawProjectLabel(&$pdf, $object, $outputlangs, $x, $y, $w, $h, $logo, $project_address_data, $project_categories)
 	{
 		global $conf, $mysoc;
 
@@ -305,8 +316,6 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 		$project_zip = empty($project_address_data['zip']) ? '' : $project_address_data['zip'];
 		$project_town = empty($project_address_data['town']) ? '' : $project_address_data['town'];
 		$project_location = trim($project_zip.' '.$project_town);
-		$category_labels = $this->getProjectCategoryLabels($object);
-		$project_categories = implode(' / ', $category_labels);
 		$project_year = '';
 		if (!empty($object->date_start)) {
 			$project_year = dol_print_date($object->date_start, '%Y');
@@ -415,6 +424,28 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 
 			$current_y += $slot_height;
 		}
+	}
+
+	/**
+	 * Draw the physical dimensions below one project label.
+	 *
+	 * @param TCPDF     $pdf            PDF instance
+	 * @param Translate $outputlangs    Output language object
+	 * @param float     $x              X position
+	 * @param float     $y              Y position
+	 * @param float     $w              Label width
+	 * @param float     $h              Label height
+	 * @param float     $caption_height Caption area height
+	 * @return void
+	 */
+	private function drawProjectLabelFormatCaption(&$pdf, $outputlangs, $x, $y, $w, $h, $caption_height)
+	{
+		$format_text = ((int) $w).' x '.((int) $h).' mm';
+		$pdf->SetTextColor(80, 80, 80);
+		$pdf->SetFont(pdf_getPDFFont($outputlangs), '', 7);
+		$pdf->SetXY($x, $y);
+		$pdf->MultiCell($w, 4, $outputlangs->convToOutputCharset($format_text), 0, 'C', false, 1, '', '', true, 1, false, true, $caption_height, 'M', false);
+		$pdf->SetTextColor(0, 0, 0);
 	}
 
 	/**

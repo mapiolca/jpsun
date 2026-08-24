@@ -406,6 +406,7 @@ BoxCamembertCategorieCa=Revenue by category chart
 
 JpsunProjectLabelsPdfModel=JPSUN project labels
 JpsunProjectLabels=Project labels
+JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Label format
 JpsunProjectLabelCompanyLogo=Company logo
 JpsunProjectLabelProjectRef=Project reference
