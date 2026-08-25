@@ -1,5 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.22.2 (25/08/2026)
+- Suppression de la propriété dynamique obsolète du descripteur sous PHP 8.2.
+
 ## 1.22.1 (24/08/2026)
 - Ajout du format d’étiquette de classeur 52 x 188 mm au modèle PDF `jpsun_projectlabels`, avec une planche A4 unique en orientation paysage.
 - Affichage des dimensions sous chaque étiquette générée.
