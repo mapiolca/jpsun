@@ -1,5 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.22.2 (01/10/2026)
+- Correction du modèle PDF de stock : valorisation avec le PMP de l'entité active lorsque le partage des produits et le PMP par entité sont activés.
+- Les produits sans PMP dans cette entité restent affichés sans valorisation ; le PDF signale explicitement que le total des autres produits est partiel.
+- Ajout de l'onglet À propos aux réglages du module.
+
 ## 1.22.1 (24/08/2026)
 - Ajout du format d’étiquette de classeur 52 x 188 mm au modèle PDF `jpsun_projectlabels`, avec une planche A4 unique en orientation paysage.
 - Affichage des dimensions sous chaque étiquette générée.

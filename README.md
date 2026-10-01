@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 24/08/2026
+- Dernière mise à jour : 01/10/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.22.1
+- Version : 1.22.2
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -25,6 +25,7 @@
 - Ajout de fonctionnalités diverses pour JPSUN.
 - Rapport comptable des projets non soldés, avec agrégation des commandes, factures, achats, frais, temps et expéditions valorisées selon le réglage natif du module Marges.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.
+- Le modèle PDF de stock utilise le PMP de l'entité active lorsque le partage des produits et le PMP par entité sont activés ; les valorisations incomplètes sont signalées.
 - Intégration du modèle contrat JPSUN PRO avec le module Centrale PV.
 - Intégration du modèle contrat SOLEIL AQUITAIN avec centrales PV liées, annexes natives, mentions légales configurables et zone issue des catégories de contrat `lmdbzoning`.
 

@@ -84,6 +84,9 @@ class pdf_jpsun_stock extends ModelePDFStock
 	 */
 	public $tabTitleHeight;
 
+	/** @var array{nb: float, value: float, missing: int} */
+	private $stockPdfSummary = array('nb' => 0.0, 'value' => 0.0, 'missing' => 0);
+
 
 	/**
 	 *	Constructor
@@ -182,7 +185,8 @@ class pdf_jpsun_stock extends ModelePDFStock
 		}
 
 		// Load traductions files required by page
-		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "stocks", "orders", "deliveries"));
+		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "stocks", "orders", "deliveries", "jpsun@jpsun"));
+		$this->stockPdfSummary = array('nb' => 0.0, 'value' => 0.0, 'missing' => 0);
 
 		if ($conf->stock->dir_output) {
 			// Definition of $dir and $file
@@ -218,6 +222,44 @@ class pdf_jpsun_stock extends ModelePDFStock
 				$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
 				global $action;
 				$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+
+				// Prepare the same stock valuation for the table and the first-page summary.
+				$useEntityPmp = getDolGlobalString('MULTICOMPANY_PRODUCT_SHARING_ENABLED') && getDolGlobalString('MULTICOMPANY_PMP_PER_ENTITY_ENABLED');
+				$sql = "SELECT p.rowid, p.ref, p.label as produit, p.tobatch, p.fk_product_type as type, p.price, p.price_ttc, p.entity,";
+				$sql .= $useEntityPmp ? " pa.pmp as ppmp," : " p.pmp as ppmp,";
+				$sql .= " ps.reel as value";
+				$sql .= " FROM ".MAIN_DB_PREFIX."product_stock as ps";
+				$sql .= " INNER JOIN ".MAIN_DB_PREFIX."product as p ON p.rowid = ps.fk_product";
+				if ($useEntityPmp) {
+					$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_perentity as pa ON pa.fk_product = p.rowid AND pa.entity = ".((int) $conf->entity);
+				}
+				$sql .= " WHERE ps.reel <> 0";
+				$sql .= " AND ps.fk_entrepot = ".((int) $object->id);
+				$sql .= $this->db->order('p.ref', 'ASC');
+
+				$resql = $this->db->query($sql);
+				if (!$resql) {
+					$this->error = $this->db->lasterror();
+					return -1;
+				}
+				$stockRows = array();
+				$nblines = $this->db->num_rows($resql);
+				for ($i = 0; $i < $nblines; $i++) {
+					$objp = $this->db->fetch_object($resql);
+					if (!is_object($objp)) {
+						$this->error = $this->db->lasterror();
+						$this->db->free($resql);
+						return -1;
+					}
+					$stockRows[] = $objp;
+					$this->stockPdfSummary['nb'] += (float) $objp->value;
+					if ($useEntityPmp && $objp->ppmp === null) {
+						$this->stockPdfSummary['missing']++;
+					} else {
+						$this->stockPdfSummary['value'] += (float) price2num($objp->ppmp * $objp->value, 'MT');
+					}
+				}
+				$this->db->free($resql);
 
 				// Create pdf instance
 				$pdf = pdf_getInstance($this->format);
@@ -278,32 +320,18 @@ class pdf_jpsun_stock extends ModelePDFStock
 
 				// Show list of product in warehouse                                          */
 
-				$totalunit = 0;
-				$totalvalue = $totalvaluesell = 0;
+				$totalunit = $this->stockPdfSummary['nb'];
+				$totalvalue = $this->stockPdfSummary['value'];
+				$totalvaluesell = 0;
 
-				$sortfield = 'p.ref';
-				$sortorder = 'ASC';
-
-				$sql = "SELECT p.rowid as rowid, p.ref, p.label as produit, p.tobatch, p.fk_product_type as type, p.pmp as ppmp, p.price, p.price_ttc, p.entity,";
-				$sql .= " ps.reel as value";
-				$sql .= " FROM ".MAIN_DB_PREFIX."product_stock as ps, ".MAIN_DB_PREFIX."product as p";
-				$sql .= " WHERE ps.fk_product = p.rowid";
-				$sql .= " AND ps.reel <> 0"; // We do not show if stock is 0 (no product in this warehouse)
-				$sql .= " AND ps.fk_entrepot = ".((int) $object->id);
-				$sql .= $this->db->order($sortfield, $sortorder);
-
-				//dol_syslog('List products', LOG_DEBUG);
-				$resql = $this->db->query($sql);
-				if ($resql) {
-					$num = $this->db->num_rows($resql);
-					$nblines = $num;
+				if ($stockRows) {
 
 					$nexY = $tab_top + $this->tabTitleHeight;
 
 					for ($i = 0; $i < $nblines; $i++) {
 						$curY = $nexY;
 
-						$objp = $this->db->fetch_object($resql);
+						$objp = $stockRows[$i];
 
 						// Multilangs
 						if (getDolGlobalInt('MAIN_MULTILANGS')) { // si l'option est active
@@ -435,15 +463,15 @@ class pdf_jpsun_stock extends ModelePDFStock
 						$pdf->MultiCell($this->posxup - $this->posxqty - 0.8, $hRow, $towrite, 0, 'R', false, 0, '', '', true, 0, false, true, $hRow, 'T', true);
 
 						// AWP
-						$totalunit += $objp->value;
-
 						$pdf->SetXY($this->posxup, $curY);
-						$pdf->MultiCell($this->posxunit - $this->posxup - 0.8, $hRow, price(price2num($objp->ppmp, 'MU'), 0, $outputlangs), 0, 'R', false, 0, '', '', true, 0, false, true, $hRow, 'T', true);
+						$missingPmp = $useEntityPmp && $objp->ppmp === null;
+						$unitPmp = $missingPmp ? $outputlangs->transnoentities('JpsunStockPmpUnavailable') : price(price2num($objp->ppmp, 'MU'), 0, $outputlangs);
+						$pdf->MultiCell($this->posxunit - $this->posxup - 0.8, $hRow, $unitPmp, 0, 'R', false, 0, '', '', true, 0, false, true, $hRow, 'T', true);
 
 						// Total PMP
 						$pdf->SetXY($this->posxunit, $curY);
-						$pdf->MultiCell($this->posxdiscount - $this->posxunit - 0.8, $hRow, price(price2num($objp->ppmp * $objp->value, 'MT'), 0, $outputlangs), 0, 'R', false, 0, '', '', true, 0, false, true, $hRow, 'T', true);
-						$totalvalue += price2num($objp->ppmp * $objp->value, 'MT');
+						$lineValue = $missingPmp ? $outputlangs->transnoentities('JpsunStockPmpUnavailable') : price(price2num($objp->ppmp * $objp->value, 'MT'), 0, $outputlangs);
+						$pdf->MultiCell($this->posxdiscount - $this->posxunit - 0.8, $hRow, $lineValue, 0, 'R', false, 0, '', '', true, 0, false, true, $hRow, 'T', true);
 
 						$pricemin = 0;
 						/*
@@ -509,8 +537,6 @@ class pdf_jpsun_stock extends ModelePDFStock
 						}
 					}
 
-					$this->db->free($resql);
-
 					/**
 					 * Footer table
 					 */
@@ -528,7 +554,7 @@ class pdf_jpsun_stock extends ModelePDFStock
 
 						// Ref.
 						$pdf->SetXY($this->posxdesc, $curY);
-						$pdf->MultiCell($this->wref, 3, $langs->trans("Total"), 0, 'L');
+						$pdf->MultiCell($this->wref, 3, $outputlangs->transnoentities($this->stockPdfSummary['missing'] ? 'JpsunStockPartialTotal' : 'Total'), 0, 'L');
 
 						// Quantity
 						$valtoshow = price2num($totalunit, 'MS');
@@ -540,6 +566,11 @@ class pdf_jpsun_stock extends ModelePDFStock
 						// Total PMP
 						$pdf->SetXY($this->posxunit, $curY);
 						$pdf->MultiCell($this->posxdiscount - $this->posxunit - 0.8, 3, price(price2num($totalvalue, 'MT'), 0, $outputlangs), 0, 'R');
+						if ($this->stockPdfSummary['missing'] > 0) {
+							$pdf->SetFont('', '', $default_font_size - 2);
+							$pdf->SetXY($this->posxdesc, $curY + 4);
+							$pdf->MultiCell($this->page_largeur - $this->marge_gauche - $this->marge_droite, 3, $outputlangs->transnoentities('JpsunStockValuationPartial', $this->stockPdfSummary['missing']), 0, 'L');
+						}
 						/*
 						// Price sell min
 						if (!getDolGlobalString('PRODUIT_MULTIPRICES')) {
@@ -549,8 +580,6 @@ class pdf_jpsun_stock extends ModelePDFStock
 						}
 						*/
 					}
-				} else {
-					dol_print_error($this->db);
 				}
 
 				// Displays notes
@@ -761,7 +790,7 @@ class pdf_jpsun_stock extends ModelePDFStock
 		global $conf, $langs;
 
 		// Load traductions files required by page
-		$outputlangs->loadLangs(array("main", "propal", "companies", "bills", "orders", "stocks"));
+		$outputlangs->loadLangs(array("main", "propal", "companies", "bills", "orders", "stocks", "jpsun@jpsun"));
 
 		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
@@ -843,7 +872,7 @@ class pdf_jpsun_stock extends ModelePDFStock
 			$nexY = $pdf->GetY();
 
 			$calcproductsunique = $object->nb_different_products();
-			$calcproducts = $object->nb_products();
+			$calcproducts = $this->stockPdfSummary;
 
 			// Total nb of different products
 			$pdf->writeHTMLCell(190, 2, $this->marge_gauche, $nexY, '<b>'.$outputlangs->transnoentities("NumberOfDifferentProducts").' : </b>'.(empty($calcproductsunique['nb']) ? '0' : $calcproductsunique['nb']), 0, 1);
@@ -855,8 +884,12 @@ class pdf_jpsun_stock extends ModelePDFStock
 			$nexY = $pdf->GetY();
 
 			// Value
-			$pdf->writeHTMLCell(190, 2, $this->marge_gauche, $nexY, '<b>'.$outputlangs->transnoentities("EstimatedStockValueShort").' : </b>'.price((empty($calcproducts['value']) ? '0' : price2num($calcproducts['value'], 'MT')), 0, $langs, 0, -1, -1, $conf->currency), 0, 1);
+			$pdf->writeHTMLCell(190, 2, $this->marge_gauche, $nexY, '<b>'.$outputlangs->transnoentities($calcproducts['missing'] ? 'JpsunStockPartialValue' : 'EstimatedStockValueShort').' : </b>'.price(price2num($calcproducts['value'], 'MT'), 0, $outputlangs, 0, -1, -1, $conf->currency), 0, 1);
 			$nexY = $pdf->GetY();
+			if ($calcproducts['missing'] > 0) {
+				$pdf->writeHTMLCell(190, 2, $this->marge_gauche, $nexY, $outputlangs->transnoentities('JpsunStockValuationPartial', $calcproducts['missing']), 0, 1);
+				$nexY = $pdf->GetY();
+			}
 
 			// Value
 			$pdf->writeHTMLCell(190, 2, $this->marge_gauche, $nexY, '<b>'.$outputlangs->transnoentities("Date").' : </b>'.dol_print_date(dol_now(), 'dayhour'), 0, 1);
