@@ -1,5 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.22.3 (05/10/2026)
+- Maintien des actions de masse JPSUN sur les tâches sous Dolibarr 24 ; leur désactivation intervient désormais à partir de Dolibarr 25, pour l'affichage, les modales et le traitement serveur.
+
 ## 1.22.2 (01/10/2026)
 - Correction du modèle PDF de stock : valorisation avec le PMP de l'entité active lorsque le partage des produits et le PMP par entité sont activés.
 - Les produits sans PMP dans cette entité restent affichés sans valorisation ; le PDF signale explicitement que le total des autres produits est partiel.

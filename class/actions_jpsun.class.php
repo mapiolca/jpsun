@@ -1122,7 +1122,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$error = 0;
 		$done = 0;
 		$contexts = explode(':', $parameters['context']);
-		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
+		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '25.0', '<'));
 		$requestedAction = GETPOST('action', 'aZ09');
 		$massactionFromHook = (isset($parameters['massaction']) && $parameters['massaction'] !== '' ? $parameters['massaction'] : '');
 		$massactionFromRequest = GETPOST('massaction', 'aZ09');
@@ -1350,7 +1350,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		global $db, $form, $langs, $user;
 
 		$contexts = explode(':', $parameters['context']);
-		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
+		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '25.0', '<'));
 		$massaction = (!empty($parameters['massaction']) ? $parameters['massaction'] : GETPOST('massaction', 'aZ09'));
 		$toselect = GETPOST('toselect', 'array:int');
 		if (empty($toselect) && !empty($parameters['toselect']) && is_array($parameters['toselect'])) {
@@ -1548,7 +1548,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$error = 0;
 		$contexts = explode(':', $parameters['context']);
-		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '24.0', '<'));
+		$isCompatibleVersion = (defined('DOL_VERSION') && version_compare(DOL_VERSION, '25.0', '<'));
 		$canCloseTasks = $user->hasRight('projet', 'creer');
 		$langs->load('jpsun@jpsun');
 

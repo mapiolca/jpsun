@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 01/10/2026
+- Dernière mise à jour : 05/10/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.22.2
+- Version : 1.22.3
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -23,6 +23,7 @@
 ## Fonctionnalités
 
 - Ajout de fonctionnalités diverses pour JPSUN.
+- Actions de masse JPSUN sur les tâches disponibles jusqu’à Dolibarr 24 inclus ; désactivées à partir de Dolibarr 25.
 - Rapport comptable des projets non soldés, avec agrégation des commandes, factures, achats, frais, temps et expéditions valorisées selon le réglage natif du module Marges.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.
 - Le modèle PDF de stock utilise le PMP de l'entité active lorsque le partage des produits et le PMP par entité sont activés ; les valorisations incomplètes sont signalées.
