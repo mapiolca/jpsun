@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.23.0 (28/10/2026)
+- Ajout du modèle de facture `jpsuninvoice`, basé sur Sponge, avec une ligne HT « Acomptes déduits » juste au-dessus de « Remise totale » : les acomptes déduits sont séparés des remises commerciales, sans modifier les totaux HT, TVA et TTC calculés par Dolibarr.
+- Identification des acomptes par les liaisons natives des lignes et le type de facture source, avec prise en charge des acomptes multiples et des montants en devise ; les factures de situation et les avoirs conservent leur récapitulatif natif.
+- Ajout des traductions françaises et anglaises, d'un accès aux réglages natifs des modèles de facture et d'un onglet Compatibilité. Le modèle nécessite Dolibarr 24 ou plus et reste désactivé sous Dolibarr 20 à 23.
+- Après mise à jour, activer `jpsuninvoice` dans les modèles de document des réglages natifs des factures, puis le sélectionner sur les factures concernées. Aucune migration de données ni activation automatique du modèle.
+
 ## 1.22.3 (05/10/2026)
 - Maintien des actions de masse JPSUN sur les tâches sous Dolibarr 24 ; leur désactivation intervient désormais à partir de Dolibarr 25, pour l'affichage, les modales et le traitement serveur.
 

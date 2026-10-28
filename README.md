@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 05/10/2026
+- Dernière mise à jour : 28/10/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.22.3
+- Version : 1.23.0
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -35,6 +35,14 @@
 Le menu **Comptabilité > Projets non soldés** présente les projets ouverts dont le total HT des commandes valides diffère du total HT des factures clients émises. L'accès nécessite l'un des droits natifs de consultation des rapports comptables, en comptabilité simplifiée ou en partie double. Les restrictions natives de visibilité des projets et des entités restent appliquées aux données affichées.
 
 Les expéditions sont recalculées à partir des mouvements réels de stock et du coût courant fourni par le module Marges (meilleur prix fournisseur, PMP ou prix de revient). Les sources optionnelles désactivées sont signalées comme non disponibles et les coûts ou taux horaires manquants sont valorisés à zéro avec une alerte. La liste filtrée complète peut être exportée en CSV.
+
+### Modèle de facture JPSUN — version 1.23.0
+
+Le nouveau modèle de facture `jpsuninvoice`, dérivé du modèle natif **Sponge**, sépare les **Acomptes déduits** de la **Remise totale**, dans cet ordre et en montants HT. Les acomptes sont identifiés par les liaisons natives des lignes vers leurs factures d’acompte ; un avoir ou une ligne négative ordinaire n’est pas reclassé en acompte. Les totaux HT, TVA, TTC et le solde restent calculés et imprimés par Dolibarr. Les acomptes affectés comme règlements restent dans le bloc natif des paiements.
+
+Ce modèle nécessite **Dolibarr 24 ou plus**, qui fournit les contrôles d’affichage des remises de Sponge ; il reste désactivé sous Dolibarr 20 à 23. Les factures de situation et les avoirs conservent le récapitulatif natif. Activer le modèle dans **Configuration > Modules > Factures > Modèles de document**, puis le sélectionner sur la facture. Les réglages JPSUN > Factures donnent accès à cet écran et l’onglet Compatibilité indique sa disponibilité.
+
+Les limites et validations de la version `1.23.0` sont consignées dans [les preuves de développement](test/README-invoice.md).
 
 ## Traductions
 
