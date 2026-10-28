@@ -12,6 +12,11 @@ require_once __DIR__.'/_setup_common.php';
 jpsunHandleAdminSetupActions();
 jpsunPrintAdminSetupHeader('invoices');
 
+setup_print_title($langs->trans('JpsunInvoiceModelTitle'));
+print '<tr class="oddeven"><td colspan="3">'.$langs->trans('JpsunInvoiceModelDescription').'</td></tr>';
+print '<tr class="oddeven"><td colspan="3">'.$langs->trans('JpsunInvoiceModelRequirement').'</td></tr>';
+print '<tr class="oddeven"><td colspan="3"><a href="'.DOL_URL_ROOT.'/admin/invoice.php">'.$langs->trans('JpsunInvoiceModelSetup').'</a></td></tr>';
+
 setup_print_title($langs->trans("SetupSituationTitle"));
 
 $ajaxConstantOnOffInput = array(

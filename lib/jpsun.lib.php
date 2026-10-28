@@ -73,6 +73,10 @@ function jpsunAdminPrepareHead()
     $head[$h][1] = $langs->trans("JpsunSetupTabTickets");
     $head[$h][2] = 'tickets';
     $h++;
+    $head[$h][0] = dol_buildpath('/jpsun/admin/compatibility.php', 1);
+    $head[$h][1] = $langs->trans('Compatibility');
+    $head[$h][2] = 'compatibility';
+    $h++;
     $head[$h][0] = dol_buildpath("/jpsun/admin/about.php", 1);
     $head[$h][1] = $langs->trans("About");
     $head[$h][2] = 'about';
