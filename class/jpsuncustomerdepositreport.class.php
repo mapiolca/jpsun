@@ -67,7 +67,8 @@ class JpsunCustomerDepositReport
 		$available = min(max(0, $net), $capacity);
 		$remaining = (float) price2num(max(0, $available - max(0, $applied)), 'MT');
 		$status = $remaining > 0 ? 'DepositControlOutstanding' : 'DepositControlCleared';
-		if ($net < 0 || $credited > $invoiced || $net > $capacity || $applied > $available || $applied < 0) {
+		if ($net < 0 || (float) price2num($credited - $invoiced, 'MT') > 0 || $net > $capacity
+			|| (float) price2num($applied - $available, 'MT') > 0 || $applied < 0) {
 			$status = 'DepositControlInconsistent';
 		}
 		return array('received' => $net, 'remaining' => $remaining, 'status' => $status);
@@ -137,7 +138,12 @@ class JpsunCustomerDepositReport
 		$sqlcredits .= " AND cn.datef <= '".$this->db->escape($cutoff)."' AND (cn.date_valid IS NULL OR cn.date_valid <= '".$this->db->escape($cutoff)."')";
 		$sqlcredits .= ' GROUP BY cn.fk_facture_source';
 
-		$sqlremaining = 'GREATEST(0, LEAST(GREATEST(0, pay.receipts - pay.refunds), GREATEST(0, f.total_ttc - COALESCE(credit.credited, 0))) - GREATEST(0, COALESCE(used.applied, 0)))';
+		// Mirror calculate() at SQL filtering time, before counting or paginating.
+		// Exact arithmetic at the native monetary column scale avoids DOUBLE tie rounding.
+		$totalprecision = getDolGlobalInt('MAIN_MAX_DECIMALS_TOT');
+		$sqlnet = 'ROUND(CAST(pay.receipts AS DECIMAL(65,8)) - CAST(pay.refunds AS DECIMAL(65,8)), '.$totalprecision.')';
+		$sqlcapacity = 'ROUND(GREATEST(0, CAST(f.total_ttc AS DECIMAL(65,8)) - CAST(COALESCE(credit.credited, 0) AS DECIMAL(65,8))), '.$totalprecision.')';
+		$sqlremaining = 'ROUND(GREATEST(0, LEAST(GREATEST(0, '.$sqlnet.'), '.$sqlcapacity.') - GREATEST(0, CAST(COALESCE(used.applied, 0) AS DECIMAL(65,8)))), '.$totalprecision.')';
 		$sqlfrom = ' FROM '.$this->db->prefix().'facture AS f';
 		$sqlfrom .= ' INNER JOIN '.$this->db->prefix().'societe AS s ON s.rowid = f.fk_soc';
 		$sqlfrom .= ' INNER JOIN ('.$sqlpayments.') AS pay ON pay.fk_facture = f.rowid';

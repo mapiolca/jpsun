@@ -250,6 +250,59 @@ class DepositControlTest(unittest.TestCase):
         self.assertAlmostEqual(data['received'], .988)
         self.assertAlmostEqual(data['remaining'], .865)
 
+    def test_status_filters_match_native_rounded_remaining(self):
+        self.db.executescript('''
+            UPDATE fixture_paiement SET datep='2026-07-01' WHERE rowid=2;
+            DELETE FROM fixture_societe_remise_except WHERE fk_facture_source=1;
+            INSERT INTO fixture_societe_remise_except VALUES(1, 0, 100, NULL, 0, 1);
+        ''')
+        cases = [
+            (2, 1, .10, .20, .30, 0),
+            (2, 1, .10, .20, .299, 0),
+            (3, 1, .10, .20, .299, .001),
+            (0, 2, 1, 0, .6, 0),
+            (0, 2, 1, 0, .4, 1),
+            (0, 2, 1, 0, .5, 1),
+            (2, 1, .006, 0, .004, .01),
+            (2, .006, .01, 0, .004, .01),
+            (4, 1, .1234, .0001, .1235, 0),
+        ]
+        for precision, invoiced, first, second, applied, remaining in cases:
+            with self.subTest(precision=precision, receipts=[first, second], applied=applied, invoiced=invoiced):
+                self.db.execute('UPDATE fixture_facture SET total_ttc=? WHERE rowid=1', (invoiced,))
+                self.db.execute('UPDATE fixture_paiement_facture SET amount=? WHERE fk_paiement=1', (first,))
+                self.db.execute('UPDATE fixture_paiement_facture SET amount=? WHERE fk_paiement=2', (second,))
+                self.db.execute('UPDATE fixture_societe_remise_except SET amount_ttc=? WHERE fk_facture_source=1', (applied,))
+                line = self.deposit(precision=precision)
+                self.assertEqual(line['calculation']['remaining'], remaining)
+                self.assertEqual(line['calculation']['status'], 'DepositControlOutstanding' if remaining else 'DepositControlCleared')
+                for status in ['cleared', 'outstanding']:
+                    matches = (remaining == 0) if status == 'cleared' else (remaining > 0)
+                    data = self.run_worker(precision=precision, filter={'ref': 'D1', 'status': status}, limit=1)
+                    self.assertEqual(data['total'], int(matches))
+                    self.assertEqual(bool(data['lines']), matches)
+
+    def test_fractional_application_and_credit_sums_do_not_flag_inconsistency(self):
+        self.db.executescript('''
+            UPDATE fixture_facture SET total_ttc=.3 WHERE rowid=1;
+            UPDATE fixture_facture SET datef='2026-07-01', date_valid='2026-07-01' WHERE rowid=11;
+            UPDATE fixture_paiement SET datep='2026-07-01' WHERE rowid=2;
+            UPDATE fixture_paiement_facture SET amount=.3 WHERE fk_paiement=1;
+            UPDATE fixture_paiement_facture SET amount=0 WHERE fk_paiement=2;
+            UPDATE fixture_societe_remise_except SET amount_ttc=.1 WHERE fk_facture_line=100;
+            UPDATE fixture_societe_remise_except SET amount_ttc=.2 WHERE fk_facture_line=101;
+        ''')
+        self.assertEqual(self.deposit()['calculation']['status'], 'DepositControlCleared')
+        self.db.executescript('''
+            DELETE FROM fixture_societe_remise_except WHERE fk_facture_source=1;
+            INSERT INTO fixture_facture VALUES
+                (20, 'CN-ONE', 2, 1, 1, '2026-07-01', '2026-07-01', 1, -.1, 1),
+                (21, 'CN-TWO', 2, 1, 1, '2026-07-01', '2026-07-01', 1, -.2, 1);
+            INSERT INTO fixture_paiement VALUES(20, 1, '2026-08-01');
+            INSERT INTO fixture_paiement_facture VALUES(20, 1, -.3);
+        ''')
+        self.assertEqual(self.deposit()['calculation']['status'], 'DepositControlCleared')
+
     def test_menu_cycle_and_suppression(self):
         menu = [dict(url='/accountancy/index.php?leftmenu=accountancy_accountancy', level=0, enabled=1),
                 dict(url='/other/module.php', level=1, enabled=1),
