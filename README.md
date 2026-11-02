@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 28/10/2026
+- Dernière mise à jour : 02/11/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.23.0
+- Version : 1.24.0
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -44,7 +44,7 @@ Ce modèle nécessite **Dolibarr 24 ou plus**, qui fournit les contrôles d’af
 
 Les limites et validations de la version `1.23.0` sont consignées dans [les preuves de développement](test/README-invoice.md).
 
-### Évolution proposée : contrôle des acomptes clients avant Dolibarr 26
+### Contrôle des acomptes clients avant Dolibarr 26 — version 1.24.0
 
 Le rétroportage demandé de [Dolibarr/dolibarr#42407](https://github.com/Dolibarr/dolibarr/pull/42407) ajoute **Comptabilité > Régularisations > Contrôle des acomptes clients** par le hook natif `menuLeftMenuItems`, sans modification du core. Il nécessite les modules JPSUN, Comptabilité en partie double et Factures, un utilisateur interne et le droit natif de lecture des rapports comptables. Les restrictions commerciales s’appliquent avant pagination ; ce contrôle comptable reste dans l’entité courante, sans afficher les factures partagées d’une autre entité.
 
@@ -52,7 +52,7 @@ Le rapport reprend les encaissements, remboursements, avoirs et utilisations à 
 
 Le menu, l’accès direct et le service sont désactivés à partir de Dolibarr 26, préversions incluses. Si une instance antérieure expose déjà le contrôle natif, le hook conserve son entrée sans doublon. L’onglet Compatibilité précise les conditions d’accès. Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module, en conservant les réglages existants ; aucune activation ou réactivation automatique n’est effectuée.
 
-Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. L’ID historique `999000`, les droits et la version publiée `1.23.0` restent ceux du module existant ; cette proposition ne constitue pas une release.
+Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. La version `1.24.0` est préparée dans cette PR en incrémentant le composant mineur `y` de `x.y.z`. L’ID historique `999000` et les droits existants sont conservés ; aucune release GitHub ni aucun déploiement n’est effectué par cette préparation.
 
 Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
 

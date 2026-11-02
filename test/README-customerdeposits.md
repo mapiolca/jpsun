@@ -1,6 +1,6 @@
-# Contrôle des acomptes clients — proposition de développement
+# Contrôle des acomptes clients — préparation de JPSUN 1.24.0
 
-État vérifié le 2026-11-02. Cette proposition ne change pas la version publiée `1.23.0` et n’ajoute pas d’entrée de release au changelog.
+État vérifié le 2026-11-02. La version `1.24.0` est préparée dans la PR, avec incrément du composant mineur `y` de `x.y.z` et ajout de son entrée au changelog. L’onglet À propos lit automatiquement cette version depuis le descripteur ; aucune release GitHub ni aucun déploiement n’est effectué.
 
 ## Source et intégration
 
