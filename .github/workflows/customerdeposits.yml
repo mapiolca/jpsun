@@ -1,0 +1,60 @@
+name: Customer deposit control
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  customerdeposits:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dolibarr: '20.0.0'
+            ref: 697bf01970740a3339cd99cf055b4428fc5e051c
+            php: '8.0'
+          - dolibarr: '21.0.0'
+            ref: fd970b582a4d8c5779a2958a4e9f4fce225cf085
+            php: '8.1'
+          - dolibarr: '22.0.0'
+            ref: 49b9a6d19f3deb6d410c0e9b3310e95be4ea7710
+            php: '8.2'
+          - dolibarr: '23.0.0'
+            ref: 57a1f05d490a7a80944a8232e9c613e6556d2704
+            php: '8.2'
+          - dolibarr: '24.0.0'
+            ref: 769c7db907099643558e77d7002c109cfda919e5
+            php: '8.3'
+          - dolibarr: '25.0.0-alpha'
+            ref: 0ac96524bf68b063a44d6af8137e05bf11c227c8
+            php: '8.4'
+    name: Dolibarr ${{ matrix.dolibarr }} / PHP ${{ matrix.php }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: jpsun
+      - uses: actions/checkout@v4
+        with:
+          repository: Dolibarr/dolibarr
+          ref: ${{ matrix.ref }}
+          path: dolibarr
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Lint new entry points
+        run: |
+          php -l jpsun/customerdeposits.php
+          php -l jpsun/class/jpsuncustomerdepositreport.class.php
+          php -l jpsun/class/jpsuncustomerdepositcompatibility.class.php
+          php -l jpsun/class/actions_jpsun.class.php
+      - name: SQL fixtures, native hooks and icon resolution
+        env:
+          DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}
+        run: python3 jpsun/test/customerdeposits.py dolibarr/htdocs

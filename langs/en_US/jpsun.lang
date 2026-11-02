@@ -469,3 +469,27 @@ JpsunInvoiceModelSetup=Enable jpsuninvoice in the native invoice settings
 JpsunInvoiceDocumentDirectoryUnavailable=The invoice owner's document directory is unavailable.
 JpsunInvoiceDiscountUnavailable=A deduction linked to this invoice is missing, inaccessible or inconsistent. Check the relation before generating the document.
 JpsunInvoiceValidationStatus=Module target: Dolibarr 20 to 25. The invoice template requires Dolibarr 24 or later. Real instance tests and validation of each version remain pending; see the development evidence.
+
+## Customer deposit control
+MenuAccountancyAdjustments=Adjustments
+CustomerDepositControl=Customer deposit control
+DepositControlDescription=Control customer deposits at the selected cutoff using dated receipts, refunds, credit notes and applications. Amounts include tax, in the company currency. The remaining receipt is not a deferred revenue amount or an accounting balance: review the source accounting and actual delivery before deciding between customer advances, deferred revenue or another treatment. No accounting entries are generated.
+DepositControlHistoryWarning=Reconstruction uses currently existing documents and links, invoice and validation dates, and payment dates. Later deletions, unlinks, edits or status changes cannot be reconstructed. Linked order statuses are current and planned dates are not evidence of delivery. Fully applied deposits remain available in the All view because the consuming invoice may still require review.
+DepositControlCutoffDate=Cutoff date
+DepositControlInvoiced=Deposit invoiced (incl. tax)
+DepositControlReceived=Net cash received (incl. tax)
+DepositControlRefunded=Cash refunded (incl. tax)
+DepositControlCredited=Credit notes (incl. tax)
+DepositControlLastPayment=Last payment by cutoff
+DepositControlApplied=Applied by cutoff (incl. tax)
+DepositControlRemaining=Remaining receipt (incl. tax)
+DepositControlApplications=Consuming invoices
+DepositControlOrders=Linked orders (current status)
+DepositControlOutstanding=Remaining receipt to review
+DepositControlCleared=No remaining receipt
+DepositControlInconsistent=Amounts or document status to review
+DepositControlAppliedAtCutoff=Applied by cutoff
+DepositControlNotAppliedAtCutoff=After cutoff or not validated
+DepositControlNoOrder=No accessible directly linked order
+DepositControlPageTotal=This page, including tax: net receipts %s; applied %s; remaining %s
+JpsunDepositControlRequirement=Requested backport of Dolibarr PR #42407 for Dolibarr 20 to 25, with JPSUN, Double-entry accounting and Invoices enabled. Disabled from Dolibarr 26, including prereleases. Native accounting report permission required; no accounting entries are generated.

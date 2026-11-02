@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.23.0';
+		$this->version = '1.24.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -90,8 +90,10 @@ class modJpsun extends DolibarrModules
 			'triggers' => 1,
 			'models' => 1,
 			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard', 'propalcard', 'formfile'),
-			'picto'=>'object_jpsun@jpsun'
 		);
+		if (version_compare(DOL_VERSION, '26.0', '<')) {
+			$this->module_parts['hooks'][] = 'leftblock';
+		}
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");

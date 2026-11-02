@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 28/10/2026
+- Dernière mise à jour : 02/11/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.23.0
+- Version : 1.24.0
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -43,6 +43,20 @@ Le nouveau modèle de facture `jpsuninvoice`, dérivé du modèle natif **Sponge
 Ce modèle nécessite **Dolibarr 24 ou plus**, qui fournit les contrôles d’affichage des remises de Sponge ; il reste désactivé sous Dolibarr 20 à 23. Les factures de situation et les avoirs conservent le récapitulatif natif. Activer le modèle dans **Configuration > Modules > Factures > Modèles de document**, puis le sélectionner sur la facture. Les réglages JPSUN > Factures donnent accès à cet écran et l’onglet Compatibilité indique sa disponibilité.
 
 Les limites et validations de la version `1.23.0` sont consignées dans [les preuves de développement](test/README-invoice.md).
+
+### Contrôle des acomptes clients avant Dolibarr 26 — version 1.24.0
+
+Le rétroportage demandé de [Dolibarr/dolibarr#42407](https://github.com/Dolibarr/dolibarr/pull/42407) ajoute **Comptabilité > Régularisations > Contrôle des acomptes clients** par le hook natif `menuLeftMenuItems`, sans modification du core. Il nécessite les modules JPSUN, Comptabilité en partie double et Factures, un utilisateur interne et le droit natif de lecture des rapports comptables. Les restrictions commerciales s’appliquent avant pagination ; ce contrôle comptable reste dans l’entité courante, sans afficher les factures partagées d’une autre entité.
+
+Le rapport reprend les encaissements, remboursements, avoirs et utilisations à la date d’arrêté, les factures consommatrices et les commandes directement liées accessibles. Les montants sont TTC dans la devise de la société. Le reliquat ne constitue ni un calcul de PCA ni un solde comptable, et aucune écriture n’est produite. Les liaisons et statuts actuels ne permettent pas de reconstituer les suppressions ou modifications historiques ni de prouver une livraison.
+
+Le menu, l’accès direct et le service sont désactivés à partir de Dolibarr 26, préversions incluses. Si une instance antérieure expose déjà le contrôle natif, le hook conserve son entrée sans doublon. L’onglet Compatibilité précise les conditions d’accès. Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module, en conservant les réglages existants ; aucune activation ou réactivation automatique n’est effectuée.
+
+Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. La version `1.24.0` est préparée dans cette PR en incrémentant le composant mineur `y` de `x.y.z`. L’ID historique `999000` et les droits existants sont conservés ; aucune release GitHub ni aucun déploiement n’est effectué par cette préparation.
+
+Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
+
+Le contrôle est entièrement traduit en français et en anglais : ses 22 libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
 
 ## Traductions
 
