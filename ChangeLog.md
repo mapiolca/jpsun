@@ -1,7 +1,7 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.24.0 (02/11/2026)
-- Ajout du contrôle des acomptes clients à une date d’arrêté : encaissements nets, remboursements, avoirs, utilisations sur factures et commandes directement liées accessibles, sans génération d’écriture comptable.
+- Ajout du contrôle des acomptes clients à une date d’arrêté : encaissements nets, remboursements sur l’acompte ou ses avoirs liés, avoirs, utilisations sur factures et commandes directement liées accessibles, sans génération d’écriture comptable.
 - Intégration au menu comptable par le hook natif, avec droits, restrictions commerciales et isolation d’entité ; disponible sous Dolibarr 20 à 25 et désactivée dès Dolibarr 26, préversions incluses. Interface traduite en français et en anglais.
 - Correction du pictogramme JPSUN avec une copie compatible avec le rendu récent, tout en conservant l’image historique pour les versions antérieures.
 - Après mise à jour, actualiser les hooks persistés par le parcours natif du module en conservant les réglages existants. Aucune migration SQL ni réactivation automatique.

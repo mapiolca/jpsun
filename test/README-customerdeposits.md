@@ -12,6 +12,10 @@ Le hook `menuLeftMenuItems`, disponible dans les sources v20 à v25 examinées, 
 
 ## Commandes et couverture
 
+La revue [sur les remboursements des avoirs](https://github.com/mapiolca/jpsun/pull/72#discussion_r4442905989) a été reproduite avant correction : 0 au lieu de 120 de remboursement pour un acompte intégralement remboursé, et 5 au lieu de 20 pour le scénario mixte. Les paiements négatifs des avoirs liés sont désormais agrégés une seule fois sous l’acompte source. Entité du paiement et des deux factures, tiers, type, statut et dates de l’avoir sont contrôlés ; le montant de l’avoir reste calculé séparément du flux de trésorerie. Le nombre de requêtes par page reste inchangé.
+
+Contrat natif lu dans les six révisions de la matrice : `compta/paiement.php` normalise le paiement d’un avoir en montant négatif sous l’identifiant de cet avoir, notamment [v20, lignes 232–240](https://github.com/Dolibarr/dolibarr/blob/697bf01970740a3339cd99cf055b4428fc5e051c/htdocs/compta/paiement.php#L232-L240) et [v24, lignes 243–251](https://github.com/Dolibarr/dolibarr/blob/769c7db907099643558e77d7002c109cfda919e5/htdocs/compta/paiement.php#L243-L251). Lecture de sources et tests SQL simulés, sans remboursement effectué sur une instance.
+
 Le support français comprend les 22 libellés propres au contrôle dans `langs/fr_FR/jpsun.lang`, indépendamment du catalogue anglais de la PR core. Le test de langue utilise `Translate` et `load('jpsun@jpsun')` avec les racines natives de modules ; aucune traduction n’est injectée dans `tab_translate`. Il vérifie le chargement complet sans clé brute ni repli anglais, les accents, les paramètres du total de page et le texte des deux entrées du menu.
 
 Avec un arbre Dolibarr complet accessible localement :
@@ -24,10 +28,11 @@ php <phpstan.phar> analyse -c test/.runtime/phpstan-deposits.neon --no-progress 
 
 Les tests exécutent les SELECT de production dans une base SQLite en mémoire par un transport PHP/Python. Les classes et fonctions natives sont chargées depuis les sources indiquées, mais l’acteur, les réponses de base et le contexte d’installation sont simulés. Les fonctions MySQL `GREATEST` et `LEAST` sont adaptées pour SQLite. Ce contrôle ne remplace pas une recette MySQL/MariaDB ou Multicompany réelle.
 
-Les 17 tests couvrent :
+Les 19 tests couvrent :
 
 - acomptes non payés exclus, encaissements partiels et futurs, utilisations datées, validations tardives et brouillons ;
 - acomptes entièrement utilisés conservés dans Tous et dans le filtre sans reliquat, remboursements et avoirs séparés, incohérences signalées ;
+- remboursement intégral via avoir, remboursements directs et via plusieurs avoirs sans multiplication des encaissements, paiements futurs et avoirs hors périmètre ou non validés exclus ;
 - isolation des entités et restrictions commerciales avant calcul des compteurs et pagination, liaisons étrangères exclues ;
 - refus sans requête pour droit absent, administrateur sans droit, utilisateur externe, dépendance absente et v26/v27 ; commandes omises sans droit ou sans module ;
 - filtres, quotes, tri, pagination, doublons de commerciaux et de liaisons, échecs des quatre requêtes sans résultat partiel, précision monétaire native ;
@@ -35,16 +40,16 @@ Les 17 tests couvrent :
 - résolution native des deux chemins d’image et identité binaire de `jpsun.png` avec l’original `object_jpsun.png` ;
 - chargement natif du catalogue français, couverture des 22 libellés et menus traduits sans repli sur l’anglais.
 
-Exécutions locales : 17 tests réussis sur chacun des six arbres ci-dessous, tous sous **PHP 8.4.22**, soit 102 tests. Les schémas SQL touchés et les signatures natives utilisées ont également été lus dans ces révisions.
+Exécutions locales : 19 tests réussis sur chacun des six arbres ci-dessous, tous sous **PHP 8.4.22**, soit 114 tests. Les schémas SQL touchés et les signatures natives utilisées ont également été lus dans ces révisions.
 
 | Sources | Commit | Résultat local |
 |---|---|---|
-| Dolibarr 20.0.0 | `697bf01970740a3339cd99cf055b4428fc5e051c` | 17 réussis |
-| Dolibarr 21.0.0 | `fd970b582a4d8c5779a2958a4e9f4fce225cf085` | 17 réussis |
-| Dolibarr 22.0.0 | `49b9a6d19f3deb6d410c0e9b3310e95be4ea7710` | 17 réussis |
-| Dolibarr 23.0.0 | `57a1f05d490a7a80944a8232e9c613e6556d2704` | 17 réussis |
-| Dolibarr 24.0.0 | `769c7db907099643558e77d7002c109cfda919e5` | 17 réussis |
-| Dolibarr 25.0.0-alpha | `0ac96524bf68b063a44d6af8137e05bf11c227c8` | 17 réussis ; préversion |
+| Dolibarr 20.0.0 | `697bf01970740a3339cd99cf055b4428fc5e051c` | 19 réussis |
+| Dolibarr 21.0.0 | `fd970b582a4d8c5779a2958a4e9f4fce225cf085` | 19 réussis |
+| Dolibarr 22.0.0 | `49b9a6d19f3deb6d410c0e9b3310e95be4ea7710` | 19 réussis |
+| Dolibarr 23.0.0 | `57a1f05d490a7a80944a8232e9c613e6556d2704` | 19 réussis |
+| Dolibarr 24.0.0 | `769c7db907099643558e77d7002c109cfda919e5` | 19 réussis |
+| Dolibarr 25.0.0-alpha | `0ac96524bf68b063a44d6af8137e05bf11c227c8` | 19 réussis ; préversion |
 
 La CI ajoutée fixe ces mêmes commits et prévoit respectivement PHP 8.0, 8.1, 8.2, 8.2, 8.3 et 8.4. Sa déclaration n’est pas une preuve d’exécution : consulter les résultats du SHA de la PR.
 

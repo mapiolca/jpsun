@@ -179,6 +179,55 @@ class DepositControlTest(unittest.TestCase):
         self.db.execute("UPDATE fixture_facture SET datef='2026-07-01', date_valid='2026-07-01' WHERE rowid=11")
         self.assertEqual(self.deposit()['calculation']['status'], 'DepositControlInconsistent')
 
+    def test_credit_note_refund_is_attributed_to_source_deposit(self):
+        self.db.executescript('''
+            DELETE FROM fixture_societe_remise_except WHERE fk_facture_source=1;
+            UPDATE fixture_paiement SET datep='2026-07-01' WHERE rowid=2;
+            INSERT INTO fixture_facture VALUES(20, 'CN-FULL', 2, 1, 1, '2026-07-01', '2026-07-01', 1, -120, 1);
+            INSERT INTO fixture_paiement VALUES(20, 1, '2026-08-01');
+            INSERT INTO fixture_paiement_facture VALUES(20, 20, -120);
+        ''')
+        line = self.deposit()
+        self.assertEqual(line['receipts'], 120)
+        self.assertEqual(line['refunds'], 120)
+        self.assertEqual(line['credited'], 120)
+        self.assertEqual(line['calculation'], dict(received=0, remaining=0, status='DepositControlCleared'))
+        self.assertIn('1', self.run_worker(filter={'status': 'cleared'})['lines'])
+        self.assertNotIn('1', self.run_worker(filter={'status': 'outstanding'})['lines'])
+
+    def test_credit_note_refunds_preserve_cutoff_entity_and_client_scope(self):
+        self.db.executescript('''
+            DELETE FROM fixture_societe_remise_except WHERE fk_facture_source=1;
+            UPDATE fixture_paiement SET datep='2026-07-01' WHERE rowid=2;
+            INSERT INTO fixture_facture VALUES
+                (20, 'CN-ONE', 2, 1, 1, '2026-07-01', '2026-07-01', 1, -10, 1),
+                (21, 'CN-TWO', 2, 1, 1, '2026-07-01', '2026-07-01', 1, -20, 1),
+                (22, 'CN-OTHER-ENTITY', 2, 2, 1, '2026-07-01', '2026-07-01', 1, -40, 1),
+                (23, 'CN-OTHER-CLIENT', 2, 1, 2, '2026-07-01', '2026-07-01', 1, -40, 1),
+                (24, 'CN-DRAFT', 2, 1, 1, '2026-07-01', NULL, 0, -40, 1);
+            INSERT INTO fixture_paiement VALUES
+                (20, 1, '2026-08-01'), (21, 1, '2026-08-02'), (22, 1, '2027-01-01'),
+                (23, 2, '2026-08-01'), (24, 1, '2026-08-01'), (25, 1, '2026-08-01'),
+                (26, 2, '2026-08-01');
+            INSERT INTO fixture_paiement_facture VALUES
+                (20, 20, -5), (21, 21, -10), (22, 21, -10), (23, 22, -40),
+                (24, 23, -40), (25, 24, -40), (26, 20, -40), (21, 1, -5);
+        ''')
+        line = self.deposit()
+        self.assertEqual(line['receipts'], 120)
+        self.assertEqual(line['credited'], 30)
+        self.assertEqual(line['refunds'], 20)
+        self.assertEqual(line['calculation']['received'], 100)
+        self.assertEqual(line['calculation']['remaining'], 90)
+        later = self.deposit(cutoff='2027-01-31')
+        self.assertEqual(later['refunds'], 30)
+        self.assertEqual(later['calculation'], dict(received=90, remaining=90, status='DepositControlOutstanding'))
+        for datefield in ['datef', 'date_valid']:
+            with self.subTest(datefield=datefield):
+                self.db.execute('UPDATE fixture_facture SET '+datefield+"='2027-01-01' WHERE rowid=21")
+                self.assertEqual(self.deposit()['refunds'], 10)
+                self.db.execute('UPDATE fixture_facture SET '+datefield+"='2026-07-01' WHERE rowid=21")
+
     def test_failure_does_not_present_incomplete_report(self):
         for query in [1, 2, 3, 4]:
             with self.subTest(query=query):

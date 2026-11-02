@@ -101,11 +101,20 @@ class JpsunCustomerDepositReport
 		}
 		$cutoff = $this->db->idate(dol_get_last_hour($date_cutoff));
 		$entities = getEntity('invoice', 0);
-		$sqlpayments = 'SELECT pf.fk_facture, SUM(CASE WHEN pf.amount > 0 THEN pf.amount ELSE 0 END) AS receipts,';
+		// Native refunds are negative payments on either the deposit or its credit notes.
+		$sqlpayments = 'SELECT source.rowid AS fk_facture, SUM(CASE WHEN paid.type = '.Facture::TYPE_DEPOSIT.' AND pf.amount > 0 THEN pf.amount ELSE 0 END) AS receipts,';
 		$sqlpayments .= ' SUM(CASE WHEN pf.amount < 0 THEN -pf.amount ELSE 0 END) AS refunds, MAX(p.datep) AS last_payment';
 		$sqlpayments .= ' FROM '.$this->db->prefix().'paiement_facture AS pf';
 		$sqlpayments .= ' INNER JOIN '.$this->db->prefix().'paiement AS p ON p.rowid = pf.fk_paiement';
-		$sqlpayments .= " WHERE p.datep <= '".$this->db->escape($cutoff)."' AND p.entity IN (".$this->db->sanitize($entities).') GROUP BY pf.fk_facture';
+		$sqlpayments .= ' INNER JOIN '.$this->db->prefix().'facture AS paid ON paid.rowid = pf.fk_facture';
+		$sqlpayments .= ' INNER JOIN '.$this->db->prefix().'facture AS source ON source.rowid = CASE WHEN paid.type = '.Facture::TYPE_CREDIT_NOTE.' THEN paid.fk_facture_source ELSE paid.rowid END';
+		$sqlpayments .= ' WHERE source.type = '.Facture::TYPE_DEPOSIT.' AND source.entity IN ('.$this->db->sanitize($entities).')';
+		$sqlpayments .= ' AND p.entity = source.entity AND paid.entity = source.entity AND paid.fk_soc = source.fk_soc';
+		$sqlpayments .= " AND p.datep <= '".$this->db->escape($cutoff)."'";
+		$sqlpayments .= ' AND (paid.type = '.Facture::TYPE_DEPOSIT.' OR (paid.type = '.Facture::TYPE_CREDIT_NOTE;
+		$sqlpayments .= ' AND paid.fk_statut IN ('.Facture::STATUS_VALIDATED.','.Facture::STATUS_CLOSED.')';
+		$sqlpayments .= " AND paid.datef <= '".$this->db->escape($cutoff)."' AND (paid.date_valid IS NULL OR paid.date_valid <= '".$this->db->escape($cutoff)."')))";
+		$sqlpayments .= ' GROUP BY source.rowid';
 
 		$sqlapplications = 'SELECT re.fk_facture_source, SUM(re.amount_ttc) AS applied';
 		$sqlapplications .= ' FROM '.$this->db->prefix().'societe_remise_except AS re';
