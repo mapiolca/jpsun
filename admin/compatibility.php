@@ -3,7 +3,9 @@
 
 require_once __DIR__.'/_setup_common.php';
 require_once __DIR__.'/../class/jpsuninvoicecompatibility.class.php';
+require_once __DIR__.'/../class/jpsuncustomerdepositcompatibility.class.php';
 
+/** @var Translate $langs */
 jpsunPrintAdminSetupHeader('compatibility');
 setup_print_title($langs->trans('Compatibility'));
 
@@ -11,11 +13,18 @@ $rows = array(
 	array('Dolibarr', DOL_VERSION),
 	array('PHP', PHP_VERSION),
 	array($langs->trans('JpsunAboutMinimumVersions'), 'Dolibarr 20 / PHP 8.0'),
-	array($langs->trans('JpsunInvoiceModelTitle'), $langs->trans(JpsunInvoiceCompatibility::isAvailable() ? 'Available' : 'NotAvailable')),
 );
 foreach ($rows as $row) {
 	print '<tr class="oddeven"><td class="titlefield">'.dol_escape_htmltag($row[0]).'</td><td>'.dol_escape_htmltag($row[1]).'</td></tr>';
 }
-print '<tr class="oddeven"><td colspan="2">'.$langs->trans('JpsunInvoiceModelRequirement').'</td></tr>';
+$features = array(
+	array('JpsunInvoiceModelTitle', JpsunInvoiceCompatibility::isAvailable(), 'JpsunInvoiceModelRequirement'),
+	array('CustomerDepositControl', JpsunCustomerDepositCompatibility::isAvailable(), 'JpsunDepositControlRequirement'),
+);
+foreach ($features as $feature) {
+	print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($feature[0]).'</td><td>';
+	print dolGetBadge($langs->trans($feature[1] ? 'Available' : 'NotAvailable'), '', $feature[1] ? 'success' : 'danger');
+	print ' '.$langs->trans($feature[2]).'</td></tr>';
+}
 print '<tr class="oddeven"><td colspan="2">'.$langs->trans('JpsunInvoiceValidationStatus').'</td></tr>';
 jpsunPrintAdminSetupFooter();

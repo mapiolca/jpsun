@@ -44,6 +44,18 @@ Ce modèle nécessite **Dolibarr 24 ou plus**, qui fournit les contrôles d’af
 
 Les limites et validations de la version `1.23.0` sont consignées dans [les preuves de développement](test/README-invoice.md).
 
+### Évolution proposée : contrôle des acomptes clients avant Dolibarr 26
+
+Le rétroportage demandé de [Dolibarr/dolibarr#42407](https://github.com/Dolibarr/dolibarr/pull/42407) ajoute **Comptabilité > Régularisations > Contrôle des acomptes clients** par le hook natif `menuLeftMenuItems`, sans modification du core. Il nécessite les modules JPSUN, Comptabilité en partie double et Factures, un utilisateur interne et le droit natif de lecture des rapports comptables. Les restrictions commerciales s’appliquent avant pagination ; ce contrôle comptable reste dans l’entité courante, sans afficher les factures partagées d’une autre entité.
+
+Le rapport reprend les encaissements, remboursements, avoirs et utilisations à la date d’arrêté, les factures consommatrices et les commandes directement liées accessibles. Les montants sont TTC dans la devise de la société. Le reliquat ne constitue ni un calcul de PCA ni un solde comptable, et aucune écriture n’est produite. Les liaisons et statuts actuels ne permettent pas de reconstituer les suppressions ou modifications historiques ni de prouver une livraison.
+
+Le menu, l’accès direct et le service sont désactivés à partir de Dolibarr 26, préversions incluses. Si une instance antérieure expose déjà le contrôle natif, le hook conserve son entrée sans doublon. L’onglet Compatibilité précise les conditions d’accès. Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module, en conservant les réglages existants ; aucune activation ou réactivation automatique n’est effectuée.
+
+Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. L’ID historique `999000`, les droits et la version publiée `1.23.0` restent ceux du module existant ; cette proposition ne constitue pas une release.
+
+Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
+
 ## Traductions
 
 - Français

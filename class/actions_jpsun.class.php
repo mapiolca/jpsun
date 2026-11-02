@@ -30,6 +30,7 @@
 require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
 require_once dirname(__DIR__) . '/lib/jpsun_delivery.lib.php';
 require_once dirname(__DIR__) . '/lib/jpsun_pdf_signature.lib.php';
+require_once __DIR__.'/jpsuncustomerdepositcompatibility.class.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**
@@ -74,6 +75,53 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
     {
         $this->db = $db;
     }
+
+	/**
+	 * Insert the requested pre-v26 deposit control below native Accounting.
+	 *
+	 * @param array{mainmenu?:string,currentcontext?:string} $parameters Hook metadata
+	 * @param array<array<string,mixed>> $object Existing menu entries, including other modules
+	 * @param string $action Current action
+	 * @param HookManager $hookmanager Native manager
+	 * @return int 1 to return the augmented menu, 0 when unchanged
+	 */
+	public function menuLeftMenuItems($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs, $user;
+
+		$this->results = array();
+		if (($parameters['mainmenu'] ?? '') !== 'accountancy'
+			|| !JpsunCustomerDepositCompatibility::isAvailable()
+			|| $user->socid > 0 || !$user->hasRight('accounting', 'comptarapport', 'lire')) {
+			return 0;
+		}
+		$parent = null;
+		foreach ($object as $index => $item) {
+			if (strpos($item['url'] ?? '', '/customerdeposits.php') !== false) {
+				// Keep native or previously inserted entries on patched pre-v26 instances.
+				return 0;
+			}
+			if (strpos($item['url'] ?? '', '/accountancy/index.php') === 0
+				&& (int) ($item['level'] ?? -1) === 0 && !empty($item['enabled'])) {
+				$parent = $index;
+			}
+		}
+		if ($parent === null) {
+			return 0;
+		}
+		$langs->load('jpsun@jpsun');
+		require_once DOL_DOCUMENT_ROOT.'/core/class/menu.class.php';
+		$menu = new Menu();
+		$url = '/jpsun/customerdeposits.php?mainmenu=accountancy&leftmenu=accountancy_accountancy_customerdeposits';
+		$menu->add($url, $langs->trans('MenuAccountancyAdjustments'), 1, 1, '', 'accountancy', 'accountancy_accountancy_customerdeposits');
+		$menu->add($url, $langs->trans('CustomerDepositControl'), 2, 1, '', 'accountancy', 'accountancy_accountancy_customerdeposits');
+		$position = $parent + 1;
+		while (isset($object[$position]) && (int) ($object[$position]['level'] ?? 0) > 0) {
+			$position++;
+		}
+		$this->results = array_merge(array_slice($object, 0, $position), $menu->liste, array_slice($object, $position));
+		return 1;
+	}
 
 	/**
 	 * Add a bulk download control to native Dolibarr document pages.

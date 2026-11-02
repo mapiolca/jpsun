@@ -475,3 +475,27 @@ JpsunInvoiceModelSetup=Activer le modèle jpsuninvoice dans les réglages natifs
 JpsunInvoiceDocumentDirectoryUnavailable=Le répertoire documentaire de l’entité propriétaire de la facture est indisponible.
 JpsunInvoiceDiscountUnavailable=Une déduction liée à cette facture est introuvable, inaccessible ou incohérente. Vérifiez la liaison avant de générer le document.
 JpsunInvoiceValidationStatus=Cible du module : Dolibarr 20 à 25. Le modèle de facture nécessite Dolibarr 24 ou plus. Les essais réels sur une instance et la validation de chaque version restent à effectuer ; voir les preuves de développement.
+
+## Contrôle des acomptes clients
+MenuAccountancyAdjustments=Régularisations
+CustomerDepositControl=Contrôle des acomptes clients
+DepositControlDescription=Contrôle des acomptes clients à la date d’arrêté à partir des encaissements datés, remboursements, avoirs et utilisations. Les montants sont TTC, dans la devise de la société. Le reliquat encaissé ne constitue ni un montant de produits constatés d’avance ni un solde comptable : examiner la comptabilité source et la livraison réelle avant de décider du traitement. Aucune écriture comptable n’est générée.
+DepositControlHistoryWarning=La reconstitution utilise les documents et liaisons actuellement présents, les dates de facture, de validation et de paiement. Les suppressions, déliaisons, modifications et changements de statut ultérieurs ne peuvent pas être reconstitués. Les statuts des commandes liées sont actuels et les dates prévues ne prouvent pas la livraison. Les acomptes entièrement utilisés restent visibles dans la vue Tous pour examiner la facture consommatrice.
+DepositControlCutoffDate=Date d’arrêté
+DepositControlInvoiced=Acompte facturé TTC
+DepositControlReceived=Encaissement net TTC
+DepositControlRefunded=Remboursements TTC
+DepositControlCredited=Avoirs TTC
+DepositControlLastPayment=Dernier paiement à la date d’arrêté
+DepositControlApplied=Utilisé à la date d’arrêté TTC
+DepositControlRemaining=Reliquat encaissé TTC
+DepositControlApplications=Factures consommatrices
+DepositControlOrders=Commandes liées (statut actuel)
+DepositControlOutstanding=Reliquat encaissé à examiner
+DepositControlCleared=Aucun reliquat encaissé
+DepositControlInconsistent=Montants ou statut du document à examiner
+DepositControlAppliedAtCutoff=Utilisé à la date d’arrêté
+DepositControlNotAppliedAtCutoff=Après la date d’arrêté ou non validée
+DepositControlNoOrder=Aucune commande directement liée accessible
+DepositControlPageTotal=Cette page, TTC : encaissements nets %s ; utilisés %s ; reliquats %s
+JpsunDepositControlRequirement=Rétroportage demandé de la PR Dolibarr #42407 pour Dolibarr 20 à 25, avec JPSUN, Comptabilité en partie double et Factures actifs. Désactivé à partir de Dolibarr 26, préversions incluses. Droit natif de consultation des rapports comptables requis ; aucune écriture comptable générée.

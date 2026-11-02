@@ -90,8 +90,10 @@ class modJpsun extends DolibarrModules
 			'triggers' => 1,
 			'models' => 1,
 			'hooks'  => array('projectOverview', 'toprightmenu', 'ajaxonlinesign', 'tasklist', 'projecttaskscard', 'propalcard', 'formfile'),
-			'picto'=>'object_jpsun@jpsun'
 		);
+		if (version_compare(DOL_VERSION, '26.0', '<')) {
+			$this->module_parts['hooks'][] = 'leftblock';
+		}
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
