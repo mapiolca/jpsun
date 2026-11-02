@@ -38,14 +38,13 @@ require_once (is_file($contracts.'/hookmanager.class.php') ? $contracts.'/hookma
 require_once DOL_DOCUMENT_ROOT.'/core/class/translate.class.php';
 require_once __DIR__.'/../class/jpsuncustomerdepositreport.class.php';
 require_once __DIR__.'/../class/actions_jpsun.class.php';
-$langs = new Translate(DOL_DOCUMENT_ROOT, $conf);
-$langs->setDefaultLang('en_US');
-foreach (file(__DIR__.'/../langs/en_US/jpsun.lang') as $entry) {
-	$parts = explode('=', trim($entry), 2);
-	if (count($parts) === 2) {
-		$langs->tab_translate[$parts[0]] = $parts[1];
-	}
+$langs = new Translate('', $conf);
+$language = $input['language'] ?? 'en_US';
+if (!in_array($language, array('en_US', 'fr_FR'), true)) {
+	throw new RuntimeException('Unsupported fixture language');
 }
+$langs->setDefaultLang($language);
+$langs->load('jpsun@jpsun');
 
 class DepositFixtureActor
 {
@@ -94,7 +93,14 @@ $user->socid = $input['socid'] ?? 0;
 $user->admin = $input['admin'] ?? 0;
 $mode = $input['mode'] ?? 'report';
 $output = array();
-if ($mode === 'descriptor') {
+if ($mode === 'translations') {
+	foreach (file(__DIR__.'/../langs/en_US/jpsun.lang') as $entry) {
+		$key = explode('=', trim($entry), 2)[0];
+		if (preg_match('/^(DepositControl\w+|CustomerDepositControl|MenuAccountancyAdjustments|JpsunDepositControlRequirement)$/', $key)) {
+			$output[$key] = $langs->transnoentities($key, '60', '40', '20');
+		}
+	}
+} elseif ($mode === 'descriptor') {
 	require_once __DIR__.'/../core/modules/modJpsun.class.php';
 	$module = new modJpsun($db);
 	$output = array('picto' => $module->picto, 'hooks' => $module->module_parts['hooks'], 'id' => $module->numero);

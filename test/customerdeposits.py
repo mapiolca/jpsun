@@ -3,6 +3,7 @@
 Usage: python test/customerdeposits.py [Dolibarr htdocs] [extracted core contract directory]
 """
 import json
+from html import unescape
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -229,6 +230,25 @@ class DepositControlTest(unittest.TestCase):
         self.assertEqual(data['picto'], 'jpsun@jpsun')
         self.assertIn('leftblock', data['hooks'])
         self.assertNotIn('leftblock', self.run_worker(mode='descriptor', version='26.0.0-alpha')['hooks'])
+
+    def test_french_catalog_loads_natively_without_english_fallback(self):
+        french = self.run_worker(mode='translations', language='fr_FR')
+        english = self.run_worker(mode='translations', language='en_US')
+        self.assertEqual(len(french), 22)
+        self.assertEqual(set(french), set(english))
+        for key, translated in french.items():
+            with self.subTest(key=key):
+                self.assertNotEqual(translated, key)
+                self.assertNotEqual(translated, english[key])
+        self.assertEqual(french['CustomerDepositControl'], 'Contrôle des acomptes clients')
+        self.assertEqual(french['MenuAccountancyAdjustments'], 'Régularisations')
+        self.assertEqual(french['DepositControlCutoffDate'], 'Date d’arrêté')
+        self.assertEqual(french['DepositControlApplications'], 'Factures consommatrices')
+        self.assertEqual(french['DepositControlPageTotal'], 'Cette page, TTC : encaissements nets 60 ; utilisés 40 ; reliquats 20')
+        menu = [dict(url='/accountancy/index.php?leftmenu=accountancy_accountancy', level=0, enabled=1)]
+        output = self.run_worker(mode='hook', language='fr_FR', menu=menu)
+        self.assertEqual([unescape(item['titre']) for item in output['menu'][1:]],
+                         ['Régularisations', 'Contrôle des acomptes clients'])
 
 
 if __name__ == '__main__':

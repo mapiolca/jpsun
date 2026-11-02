@@ -56,6 +56,8 @@ Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `im
 
 Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
 
+Le contrôle est entièrement traduit en français et en anglais : ses 22 libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
+
 ## Traductions
 
 - Français
