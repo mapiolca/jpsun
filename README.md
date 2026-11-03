@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.24.1
+- Version : 1.24.2
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -56,7 +56,7 @@ Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `im
 
 Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
 
-Le contrôle est entièrement traduit en français et en anglais : ses 22 libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
+Le contrôle est entièrement traduit en français et en anglais : ses libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
 
 ### Retrait des installations historiques — version 1.24.1
 
@@ -71,6 +71,16 @@ Le contrôle est entièrement traduit en français et en anglais : ses 22 libell
 - Après mise à jour, actualiser les déclarations persistées du module par le parcours natif afin de retirer l’onglet et d’exécuter la migration dans chaque entité concernée. Aucune purge des données historiques n’est prévue.
 
 Vérifications reproductibles : `python test/legacysetup.py <racine htdocs Dolibarr>` et `python test/migration1241.py <racine htdocs Dolibarr>`. Les tests exécutent le descripteur et les helpers de constantes natifs avec des services d’installation et transactions simulés, le SQL sur SQLite et l’ancienne URL dans les deux dispositions d’installation. Ils couvrent les entités 1 et 2, les réactivations, les cibles vides/renseignées, les marques trop longues, le seuil exact 1.24.1, le masquage et les rollbacks après erreur. Ils ne remplacent pas une désactivation/réactivation sur une instance réelle avec MySQL/MariaDB.
+
+### Version 1.24.2
+
+- JPSUN ne crée et ne met plus à jour l’extrafield produit `jpsun_module_pv_pc`, couvert par PowerPlantPV. Les définitions, paramètres personnalisés et valeurs existants restent conservés ; aucune colonne n’est supprimée.
+- JPSUN ne supprime et ne recrée plus le type de contact projet externe `PROJECTADD`, fourni par `lmdbjobsite`. Les identifiants, libellés, états, positions et liaisons existants restent inchangés. Aucun de ces modules n’est activé automatiquement.
+- Le contrôle des acomptes est disponible sous **Comptabilité simple → Rapports → Contrôle des acomptes clients**, avec le droit natif `compta → resultat → lire`. L’accès par URL directe et le service appliquent le même contrôle ; un droit de comptabilité en partie double ne remplace pas ce droit lorsque seul le module simple est actif.
+- Le rapport reste en lecture seule : date d’arrêté, filtres, pagination, colonnes, montants et liens vers les pièces accessibles. Aucune écriture, régularisation, affectation de compte ou opération réservée à la comptabilité en partie double n’est ajoutée. En Comptabilité simple, la date proposée est la date courante, sans consultation de la table des exercices de la partie double.
+- Toutes les colonnes du rapport sont filtrables : références et tiers, périodes inclusives pour la date de facture et du dernier paiement, comparaisons natives sur les six montants (par exemple `>=100`), références des factures utilisées et commandes liées, et statut affiché incluant les incohérences. Les filtres sont combinés en SQL avant comptage et pagination, conservés lors de la navigation et remis à zéro par le bouton natif. Les filtres de commandes restent soumis au droit de lecture des commandes.
+- La prise en charge existante de la comptabilité en partie double, ses droits, les traductions françaises/anglaises et la désactivation dès Dolibarr 26 (préversions incluses) restent conservées.
+- Cette version n’exécute pas la migration des marques de la 1.24.1. Terminer les migrations en attente **sous 1.24.1 avant de passer en 1.24.2**. Après mise à jour, vérifier le rapport avec un utilisateur disposant du droit natif correspondant.
 
 ## Traductions
 

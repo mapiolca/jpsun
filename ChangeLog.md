@@ -1,5 +1,12 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.24.2 (03/11/2026)
+- Arrêt de la création et de la mise à jour de `jpsun_module_pv_pc`, couvert par PowerPlantPV, sans suppression des définitions ni des valeurs existantes.
+- Arrêt de la suppression/réinstallation du type de contact projet `PROJECTADD`, fourni par `lmdbjobsite`, avec conservation des réglages et des liaisons existants.
+- Ajout du contrôle des acomptes à Comptabilité simple, sous Rapports, avec le droit natif de consultation des résultats. Rapport en lecture seule, sans écriture ni opération de comptabilité en partie double ; droits, entités, traductions et seuil Dolibarr inférieur à 26 conservés.
+- Filtres SQL sur toutes les colonnes du contrôle des acomptes : périodes de dates, comparaisons de montants, références des pièces liées et statut affiché, avec prise en compte avant comptage et pagination.
+- Aucune nouvelle migration de valeurs ; terminer les migrations de marques en attente sous JPSUN 1.24.1 avant cette mise à jour.
+
 ## 1.24.1 (03/11/2026)
 - Arrêt de la suppression/réinstallation des 17 types d’événements ENEDIS et de leurs surcharges de traduction ; retrait de l’onglet ENEDIS et refus de son ancienne URL, avec conservation des événements dans l’Agenda natif.
 - Arrêt de la création des six extrafields projet historiques, de `jpsun_marque` et des dix champs de contrat couverts par PowerPlantPV ; masquage des champs existants sans supprimer leurs valeurs.

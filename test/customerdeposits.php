@@ -6,6 +6,7 @@ if (PHP_SAPI !== 'cli') {
 	exit;
 }
 error_reporting(E_ALL & ~E_DEPRECATED);
+date_default_timezone_set('UTC');
 set_error_handler(static function ($level, $message, $file, $line) {
 	if (error_reporting() & $level) {
 		throw new ErrorException($message, 0, $level, $file, $line);
@@ -29,6 +30,7 @@ $conf = (object) array(
 	'global' => (object) array('MAIN_MAX_DECIMALS_TOT' => $input['precision'] ?? 2, 'MAIN_MAX_DECIMALS_UNIT' => 5),
 	'file' => (object) array('dol_document_root' => array('main' => $root, 'alt0' => dirname(__DIR__, 2)), 'dol_url_root' => array('alt0' => '/custom')),
 	'modules_parts' => array('hooks' => array('jpsun' => array('toprightmenu', 'leftblock'))),
+	'liste_limit' => 50,
 );
 require_once $contracts.'/functions.lib.php';
 if (is_file($contracts.'/html.lib.php')) {
@@ -44,7 +46,7 @@ if (!in_array($language, array('en_US', 'fr_FR'), true)) {
 	throw new RuntimeException('Unsupported fixture language');
 }
 $langs->setDefaultLang($language);
-$langs->load('jpsun@jpsun');
+$langs->loadLangs(array('main', 'jpsun@jpsun'));
 
 class DepositFixtureActor
 {
@@ -60,6 +62,7 @@ class DepositFixtureDatabase
 {
 	public $queries = array();
 	public $error = '';
+	public $stopAtQuery = false;
 	public function prefix() { return MAIN_DB_PREFIX; }
 	public function escape($value) { return str_replace("'", "''", $value); }
 	public function sanitize($value) {
@@ -73,6 +76,7 @@ class DepositFixtureDatabase
 	public function query($sql) {
 		if (strpos($sql, 'SELECT ') !== 0) { throw new RuntimeException('Unexpected write'); }
 		$this->queries[] = $sql;
+		if ($this->stopAtQuery) { throw new DepositFixturePageStop('Query reached'); }
 		echo json_encode(array('sql' => $sql), JSON_THROW_ON_ERROR)."\n";
 		fflush(STDOUT);
 		$reply = json_decode(trim(fgets(STDIN)), true, 512, JSON_THROW_ON_ERROR);
@@ -93,7 +97,28 @@ $user->socid = $input['socid'] ?? 0;
 $user->admin = $input['admin'] ?? 0;
 $mode = $input['mode'] ?? 'report';
 $output = array();
-if ($mode === 'translations') {
+if ($mode === 'page') {
+	// Execute the actual page through its bootstrap, stopping before business reads/rendering.
+	class DepositFixturePageStop extends RuntimeException { }
+	function accessforbidden($message = '', $printheader = 1, $printfooter = 1, $showonlymessage = 0, $params = null) {
+		throw new DepositFixturePageStop('Forbidden', 403);
+	}
+	$_SERVER['REQUEST_METHOD'] = 'GET';
+	$_SERVER['PHP_SELF'] = '/custom/jpsun/customerdeposits.php';
+	$_SESSION = array();
+	$_GET = $input['get'] ?? array();
+	$_POST = array();
+	$_REQUEST = $_GET;
+	$db->stopAtQuery = true;
+	try {
+		include $input['page_path'];
+		throw new RuntimeException('Page did not stop at its access guard or first query');
+	} catch (DepositFixturePageStop $exception) {
+		$output = array('denied' => $exception->getCode() === 403, 'queries' => $db->queries,
+			'cutoff' => isset($date_cutoff) ? $date_cutoff : null,
+			'filter' => $filter ?? array(), 'page' => $page ?? null);
+	}
+} elseif ($mode === 'translations') {
 	foreach (file(__DIR__.'/../langs/en_US/jpsun.lang') as $entry) {
 		$key = explode('=', trim($entry), 2)[0];
 		if (preg_match('/^(DepositControl\w+|CustomerDepositControl|MenuAccountancyAdjustments|JpsunDepositControlRequirement)$/', $key)) {

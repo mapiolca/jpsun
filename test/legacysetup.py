@@ -110,7 +110,7 @@ class LegacySetupTests(unittest.TestCase):
         result = json.loads(process.stdout)
         self.assertEqual(result['result'], 1)
         self.assertEqual(result['tabs'], [])
-        self.assertEqual(result['version'], '1.24.1')
+        self.assertEqual(result['version'], '1.24.2')
         return result
 
     def test_fresh_and_repeated_activation_do_not_create_retired_fields(self):
@@ -122,6 +122,7 @@ class LegacySetupTests(unittest.TestCase):
                 self.assertTrue(set(KEPT).issubset(state['contrat']))
                 self.assertTrue(set(RETIRED).isdisjoint(state['contrat']))
                 self.assertNotIn('jpsun_marque', state['product'])
+                self.assertNotIn('jpsun_module_pv_pc', state['product'])
                 self.assertTrue(all(not key.startswith('jpsun_project_') for key in state.get('projet', {})))
 
     def test_existing_definitions_and_values_remain_untouched(self):
@@ -137,6 +138,15 @@ class LegacySetupTests(unittest.TestCase):
                                                       if element == 'contrat'))
                 self.assertFalse(any(key in sql for key in RETIRED for sql in result['sql']))
 
+    def test_legacy_panel_power_definition_and_value_are_preserved(self):
+        original = {'label': 'Custom power', 'enabled': '1', 'list': '3', 'default': '', 'value': 450}
+        state = {'product': {'jpsun_module_pv_pc': original.copy()}}
+        for _ in range(2):
+            result = self.activate(state, 2)
+            state = result['definitions']
+            self.assertEqual(state['product']['jpsun_module_pv_pc'], original)
+            self.assertNotIn(['product', 'jpsun_module_pv_pc'], result['writes'])
+
     def test_dictionary_and_translation_settings_are_preserved(self):
         db = sqlite3.connect(':memory:')
         self.addCleanup(db.close)
@@ -145,6 +155,10 @@ class LegacySetupTests(unittest.TestCase):
             CREATE TABLE llx_c_actioncomm(id, code, type, libelle, module, active, todo, color, picto, position);
             CREATE TABLE llx_overwrite_trans(rowid INTEGER PRIMARY KEY, entity, lang, transkey, transvalue);
             CREATE TABLE llx_c_type_contact(element, source, code, libelle, active, module, position);
+            CREATE TABLE llx_element_contact(rowid INTEGER PRIMARY KEY, fk_c_type_contact INTEGER);
+            INSERT INTO llx_c_type_contact(rowid, element, source, code, libelle, active, module, position)
+                VALUES (4242, 'project', 'external', 'PROJECTADD', 'Custom site address', 0, 'lmdbjobsite', 17);
+            INSERT INTO llx_element_contact VALUES (7, 4242);
         ''')
         for index, code in enumerate(EVENTS):
             db.execute('INSERT INTO llx_c_actioncomm VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -155,7 +169,8 @@ class LegacySetupTests(unittest.TestCase):
                                (entity, 'fr_FR', prefix + code, 'Custom translation'))
         def snapshot():
             return (db.execute('SELECT * FROM llx_c_actioncomm').fetchall(),
-                    db.execute("SELECT * FROM llx_overwrite_trans WHERE transkey LIKE '%JPSUN_DDR_%'").fetchall())
+                    db.execute("SELECT * FROM llx_overwrite_trans WHERE transkey LIKE '%JPSUN_DDR_%'").fetchall(),
+                    db.execute("SELECT c.rowid, c.* FROM llx_c_type_contact c JOIN llx_element_contact ec ON ec.fk_c_type_contact=c.rowid").fetchall())
         before = snapshot()
         sql = '\n'.join(line for line in (MODULE / 'sql/data.sql').read_text(encoding='utf-8').splitlines()
                         if not line.lstrip().startswith('--'))
@@ -188,6 +203,20 @@ class LegacySetupTests(unittest.TestCase):
                     (site / 'main.inc.php').unlink()
                     result = subprocess.run(['php', str(target)], text=True, capture_output=True, check=True)
                     self.assertEqual(result.stdout, 'Include of main fails')
+
+    def test_fresh_dictionary_does_not_install_projectadd(self):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        db.executescript('''
+            CREATE TABLE llx_const(name, entity, value, type, visible, note);
+            CREATE TABLE llx_overwrite_trans(rowid INTEGER PRIMARY KEY, entity, lang, transkey, transvalue);
+            CREATE TABLE llx_c_type_contact(element, source, code, libelle, active, module, position);
+        ''')
+        sql = '\n'.join(line for line in (MODULE / 'sql/data.sql').read_text(encoding='utf-8').splitlines()
+                        if not line.lstrip().startswith('--'))
+        db.executescript(sql.replace('__ENTITY__', '2').replace('INSERT IGNORE', 'INSERT OR IGNORE'))
+        self.assertEqual(db.execute("SELECT COUNT(*) FROM llx_c_type_contact WHERE code='PROJECTADD'").fetchone()[0], 0)
+        self.assertEqual(db.execute('SELECT COUNT(*) FROM llx_c_type_contact').fetchone()[0], 3)
 
 
 if __name__ == '__main__':

@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.24.1';
+		$this->version = '1.24.2';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -318,74 +318,75 @@ class modJpsun extends DolibarrModules
 			$ext->fetch_name_optionals_label('product');
 		    // Retired in 1.24.1; definitions and values are preserved by the migration.
 		    // $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-			$productPeakPowerField = array(
-				'label' => 'jpsun_module_pv_pc',
-				'type' => 'int',
-				'pos' => 1,
-				'size' => '4',
-				'elementtype' => 'product',
-				'unique' => 0,
-				'required' => 0,
-				'default_value' => '',
-				'param' => '',
-				'alwayseditable' => 1,
-				'perms' => '',
-				'list' => '($object->finished == 2 ? -1:0)',
-				'help' => 'jpsun_module_pv_pc_help',
-				'computed' => '',
-				'entity' => $conf->entity,
-				'langfile' => 'jpsun@jpsun',
-				'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
-				'totalizable' => 0,
-				'printable' => 0,
-			);
-			if (empty($ext->attributes['product']['label']['jpsun_module_pv_pc'])) {
-				$ext->addExtraField(
-					'jpsun_module_pv_pc',
-					$productPeakPowerField['label'],
-					$productPeakPowerField['type'],
-					$productPeakPowerField['pos'],
-					$productPeakPowerField['size'],
-					$productPeakPowerField['elementtype'],
-					$productPeakPowerField['unique'],
-					$productPeakPowerField['required'],
-					$productPeakPowerField['default_value'],
-					$productPeakPowerField['param'],
-					$productPeakPowerField['alwayseditable'],
-					$productPeakPowerField['perms'],
-					$productPeakPowerField['list'],
-					$productPeakPowerField['help'],
-					$productPeakPowerField['computed'],
-					$productPeakPowerField['entity'],
-					$productPeakPowerField['langfile'],
-					$productPeakPowerField['enabled'],
-					$productPeakPowerField['totalizable'],
-					$productPeakPowerField['printable']
-				);
-			} else {
-				$ext->update(
-					'jpsun_module_pv_pc',
-					$productPeakPowerField['label'],
-					$productPeakPowerField['type'],
-					$productPeakPowerField['size'],
-					$productPeakPowerField['elementtype'],
-					$productPeakPowerField['unique'],
-					$productPeakPowerField['required'],
-					$productPeakPowerField['pos'],
-					$productPeakPowerField['param'],
-					$productPeakPowerField['alwayseditable'],
-					$productPeakPowerField['perms'],
-					$productPeakPowerField['list'],
-					$productPeakPowerField['help'],
-					$productPeakPowerField['default_value'],
-					$productPeakPowerField['computed'],
-					$productPeakPowerField['entity'],
-					$productPeakPowerField['langfile'],
-					$productPeakPowerField['enabled'],
-					$productPeakPowerField['totalizable'],
-					$productPeakPowerField['printable']
-				);
-			}
+			// Retired in 1.24.2: PowerPlantPV owns panel power; preserve legacy data and settings.
+			// $productPeakPowerField = array(
+				// 'label' => 'jpsun_module_pv_pc',
+				// 'type' => 'int',
+				// 'pos' => 1,
+				// 'size' => '4',
+				// 'elementtype' => 'product',
+				// 'unique' => 0,
+				// 'required' => 0,
+				// 'default_value' => '',
+				// 'param' => '',
+				// 'alwayseditable' => 1,
+				// 'perms' => '',
+				// 'list' => '($object->finished == 2 ? -1:0)',
+				// 'help' => 'jpsun_module_pv_pc_help',
+				// 'computed' => '',
+				// 'entity' => $conf->entity,
+				// 'langfile' => 'jpsun@jpsun',
+				// 'enabled' => '$conf->jpsun->enabled && !isModEnabled("powerplantpv")',
+				// 'totalizable' => 0,
+				// 'printable' => 0,
+			// );
+			// if (empty($ext->attributes['product']['label']['jpsun_module_pv_pc'])) {
+				// $ext->addExtraField(
+					// 'jpsun_module_pv_pc',
+					// $productPeakPowerField['label'],
+					// $productPeakPowerField['type'],
+					// $productPeakPowerField['pos'],
+					// $productPeakPowerField['size'],
+					// $productPeakPowerField['elementtype'],
+					// $productPeakPowerField['unique'],
+					// $productPeakPowerField['required'],
+					// $productPeakPowerField['default_value'],
+					// $productPeakPowerField['param'],
+					// $productPeakPowerField['alwayseditable'],
+					// $productPeakPowerField['perms'],
+					// $productPeakPowerField['list'],
+					// $productPeakPowerField['help'],
+					// $productPeakPowerField['computed'],
+					// $productPeakPowerField['entity'],
+					// $productPeakPowerField['langfile'],
+					// $productPeakPowerField['enabled'],
+					// $productPeakPowerField['totalizable'],
+					// $productPeakPowerField['printable']
+				// );
+			// } else {
+				// $ext->update(
+					// 'jpsun_module_pv_pc',
+					// $productPeakPowerField['label'],
+					// $productPeakPowerField['type'],
+					// $productPeakPowerField['size'],
+					// $productPeakPowerField['elementtype'],
+					// $productPeakPowerField['unique'],
+					// $productPeakPowerField['required'],
+					// $productPeakPowerField['pos'],
+					// $productPeakPowerField['param'],
+					// $productPeakPowerField['alwayseditable'],
+					// $productPeakPowerField['perms'],
+					// $productPeakPowerField['list'],
+					// $productPeakPowerField['help'],
+					// $productPeakPowerField['default_value'],
+					// $productPeakPowerField['computed'],
+					// $productPeakPowerField['entity'],
+					// $productPeakPowerField['langfile'],
+					// $productPeakPowerField['enabled'],
+					// $productPeakPowerField['totalizable'],
+					// $productPeakPowerField['printable']
+				// );
+			// }
 		    $ext->addExtraField('jpsun_productdet', 'jpsun_ProductDet', 'html', 1, '2000', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_ProductDet_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
 		// Legacy project definitions retired in 1.24.1; retain their stored values.

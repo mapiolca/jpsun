@@ -9,6 +9,7 @@ class JpsunCustomerDepositCompatibility
 	{
 		return version_compare(DOL_VERSION, '20.0.0', '>=')
 			&& version_compare(DOL_VERSION, '26.0', '<')
-			&& isModEnabled('jpsun') && isModEnabled('accounting') && isModEnabled('invoice');
+			&& isModEnabled('jpsun') && isModEnabled('invoice')
+			&& (isModEnabled('accounting') || isModEnabled('comptabilite'));
 	}
 }

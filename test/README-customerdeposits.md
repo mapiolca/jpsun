@@ -32,7 +32,7 @@ php <phpstan.phar> analyse -c test/.runtime/phpstan-deposits.neon --no-progress 
 
 Les tests exécutent les SELECT de production dans une base SQLite en mémoire par un transport PHP/Python. Les classes et fonctions natives sont chargées depuis les sources indiquées, mais l’acteur, les réponses de base et le contexte d’installation sont simulés. Les fonctions MySQL `GREATEST` et `LEAST` sont adaptées pour SQLite. Ce contrôle ne remplace pas une recette MySQL/MariaDB ou Multicompany réelle.
 
-Les 21 tests couvrent :
+Les tests couvrent :
 
 - acomptes non payés exclus, encaissements partiels et futurs, utilisations datées, validations tardives et brouillons ;
 - acomptes entièrement utilisés conservés dans Tous et dans le filtre sans reliquat, remboursements et avoirs séparés, incohérences signalées ;
@@ -43,7 +43,7 @@ Les 21 tests couvrent :
 - cohérence des filtres, compteurs, pagination, montants et badges avec les précisions natives 0/2/3/4, sans faux dépassement dû aux sommes flottantes ;
 - découverte du descripteur, conservation de l’ID historique `999000`, retrait de `leftblock` en v26, cycle réel du HookManager avec plusieurs contextes et appels successifs ;
 - résolution native des deux chemins d’image et identité binaire de `jpsun.png` avec l’original `object_jpsun.png` ;
-- chargement natif du catalogue français, couverture des 22 libellés et menus traduits sans repli sur l’anglais.
+- chargement natif du catalogue français, couverture des libellés et menus traduits sans repli sur l’anglais.
 
 Exécutions locales : 21 tests réussis sur chacun des six arbres ci-dessous, tous sous **PHP 8.4.22**, soit 126 tests. Les schémas SQL touchés et les signatures natives utilisées ont également été lus dans ces révisions.
 
@@ -69,3 +69,19 @@ Après déploiement, actualiser la déclaration des hooks par le parcours natif 
 À vérifier sur une instance servant ce code : menu après actualisation des hooks, accès direct autorisé/refusé, deux entités Multicompany, comptes internes limités et externe, datepicker, Select2, pagination 20/50/100 avec son formulaire parent, absence de champ caché `limit`, sélection et persistance des colonnes, position des commandes de filtre à gauche/droite, icône dans la liste des modules et les réglages, traductions françaises/anglaises. Aucun navigateur distant, déploiement, test d’installation de ZIP ou soumission Dolistore n’est revendiqué.
 
 Les règles officielles Dolistore ont été consultées le 2026-11-02, révision wiki `65313`. La PR ne livre pas de ZIP. Le rapport est un contrôle des encaissements TTC, pas un calcul de PCA, une preuve de livraison ou un solde comptable. Les modifications, suppressions et déliaisons historiques restent impossibles à reconstruire depuis les seuls documents actuels.
+
+## Extension Comptabilité simple — JPSUN 1.24.2
+
+Le module natif est `comptabilite` et son droit de rapports est `compta/resultat/lire`. Les menus natifs des six sources de la matrice exposent le parent Rapports via `/compta/resultat/index.php` ; le hook y ajoute un seul lien de consultation de niveau 1. Le menu et les droits de la partie double restent distincts. Aucun traitement de comptabilisation n’est ajouté.
+
+Les nouveaux scénarios vérifient le service, le hook natif avec appels successifs, l’accès réel à la page dans un bootstrap simulé, les refus sans requête, l’isolation d’entité, les permissions des modules actifs et le seuil Dolibarr 26. Le test de page s’arrête à la première requête métier : il prouve le contrôle d’accès et l’absence de lecture de `accounting_fiscalyear` en mode simple, mais ne constitue pas une recette navigateur du rendu complet. Toutes les requêtes du rapport exécutées par les fixtures doivent rester des SELECT.
+
+Les tests `legacysetup.py` vérifient aussi l’absence de création/mise à jour du champ produit historique et la conservation du type `PROJECTADD`, y compris son identifiant et une liaison existante. La migration 1.24.1 conserve ses tests de version : elle ne doit pas être exécutée par le descripteur 1.24.2.
+
+## Filtres de toutes les colonnes — JPSUN 1.24.2
+
+Les six montants utilisent la recherche numérique native, sur des colonnes calculées exposées par une table dérivée : cela conserve les arrondis affichés tout en respectant l’assainissement des identifiants ajouté à `natural_search()`. Les bornes de dates sont inclusives sur la journée serveur, avec le format natif DATE pour la facture et les heures conservées pour les paiements.
+
+Les filtres des pièces liées portent sur leur référence. Ils utilisent des EXISTS avec les mêmes règles de liaison, date d’arrêté, tiers et entité que les preuves affichées, sans multiplier les acomptes. Un filtre de commande sans module ou sans droit est refusé avant toute requête. Les applications futures ou brouillon restent filtrables puisqu’elles sont affichées comme éléments de revue.
+
+Le statut de la colonne correspond au badge calculé (dont les incohérences). Le filtre général de reliquat conserve sa signification historique positif/nul. Les tests vérifient les six montants, zéro, les combinaisons avant pagination, les périodes de dates, les liens privés/inaccessibles, les incohérences, les sommes fractionnaires, la lecture des paramètres par la page et la remise à zéro. Les prérequis et limites de simulation ci-dessus restent applicables ; aucun rendu navigateur complet n’est revendiqué.
