@@ -1,10 +1,10 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.24.1 (03/11/2026 — en préparation)
-- Arrêt de la suppression/réinstallation des 17 types d’événements ENEDIS et de leurs surcharges de traduction à chaque activation ; conservation des événements et réglages existants.
-- Retrait de l’onglet ENEDIS des projets et refus de son ancienne URL ; les événements historiques restent accessibles par l’Agenda natif.
-- Arrêt de la création et de la mise à jour des dix extrafields de contrat couverts par PowerPlantPV ; conservation des définitions et valeurs existantes ainsi que des autres champs de contrat.
-- Après mise à jour, actualiser les déclarations persistées du module par le parcours natif pour retirer l’onglet. Aucune purge des données historiques.
+- Arrêt de la suppression/réinstallation des 17 types d’événements ENEDIS et de leurs surcharges de traduction ; retrait de l’onglet ENEDIS et refus de son ancienne URL, avec conservation des événements dans l’Agenda natif.
+- Arrêt de la création des six extrafields projet historiques, de `jpsun_marque` et des dix champs de contrat couverts par PowerPlantPV ; masquage des champs existants sans supprimer leurs valeurs.
+- Migration transactionnelle de `jpsun_marque` vers `product_photovoltaic_brand` uniquement si la cible est vide, limitée aux produits de l’entité courante et à JPSUN 1.24.1, avec marqueur de succès conservé par entité. Aucun écrasement ni troncature ; les lignes non migrables sont signalées et restent à traiter sous cette version.
+- Après mise à jour, actualiser le module par le parcours natif dans chaque entité concernée pour retirer l’onglet et exécuter la migration. Les autres champs et les données historiques sont conservés.
 
 ## 1.24.0 (02/11/2026)
 - Ajout du contrôle des acomptes clients à une date d’arrêté : encaissements nets, remboursements sur l’acompte ou ses avoirs liés, avoirs, utilisations sur factures et commandes directement liées accessibles, sans génération d’écriture comptable.

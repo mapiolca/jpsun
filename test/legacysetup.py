@@ -34,6 +34,8 @@ $conf = (object) array('entity' => $input['entity'], 'global' => new stdClass())
 $langs = new class { public function trans($key) { return $key; } };
 function img_picto(...$args) { return ''; }
 function isModEnabled($module) { return $module === 'powerplantpv'; }
+// This suite checks later activations; the migration itself has its own SQL regression suite.
+function getDolGlobalInt($key, $default = 0) { return $key === 'JPSUN_MIGRATION_1241_DONE' ? 1 : $default; }
 function dol_include_once($path) {
     if ($path !== '/core/class/extrafields.class.php') { throw new RuntimeException($path); }
     return 1;
@@ -119,6 +121,8 @@ class LegacySetupTests(unittest.TestCase):
                 state = result['definitions']
                 self.assertTrue(set(KEPT).issubset(state['contrat']))
                 self.assertTrue(set(RETIRED).isdisjoint(state['contrat']))
+                self.assertNotIn('jpsun_marque', state['product'])
+                self.assertTrue(all(not key.startswith('jpsun_project_') for key in state.get('projet', {})))
 
     def test_existing_definitions_and_values_remain_untouched(self):
         for entity in (1, 2):

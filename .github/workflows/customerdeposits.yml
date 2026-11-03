@@ -56,10 +56,16 @@ jobs:
           php -l jpsun/class/actions_jpsun.class.php
           php -l jpsun/core/modules/modJpsun.class.php
           php -l jpsun/tabs/projet_enedis.php
+          php -l jpsun/scripts/migrate_1_24_1.php
+          php -l jpsun/test/migration1241.php
       - name: Legacy setup preservation and retired ENEDIS URL
         env:
           DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}
         run: python3 jpsun/test/legacysetup.py dolibarr/htdocs
+      - name: JPSUN 1.24.1 migration, entity scope and rollback
+        env:
+          DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}
+        run: python3 jpsun/test/migration1241.py dolibarr/htdocs
       - name: SQL fixtures, native hooks and icon resolution
         env:
           DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}

@@ -316,7 +316,8 @@ class modJpsun extends DolibarrModules
 		//Produits
 
 			$ext->fetch_name_optionals_label('product');
-		    $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+		    // Retired in 1.24.1; definitions and values are preserved by the migration.
+		    // $ext->addExtraField('jpsun_marque', 'jpsun_marque', 'varchar', 100, '255', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_marque_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 			$productPeakPowerField = array(
 				'label' => 'jpsun_module_pv_pc',
 				'type' => 'int',
@@ -387,14 +388,13 @@ class modJpsun extends DolibarrModules
 			}
 		    $ext->addExtraField('jpsun_productdet', 'jpsun_ProductDet', 'html', 1, '2000', 'product', 0, 0, '', '', 1, '', '-1', 'jpsun_ProductDet_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 		    
-		//Projets 
-		    
-		    $ext->addExtraField('jpsun_project_pc', 'jpsun_project_pc', 'varchar', 98, '255', 'projet', 0, 0, '', '', 1, '', '-1', 'jpsun_project_pc_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_project_n_ddr', 'jpsun_project_n_ddr', 'varchar', 99, '18', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_n_ddr_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_project_t0', 'jpsun_project_t0', 'date', 100, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_t0_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_project_prix_rachat', 'jpsun_project_prix_rachat', 'price', 101, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_prix_rachat_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_project_type_racc', 'jpsun_project_type_racc', 'select', 102, '', 'projet', 0, 0, '', 'a:1:{s:7:"options";a:3:{i:1;s:26:"jpsun_project_type_racc_vt";i:2;s:26:"jpsun_project_type_racc_as";i:3;s:26:"jpsun_project_type_racc_at";}}', 1, '', '-1', 'jpsun_project_pc_help', '',  $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
-		    $ext->addExtraField('jpsun_project_mes_date', 'jpsun_project_mes_date', 'date', 103, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_mes_date_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+		// Legacy project definitions retired in 1.24.1; retain their stored values.
+			// $ext->addExtraField('jpsun_project_pc', 'jpsun_project_pc', 'varchar', 98, '255', 'projet', 0, 0, '', '', 1, '', '-1', 'jpsun_project_pc_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			// $ext->addExtraField('jpsun_project_n_ddr', 'jpsun_project_n_ddr', 'varchar', 99, '18', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_n_ddr_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			// $ext->addExtraField('jpsun_project_t0', 'jpsun_project_t0', 'date', 100, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_t0_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			// $ext->addExtraField('jpsun_project_prix_rachat', 'jpsun_project_prix_rachat', 'price', 101, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_prix_rachat_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			// $ext->addExtraField('jpsun_project_type_racc', 'jpsun_project_type_racc', 'select', 102, '', 'projet', 0, 0, '', 'a:1:{s:7:"options";a:3:{i:1;s:26:"jpsun_project_type_racc_vt";i:2;s:26:"jpsun_project_type_racc_as";i:3;s:26:"jpsun_project_type_racc_at";}}', 1, '', '-1', 'jpsun_project_pc_help', '',  $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
+			// $ext->addExtraField('jpsun_project_mes_date', 'jpsun_project_mes_date', 'date', 103, '', 'projet', 0, 0, '', '', 1, '', '-4', 'jpsun_project_mes_date_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled');
 			foreach (array('project_address', 'project_zip', 'project_town') as $obsoleteProjectExtraField) {
 				$result = $this->deleteObsoleteProjectExtraFieldIfExists($ext, $obsoleteProjectExtraField);
 				if ($result < 0) {
@@ -952,6 +952,20 @@ class modJpsun extends DolibarrModules
 		$sql[] = "DELETE ur FROM ".MAIN_DB_PREFIX."user_rights as ur INNER JOIN ".MAIN_DB_PREFIX."rights_def as rd ON rd.id = ur.fk_id WHERE rd.module = 'jpsun' AND rd.perms = 'pcinstall' AND rd.subperms = 'write'";
 		$sql[] = "DELETE ugr FROM ".MAIN_DB_PREFIX."usergroup_rights as ugr INNER JOIN ".MAIN_DB_PREFIX."rights_def as rd ON rd.id = ugr.fk_id WHERE rd.module = 'jpsun' AND rd.perms = 'pcinstall' AND rd.subperms = 'write'";
 		$sql[] = "DELETE FROM ".MAIN_DB_PREFIX."rights_def WHERE module = 'jpsun' AND perms = 'pcinstall' AND subperms = 'write'";
+
+		if ($this->version === '1.24.1') {
+			require_once __DIR__.'/../../scripts/migrate_1_24_1.php';
+			$migration = new JpsunMigration1241($this->db);
+			$result = $migration->run($this->version, (int) $conf->entity);
+			if ($result < 0) {
+				$this->error = $migration->error;
+				return 0;
+			}
+			if ($migration->pending > 0) {
+				$langs->load('jpsun@jpsun');
+				setEventMessages($langs->trans('JpsunMigration1241Pending', $migration->pending), null, 'warnings');
+			}
+		}
 
 		$result = $this->_init($sql);
 		if ($result > 0) {
