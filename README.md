@@ -72,7 +72,7 @@ Le contrôle est entièrement traduit en français et en anglais : ses libellés
 
 Vérifications reproductibles : `python test/legacysetup.py <racine htdocs Dolibarr>` et `python test/migration1241.py <racine htdocs Dolibarr>`. Les tests exécutent le descripteur et les helpers de constantes natifs avec des services d’installation et transactions simulés, le SQL sur SQLite et l’ancienne URL dans les deux dispositions d’installation. Ils couvrent les entités 1 et 2, les réactivations, les cibles vides/renseignées, les marques trop longues, le seuil exact 1.24.1, le masquage et les rollbacks après erreur. Ils ne remplacent pas une désactivation/réactivation sur une instance réelle avec MySQL/MariaDB.
 
-### Version 1.24.2 en préparation
+### Version 1.24.2
 
 - JPSUN ne crée et ne met plus à jour l’extrafield produit `jpsun_module_pv_pc`, couvert par PowerPlantPV. Les définitions, paramètres personnalisés et valeurs existants restent conservés ; aucune colonne n’est supprimée.
 - JPSUN ne supprime et ne recrée plus le type de contact projet externe `PROJECTADD`, fourni par `lmdbjobsite`. Les identifiants, libellés, états, positions et liaisons existants restent inchangés. Aucun de ces modules n’est activé automatiquement.

@@ -1,6 +1,6 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.24.2 (03/11/2026 — en préparation)
+## 1.24.2 (03/11/2026)
 - Arrêt de la création et de la mise à jour de `jpsun_module_pv_pc`, couvert par PowerPlantPV, sans suppression des définitions ni des valeurs existantes.
 - Arrêt de la suppression/réinstallation du type de contact projet `PROJECTADD`, fourni par `lmdbjobsite`, avec conservation des réglages et des liaisons existants.
 - Ajout du contrôle des acomptes à Comptabilité simple, sous Rapports, avec le droit natif de consultation des résultats. Rapport en lecture seule, sans écriture ni opération de comptabilité en partie double ; droits, entités, traductions et seuil Dolibarr inférieur à 26 conservés.
