@@ -6,6 +6,7 @@ if (PHP_SAPI !== 'cli') {
 	exit;
 }
 error_reporting(E_ALL & ~E_DEPRECATED);
+date_default_timezone_set('UTC');
 set_error_handler(static function ($level, $message, $file, $line) {
 	if (error_reporting() & $level) {
 		throw new ErrorException($message, 0, $level, $file, $line);
@@ -45,7 +46,7 @@ if (!in_array($language, array('en_US', 'fr_FR'), true)) {
 	throw new RuntimeException('Unsupported fixture language');
 }
 $langs->setDefaultLang($language);
-$langs->load('jpsun@jpsun');
+$langs->loadLangs(array('main', 'jpsun@jpsun'));
 
 class DepositFixtureActor
 {
@@ -105,13 +106,17 @@ if ($mode === 'page') {
 	$_SERVER['REQUEST_METHOD'] = 'GET';
 	$_SERVER['PHP_SELF'] = '/custom/jpsun/customerdeposits.php';
 	$_SESSION = array();
+	$_GET = $input['get'] ?? array();
+	$_POST = array();
+	$_REQUEST = $_GET;
 	$db->stopAtQuery = true;
 	try {
 		include $input['page_path'];
 		throw new RuntimeException('Page did not stop at its access guard or first query');
 	} catch (DepositFixturePageStop $exception) {
 		$output = array('denied' => $exception->getCode() === 403, 'queries' => $db->queries,
-			'cutoff' => isset($date_cutoff) ? $date_cutoff : null);
+			'cutoff' => isset($date_cutoff) ? $date_cutoff : null,
+			'filter' => $filter ?? array(), 'page' => $page ?? null);
 	}
 } elseif ($mode === 'translations') {
 	foreach (file(__DIR__.'/../langs/en_US/jpsun.lang') as $entry) {

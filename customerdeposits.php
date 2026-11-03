@@ -25,6 +25,7 @@ if (!$res) {
 }
 require_once __DIR__.'/class/jpsuncustomerdepositreport.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/ajax.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
@@ -51,6 +52,22 @@ $search_thirdparty = GETPOST('search_thirdparty', 'alphanohtml');
 $search_status = GETPOST('search_status', 'aZ');
 if (!in_array($search_status, array('outstanding', 'cleared', 'all'))) {
 	$search_status = 'all';
+}
+$search_amounts = array();
+foreach (array('invoiced', 'received', 'refunds', 'credited', 'applied', 'remaining') as $key) {
+	$search_amounts[$key] = GETPOST('search_'.$key, 'alphanohtml');
+}
+$search_dates = array(
+	'invoice_start' => (int) GETPOSTDATE('search_invoice_start', 'getpost', 'tzserver'),
+	'invoice_end' => (int) GETPOSTDATE('search_invoice_end', 'getpost', 'tzserver'),
+	'payment_start' => (int) GETPOSTDATE('search_payment_start', 'getpost', 'tzserver'),
+	'payment_end' => (int) GETPOSTDATE('search_payment_end', 'getpost', 'tzserver'),
+);
+$search_applications = GETPOST('search_applications', 'alphanohtml');
+$search_orders = GETPOST('search_orders', 'alphanohtml');
+$search_control_status = GETPOST('search_control_status', 'aZ');
+if (!in_array($search_control_status, array('', 'DepositControlOutstanding', 'DepositControlCleared', 'DepositControlInconsistent'), true)) {
+	$search_control_status = '';
 }
 $limit = GETPOSTINT('limit') > 0 ? GETPOSTINT('limit') : $conf->liste_limit;
 $page = max(0, GETPOSTINT('page'));
@@ -102,6 +119,11 @@ if ($clearfilters) {
 	$search_ref = '';
 	$search_thirdparty = '';
 	$search_status = 'all';
+	$search_amounts = array_fill_keys(array_keys($search_amounts), '');
+	$search_dates = array_fill_keys(array_keys($search_dates), 0);
+	$search_applications = '';
+	$search_orders = '';
+	$search_control_status = '';
 }
 
 if (empty($date_cutoff)) {
@@ -125,7 +147,8 @@ if (empty($date_cutoff)) {
 	}
 }
 
-$filter = array('ref' => $search_ref, 'thirdparty' => $search_thirdparty, 'status' => $search_status);
+$filter = array_merge(array('ref' => $search_ref, 'thirdparty' => $search_thirdparty, 'status' => $search_status,
+	'applications' => $search_applications, 'orders' => $search_orders, 'control_status' => $search_control_status), $search_amounts, $search_dates);
 $result = $reshook < 0 ? -1 : $report->fetchAll($user, $date_cutoff, $filter, $limit, $page * $limit, $sortfield, $sortorder);
 if ($result < 0) {
 	setEventMessages($report->error, null, 'errors');
@@ -145,6 +168,15 @@ $leftmenu = $simpleaccounting ? 'accountancy_report_customerdeposits' : 'account
 $param = '&mainmenu=accountancy&leftmenu='.$leftmenu;
 $param .= '&date_cutoffday='.$dateparts['mday'].'&date_cutoffmonth='.$dateparts['mon'].'&date_cutoffyear='.$dateparts['year'];
 $param .= '&search_ref='.urlencode($search_ref).'&search_thirdparty='.urlencode($search_thirdparty).'&search_status='.urlencode($search_status);
+foreach (array_merge($search_amounts, array('applications' => $search_applications, 'orders' => $search_orders, 'control_status' => $search_control_status)) as $key => $value) {
+	$param .= '&search_'.$key.'='.urlencode($value);
+}
+foreach ($search_dates as $key => $value) {
+	if ($value) {
+		$parts = dol_getdate($value, false, 'tzserver');
+		$param .= '&search_'.$key.'day='.$parts['mday'].'&search_'.$key.'month='.$parts['mon'].'&search_'.$key.'year='.$parts['year'];
+	}
+}
 if ($limit != $conf->liste_limit) {
 	$param .= '&limit='.$limit;
 }
@@ -158,6 +190,33 @@ print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="sortfield" value="'.dolPrintHTMLForAttribute($sortfield).'">';
 print '<input type="hidden" name="sortorder" value="'.dolPrintHTMLForAttribute($sortorder).'">';
+// Retain active filters when their columns are hidden through native preferences.
+$columnsearches = array(
+	'f.ref' => array('search_ref' => $search_ref),
+	's.nom' => array('search_thirdparty' => $search_thirdparty),
+	'applications' => array('search_applications' => $search_applications),
+	'orders' => array('search_orders' => $search_orders),
+	'status' => array('search_control_status' => $search_control_status),
+);
+foreach ($search_amounts as $key => $value) {
+	$columnsearches[$key === 'invoiced' ? 'f.total_ttc' : $key] = array('search_'.$key => $value);
+}
+foreach ($search_dates as $key => $value) {
+	if ($value) {
+		$column = strpos($key, 'invoice_') === 0 ? 'f.datef' : 'pay.last_payment';
+		$parts = dol_getdate($value, false, 'tzserver');
+		$columnsearches[$column]['search_'.$key.'day'] = (string) $parts['mday'];
+		$columnsearches[$column]['search_'.$key.'month'] = (string) $parts['mon'];
+		$columnsearches[$column]['search_'.$key.'year'] = (string) $parts['year'];
+	}
+}
+foreach ($columnsearches as $column => $values) {
+	if (empty($arrayfields[$column]['checked'])) {
+		foreach ($values as $name => $value) {
+			print '<input type="hidden" name="'.$name.'" value="'.dolPrintHTMLForAttribute($value).'">';
+		}
+	}
+}
 print_barre_liste($title, $page, $_SERVER['PHP_SELF'], $param, $sortfield, $sortorder, '', $result, $report->num_total, 'accountancy', 0, '', '', $limit);
 print '<div class="opacitymedium marginbottomonly">'.$langs->trans('DepositControlDescription').'</div>';
 print '<div class="warning">'.$langs->trans('DepositControlHistoryWarning').'</div>';
@@ -165,8 +224,9 @@ print '<div class="liste_titre liste_titre_bydiv centpercent">';
 print '<div class="divsearchfield">'.$langs->trans('DepositControlCutoffDate').': ';
 print $form->selectDate($date_cutoff, 'date_cutoff', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 print '</div>';
-print '<div class="divsearchfield"><label for="search_status">'.$langs->trans('Status').'</label> ';
+print '<div class="divsearchfield"><label for="search_status">'.$langs->trans('DepositControlRemaining').'</label> ';
 print $form->selectarray('search_status', array('all' => $langs->trans('All'), 'outstanding' => $langs->trans('DepositControlOutstanding'), 'cleared' => $langs->trans('DepositControlCleared')), $search_status, 0, 0, 0, '', 0, 0, 0, '', 'maxwidth200');
+print ajax_combobox('search_status');
 print '</div>';
 print '</div>';
 
@@ -192,6 +252,28 @@ foreach ($arrayfields as $key => $field) {
 		print '<input class="flat maxwidth100" aria-label="'.dolPrintHTMLForAttribute($langs->transnoentities('Ref')).'" name="search_ref" value="'.dolPrintHTMLForAttribute($search_ref).'">';
 	} elseif ($key === 's.nom') {
 		print '<input class="flat maxwidth100" aria-label="'.dolPrintHTMLForAttribute($langs->transnoentities('ThirdParty')).'" name="search_thirdparty" value="'.dolPrintHTMLForAttribute($search_thirdparty).'">';
+	} elseif (in_array($key, array('f.datef', 'pay.last_payment'), true)) {
+		$prefix = $key === 'f.datef' ? 'invoice' : 'payment';
+		foreach (array('start' => 'From', 'end' => 'To') as $bound => $label) {
+			$datekey = $prefix.'_'.$bound;
+			print '<div class="nowraponall">'.$langs->trans($label).' ';
+			print $form->selectDate($search_dates[$datekey], 'search_'.$datekey, 0, 0, 1, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
+			print '</div>';
+		}
+	} elseif (in_array($key, array('f.total_ttc', 'received', 'refunds', 'credited', 'applied', 'remaining'), true)) {
+		$amountkey = $key === 'f.total_ttc' ? 'invoiced' : $key;
+		print '<input class="flat maxwidth75 right" name="search_'.$amountkey.'" value="'.dolPrintHTMLForAttribute($search_amounts[$amountkey]).'"';
+		print ' aria-label="'.dolPrintHTMLForAttribute($langs->transnoentities($field['label'])).'" title="'.dolPrintHTMLForAttribute($langs->transnoentities('DepositControlAmountFilterHelp')).'">';
+	} elseif (in_array($key, array('applications', 'orders'), true)) {
+		$value = $key === 'applications' ? $search_applications : $search_orders;
+		print '<input class="flat maxwidth100" name="search_'.$key.'" value="'.dolPrintHTMLForAttribute($value).'"';
+		print ' aria-label="'.dolPrintHTMLForAttribute($langs->transnoentities($field['label'])).'" placeholder="'.dolPrintHTMLForAttribute($langs->transnoentities('Ref')).'">';
+	} elseif ($key === 'status') {
+		print $form->selectarray('search_control_status', array('' => $langs->trans('All'),
+			'DepositControlOutstanding' => $langs->trans('DepositControlOutstanding'),
+			'DepositControlCleared' => $langs->trans('DepositControlCleared'),
+			'DepositControlInconsistent' => $langs->trans('DepositControlInconsistent')), $search_control_status, 0, 0, 0, '', 0, 0, 0, '', 'maxwidth200');
+		print ajax_combobox('search_control_status');
 	}
 	print '</td>';
 }

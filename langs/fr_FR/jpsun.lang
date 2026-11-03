@@ -501,3 +501,5 @@ DepositControlPageTotal=Cette page, TTC : encaissements nets %s ; utilisés %s ;
 JpsunDepositControlRequirement=Rétroportage demandé de la PR Dolibarr #42407 pour Dolibarr 20 à 25, avec JPSUN et Factures actifs, avec Comptabilité simple ou Comptabilité en partie double. Désactivé à partir de Dolibarr 26, préversions incluses. Droit natif de consultation des rapports comptables requis ; aucune écriture comptable générée.
 
 JpsunMigration1241Pending=Migration JPSUN 1.24.1 : %s marque(s) restent à migrer. Vérifiez que le champ Marque photovoltaïque de PowerPlantPV existe et peut contenir les valeurs sources. Les valeurs historiques sont conservées et masquées. Relancez la migration sous JPSUN 1.24.1 avant de passer à une version suivante.
+
+DepositControlAmountFilterHelp=Filtre de montant : 0, =100, >=100, <=200. Les comparaisons natives peuvent être combinées.

@@ -3,6 +3,7 @@
 Usage: python test/customerdeposits.py [Dolibarr htdocs] [extracted core contract directory]
 """
 import json
+from datetime import datetime, timezone
 from html import unescape
 from pathlib import Path
 import sqlite3
@@ -266,6 +267,120 @@ class DepositControlTest(unittest.TestCase):
         self.assertEqual(self.run_worker(filter={'ref': "' OR 1=1 --"})['total'], 0)
         self.assertEqual(self.run_worker(sortfield='f.ref; DROP TABLE fixture_facture')['total'], 2)
 
+    def test_all_amount_columns_filter_before_count_and_pagination(self):
+        cases = [('invoiced', '=120', {'1'}), ('received', '<100', {'1'}),
+                 ('refunds', '0', {'1', '3'}), ('credited', '=0', {'1', '3'}),
+                 ('applied', '>=40', {'1'}), ('remaining', '>20', {'3'})]
+        for field, value, expected in cases:
+            with self.subTest(field=field):
+                output = self.run_worker(filter={field: value})
+                self.assertEqual(set(output['lines']), expected)
+                self.assertEqual(output['total'], len(expected))
+        combined = dict(invoiced='>=100 <200', received='>0', refunds='0', credited='0', applied='40', remaining='20')
+        data = self.run_worker(filter=combined, limit=1, offset=1)
+        self.assertEqual((data['total'], data['result']), (1, 0))
+        self.assertEqual(self.run_worker(filter={'ref': '0'})['total'], 0)
+
+    def test_both_date_columns_have_inclusive_day_ranges(self):
+        def day(value):
+            return int(datetime.fromisoformat(value).replace(tzinfo=timezone.utc).timestamp())
+        self.db.executescript("""
+            UPDATE fixture_facture SET datef='2026-02-01' WHERE rowid=3;
+            UPDATE fixture_paiement SET datep='2026-06-02 23:59:59' WHERE rowid=4;
+        """)
+        cases = [({'invoice_start': day('2026-02-01'), 'invoice_end': day('2026-02-01')}, {'3'}),
+                 ({'invoice_end': day('2026-01-31')}, {'1'}),
+                 ({'invoice_start': day('2026-01-01')}, {'1', '3'}),
+                 ({'payment_start': day('2026-06-02'), 'payment_end': day('2026-06-02')}, {'3'}),
+                 ({'payment_end': day('2026-06-01')}, {'1'})]
+        for filters, expected in cases:
+            self.assertEqual(set(self.run_worker(filter=filters)['lines']), expected)
+
+    def test_linked_document_filters_match_visible_evidence(self):
+        for reference in ('INV1', 'INV2'):
+            self.assertEqual(set(self.run_worker(filter={'applications': reference})['lines']), {'1'})
+        self.assertEqual(set(self.run_worker(filter={'orders': 'ORDER1'})['lines']), {'1'})
+        self.assertEqual(self.run_worker(filter={'applications': "' OR 1=1 --"})['total'], 0)
+        self.db.executescript("""
+            INSERT INTO fixture_facture VALUES(12,'PRIVATE',0,2,1,'2026-01-01','2026-01-01',1,10,NULL);
+            INSERT INTO fixture_facturedet VALUES(102,12);
+            INSERT INTO fixture_societe_remise_except VALUES(1,10,102,NULL,0,1);
+            INSERT INTO fixture_commande VALUES(2,'PRIVATE',1,'2026-01-01',NULL,NULL,2,1);
+            INSERT INTO fixture_element_element VALUES(2,1,'commande','facture');
+        """)
+        for key in ('applications', 'orders'):
+            self.assertEqual(self.run_worker(filter={key: 'PRIVATE'})['total'], 0)
+        self.db.execute("UPDATE fixture_commande SET date_commande='2027-01-01' WHERE rowid=1")
+        self.assertEqual(self.run_worker(filter={'orders': 'ORDER1'})['total'], 0)
+        for options in (dict(denied=['commande.lire']), dict(modules=['jpsun', 'accounting', 'invoice'])):
+            data = self.run_worker(filter={'orders': 'ORDER1'}, **options)
+            self.assertEqual((data['result'], data['queries']), (-1, 0))
+
+    def test_badge_status_filter_is_distinct_from_remaining_balance(self):
+        self.db.executescript("""
+            UPDATE fixture_facture SET total_ttc=150 WHERE rowid=3;
+            INSERT INTO fixture_facture VALUES(5,'CLEARED',3,1,1,'2026-01-01','2026-01-01',1,50,NULL);
+            INSERT INTO fixture_paiement_facture VALUES(1,5,50);
+            INSERT INTO fixture_societe_remise_except VALUES(5,50,100,NULL,0,1);
+        """)
+        for status, expected in [('DepositControlOutstanding', {'1'}), ('DepositControlCleared', {'5'}),
+                                 ('DepositControlInconsistent', {'3'})]:
+            data = self.run_worker(filter={'control_status': status})
+            self.assertEqual(set(data['lines']), expected)
+            self.assertTrue(all(row['calculation']['status'] == status for row in data['lines'].values()))
+        self.db.executescript("""
+            INSERT INTO fixture_facture VALUES(13,'USED3',0,1,2,'2026-06-01','2026-06-01',1,250,NULL);
+            INSERT INTO fixture_facturedet VALUES(103,13);
+            INSERT INTO fixture_societe_remise_except VALUES(3,250,103,NULL,0,1);
+        """)
+        self.assertEqual(set(self.run_worker(filter={'status': 'cleared', 'control_status': 'DepositControlInconsistent'})['lines']), {'3'})
+        self.db.execute('UPDATE fixture_facture SET date_valid=NULL WHERE rowid=1')
+        self.assertIn('1', self.run_worker(filter={'control_status': 'DepositControlInconsistent'})['lines'])
+
+    def test_status_filter_keeps_native_precision_for_fractional_sums(self):
+        self.db.executescript("""
+            UPDATE fixture_facture SET total_ttc=.3 WHERE rowid=1;
+            DELETE FROM fixture_paiement_facture WHERE fk_facture=1;
+            INSERT INTO fixture_paiement_facture VALUES(1,1,.1),(1,1,.2);
+            DELETE FROM fixture_societe_remise_except WHERE fk_facture_source=1;
+            INSERT INTO fixture_societe_remise_except VALUES(1,.1,100,NULL,0,1),(1,.2,100,NULL,0,1);
+        """)
+        row = self.deposit()
+        self.assertEqual(row['calculation']['status'], 'DepositControlCleared')
+        self.assertIn('1', self.run_worker(filter={'control_status': 'DepositControlCleared'})['lines'])
+        self.assertNotIn('1', self.run_worker(filter={'control_status': 'DepositControlInconsistent'})['lines'])
+
+    def test_invalid_column_filters_fail_without_queries(self):
+        for filters in ({'invoiced': '==0'}, {'invoiced': '='}, {'received': []}, {'invoice_start': 'bad'},
+                        {'invoice_start': 2000000000, 'invoice_end': 1000000000},
+                        {'control_status': 'bad'}):
+            data = self.run_worker(filter=filters)
+            self.assertEqual((data['result'], data['queries']), (-1, 0))
+
+    def test_page_parses_and_resets_all_column_filters(self):
+        query = dict(search_invoiced='<=200', search_received='>=0', search_ref='D1',
+                     search_refunds='0', search_credited='0', search_applied='40', search_remaining='20',
+                     search_thirdparty='Client', search_applications='INV', search_orders='ORDER',
+                     search_control_status='DepositControlInconsistent', page='2', button_search='1')
+        for prefix, day, month in [('invoice_start',1,1), ('invoice_end',31,1),
+                                   ('payment_start',1,6), ('payment_end',2,6)]:
+            query.update({f'search_{prefix}day': str(day), f'search_{prefix}month': str(month),
+                          f'search_{prefix}year': '2026'})
+        options = dict(mode='page', page_path=str(self.page_module / 'customerdeposits.php'),
+                       modules=['jpsun', 'comptabilite', 'invoice', 'order'])
+        data = self.run_worker(**options, get=query)
+        self.assertFalse(data['denied'])
+        self.assertEqual(data['page'], 0)
+        self.assertEqual(data['filter']['invoiced'], '<=200')
+        self.assertEqual(data['filter']['orders'], 'ORDER')
+        self.assertIsInstance(data['filter']['invoice_start'], int)
+        self.assertIn('2026-01-31', data['queries'][0])
+        self.assertIn('2026-06-02 23:59:59', data['queries'][0])
+        reset = self.run_worker(**options, get={**query, 'button_removefilter': '1'})
+        self.assertEqual(reset['page'], 0)
+        for key, value in reset['filter'].items():
+            self.assertEqual(value, 'all' if key == 'status' else 0 if key.endswith(('_start', '_end')) else '')
+
     def test_native_precision(self):
         data = self.run_worker(mode='calculate', precision=3, amounts=[1, .98765, 0, 0, .12345])
         self.assertAlmostEqual(data['received'], .988)
@@ -384,7 +499,7 @@ class DepositControlTest(unittest.TestCase):
                       modules=['jpsun', 'comptabilite', 'invoice', 'order'])
         data = self.run_worker(**simple, denied=['accounting.comptarapport.lire'])
         self.assertFalse(data['denied'])
-        self.assertTrue(data['queries'][0].startswith('SELECT COUNT(f.rowid)'))
+        self.assertTrue(data['queries'][0].startswith('SELECT COUNT('))
         self.assertNotIn('accounting_fiscalyear', data['queries'][0])
         self.assertIsInstance(data['cutoff'], int)
         for options in (dict(admin=1, denied=['compta.resultat.lire']), dict(version='26.0.0-alpha'), dict(socid=1)):
@@ -408,7 +523,7 @@ class DepositControlTest(unittest.TestCase):
     def test_french_catalog_loads_natively_without_english_fallback(self):
         french = self.run_worker(mode='translations', language='fr_FR')
         english = self.run_worker(mode='translations', language='en_US')
-        self.assertEqual(len(french), 22)
+        self.assertEqual(len(french), 23)
         self.assertEqual(set(french), set(english))
         for key, translated in french.items():
             with self.subTest(key=key):

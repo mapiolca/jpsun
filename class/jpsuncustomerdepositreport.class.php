@@ -80,7 +80,7 @@ class JpsunCustomerDepositReport
 	 *
 	 * @param User $user Actor whose native accounting and commercial access is enforced
 	 * @param int $date_cutoff Cutoff timestamp (end of the selected server calendar day)
-	 * @param array{ref?:string,thirdparty?:string,status?:string} $filter Search filters
+	 * @param array<string,mixed> $filter Untrusted column text and server timestamps, reduced to typed maps below
 	 * @param int $limit Maximum number of deposits
 	 * @param int $offset Offset
 	 * @param string $sortfield Sort column
@@ -98,6 +98,42 @@ class JpsunCustomerDepositReport
 		if (!JpsunCustomerDepositCompatibility::isAvailable() || $user->socid > 0
 			|| !((isModEnabled('accounting') && $user->hasRight('accounting', 'comptarapport', 'lire'))
 				|| (isModEnabled('comptabilite') && $user->hasRight('compta', 'resultat', 'lire')))) {
+			$this->error = $langs->trans('NotEnoughPermissions');
+			return -1;
+		}
+		$textfilters = array();
+		$datefilters = array();
+		foreach (array('ref', 'thirdparty', 'status', 'control_status', 'invoiced', 'received', 'refunds', 'credited', 'applied', 'remaining', 'applications', 'orders') as $key) {
+			$value = $filter[$key] ?? '';
+			if (!is_string($value)) {
+				$this->error = $langs->trans('ErrorWrongValueForParameterX', $key);
+				return -1;
+			}
+			$textfilters[$key] = $value;
+		}
+		foreach (array('invoice_start', 'invoice_end', 'payment_start', 'payment_end') as $key) {
+			$value = $filter[$key] ?? 0;
+			if (!is_int($value)) {
+				$this->error = $langs->trans('ErrorWrongValueForParameterX', $key);
+				return -1;
+			}
+			$datefilters[$key] = $value;
+		}
+		$filter = $textfilters;
+		foreach (array('invoice', 'payment') as $prefix) {
+			if (!empty($datefilters[$prefix.'_start']) && !empty($datefilters[$prefix.'_end'])
+				&& dol_get_first_hour($datefilters[$prefix.'_start']) > dol_get_last_hour($datefilters[$prefix.'_end'])) {
+				$this->error = $langs->trans('ErrorWrongValueForParameterX', $prefix);
+				return -1;
+			}
+		}
+		if (isset($filter['control_status']) && $filter['control_status'] !== ''
+			&& !in_array($filter['control_status'], array('DepositControlOutstanding', 'DepositControlCleared', 'DepositControlInconsistent'), true)) {
+			$this->error = $langs->trans('ErrorWrongValueForParameterX', 'control_status');
+			return -1;
+		}
+		if (isset($filter['orders']) && $filter['orders'] !== ''
+			&& (!isModEnabled('order') || !$user->hasRight('commande', 'lire'))) {
 			$this->error = $langs->trans('NotEnoughPermissions');
 			return -1;
 		}
@@ -154,10 +190,10 @@ class JpsunCustomerDepositReport
 		// Keep abandoned deposits for review instead of silently losing an outstanding receipt.
 		$sqlfrom .= " AND f.fk_statut > 0 AND f.datef <= '".$this->db->escape($cutoff)."' AND pay.receipts > 0";
 		$sqlfrom .= " AND (f.date_valid IS NULL OR f.date_valid <= '".$this->db->escape($cutoff)."')";
-		if (!empty($filter['ref'])) {
+		if (isset($filter['ref']) && $filter['ref'] !== '') {
 			$sqlfrom .= natural_search('f.ref', $filter['ref']);
 		}
-		if (!empty($filter['thirdparty'])) {
+		if (isset($filter['thirdparty']) && $filter['thirdparty'] !== '') {
 			$sqlfrom .= natural_search('s.nom', $filter['thirdparty']);
 		}
 		if (!$user->hasRight('societe', 'client', 'voir')) {
@@ -169,7 +205,81 @@ class JpsunCustomerDepositReport
 		} elseif (isset($filter['status']) && $filter['status'] == 'cleared') {
 			$sqlfrom .= ' AND '.$sqlremaining.' = 0';
 		}
-		$resql = $this->db->query('SELECT COUNT(f.rowid) AS nb'.$sqlfrom);
+		$amountfields = array(
+			'invoiced' => 'ROUND(CAST(f.total_ttc AS DECIMAL(65,8)), '.$totalprecision.')',
+			'received' => $sqlnet,
+			'refunds' => 'ROUND(CAST(pay.refunds AS DECIMAL(65,8)), '.$totalprecision.')',
+			'credited' => 'ROUND(CAST(COALESCE(credit.credited, 0) AS DECIMAL(65,8)), '.$totalprecision.')',
+			'applied' => 'ROUND(CAST(COALESCE(used.applied, 0) AS DECIMAL(65,8)), '.$totalprecision.')',
+			'remaining' => $sqlremaining,
+		);
+		$columnconditions = '';
+		foreach ($amountfields as $key => $expression) {
+			if (isset($filter[$key]) && $filter[$key] !== '') {
+				// Keep the native numeric search syntax, rejecting malformed operators before SQL.
+				if (preg_match('/(?:^|[|\s])[!<>=]+\s*(?:[|]|$)/', $filter[$key])) {
+					$this->error = $langs->trans('ErrorWrongValueForParameterX', $key);
+					return -1;
+				}
+				preg_match_all('/[!<>=]+/', $filter[$key], $operators);
+				foreach ($operators[0] as $operator) {
+					if (!in_array($operator, array('=', '<', '>', '<=', '>=', '!=', '<>'), true)) {
+						$this->error = $langs->trans('ErrorWrongValueForParameterX', $key);
+						return -1;
+					}
+				}
+				$columnconditions .= natural_search('deposits.filter_'.$key, $filter[$key], 1);
+			}
+		}
+		foreach (array('invoice' => 'f.datef', 'payment' => 'pay.last_payment') as $prefix => $column) {
+			foreach (array('start' => '>=', 'end' => '<=') as $bound => $operator) {
+				$key = $prefix.'_'.$bound;
+				if (!empty($datefilters[$key])) {
+					$date = $this->db->idate($bound === 'start' ? dol_get_first_hour($datefilters[$key]) : dol_get_last_hour($datefilters[$key]));
+					// f.datef is a native DATE column; payment timestamps retain their time bounds.
+					if ($prefix === 'invoice') {
+						$date = substr($date, 0, 10);
+					}
+					$sqlfrom .= ' AND '.$column.' '.$operator." '".$this->db->escape($date)."'";
+				}
+			}
+		}
+		if (isset($filter['applications']) && $filter['applications'] !== '') {
+			$sqlfrom .= ' AND EXISTS (SELECT 1 FROM '.$this->db->prefix().'societe_remise_except AS re';
+			$sqlfrom .= ' LEFT JOIN '.$this->db->prefix().'facturedet AS usedline ON usedline.rowid = re.fk_facture_line';
+			$sqlfrom .= ' INNER JOIN '.$this->db->prefix().'facture AS target ON target.rowid = COALESCE(usedline.fk_facture, re.fk_facture)';
+			$sqlfrom .= ' WHERE re.fk_facture_source = f.rowid AND re.discount_type = 0';
+			$sqlfrom .= ' AND re.entity = f.entity AND target.entity = f.entity AND target.fk_soc = f.fk_soc';
+			$sqlfrom .= natural_search('target.ref', $filter['applications']).')';
+		}
+		if (isset($filter['orders']) && $filter['orders'] !== '') {
+			$sqlfrom .= ' AND EXISTS (SELECT 1 FROM '.$this->db->prefix().'element_element AS ee';
+			$sqlfrom .= ' INNER JOIN '.$this->db->prefix().'commande AS c ON c.rowid = ee.fk_source';
+			$sqlfrom .= " WHERE ee.sourcetype = 'commande' AND ee.targettype = 'facture' AND ee.fk_target = f.rowid";
+			$sqlfrom .= ' AND c.entity IN ('.$this->db->sanitize(getEntity('commande')).') AND c.fk_soc = f.fk_soc';
+			$sqlfrom .= " AND c.date_commande <= '".$this->db->escape($cutoff)."'";
+			$sqlfrom .= natural_search('c.ref', $filter['orders']).')';
+		}
+		$statuscolumn = '';
+		if (isset($filter['control_status']) && $filter['control_status'] !== '') {
+			$available = 'LEAST(GREATEST(0, '.$sqlnet.'), '.$sqlcapacity.')';
+			$inconsistent = $sqlnet.' < 0 OR '.$sqlnet.' > '.$sqlcapacity;
+			$inconsistent .= ' OR ROUND(CAST(COALESCE(credit.credited, 0) AS DECIMAL(65,8)) - CAST(f.total_ttc AS DECIMAL(65,8)), '.$totalprecision.') > 0';
+			$inconsistent .= ' OR ROUND(CAST(COALESCE(used.applied, 0) AS DECIMAL(65,8)) - '.$available.', '.$totalprecision.') > 0';
+			$inconsistent .= ' OR COALESCE(used.applied, 0) < 0 OR f.fk_statut > '.Facture::STATUS_CLOSED;
+			$inconsistent .= " OR COALESCE(CAST(f.date_valid AS CHAR), '') IN ('', '0')";
+			$status = "CASE WHEN (".$inconsistent.") THEN 'DepositControlInconsistent' WHEN ".$sqlremaining." > 0 THEN 'DepositControlOutstanding' ELSE 'DepositControlCleared' END";
+			$statuscolumn = ', ('.$status.') AS filter_status';
+			$columnconditions .= " AND deposits.filter_status = '".$this->db->escape($filter['control_status'])."'";
+		}
+		// Native numeric search sanitizes identifiers, so expose calculated values as real columns.
+		$columns = 'f.rowid, f.ref, f.type, f.datef, f.date_valid, f.fk_statut, f.total_ttc, f.fk_soc, s.nom AS thirdparty_name,';
+		$columns .= ' pay.receipts, pay.refunds, pay.last_payment, COALESCE(used.applied, 0) AS applied, COALESCE(credit.credited, 0) AS credited';
+		foreach ($amountfields as $key => $expression) {
+			$columns .= ', ('.$expression.') AS filter_'.$key;
+		}
+		$sqlfrom = ' FROM (SELECT '.$columns.$statuscolumn.$sqlfrom.') AS deposits WHERE 1 = 1'.$columnconditions;
+		$resql = $this->db->query('SELECT COUNT(deposits.rowid) AS nb'.$sqlfrom);
 		if (!$resql) {
 			$this->error = $this->db->lasterror();
 			return -1;
@@ -179,13 +289,12 @@ class JpsunCustomerDepositReport
 			$this->num_total = (int) $count->nb;
 		}
 		$this->db->free($resql);
-		$sql = 'SELECT f.rowid, f.ref, f.type, f.datef, f.date_valid, f.fk_statut, f.total_ttc, f.fk_soc, s.nom AS thirdparty_name,';
-		$sql .= ' pay.receipts, pay.refunds, pay.last_payment, COALESCE(used.applied, 0) AS applied, COALESCE(credit.credited, 0) AS credited';
+		$sql = 'SELECT deposits.rowid, deposits.ref, deposits.type, deposits.datef, deposits.date_valid, deposits.fk_statut,';
+		$sql .= ' deposits.total_ttc, deposits.fk_soc, deposits.thirdparty_name, deposits.receipts, deposits.refunds, deposits.last_payment, deposits.applied, deposits.credited';
 		$sql .= $sqlfrom;
-		if (!in_array($sortfield, array('f.ref', 'f.datef', 's.nom', 'f.total_ttc', 'pay.last_payment'), true)) {
-			$sortfield = 'f.datef';
-		}
-		$sql .= $this->db->order($sortfield, $sortorder === 'DESC' ? 'DESC' : 'ASC').', f.rowid ASC';
+		$sortcolumns = array('f.ref' => 'deposits.ref', 'f.datef' => 'deposits.datef', 's.nom' => 'deposits.thirdparty_name',
+			'f.total_ttc' => 'deposits.total_ttc', 'pay.last_payment' => 'deposits.last_payment');
+		$sql .= $this->db->order($sortcolumns[$sortfield] ?? 'deposits.datef', $sortorder === 'DESC' ? 'DESC' : 'ASC').', deposits.rowid ASC';
 		$sql .= $this->db->plimit(max(1, $limit), max(0, $offset));
 		$resql = $this->db->query($sql);
 		if (!$resql) {
