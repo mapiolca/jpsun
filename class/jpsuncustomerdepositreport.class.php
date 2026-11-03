@@ -96,7 +96,8 @@ class JpsunCustomerDepositReport
 		$this->totals = array('received' => 0, 'applied' => 0, 'remaining' => 0);
 		$this->error = '';
 		if (!JpsunCustomerDepositCompatibility::isAvailable() || $user->socid > 0
-			|| !$user->hasRight('accounting', 'comptarapport', 'lire')) {
+			|| !((isModEnabled('accounting') && $user->hasRight('accounting', 'comptarapport', 'lire'))
+				|| (isModEnabled('comptabilite') && $user->hasRight('compta', 'resultat', 'lire')))) {
 			$this->error = $langs->trans('NotEnoughPermissions');
 			return -1;
 		}

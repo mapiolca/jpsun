@@ -91,8 +91,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 
 		$this->results = array();
 		if (($parameters['mainmenu'] ?? '') !== 'accountancy'
-			|| !JpsunCustomerDepositCompatibility::isAvailable()
-			|| $user->socid > 0 || !$user->hasRight('accounting', 'comptarapport', 'lire')) {
+			|| !JpsunCustomerDepositCompatibility::isAvailable() || $user->socid > 0) {
+			return 0;
+		}
+		$doubleaccounting = isModEnabled('accounting') && $user->hasRight('accounting', 'comptarapport', 'lire');
+		$simpleaccounting = !$doubleaccounting && isModEnabled('comptabilite') && $user->hasRight('compta', 'resultat', 'lire');
+		if (!($doubleaccounting || $simpleaccounting)) {
 			return 0;
 		}
 		$parent = null;
@@ -101,7 +105,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 				// Keep native or previously inserted entries on patched pre-v26 instances.
 				return 0;
 			}
-			if (strpos($item['url'] ?? '', '/accountancy/index.php') === 0
+			if (strpos($item['url'] ?? '', $simpleaccounting ? '/compta/resultat/index.php' : '/accountancy/index.php') === 0
 				&& (int) ($item['level'] ?? -1) === 0 && !empty($item['enabled'])) {
 				$parent = $index;
 			}
@@ -112,9 +116,12 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		$langs->load('jpsun@jpsun');
 		require_once DOL_DOCUMENT_ROOT.'/core/class/menu.class.php';
 		$menu = new Menu();
-		$url = '/jpsun/customerdeposits.php?mainmenu=accountancy&leftmenu=accountancy_accountancy_customerdeposits';
-		$menu->add($url, $langs->trans('MenuAccountancyAdjustments'), 1, 1, '', 'accountancy', 'accountancy_accountancy_customerdeposits');
-		$menu->add($url, $langs->trans('CustomerDepositControl'), 2, 1, '', 'accountancy', 'accountancy_accountancy_customerdeposits');
+		$leftmenu = $simpleaccounting ? 'accountancy_report_customerdeposits' : 'accountancy_accountancy_customerdeposits';
+		$url = '/jpsun/customerdeposits.php?mainmenu=accountancy&leftmenu='.$leftmenu;
+		if (!$simpleaccounting) {
+			$menu->add($url, $langs->trans('MenuAccountancyAdjustments'), 1, 1, '', 'accountancy', $leftmenu);
+		}
+		$menu->add($url, $langs->trans('CustomerDepositControl'), $simpleaccounting ? 1 : 2, 1, '', 'accountancy', $leftmenu);
 		$position = $parent + 1;
 		while (isset($object[$position]) && (int) ($object[$position]['level'] ?? 0) > 0) {
 			$position++;

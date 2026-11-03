@@ -32,7 +32,7 @@ php <phpstan.phar> analyse -c test/.runtime/phpstan-deposits.neon --no-progress 
 
 Les tests exécutent les SELECT de production dans une base SQLite en mémoire par un transport PHP/Python. Les classes et fonctions natives sont chargées depuis les sources indiquées, mais l’acteur, les réponses de base et le contexte d’installation sont simulés. Les fonctions MySQL `GREATEST` et `LEAST` sont adaptées pour SQLite. Ce contrôle ne remplace pas une recette MySQL/MariaDB ou Multicompany réelle.
 
-Les 21 tests couvrent :
+Les tests couvrent :
 
 - acomptes non payés exclus, encaissements partiels et futurs, utilisations datées, validations tardives et brouillons ;
 - acomptes entièrement utilisés conservés dans Tous et dans le filtre sans reliquat, remboursements et avoirs séparés, incohérences signalées ;
@@ -69,3 +69,11 @@ Après déploiement, actualiser la déclaration des hooks par le parcours natif 
 À vérifier sur une instance servant ce code : menu après actualisation des hooks, accès direct autorisé/refusé, deux entités Multicompany, comptes internes limités et externe, datepicker, Select2, pagination 20/50/100 avec son formulaire parent, absence de champ caché `limit`, sélection et persistance des colonnes, position des commandes de filtre à gauche/droite, icône dans la liste des modules et les réglages, traductions françaises/anglaises. Aucun navigateur distant, déploiement, test d’installation de ZIP ou soumission Dolistore n’est revendiqué.
 
 Les règles officielles Dolistore ont été consultées le 2026-11-02, révision wiki `65313`. La PR ne livre pas de ZIP. Le rapport est un contrôle des encaissements TTC, pas un calcul de PCA, une preuve de livraison ou un solde comptable. Les modifications, suppressions et déliaisons historiques restent impossibles à reconstruire depuis les seuls documents actuels.
+
+## Extension Comptabilité simple — JPSUN 1.24.2
+
+Le module natif est `comptabilite` et son droit de rapports est `compta/resultat/lire`. Les menus natifs des six sources de la matrice exposent le parent Rapports via `/compta/resultat/index.php` ; le hook y ajoute un seul lien de consultation de niveau 1. Le menu et les droits de la partie double restent distincts. Aucun traitement de comptabilisation n’est ajouté.
+
+Les nouveaux scénarios vérifient le service, le hook natif avec appels successifs, l’accès réel à la page dans un bootstrap simulé, les refus sans requête, l’isolation d’entité, les permissions des modules actifs et le seuil Dolibarr 26. Le test de page s’arrête à la première requête métier : il prouve le contrôle d’accès et l’absence de lecture de `accounting_fiscalyear` en mode simple, mais ne constitue pas une recette navigateur du rendu complet. Toutes les requêtes du rapport exécutées par les fixtures doivent rester des SELECT.
+
+Les tests `legacysetup.py` vérifient aussi l’absence de création/mise à jour du champ produit historique et la conservation du type `PROJECTADD`, y compris son identifiant et une liaison existante. La migration 1.24.1 conserve ses tests de version : elle ne doit pas être exécutée par le descripteur 1.24.2.

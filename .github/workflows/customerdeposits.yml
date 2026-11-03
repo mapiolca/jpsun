@@ -54,6 +54,7 @@ jobs:
           php -l jpsun/class/jpsuncustomerdepositreport.class.php
           php -l jpsun/class/jpsuncustomerdepositcompatibility.class.php
           php -l jpsun/class/actions_jpsun.class.php
+          php -l jpsun/test/customerdeposits.php
           php -l jpsun/core/modules/modJpsun.class.php
           php -l jpsun/tabs/projet_enedis.php
           php -l jpsun/scripts/migrate_1_24_1.php

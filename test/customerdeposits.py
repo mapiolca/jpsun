@@ -8,6 +8,7 @@ from pathlib import Path
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -17,6 +18,26 @@ sys.argv[1:] = []
 
 
 class DepositControlTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        runtime = HERE / '.runtime'
+        runtime.mkdir(exist_ok=True)
+        cls.page_temp = tempfile.TemporaryDirectory(prefix='deposit-page-', dir=runtime)
+        cls.page_module = Path(cls.page_temp.name) / 'htdocs/custom/jpsun'
+        (cls.page_module / 'class').mkdir(parents=True)
+        for name in ('customerdeposits.php', 'class/jpsuncustomerdepositreport.class.php',
+                     'class/jpsuncustomerdepositcompatibility.class.php'):
+            if name == 'customerdeposits.php':
+                (cls.page_module / name).write_bytes((HERE.parent / name).read_bytes())
+            else:
+                source = (HERE.parent / name).as_posix().replace("'", "\\'")
+                (cls.page_module / name).write_text("<?php require_once '" + source + "';\n", encoding='utf-8')
+        (cls.page_module.parents[1] / 'main.inc.php').write_text('<?php return 1;\n', encoding='utf-8')
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.page_temp.cleanup()
+
     def setUp(self):
         self.db = sqlite3.connect(':memory:')
         self.db.row_factory = sqlite3.Row
@@ -318,6 +339,57 @@ class DepositControlTest(unittest.TestCase):
             self.assertEqual(self.run_worker(mode='hook', menu=menu, **options)['menu'], menu)
         native = menu + [dict(url='/accountancy/customerdeposits.php', level=2)]
         self.assertEqual(self.run_worker(mode='hook', menu=native)['menu'], native)
+
+    def test_simple_accounting_report_uses_its_own_permission(self):
+        simple = dict(modules=['jpsun', 'comptabilite', 'invoice', 'order'])
+        data = self.run_worker(**simple, denied=['accounting.comptarapport.lire'])
+        self.assertEqual(data['result'], 2)
+        self.assertEqual(data['queries'], 4)
+        self.assertEqual(data['lines']['1']['calculation']['remaining'], 20)
+        self.assertEqual(self.run_worker(**simple)['lines'], self.run_worker()['lines'])
+        for admin in (0, 1):
+            denied = self.run_worker(**simple, admin=admin, denied=['compta.resultat.lire'])
+            self.assertEqual((denied['result'], denied['queries']), (-1, 0))
+        denied = self.run_worker(modules=['jpsun', 'invoice'], denied=[])
+        self.assertEqual((denied['result'], denied['queries']), (-1, 0))
+
+    def test_simple_accounting_keeps_entity_scope_and_version_guard(self):
+        simple = dict(modules=['jpsun', 'comptabilite', 'invoice'])
+        self.assertEqual(set(self.run_worker(**simple, entity=2)['lines']), {'2'})
+        for options in (dict(version='26.0.0-alpha'), dict(version='26.0.0'), dict(socid=1)):
+            data = self.run_worker(**simple, **options)
+            self.assertEqual((data['result'], data['queries']), (-1, 0))
+        # A permission from an inactive module never grants access to the other report.
+        denied = self.run_worker(denied=['accounting.comptarapport.lire'])
+        self.assertEqual((denied['result'], denied['queries']), (-1, 0))
+
+    def test_simple_accounting_menu_is_a_single_readonly_report(self):
+        simple = dict(modules=['jpsun', 'comptabilite', 'invoice', 'order'])
+        menu = [dict(url='/compta/resultat/index.php?mainmenu=accountancy&leftmenu=report', level=0, enabled=1),
+                dict(url='/compta/resultat/projects.php?leftmenu=report', level=1, enabled=1),
+                dict(url='/asset/list.php', level=0, enabled=1)]
+        data = self.run_worker(mode='hook', menu=menu, denied=['accounting.comptarapport.lire'], **simple)
+        self.assertEqual(data['returns'], [1, 0, 0, 0])
+        self.assertEqual([item['level'] for item in data['menu']], [0, 1, 1, 0])
+        report = data['menu'][2]
+        self.assertIn('leftmenu=accountancy_report_customerdeposits', report['url'])
+        self.assertEqual(data['menu'][1], menu[1])
+        for options in (dict(admin=1, denied=['compta.resultat.lire']), dict(version='26.0.0'), dict(socid=1)):
+            self.assertEqual(self.run_worker(mode='hook', menu=menu, **simple, **options)['menu'], menu)
+        native = menu + [dict(url='/compta/customerdeposits.php', level=1)]
+        self.assertEqual(self.run_worker(mode='hook', menu=native, **simple)['menu'], native)
+
+    def test_simple_accounting_page_access_and_no_double_entry_dependency(self):
+        simple = dict(mode='page', page_path=str(self.page_module / 'customerdeposits.php'),
+                      modules=['jpsun', 'comptabilite', 'invoice', 'order'])
+        data = self.run_worker(**simple, denied=['accounting.comptarapport.lire'])
+        self.assertFalse(data['denied'])
+        self.assertTrue(data['queries'][0].startswith('SELECT COUNT(f.rowid)'))
+        self.assertNotIn('accounting_fiscalyear', data['queries'][0])
+        self.assertIsInstance(data['cutoff'], int)
+        for options in (dict(admin=1, denied=['compta.resultat.lire']), dict(version='26.0.0-alpha'), dict(socid=1)):
+            denied = self.run_worker(**simple, **options)
+            self.assertEqual((denied['denied'], denied['queries']), (True, []))
 
     def test_icon_paths_resolve_and_legacy_image_is_identical(self):
         output = self.run_worker(mode='icon')

@@ -39,7 +39,9 @@ require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
 
 $langs->loadLangs(array('accountancy', 'bills', 'companies', 'orders', 'sendings', 'jpsun@jpsun'));
 
-if (!JpsunCustomerDepositCompatibility::isAvailable() || $user->socid > 0 || !$user->hasRight('accounting', 'comptarapport', 'lire')) {
+$doubleaccounting = isModEnabled('accounting') && $user->hasRight('accounting', 'comptarapport', 'lire');
+$simpleaccounting = !$doubleaccounting && isModEnabled('comptabilite') && $user->hasRight('compta', 'resultat', 'lire');
+if (!JpsunCustomerDepositCompatibility::isAvailable() || $user->socid > 0 || !($doubleaccounting || $simpleaccounting)) {
 	accessforbidden();
 }
 
@@ -104,17 +106,19 @@ if ($clearfilters) {
 
 if (empty($date_cutoff)) {
 	$now = dol_now();
-	$sql = 'SELECT date_end FROM '.$db->prefix().'accounting_fiscalyear';
-	$sql .= ' WHERE entity IN ('.$db->sanitize(getEntity('accounting_fiscalyear')).')';
-	$sql .= " AND date_start <= '".$db->idate($now)."' AND date_end >= '".$db->idate($now)."'";
-	$sql .= $db->order('date_end', 'ASC').$db->plimit(1);
-	$resql = $db->query($sql);
-	if ($resql) {
-		$fiscalyear = $db->fetch_object($resql);
-		if ($fiscalyear) {
-			$date_cutoff = $db->jdate($fiscalyear->date_end);
+	if ($doubleaccounting) {
+		$sql = 'SELECT date_end FROM '.$db->prefix().'accounting_fiscalyear';
+		$sql .= ' WHERE entity IN ('.$db->sanitize(getEntity('accounting_fiscalyear')).')';
+		$sql .= " AND date_start <= '".$db->idate($now)."' AND date_end >= '".$db->idate($now)."'";
+		$sql .= $db->order('date_end', 'ASC').$db->plimit(1);
+		$resql = $db->query($sql);
+		if ($resql) {
+			$fiscalyear = $db->fetch_object($resql);
+			if ($fiscalyear) {
+				$date_cutoff = $db->jdate($fiscalyear->date_end);
+			}
+			$db->free($resql);
 		}
-		$db->free($resql);
 	}
 	if (empty($date_cutoff)) {
 		$date_cutoff = $now;
@@ -137,7 +141,8 @@ $thirdparty = new Societe($db);
 $orderobject = new Commande($db);
 $title = $langs->trans('CustomerDepositControl');
 $dateparts = dol_getdate($date_cutoff, false, 'tzserver');
-$param = '&mainmenu=accountancy&leftmenu=accountancy_accountancy_customerdeposits';
+$leftmenu = $simpleaccounting ? 'accountancy_report_customerdeposits' : 'accountancy_accountancy_customerdeposits';
+$param = '&mainmenu=accountancy&leftmenu='.$leftmenu;
 $param .= '&date_cutoffday='.$dateparts['mday'].'&date_cutoffmonth='.$dateparts['mon'].'&date_cutoffyear='.$dateparts['year'];
 $param .= '&search_ref='.urlencode($search_ref).'&search_thirdparty='.urlencode($search_thirdparty).'&search_status='.urlencode($search_status);
 if ($limit != $conf->liste_limit) {
@@ -148,7 +153,7 @@ llxHeader('', $title, '', '', 0, 0, '', '', '', 'mod-accountancy page-customerde
 
 print '<form method="GET" action="'.dol_escape_htmltag($_SERVER['PHP_SELF']).'">';
 print '<input type="hidden" name="mainmenu" value="accountancy">';
-print '<input type="hidden" name="leftmenu" value="accountancy_accountancy_customerdeposits">';
+print '<input type="hidden" name="leftmenu" value="'.$leftmenu.'">';
 print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 print '<input type="hidden" name="sortfield" value="'.dolPrintHTMLForAttribute($sortfield).'">';
