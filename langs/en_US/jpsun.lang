@@ -493,3 +493,5 @@ DepositControlNotAppliedAtCutoff=After cutoff or not validated
 DepositControlNoOrder=No accessible directly linked order
 DepositControlPageTotal=This page, including tax: net receipts %s; applied %s; remaining %s
 JpsunDepositControlRequirement=Requested backport of Dolibarr PR #42407 for Dolibarr 20 to 25, with JPSUN, Double-entry accounting and Invoices enabled. Disabled from Dolibarr 26, including prereleases. Native accounting report permission required; no accounting entries are generated.
+
+JpsunMigration1241Pending=JPSUN 1.24.1 migration: %s brand(s) still need migration. Check that the PowerPlantPV photovoltaic brand field exists and can hold the source values. Legacy values are retained and hidden. Run the migration again under JPSUN 1.24.1 before upgrading further.
