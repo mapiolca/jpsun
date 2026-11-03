@@ -58,7 +58,7 @@ Les commandes, scénarios exécutés et limites figurent dans [les preuves de d�
 
 Le contrôle est entièrement traduit en français et en anglais : ses 22 libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
 
-### Retrait des installations historiques — version 1.24.1 en préparation
+### Retrait des installations historiques — version 1.24.1
 
 - Les 17 types d’événements ENEDIS `JPSUN_DDR_*` et leurs surcharges de traduction ne sont plus supprimés ni recréés lors de l’activation de JPSUN. Leurs données et réglages existants restent en place ; ProceduresPV porte le suivi des démarches de raccordement.
 - L’onglet ENEDIS des projets est retiré ; son ancienne URL refuse aussi l’accès. Les événements historiques restent consultables dans l’Agenda natif, selon les droits habituels.

@@ -1,6 +1,6 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.24.1 (03/11/2026 — en préparation)
+## 1.24.1 (03/11/2026)
 - Arrêt de la suppression/réinstallation des 17 types d’événements ENEDIS et de leurs surcharges de traduction ; retrait de l’onglet ENEDIS et refus de son ancienne URL, avec conservation des événements dans l’Agenda natif.
 - Arrêt de la création des six extrafields projet historiques, de `jpsun_marque` et des dix champs de contrat couverts par PowerPlantPV ; masquage des champs existants sans supprimer leurs valeurs.
 - Migration transactionnelle de `jpsun_marque` vers `product_photovoltaic_brand` uniquement si la cible est vide, limitée aux produits de l’entité courante et à JPSUN 1.24.1, avec marqueur de succès conservé par entité. Aucun écrasement ni troncature ; les lignes non migrables sont signalées et restent à traiter sous cette version.
