@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 02/11/2026
+- Dernière mise à jour : 03/11/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.24.0
+- Version : 1.24.1
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -52,11 +52,21 @@ Le rapport reprend les encaissements, remboursements, avoirs et utilisations à 
 
 Le menu, l’accès direct et le service sont désactivés à partir de Dolibarr 26, préversions incluses. Si une instance antérieure expose déjà le contrôle natif, le hook conserve son entrée sans doublon. L’onglet Compatibilité précise les conditions d’accès. Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module, en conservant les réglages existants ; aucune activation ou réactivation automatique n’est effectuée.
 
-Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. La version `1.24.0` est préparée dans cette PR en incrémentant le composant mineur `y` de `x.y.z`. L’ID historique `999000` et les droits existants sont conservés ; aucune release GitHub ni aucun déploiement n’est effectué par cette préparation.
+Le pictogramme conserve `img/object_jpsun.png` et ajoute une copie identique `img/jpsun.png`, pour les deux conventions de résolution natives. L’ID historique `999000` et les droits existants sont conservés.
 
 Les commandes, scénarios exécutés et limites figurent dans [les preuves de développement](test/README-customerdeposits.md).
 
 Le contrôle est entièrement traduit en français et en anglais : ses 22 libellés couvrent les menus, colonnes, filtres, statuts, aides, totaux et conditions de compatibilité. Le catalogue du module est chargé par le mécanisme natif Dolibarr, sans dépendre de traductions françaises ajoutées au core.
+
+### Retrait des installations historiques — version 1.24.1 en préparation
+
+- Les 17 types d’événements ENEDIS `JPSUN_DDR_*` et leurs surcharges de traduction ne sont plus supprimés ni recréés lors de l’activation de JPSUN. Leurs données et réglages existants restent en place ; ProceduresPV porte le suivi des démarches de raccordement.
+- L’onglet ENEDIS des projets est retiré ; son ancienne URL refuse aussi l’accès. Les événements historiques restent consultables dans l’Agenda natif, selon les droits habituels.
+- Les dix extrafields de contrat `jpsun_site_name`, `jpsun_installed_power_kwc`, `jpsun_pv_module_product`, `jpsun_pv_module_qty`, `jpsun_inverter_product`, `jpsun_inverter_qty`, `jpsun_dc_boxes_qty`, `jpsun_ac_boxes_qty`, `jpsun_access_code` et `jpsun_pdl_number` ne sont plus créés ni mis à jour par JPSUN. Les définitions et valeurs existantes sont conservées pour les anciens modèles ; cette version ne les masque ni ne les supprime automatiquement.
+- La récurrence, le jour de paiement, la distance, l’indice de valorisation et les trois hauteurs d’installation restent gérés par JPSUN. Les autres extrafields et types de contacts ne sont pas concernés par cette première étape.
+- Après mise à jour, actualiser les déclarations persistées du module par le parcours natif afin de retirer l’onglet. Aucune purge ni migration des données historiques n’est prévue.
+
+Vérification reproductible : `python test/legacysetup.py <racine htdocs Dolibarr>`. Les tests exécutent le descripteur avec des services d’installation simulés, le SQL du dictionnaire sur SQLite et l’ancienne URL dans les deux dispositions d’installation. Ils couvrent les entités 1 et 2, les activations répétées et les réglages personnalisés conservés ; ils ne remplacent pas une désactivation/réactivation sur une instance réelle avec MySQL/MariaDB.
 
 ## Traductions
 

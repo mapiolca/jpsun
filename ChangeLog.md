@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.24.1 (03/11/2026 — en préparation)
+- Arrêt de la suppression/réinstallation des 17 types d’événements ENEDIS et de leurs surcharges de traduction à chaque activation ; conservation des événements et réglages existants.
+- Retrait de l’onglet ENEDIS des projets et refus de son ancienne URL ; les événements historiques restent accessibles par l’Agenda natif.
+- Arrêt de la création et de la mise à jour des dix extrafields de contrat couverts par PowerPlantPV ; conservation des définitions et valeurs existantes ainsi que des autres champs de contrat.
+- Après mise à jour, actualiser les déclarations persistées du module par le parcours natif pour retirer l’onglet. Aucune purge des données historiques.
+
 ## 1.24.0 (02/11/2026)
 - Ajout du contrôle des acomptes clients à une date d’arrêté : encaissements nets, remboursements sur l’acompte ou ses avoirs liés, avoirs, utilisations sur factures et commandes directement liées accessibles, sans génération d’écriture comptable.
 - Intégration au menu comptable par le hook natif, avec droits, restrictions commerciales et isolation d’entité ; filtres et statuts cohérents avec la précision monétaire native. Disponible sous Dolibarr 20 à 25 et désactivée dès Dolibarr 26, préversions incluses. Interface traduite en français et en anglais.
