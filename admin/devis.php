@@ -20,6 +20,15 @@ if (floatval(DOL_VERSION) >= 20.0) {
 	setup_print_on_off('JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN');
 }
 
+setup_print_title($langs->trans('JpsunCoverModel'));
+require_once __DIR__.'/../class/jpsunproposalcover.class.php';
+foreach (JpsunProposalCover::COLORS as $key => $default) {
+	$value = getDolGlobalString($key, $default);
+	$value = preg_match('/^#[0-9a-f]{6}$/iD', $value) ? $value : $default;
+	setup_print_input_form_part($key, false, '', array('type' => 'color', 'value' => $value));
+}
+print '<tr class="oddeven"><td colspan="3">'.$langs->trans('JpsunCoverActivationHelp').' <a href="'.DOL_URL_ROOT.'/admin/propal.php">'.$langs->trans('Setup').'</a></td></tr>';
+
 setup_print_title($langs->trans("SupplierProposals"));
 if (floatval(DOL_VERSION) >= 20.0) {
 	setup_print_on_off('SUPPLIER_PROPOSAL_ADD_BILLING_CONTACT');

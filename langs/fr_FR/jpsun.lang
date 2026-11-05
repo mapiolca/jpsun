@@ -503,3 +503,31 @@ JpsunDepositControlRequirement=Rétroportage demandé de la PR Dolibarr #42407 p
 JpsunMigration1241Pending=Migration JPSUN 1.24.1 : %s marque(s) restent à migrer. Vérifiez que le champ Marque photovoltaïque de PowerPlantPV existe et peut contenir les valeurs sources. Les valeurs historiques sont conservées et masquées. Relancez la migration sous JPSUN 1.24.1 avant de passer à une version suivante.
 
 DepositControlAmountFilterHelp=Filtre de montant : 0, =100, >=100, <=200. Les comparaisons natives peuvent être combinées.
+
+JpsunCoverModel=JPSUN sans image avec couverture
+JpsunCoverOffer=OFFRE DE PRIX du
+JpsunCoverInstallation=INSTALLATION PHOTOVOLTAÏQUE
+JpsunCoverPresentedTo=PRÉSENTÉE À
+JpsunCoverAttention=À l’attention de %s
+JpsunCoverContact=VOTRE INTERLOCUTEUR %s
+JpsunCoverModules=%s modules
+JpsunCoverAttach=Joindre une Illustration
+JpsunCoverIllustration=Illustration de couverture
+JpsunCoverCaption=Légende / crédit
+JpsunCoverRemove=Retirer l’illustration
+JpsunCoverImageHelp=JPEG ou PNG, 10 Mo et 24 mégapixels maximum, dans la limite configurée pour les fichiers joints. L’image est centrée à hauteur fixe ; les côtés trop larges sont recadrés. Les métadonnées sont supprimées.
+JpsunCoverImageLibraries=L’envoi d’illustrations nécessite les extensions PHP GD, EXIF et Fileinfo. Les images déjà nettoyées restent utilisables.
+JpsunCoverInvalidImage=Image non valide, format non autorisé ou limite dépassée. Utilisez un JPEG ou PNG conforme.
+JpsunCoverWriteError=L’illustration n’a pas pu être enregistrée. La version précédente est conservée.
+JpsunCoverReadError=Impossible de lire les données nécessaires à la couverture.
+JpsunCoverDirectoryError=Le répertoire documentaire du devis propriétaire est indisponible ou non sûr.
+JpsunCoverImageMissing=L’illustration enregistrée est introuvable ou son chemin est invalide. Joignez une nouvelle illustration ou retirez-la.
+JpsunCoverConcurrentChange=L’illustration ou sa légende a été modifiée entre-temps. Rechargez la page avant de recommencer.
+JpsunCoverUnavailable=Le modèle nécessite JPSUN et les propositions commerciales actifs, les droits de lecture et de modification du devis et le moteur TCPDF.
+JpsunCoverInvalidColor=La couleur doit respecter le format #RRGGBB.
+JpsunCoverActivationHelp=Activez le modèle dans les réglages natifs des propositions commerciales. La commande d’illustration apparaît alors dans le bloc des fichiers joints.
+JPSUN_COVER_ACCENT=Couverture : couleur des titres et accents
+JPSUN_COVER_TEXT=Couverture : couleur du texte principal
+JPSUN_COVER_BACKGROUND=Couverture : couleur du fond de l’illustration
+JpsunCoverCompatibility=Couverture disponible sous Dolibarr 20 à 25 avec TCPDF. Le sous-titre et le nombre de modules nécessitent PowerPlantPV 1.6.0 ; puissance et stockage proviennent des extrafields existants, sans recalcul. Les versions non testées restent à vérifier.
+JpsunCoverOfferDetails=%s · N° %s

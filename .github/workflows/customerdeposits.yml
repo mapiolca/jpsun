@@ -47,6 +47,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: gd, exif, fileinfo, mbstring
           coverage: none
       - name: Lint new entry points
         run: |
@@ -71,3 +72,10 @@ jobs:
         env:
           DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}
         run: python3 jpsun/test/customerdeposits.py dolibarr/htdocs
+
+      - name: Proposal cover ownership, images and native PDF rendering
+        run: |
+          php -l jpsun/proposal_cover.php
+          php -l jpsun/class/jpsunproposalcover.class.php
+          php -l jpsun/core/modules/propale/doc/pdf_jpsunwithoutpicturescover.modules.php
+          php jpsun/test/proposal_cover.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-cover" '${{ matrix.dolibarr }}'

@@ -27,4 +27,7 @@ foreach ($features as $feature) {
 	print ' '.$langs->trans($feature[2]).'</td></tr>';
 }
 print '<tr class="oddeven"><td colspan="2">'.$langs->trans('JpsunInvoiceValidationStatus').'</td></tr>';
+require_once __DIR__.'/../class/jpsunproposalcover.class.php';
+print '<tr class="oddeven"><td>'.$langs->trans('JpsunCoverModel').'</td><td>'.dolGetBadge($langs->trans(getDolGlobalString('MAIN_USE_FPDF') ? 'NotAvailable' : 'Available'), '', getDolGlobalString('MAIN_USE_FPDF') ? 'danger' : 'success').' '.$langs->trans('JpsunCoverCompatibility').'</td></tr>';
+print '<tr class="oddeven"><td>'.$langs->trans('JpsunCoverIllustration').'</td><td>'.dolGetBadge($langs->trans(JpsunProposalCover::canUpload() ? 'Available' : 'NotAvailable'), '', JpsunProposalCover::canUpload() ? 'success' : 'danger').' '.$langs->trans('JpsunCoverImageLibraries').'</td></tr>';
 jpsunPrintAdminSetupFooter();

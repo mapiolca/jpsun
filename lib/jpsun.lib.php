@@ -120,6 +120,10 @@ function jpsunHandleAdminSetupActions()
 	if (preg_match('/set_(.*)/', $action, $reg)) {
 		$code = $reg[1];
 		$value = GETPOST($code, 'none');
+		if (in_array($code, array('JPSUN_COVER_ACCENT', 'JPSUN_COVER_TEXT', 'JPSUN_COVER_BACKGROUND'), true) && !preg_match('/^#[0-9a-f]{6}$/iD', (string) $value)) {
+			setEventMessages($langs->trans('JpsunCoverInvalidColor'), null, 'errors');
+			return;
+		}
 		if ($code === 'JPSUN_SOLEIL_AQUITAIN_MEDIATOR') {
 			$value = jpsunNormalizeSoleilAquitainMediatorConfigValue($value);
 			if ($value === false) {

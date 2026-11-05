@@ -110,7 +110,7 @@ class LegacySetupTests(unittest.TestCase):
         result = json.loads(process.stdout)
         self.assertEqual(result['result'], 1)
         self.assertEqual(result['tabs'], [])
-        self.assertEqual(result['version'], '1.24.2')
+        self.assertEqual(result['version'], '1.25.0')
         return result
 
     def test_fresh_and_repeated_activation_do_not_create_retired_fields(self):
@@ -137,6 +137,22 @@ class LegacySetupTests(unittest.TestCase):
                 self.assertTrue(set(RETIRED).isdisjoint(key for element, key in result['writes']
                                                       if element == 'contrat'))
                 self.assertFalse(any(key in sql for key in RETIRED for sql in result['sql']))
+
+    def test_cover_metadata_is_added_once_and_preserves_existing_customization(self):
+        for entity in (1, 2):
+            result = self.activate({}, entity)
+            state = result['definitions']
+            for key in ('jpsun_cover_image', 'jpsun_cover_caption'):
+                args = state['propal'][key]['args']
+                self.assertEqual(args[2], 'varchar')
+                self.assertEqual(args[11], '0')
+                self.assertEqual(args[15], entity)
+                state['propal'][key]['label'] = 'Customized cover field'
+                state['propal'][key]['value'] = 'Preserved value'
+            repeated = self.activate(state, entity)
+            for key in ('jpsun_cover_image', 'jpsun_cover_caption'):
+                self.assertEqual(repeated['definitions']['propal'][key], state['propal'][key])
+                self.assertNotIn(['propal', key], repeated['writes'])
 
     def test_legacy_panel_power_definition_and_value_are_preserved(self):
         original = {'label': 'Custom power', 'enabled': '1', 'list': '3', 'default': '', 'value': 450}

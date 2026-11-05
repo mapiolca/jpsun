@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.24.2
+- Version : 1.25.0
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -96,3 +96,17 @@ Vérifications reproductibles : `python test/legacysetup.py <racine htdocs Dolib
 - Glisser l'archive ZIP 'module_easycrm-X.Y.Z' et cliquer sur "ENVOYER FICHIER"
 - Glisser l'archive ZIP 'module_saturne-X.Y.Z' et cliquer sur "ENVOYER FICHIER"
 - Activer le module dans la liste des Modules/Applications installés
+
+### Couverture des offres — 1.25.0 (à publier)
+
+Activer **JPSUN sans image avec couverture** dans les modèles natifs des propositions commerciales (`Configuration → Modules → Propositions commerciales`). Le modèle **JPSUN sans image** reste disponible. Actualiser JPSUN par le parcours natif pour ajouter les deux extrafields techniques masqués, sans changer les droits ou réglages existants.
+
+La couverture reprend la référence client comme titre, la date et la référence du devis, son tiers et son adresse, les contacts externes actifs de suivi accessibles, puis l’auteur du brouillon ou le valideur du devis validé. Logo et coordonnées proviennent de l’entité propriétaire, sans changement de session. Les couleurs sont réglables par entité dans les paramètres JPSUN, onglet Devis.
+
+**Joindre une Illustration**, dans le bloc natif des fichiers joints, ouvre une modale avec image et légende/crédit ; le lien fonctionne aussi sans JavaScript. JPEG/PNG uniquement, dans la limite native d’upload et de 10 Mo / 24 mégapixels. GD, EXIF et Fileinfo sont requis pour nettoyer les images. Le fichier reconstitué à partir des pixels est stocké sous un nom aléatoire dans `jpsun-cover/` du répertoire documentaire du devis propriétaire. Aucun nom ni chemin fourni par le navigateur n’est conservé. Une suppression retire seulement cette illustration et sa légende ; une modification concurrente est refusée. L’enregistrement ne génère pas de PDF.
+
+L’image conserve sa hauteur et ses proportions : centrage, recadrage des côtés trop larges et bandes bleu clair dans la zone non couverte. Sans image, le cadre reste bleu clair.
+
+Puissance (`powerplantpv_peak_power`, kWc) et stockage (`powerplantpv_storage_capacity`, kWh) sont lus sans recalcul et affichés seulement si positifs. PowerPlantPV **1.6.0** fournit le texte `powerplantpv_consumption_type` (« Type de consommation », également sur commandes et factures) et le comptage des modules classés MODULE. Avec une ancienne version ou sans PowerPlantPV, les informations facultatives absentes sont omises, sans valeur inventée. Une erreur de lecture bloque la génération plutôt que produire une offre trompeuse.
+
+La pièce de référence était une image JPG, sans PDF original : la composition est reproduite mais l’identité exacte des polices ne peut être attestée. Voir `test/README-proposal-cover.md` pour les preuves et limites de validation. Aucun déploiement, fusion ou acceptation Dolistore n’est implicite.

@@ -497,3 +497,31 @@ JpsunDepositControlRequirement=Requested backport of Dolibarr PR #42407 for Doli
 JpsunMigration1241Pending=JPSUN 1.24.1 migration: %s brand(s) still need migration. Check that the PowerPlantPV photovoltaic brand field exists and can hold the source values. Legacy values are retained and hidden. Run the migration again under JPSUN 1.24.1 before upgrading further.
 
 DepositControlAmountFilterHelp=Amount filter: 0, =100, >=100, <=200. Native comparisons can be combined.
+
+JpsunCoverModel=JPSUN without pictures with cover
+JpsunCoverOffer=PRICE OFFER dated
+JpsunCoverInstallation=PHOTOVOLTAIC INSTALLATION
+JpsunCoverPresentedTo=PRESENTED TO
+JpsunCoverAttention=For the attention of %s
+JpsunCoverContact=YOUR %s CONTACT
+JpsunCoverModules=%s modules
+JpsunCoverAttach=Attach an Illustration
+JpsunCoverIllustration=Cover illustration
+JpsunCoverCaption=Caption / credit
+JpsunCoverRemove=Remove illustration
+JpsunCoverImageHelp=JPEG or PNG, up to 10 MB and 24 megapixels, within the attachment size setting. The image is centered at a fixed height; wider sides are cropped. Metadata is removed.
+JpsunCoverImageLibraries=Uploading illustrations requires the PHP GD, EXIF and Fileinfo extensions. Previously cleaned images remain usable.
+JpsunCoverInvalidImage=Invalid image, unsupported format or size limit exceeded. Use a valid JPEG or PNG.
+JpsunCoverWriteError=The illustration could not be saved. The previous version is preserved.
+JpsunCoverReadError=Unable to read the data required for the cover.
+JpsunCoverDirectoryError=The owning proposal document directory is unavailable or unsafe.
+JpsunCoverImageMissing=The saved illustration is missing or its path is invalid. Attach a new illustration or remove it.
+JpsunCoverConcurrentChange=The illustration or caption has changed. Reload the page before trying again.
+JpsunCoverUnavailable=The model requires active JPSUN and proposals, proposal read and write permissions, and the TCPDF engine.
+JpsunCoverInvalidColor=Use a color in #RRGGBB format.
+JpsunCoverActivationHelp=Activate the model in the native proposal settings. The illustration command then appears in the attachments block.
+JPSUN_COVER_ACCENT=Cover: headings and accent color
+JPSUN_COVER_TEXT=Cover: main text color
+JPSUN_COVER_BACKGROUND=Cover: illustration background color
+JpsunCoverCompatibility=Cover available on Dolibarr 20 to 25 with TCPDF. Subtitle and module count require PowerPlantPV 1.6.0; peak power and storage use existing extrafields without recalculation. Untested versions remain to be verified.
+JpsunCoverOfferDetails=%s · No. %s
