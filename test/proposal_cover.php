@@ -19,6 +19,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/translate.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 require_once __DIR__.'/../core/modules/propale/doc/pdf_jpsunwithoutpicturescover.modules.php';
 $langs = new Translate(DOL_DOCUMENT_ROOT, $conf);
 $langs->setDefaultLang('fr_FR');
