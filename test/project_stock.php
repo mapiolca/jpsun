@@ -54,7 +54,7 @@ $model->render($langs, '', '', 'PRJ-VIDE', DOL_DATA_ROOT.'/empty.pdf');
 $object = new Project($db);
 $object->initAsSpecimen();
 $object->entity = 2;
-if ($model->write_file($object, $langs) !== 1 || !is_file(DOL_DATA_ROOT.'/owner/SPECIMEN-stock.pdf')) {
+if ($model->write_file($object, $langs) !== 1 || !is_file(DOL_DATA_ROOT.'/owner/SPECIMEN.pdf')) {
 	throw new RuntimeException('Native owner directory not used: '.$model->error);
 }
 unset($conf->project->multidir_output[2]);

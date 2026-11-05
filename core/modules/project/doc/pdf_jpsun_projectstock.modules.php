@@ -96,7 +96,7 @@ class pdf_jpsun_projectstock extends ModelePDFProjects
 			$this->error = $outputlangs->trans('JpsunCoverDirectoryError');
 			return 0;
 		}
-		$file = rtrim($dir, '/\\').'/'.$object->ref.'-stock.pdf';
+		$file = rtrim($dir, '/\\').'/'.($specimen ? 'SPECIMEN.pdf' : $object->ref.'-stock.pdf');
 		if (is_link($file)) {
 			$this->error = $outputlangs->trans('JpsunCoverDirectoryError');
 			return 0;
