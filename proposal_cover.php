@@ -31,6 +31,10 @@ if ($object->fetch_optionals() < 0) {
 	exit;
 }
 $cover = new JpsunProposalCover($db);
+if (!$cover->loadOwnerValues($object)) {
+	dol_print_error($db, $langs->trans($cover->error));
+	exit;
+}
 if (!$cover->isEnabled((int) $conf->entity)) {
 	accessforbidden();
 }
@@ -45,7 +49,8 @@ if ($action === 'preview') {
 	@readfile($file);
 	exit;
 }
-if (!$user->hasRight('propal', 'creer')) {
+if (!$user->hasRight('propal', 'creer')
+	|| ((int) $object->entity !== (int) $conf->entity && isModEnabled('multicompany') && !$user->hasRight('multicompany', 'propal', 'write'))) {
 	accessforbidden();
 }
 $caption = (string) ($object->array_options['options_jpsun_cover_caption'] ?? '');

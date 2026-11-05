@@ -40,10 +40,14 @@ class pdf_jpsunwithoutpicturescover extends pdf_jpsunwithoutpictures
 	 */
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
-		global $user, $langs;
+		global $user, $langs, $conf;
 		$outputlangs = is_object($outputlangs) ? $outputlangs : $langs;
 		$outputlangs->load('jpsun@jpsun');
 		if (!isModEnabled('jpsun') || !isModEnabled('propal') || !$user->hasRight('propal', 'lire') || !$user->hasRight('propal', 'creer') || getDolGlobalString('MAIN_USE_FPDF')) {
+			$this->error = $outputlangs->trans('JpsunCoverUnavailable');
+			return 0;
+		}
+		if ((int) $object->entity !== (int) $conf->entity && isModEnabled('multicompany') && !$user->hasRight('multicompany', 'propal', 'write')) {
 			$this->error = $outputlangs->trans('JpsunCoverUnavailable');
 			return 0;
 		}
@@ -55,6 +59,10 @@ class pdf_jpsunwithoutpicturescover extends pdf_jpsunwithoutpictures
 				return 0;
 			}
 			$cover = new JpsunProposalCover($this->db);
+			if (!$cover->loadOwnerValues($object)) {
+				$this->error = $outputlangs->trans($cover->error);
+				return 0;
+			}
 			$image = $cover->directory($object) === false ? false : $cover->image($object);
 			if ($image === false) {
 				$this->error = $outputlangs->trans($cover->error);

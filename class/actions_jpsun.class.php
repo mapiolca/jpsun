@@ -90,6 +90,9 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			|| !isModEnabled('jpsun') || !$user->hasRight('propal', 'creer') || !empty($user->socid)) {
 			return 0;
 		}
+		if ((int) $object->entity !== (int) $conf->entity && isModEnabled('multicompany') && !$user->hasRight('multicompany', 'propal', 'write')) {
+			return 0;
+		}
 		require_once __DIR__.'/jpsunproposalcover.class.php';
 		$cover = new JpsunProposalCover($this->db);
 		if (!$cover->isEnabled((int) $conf->entity)) {

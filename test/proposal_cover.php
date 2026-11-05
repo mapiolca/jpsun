@@ -84,6 +84,8 @@ $object->array_options['options_jpsun_cover_image'] = '../../secret.png';
 expect($cover->image($object) === false, 'path traversal refused');
 $object->array_options = array();
 $actor = new class { public function hasRight(...$args) { return true; } };
+$viewerEntity = $conf->entity;
+$conf->entity = 2; // Same-entity transaction fixtures; shared reads use the real SQL owner fixture.
 $revision = hash('sha256', '\0');
 expect(!$cover->save($object, $actor, null, 'credit', 'stale', false), 'concurrent edit refused');
 expect($db->rolledBack, 'concurrent edit rolls back');
@@ -92,6 +94,13 @@ expect($cover->save($object, $actor, null, 'credit', $revision, false), 'caption
 $db->failCommit = true;
 expect(!$cover->save($object, $actor, null, 'other', hash('sha256', '\0credit'), false), 'commit failure is not success');
 $db->failCommit = false;
+$conf->entity = $viewerEntity;
+$conf->modules['multicompany'] = 1;
+$restrictedActor = new class {
+	public function hasRight(...$args) { return $args === array('propal', 'creer'); }
+};
+expect(!$cover->save($object, $restrictedActor, null, 'forbidden', '', false), 'native proposal write does not grant shared proposal write');
+unset($conf->modules['multicompany']);
 expect(JpsunProposalCover::placement(100, 200)['x'] > 15, 'portrait leaves side bands');
 expect(JpsunProposalCover::placement(500, 100)['x'] < 15, 'wide image clips sides at fixed height');
 

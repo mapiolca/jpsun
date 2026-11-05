@@ -40,6 +40,62 @@ class JpsunProposalCover
 	}
 
 	/**
+	 * Read stored cover facts for a shared proposal, independently of viewer field definitions.
+	 * Native fetch_optionals() only loads definitions in the authenticated entity (v20+).
+	 * Caller must already have checked native proposal access. No computed field is evaluated.
+	 * @param Propal $object Authorized proposal
+	 * @return bool
+	 */
+	public function loadOwnerValues($object): bool
+	{
+		global $conf;
+		if ((int) $object->entity === (int) $conf->entity) {
+			return true;
+		}
+		if ((int) $object->id <= 0 || (int) $object->entity <= 0) {
+			$this->error = 'JpsunCoverReadError';
+			return false;
+		}
+		$keys = array('jpsun_cover_image', 'jpsun_cover_caption', 'powerplantpv_consumption_type', 'powerplantpv_peak_power', 'powerplantpv_storage_capacity');
+		$sql = "SELECT name FROM ".MAIN_DB_PREFIX."extrafields WHERE elementtype = 'propal' AND entity IN (0, ".((int) $object->entity).")";
+		$sql .= " AND name IN ('".implode("','", $keys)."')";
+		$res = $this->db->query($sql);
+		if (!$res) {
+			$this->error = 'JpsunCoverReadError';
+			return false;
+		}
+		$columns = array();
+		while (is_object($field = $this->db->fetch_object($res))) {
+			if (in_array($field->name, $keys, true)) {
+				$columns[$field->name] = 'e.'.$this->db->sanitize($field->name);
+			}
+		}
+		$this->db->free($res);
+		foreach ($keys as $key) {
+			unset($object->array_options['options_'.$key]);
+		}
+		if (!$columns) {
+			return true;
+		}
+		$sql = 'SELECT '.implode(', ', $columns).' FROM '.MAIN_DB_PREFIX.'propal p';
+		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'propal_extrafields e ON e.fk_object = p.rowid';
+		$sql .= ' WHERE p.rowid = '.((int) $object->id).' AND p.entity = '.((int) $object->entity);
+		$res = $this->db->query($sql);
+		$row = $res ? $this->db->fetch_object($res) : false;
+		if ($res) {
+			$this->db->free($res);
+		}
+		if (!is_object($row)) {
+			$this->error = 'JpsunCoverReadError';
+			return false;
+		}
+		foreach ($columns as $key => $column) {
+			$object->array_options['options_'.$key] = $row->{$key};
+		}
+		return true;
+	}
+
+	/**
 	 * @param Propal $object Loaded, authorized proposal
 	 * @return string|false
 	 */
@@ -183,8 +239,10 @@ class JpsunProposalCover
 	 */
 	public function save($object, $actor, ?array $upload, string $caption, string $revision, bool $remove): bool
 	{
+		global $conf;
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-		if (!$actor->hasRight('propal', 'creer') || mb_strlen($caption) > 255) {
+		if (!$actor->hasRight('propal', 'creer') || mb_strlen($caption) > 255
+			|| ((int) $object->entity !== (int) $conf->entity && isModEnabled('multicompany') && !$actor->hasRight('multicompany', 'propal', 'write'))) {
 			$this->error = 'JpsunCoverUnavailable';
 			return false;
 		}
@@ -216,7 +274,7 @@ class JpsunProposalCover
 			return false;
 		}
 		$res = $this->db->query('SELECT rowid FROM '.MAIN_DB_PREFIX.'propal WHERE rowid = '.((int) $object->id).' AND entity = '.((int) $object->entity).' FOR UPDATE');
-		$ok = $res && $this->db->num_rows($res) === 1 && $object->fetch_optionals() >= 0;
+		$ok = $res && $this->db->num_rows($res) === 1 && $object->fetch_optionals() >= 0 && $this->loadOwnerValues($object);
 		$oldName = (string) ($object->array_options['options_jpsun_cover_image'] ?? '');
 		if ($ok && !hash_equals(hash('sha256', $oldName.'\0'.($object->array_options['options_jpsun_cover_caption'] ?? '')), $revision)) {
 			$this->error = 'JpsunCoverConcurrentChange';
