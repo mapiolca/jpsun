@@ -1,6 +1,7 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.25.0 (à publier)
+- Nouveau modèle de projet « Affiche stock chantier » : A4 paysage, bordure jaune/noire et composition de la référence Word, tiers lié, titre et référence native du projet ; données absentes laissées vides et stockage documentaire dans l’entité propriétaire.
 - Nouveau modèle « JPSUN sans image avec couverture », basé sur le modèle existant : identité de l’entité propriétaire, référence client, date et numéro d’offre, destinataire et interlocuteur.
 - Illustration et légende éditables depuis le bloc documentaire natif : centrage à hauteur fixe, recadrage horizontal, fond coloré, nettoyage des métadonnées et contrôles de droits, d’entité, de chemin et de concurrence.
 - Couleurs de couverture réglables par entité ; puissance et stockage affichés uniquement si positifs. Type de consommation et nombre de modules intégrés lorsqu’ils sont fournis par PowerPlantPV 1.6.0.

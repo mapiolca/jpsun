@@ -18,6 +18,7 @@ foreach ($rows as $row) {
 	print '<tr class="oddeven"><td class="titlefield">'.dol_escape_htmltag($row[0]).'</td><td>'.dol_escape_htmltag($row[1]).'</td></tr>';
 }
 $features = array(
+	array('JpsunProjectStockModel', !getDolGlobalString('MAIN_USE_FPDF'), 'JpsunProjectStockCompatibility'),
 	array('JpsunInvoiceModelTitle', JpsunInvoiceCompatibility::isAvailable(), 'JpsunInvoiceModelRequirement'),
 	array('CustomerDepositControl', JpsunCustomerDepositCompatibility::isAvailable(), 'JpsunDepositControlRequirement'),
 );

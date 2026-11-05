@@ -23,6 +23,7 @@
 ## Fonctionnalités
 
 - Ajout de fonctionnalités diverses pour JPSUN.
+- Modèle projet « Affiche stock chantier » (`jpsun_projectstock`) : affiche A4 paysage jaune/noir basée sur la référence Word, avec le nom du tiers lié, le titre du projet et sa référence native. Activation dans les réglages natifs **Projets > Modèles de document**, puis génération dans les fichiers joints du projet. Aucun extrafield ajouté ; les données absentes laissent leur zone vide. Les pictogrammes sont redessinés en vectoriel pour éviter les glyphes emoji manquants sur le serveur. Version conservée : 1.25.0.
 - Actions de masse JPSUN sur les tâches disponibles jusqu’à Dolibarr 24 inclus ; désactivées à partir de Dolibarr 25.
 - Rapport comptable des projets non soldés, avec agrégation des commandes, factures, achats, frais, temps et expéditions valorisées selon le réglage natif du module Marges.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.

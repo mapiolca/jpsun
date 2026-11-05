@@ -80,3 +80,7 @@ jobs:
           php -l jpsun/core/modules/propale/doc/pdf_jpsunwithoutpicturescover.modules.php
           php jpsun/test/proposal_cover_owner.php
           php jpsun/test/proposal_cover.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-cover" '${{ matrix.dolibarr }}'
+      - name: Project stock poster native PDF rendering
+        run: |
+          php -l jpsun/core/modules/project/doc/pdf_jpsun_projectstock.modules.php
+          php jpsun/test/project_stock.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-stock" '${{ matrix.dolibarr }}'
