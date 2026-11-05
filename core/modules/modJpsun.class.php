@@ -293,11 +293,20 @@ class modJpsun extends DolibarrModules
 		$ext->fetch_name_optionals_label('propal');
 		foreach (array('jpsun_cover_image' => 'JpsunCoverIllustration', 'jpsun_cover_caption' => 'JpsunCoverCaption') as $key => $label) {
 			if (!isset($ext->attributes['propal']['label'][$key])) {
-				$result = $ext->addExtraField($key, $label, 'varchar', 210, '255', 'propal', 0, 0, '', '', 1, '0', '-1', '', '', $conf->entity, 'jpsun@jpsun', 'isModEnabled("jpsun")');
+				$result = $ext->addExtraField($key, $label, 'varchar', 210, '255', 'propal', 0, 0, '', '', 1, '0', '0', '', '', $conf->entity, 'jpsun@jpsun', 'isModEnabled("jpsun")');
 				if ($result < 0) {
 					$this->error = $ext->error;
 					return -1;
 				}
+			}
+			// Repair only visibility of technical metadata created by early cover builds.
+			// Keep labels, values and all other administrator settings unchanged.
+			$sqlvisibility = "UPDATE ".MAIN_DB_PREFIX."extrafields SET list = '0'";
+			$sqlvisibility .= " WHERE name = '".$db->escape($key)."' AND elementtype = 'propal'";
+			$sqlvisibility .= " AND entity = ".((int) $conf->entity)." AND list <> '0'";
+			if (!$db->query($sqlvisibility)) {
+				$this->error = $db->lasterror();
+				return -1;
 			}
 		}
 
