@@ -39,6 +39,12 @@ class pdf_jpsun_projectstock extends ModelePDFProjects
 		global $conf, $langs, $user;
 		$outputlangs = is_object($outputlangs) ? $outputlangs : $langs;
 		$outputlangs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun'));
+		// Some native CSRF levels do not classify GET builddoc as sensitive.
+		if (PHP_SAPI !== 'cli' && in_array(GETPOST('action', 'aZ09'), array('builddoc', 'specimen'), true)
+			&& (!GETPOST('token', 'alpha') || !hash_equals(currentToken(), GETPOST('token', 'alpha')))) {
+			$this->error = $outputlangs->trans('SecurityTokenHasExpiredSoActionHasBeenCanceledPleaseRetry');
+			return 0;
+		}
 		$specimen = !empty($object->specimen) && (int) $object->id === 0 && $object->ref === 'SPECIMEN';
 		if (!isModEnabled('jpsun') || !isModEnabled('project') || getDolGlobalString('MAIN_USE_FPDF')
 			|| !$user->hasRight('projet', 'lire') || !$user->hasRight('projet', 'creer')

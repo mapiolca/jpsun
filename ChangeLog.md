@@ -1,6 +1,7 @@
 # JPSUN - Notes de versions (ChangeLog)
 
 ## 1.25.0 (à publier)
+- Contrôle explicite du jeton natif sur la génération et le spécimen de l’affiche projet, y compris lorsque le core ne protège pas `builddoc` en GET à son niveau CSRF courant.
 - Correction de la découverte native des modèles de projet lorsque l’ancienne classe de déplacements est absente du core.
 - Nouveau modèle de projet « Affiche stock chantier » : A4 paysage, bordure jaune/noire et composition de la référence Word, tiers lié, titre et référence native du projet ; données absentes laissées vides et stockage documentaire dans l’entité propriétaire.
 - Nouveau modèle « JPSUN sans image avec couverture », basé sur le modèle existant : identité de l’entité propriétaire, référence client, date et numéro d’offre, destinataire et interlocuteur.
