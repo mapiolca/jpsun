@@ -13,6 +13,8 @@ class pdf_jpsun_projectstock extends ModelePDFProjects
 	public $type = 'pdf';
 	public $version = 'dolibarr';
 	public $update_main_doc_field = 1;
+	public $page_largeur = 297;
+	public $page_hauteur = 210;
 
 	/** @param DoliDB $db Database */
 	public function __construct($db)

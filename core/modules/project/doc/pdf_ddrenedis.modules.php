@@ -43,7 +43,10 @@ require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.commande.class.php';
 require_once DOL_DOCUMENT_ROOT.'/contrat/class/contrat.class.php';
 require_once DOL_DOCUMENT_ROOT.'/fichinter/class/fichinter.class.php';
-require_once DOL_DOCUMENT_ROOT.'/compta/deplacement/class/deplacement.class.php';
+// Legacy trips are absent from recent cores; do not break model discovery.
+if (is_file(DOL_DOCUMENT_ROOT.'/compta/deplacement/class/deplacement.class.php')) {
+	require_once DOL_DOCUMENT_ROOT.'/compta/deplacement/class/deplacement.class.php';
+}
 require_once DOL_DOCUMENT_ROOT.'/expensereport/class/expensereport.class.php';
 require_once DOL_DOCUMENT_ROOT.'/comm/action/class/actioncomm.class.php';
 
@@ -396,7 +399,7 @@ class pdf_ddrenedis extends ModelePDFProjects
 						'datefieldname' => 'dated',
 						'margin' => 'minus',
 						'disableamount' => 1,
-						'test' => isModEnabled('deplacement') && $user->hasRight('deplacement', 'lire'),
+						'test' => class_exists('Deplacement') && isModEnabled('deplacement') && $user->hasRight('deplacement', 'lire'),
 						'lang' => 'trip'),
 					'expensereport' => array(
 						'name' => "ExpensesReports",
