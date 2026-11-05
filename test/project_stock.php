@@ -19,6 +19,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/translate.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once __DIR__.'/../core/modules/project/doc/pdf_jpsun_projectstock.modules.php';
+// Native administration scans every project model, including the legacy ENEDIS one.
+require_once __DIR__.'/../core/modules/project/doc/pdf_ddrenedis.modules.php';
 $langs = new Translate(DOL_DOCUMENT_ROOT, $conf);
 $langs->setDefaultLang('fr_FR');
 $langs->loadLangs(array('main', 'projects', 'companies'));
