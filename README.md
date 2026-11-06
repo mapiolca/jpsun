@@ -98,7 +98,7 @@ Vérifications reproductibles : `python test/legacysetup.py <racine htdocs Dolib
 - Glisser l'archive ZIP 'module_saturne-X.Y.Z' et cliquer sur "ENVOYER FICHIER"
 - Activer le module dans la liste des Modules/Applications installés
 
-### Couverture des offres — 1.25.0 (à publier)
+### Couverture des offres — 1.25.0
 
 Activer **JPSUN sans image avec couverture** dans les modèles natifs des propositions commerciales (`Configuration → Modules → Propositions commerciales`). Le modèle **JPSUN sans image** reste disponible. Actualiser JPSUN par le parcours natif pour ajouter les deux extrafields techniques masqués, sans changer les droits ou réglages existants.
 
