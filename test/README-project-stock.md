@@ -1,0 +1,63 @@
+# Affiche stock chantier — JPSUN 1.25.0
+
+Modèle natif `jpsun_projectstock`, activable par entité depuis `/projet/admin/project.php`. Il est découvert grâce à la déclaration `models` existante ; aucun modèle courant ou défaut n’est remplacé. Le fichier `REF-stock.pdf` est généré par le bloc documentaire du projet, dans le répertoire de l’entité propriétaire résolu avec `getMultidirOutput()`. Les permissions de projet, son périmètre natif et l’accès au tiers parent sont contrôlés ; un utilisateur externe est refusé pour cette affiche interne.
+
+Sources : tiers du projet (`socid`) → nom du client, `title` → chantier, `ref` → numéro d’affaire. Le titre et le nom restent vides si absents. Le document est une affiche de réservation, pas un état des quantités de stock : aucune ligne de stock ni valorisation n’est lue. L’affiche ne reprend pas les notes publiques/privées ou les extrafields.
+
+La référence Word fournie est conservée hors dépôt. Ses mesures OOXML sont A4 paysage, marges latérales 20 mm, bandeau noir, texte jaune/blanc, client 115 points, chantier 55 points, référence 28 points. Le fond PNG embarqué est repris à l’identique dans `img/project_stock_background.png` ; les quatre pictogrammes sont remplacés par des dessins vectoriels afin de ne pas dépendre d’une police emoji Windows. Les textes longs réduisent progressivement leur corps dans leur zone réservée, sans page supplémentaire. Aucun pied ou numéro de page n’est ajouté à cette affiche.
+
+Contrôles reproductibles : `php test/project_stock.php /chemin/htdocs /répertoire/temporaire [version]`. Le test utilise les bibliothèques PDF natives : trois affiches d’une page (référence, textes longs, données vides), sortie spécimen dans l’entité 2, refus d’un répertoire propriétaire absent et d’un droit manquant. Acteur et configuration sont simulés ; cela ne prouve pas les règles d’accès d’une instance complète. La matrice CI existante exécute ces contrôles sur les six révisions figées Dolibarr 20–25 alpha.
+
+Validation locale du 2026-11-05 : PHP 8.4.22, sources Dolibarr 25.0.0-alpha `0ac96524bf68b063a44d6af8137e05bf11c227c8`. Test ci-dessus réussi, trois PDF d’une page rendus avec Poppler puis inspectés visuellement (référence, textes longs, données absentes). Syntaxe des quatre fichiers PHP concernés vérifiée. PHPStan niveau 5, cible PHP 8.0, bootstrap natif du core : modèle sans erreur, sans suppression ni baseline ajouté.
+
+## Recette interactive du 2026-11-05
+
+Navigateur intégré, develop Dolibarr 25.0.0-alpha / PHP 8.3.36, JPSUN 1.25.0. Branche servie temporairement par Git Version Control cPanel ; tête finale de code `f3ac823248b1e0531c9f9aa90d5d7ddb0d812ae1` confirmée dans cPanel. PowerPlantPV n’a pas été déployé ou modifié pendant cette recette.
+
+| Scénario | Résultat observé |
+|---|---|
+| Découverte native | L’ancienne inclusion inconditionnelle de la classe `Deplacement`, absente du core déployé, provoquait une erreur fatale. Chargement et rubrique désormais conditionnels ; page complète des modèles vérifiée après correctif. |
+| Activation par entité | Modèle initialement désactivé dans TEST 1 et TEST 2, défaut `baleine`. Activation temporaire indépendante, choix disponible dans le sélecteur natif. |
+| Projet avec tiers | Projet fictif 28, `PJ2611-0012`, client TEST 1 : génération depuis la fiche et téléchargement réussis, PDF d’une page A4 paysage inspecté avec accents et titre sur deux lignes. |
+| Projet sans tiers, titre long | Même brouillon fictif modifié : zone client vide, titre accentué long sur trois lignes, référence conservée, une page sans chevauchement. Régénération réussie. |
+| Langue anglaise | Sélection native `en_US`, génération et téléchargement ; titres « SITE STOCK », « RESERVED MATERIAL — DO NOT TAKE », « Customer », « PROJECT NUMBER » vérifiés dans le rendu. |
+| Onglet documentaire | Même fichier retrouvé dans l’onglet Fichiers joints, téléchargement natif disponible. |
+| Aperçu natif | Modale ouverte, mais le lecteur PDF reste noir dans le navigateur intégré, y compris sur le spécimen. Cela ne valide pas l’affichage du lecteur ; fichiers téléchargés et rendus avec Poppler pour le contrôle visuel. |
+| CSRF | Avant correction, `builddoc` en GET sans jeton générait le document avec le niveau CSRF du core installé. Contrôle explicite par `currentToken()` ajouté au modèle pour `builddoc` et `specimen`. Après déploiement, même requête refusée avec message de jeton expiré ; bouton natif avec jeton accepté. Aucun réglage de sécurité ni fichier core modifié. |
+| Spécimen TEST 2 | Nom aligné sur la redirection native `SPECIMEN.pdf` ; clic sur l’aperçu, redirection et téléchargement réussis, une page A4 paysage. |
+| Projet TEST 2 | Nouveau brouillon fictif 29, `PJ2611-0001`, sans tiers : génération et téléchargement réussis avec bandeau TEST 2 et lien documentaire `entity=2`, rendu inspecté. Cela ne prouve pas la génération d’un projet partagé depuis une autre entité. |
+| Compte `utilisateur.test` | Projets signalés non autorisés ; fiche 28, téléchargement direct, réglages et génération directe avec jeton valide refusés. Aucun changement de droits. |
+| Compte `3.utilisateur` | Fiche 28, génération et téléchargement autorisés ; réglages administrateur refusés. Ce compte dispose de droits de modification : il ne représente pas un profil en lecture seule. |
+
+Les PDF des scénarios avec tiers, titre long et anglais ont été produits avant le dernier correctif de nom de spécimen, qui ne change pas leur rendu. Le spécimen TEST 2, le projet 29 et les essais des deux comptes ont été réalisés sur `f3ac823`. Les six couples CI et le build passent sur cette tête. Le test CLI charge aussi le modèle ENEDIS pour couvrir la régression de découverte.
+
+Données fictives conservées : projets 28 et 29 en brouillon et leurs PDF ; événements Agenda natifs de création 3032 et 3033. Aucun email, validation de projet ou appel financier exécuté. Le module de zonage a signalé `NoGeocoderResult` puis `ObjectAddressNotFound` sur le projet fictif 28 ; création et édition ont néanmoins persisté, vérifiées sur la fiche et le PDF.
+
+Restitution achevée le 2026-11-06 après reconnexion administrateur : modèle temporaire désactivé dans TEST 1, défaut `baleine` conservé, comme dans TEST 2 déjà restauré le 2026-11-05. Contexte TEST 1 rétabli. Retour par Git Version Control cPanel à la branche initiale `fix/jpsun-1.24.2-simple-accounting` / `850bd90f4b9263e637042f09a8f44dd60be3332b` ; SHA confirmé dans cPanel et version servie 1.24.2 confirmée dans À propos. Aucune donnée fictive supprimée, aucun droit modifié. Les correctifs 1.25.0 restent proposés dans la PR, sans fusion ni release.
+
+## Complément du 2026-11-06 — lecture seule et projet partagé
+
+Instance develop, navigateur intégré, même version JPSUN **1.25.0**, commit servi `695942ebf7960f529f25e0dc8d495843a6446e8e` confirmé dans Git Version Control cPanel. Les projets des deux entités étaient déjà consultables depuis l’autre entité ; aucun partage ni droit d’accès à une nouvelle entité n’a été ajouté.
+
+L’utilisateur a autorisé explicitement le retrait temporaire des droits projet 42, 142, 44, 144, 145 et 45 du compte `3.utilisateur`, puis leur restauration exacte. Les droits de lecture 41 et 141 ont été conservés. Une photographie des 514 permissions affichées avant/après confirme que seuls ces six droits ont changé. Une nouvelle connexion du compte a été utilisée pour les essais, sans attribuer implicitement des droits à partir de son rôle.
+
+| Scénario complémentaire | Résultat observé |
+|---|---|
+| Lecture seule, projet 28 de TEST 1 | Fiche et onglet Fichiers joints accessibles. Téléchargements natifs depuis la fiche (`modulepart=project`) et l’onglet (`modulepart=projet`) réussis. |
+| Refus de modification | Liens Modifier/Supprimer absents, upload et ajout de lien désactivés dans l’onglet documentaire. L’accès direct à `action=edit` avec un jeton valide ne fournit aucun formulaire d’enregistrement. |
+| Refus de régénération | Le bloc natif conserve son bouton Générer, mais les tentatives par ce bouton et par GET `builddoc` avec jeton valide ne régénèrent pas l’affiche. Date inchangée et PDF identique avant/après : SHA-256 `62ed8054f9dc32a84562b05ac14e08abdd952915af3360f62b9fb9526e00e6e0`. Pas de message explicite de refus sur ce parcours natif. |
+| Projet partagé 29 de TEST 2, consulté depuis TEST 1 | Fiche et fichier visibles avec propriétaire TEST 2, sans changement du bandeau TEST 1. Génération réussie par Codex, lien documentaire avec `entity=2`, nouveau PDF du 2026-11-06 à 08:44 (heure de l’instance). |
+| Même projet partagé en lecture seule | Fiche et onglet accessibles, upload/suppression désactivés, tentative de génération sans modification de date du fichier. |
+| Téléchargement partagé natif | **Échec reproduit**, avec Codex puis le compte en lecture seule : `document.php`, depuis la fiche et l’onglet, indique que `PJ2611-0001/PJ2611-0001-stock.pdf` n’existe pas malgré `entity=2`. Aucun téléchargement reçu. |
+| Téléchargement partagé JPSUN | Le lien existant « Télécharger » de l’onglet (`document_download.php`, même fichier, `entity=2`) réussit en lecture seule depuis TEST 1. PDF d’une page A4 paysage, référence, titre et accents vérifiés visuellement après rendu Poppler ; SHA-256 `69509f86b7d1ff4e6251e6c788171f6428c5f2c2fded74500716e5cc394aa803`. |
+| Contrôle dans l’entité propriétaire TEST 2 | Le téléchargement natif du projet 29 réussit depuis TEST 2. Son SHA-256 est identique au fichier téléchargé par le lien JPSUN depuis TEST 1. |
+| Projet 28 de TEST 1 consulté depuis TEST 2 | Lecture et téléchargement JPSUN réussis ; SHA-256 identique au fichier initial `62ed8054…e0e6e0`. Le lien natif avec `entity=1` échoue également avec « Le fichier n’existe pas ». |
+| Régénération dans le sens TEST 2 → TEST 1 | Avec Codex et le modèle temporairement activé dans TEST 2, refus explicite « Vous n’avez pas les permissions pour cette action ». Date du fichier et SHA-256 inchangés. Aucun droit ni partage élargi pour forcer une réussite ; ce cas ne prouve pas une génération autorisée dans ce sens. |
+
+La génération et le téléchargement JPSUN prouvent la présence du document propriétaire. Le défaut concerne le parcours natif de téléchargement dans ce contexte partagé ; sa cause exacte n’est pas encore établie et ne doit pas être attribuée au core ou à Multicompany sur la seule comparaison. Aucun correctif hors de JPSUN, aucun changement de session ou de sécurité n’a été appliqué pour le contourner. Le succès du lien JPSUN ne vaut pas validation du lien natif.
+
+Contrôle comparatif avant publication le 2026-11-06 : À propos confirme les versions antérieures servies JPSUN 1.24.2 et PowerPlantPV 1.5.0. Dans TEST 1, le téléchargement natif du même document du projet 29 (propriétaire TEST 2, URL avec `entity=2`) échoue encore avec « Le fichier n’existe pas ». Le lien JPSUN réussit et restitue le même SHA-256 `69509f86b7d1ff4e6251e6c788171f6428c5f2c2fded74500716e5cc394aa803`. L’échec n’est donc pas introduit par les PR JPSUN 1.25.0 / PowerPlantPV 1.6.0. Le diff ne modifie ni `document_download.php` ni les hooks de contrôle documentaire ; le nouveau hook d’illustration ne traite que les propositions. Ce constat permet de distinguer la réserve préexistante des nouveautés publiées, sans conclure à une responsabilité exclusive du core ou de Multicompany.
+
+Restitution du complément achevée le 2026-11-06 : les six droits ont été rétablis et les 514 permissions affichées sont strictement identiques au relevé initial. Le modèle est de nouveau désactivé dans TEST 1 et TEST 2, avec le défaut `baleine` conservé. Contexte TEST 1 rétabli. Branche initiale `fix/jpsun-1.24.2-simple-accounting` et SHA `850bd90f4b9263e637042f09a8f44dd60be3332b` confirmés dans Git Version Control ; À propos sert de nouveau JPSUN 1.24.2. La reconnexion cPanel a utilisé le remplissage enregistré autorisé par l’utilisateur, sans extraction ni conservation du secret. Données fictives conservées, PowerPlantPV inchangé. La PR demeure en version 1.25.0, sans fusion ni release.
+
+Limites : LibreOffice embarqué absent, donc comparaison fondée sur les propriétés OOXML et le fond du Word, puis les PNG des PDF. Profil externe, refus d’un tiers hors périmètre et répertoire propriétaire indisponible non exécutés sur l’instance ; les refus simulés du test CLI ne les remplacent pas. Suppression documentaire réelle non exécutée ; l’absence des actions de suppression est vérifiée en lecture seule. Aucun ZIP installable ou validation Dolistore revendiqué.

@@ -110,7 +110,7 @@ class LegacySetupTests(unittest.TestCase):
         result = json.loads(process.stdout)
         self.assertEqual(result['result'], 1)
         self.assertEqual(result['tabs'], [])
-        self.assertEqual(result['version'], '1.24.2')
+        self.assertEqual(result['version'], '1.25.0')
         return result
 
     def test_fresh_and_repeated_activation_do_not_create_retired_fields(self):
@@ -137,6 +137,42 @@ class LegacySetupTests(unittest.TestCase):
                 self.assertTrue(set(RETIRED).isdisjoint(key for element, key in result['writes']
                                                       if element == 'contrat'))
                 self.assertFalse(any(key in sql for key in RETIRED for sql in result['sql']))
+
+    def test_cover_metadata_is_added_once_and_preserves_existing_customization(self):
+        for entity in (1, 2):
+            result = self.activate({}, entity)
+            state = result['definitions']
+            for key in ('jpsun_cover_image', 'jpsun_cover_caption'):
+                args = state['propal'][key]['args']
+                self.assertEqual(args[2], 'varchar')
+                self.assertEqual(args[11], '0')
+                self.assertEqual(args[12], '0')
+                self.assertEqual(args[15], entity)
+                state['propal'][key]['label'] = 'Customized cover field'
+                state['propal'][key]['value'] = 'Preserved value'
+            repeated = self.activate(state, entity)
+            for key in ('jpsun_cover_image', 'jpsun_cover_caption'):
+                self.assertEqual(repeated['definitions']['propal'][key], state['propal'][key])
+                self.assertNotIn(['propal', key], repeated['writes'])
+
+    def test_cover_visibility_repair_is_scoped_and_preserves_metadata(self):
+        result = self.activate({}, 2)
+        queries = [sql for sql in result['sql'] if "extrafields SET list = '0'" in sql]
+        self.assertEqual(len(queries), 2)
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        db.execute('CREATE TABLE fixture_extrafields(name, elementtype, entity, list, label)')
+        rows = [('jpsun_cover_image', 'propal', 2, '-1', 'Custom'),
+                ('jpsun_cover_caption', 'propal', 2, '-1', 'Credit'),
+                ('jpsun_cover_image', 'propal', 1, '-1', 'Other entity'),
+                ('other_field', 'propal', 2, '-1', 'Other field')]
+        db.executemany('INSERT INTO fixture_extrafields VALUES (?, ?, ?, ?, ?)', rows)
+        for _ in range(2):
+            for sql in queries:
+                db.execute(sql)
+        actual = db.execute('SELECT * FROM fixture_extrafields').fetchall()
+        self.assertEqual(actual, [rows[0][:3] + ('0', rows[0][4]),
+                                  rows[1][:3] + ('0', rows[1][4]), rows[2], rows[3]])
 
     def test_legacy_panel_power_definition_and_value_are_preserved(self):
         original = {'label': 'Custom power', 'enabled': '1', 'list': '3', 'default': '', 'value': 450}

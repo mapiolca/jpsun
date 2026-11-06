@@ -1,5 +1,15 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.25.0 (06/11/2026)
+- Contrôle explicite du jeton natif sur la génération et le spécimen de l’affiche projet, y compris lorsque le core ne protège pas `builddoc` en GET à son niveau CSRF courant.
+- Correction de la découverte native des modèles de projet lorsque l’ancienne classe de déplacements est absente du core.
+- Nouveau modèle de projet « Affiche stock chantier » : A4 paysage, bordure jaune/noire et composition de la référence Word, tiers lié, titre et référence native du projet ; données absentes laissées vides et stockage documentaire dans l’entité propriétaire.
+- Nouveau modèle « JPSUN sans image avec couverture », basé sur le modèle existant : identité de l’entité propriétaire, référence client, date et numéro d’offre, destinataire et interlocuteur.
+- Illustration et légende éditables depuis le bloc documentaire natif : centrage à hauteur fixe, recadrage horizontal, fond coloré, nettoyage des métadonnées et contrôles de droits, d’entité, de chemin et de concurrence.
+- Couleurs de couverture réglables par entité ; puissance et stockage affichés uniquement si positifs. Type de consommation et nombre de modules intégrés lorsqu’ils sont fournis par PowerPlantPV 1.6.0.
+- Devis partagés : lecture des valeurs de couverture de l’entité propriétaire même lorsque les définitions d’extrafields diffèrent dans l’entité de consultation ; écriture soumise au droit natif Multicompany de modification des propositions partagées.
+- Après mise à jour : actualiser JPSUN par le parcours natif pour créer les métadonnées masquées puis activer le nouveau modèle dans les réglages natifs des propositions. Les choix et le modèle précédent restent conservés. GD, EXIF et Fileinfo nécessaires pour joindre une illustration.
+
 ## 1.24.2 (03/11/2026)
 - Arrêt de la création et de la mise à jour de `jpsun_module_pv_pc`, couvert par PowerPlantPV, sans suppression des définitions ni des valeurs existantes.
 - Arrêt de la suppression/réinstallation du type de contact projet `PROJECTADD`, fourni par `lmdbjobsite`, avec conservation des réglages et des liaisons existants.

@@ -141,6 +141,16 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 		$this->atleastonediscount = 0;
 	}
 
+	/** Optional introductory page; the standard model has no cover.
+	 * @param TCPDF $pdf PDF
+	 * @param Propal $object Proposal
+	 * @param Translate $outputlangs Language
+	 * @return void
+	 */
+	protected function printCover($pdf, $object, $outputlangs)
+	{
+	}
+
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
 	 *  Function to build pdf onto disk
@@ -169,7 +179,7 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 		}
 
 		// Load translation files required by page
-		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "products", "propal"));
+		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "products", "propal", "jpsun@jpsun"));
 
 		//  Show Draft Watermark
 		if ($object->status == $object::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK')) {
@@ -181,7 +191,7 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(array("main", "dict", "companies", "bills", "products", "propal"));
+			$outputlangsbis->loadLangs(array("main", "dict", "companies", "bills", "products", "propal", "jpsun@jpsun"));
 		}
 
 		$nblines = count($object->lines);
@@ -251,14 +261,19 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 			$this->posxpicture = $this->posxtva;
 		}
 
-		if ($conf->propal->multidir_output[$conf->entity]) {
+		$documentEntity = !empty($object->specimen) ? (int) $conf->entity : (int) $object->entity;
+		if ($documentEntity <= 0 || empty($conf->propal->multidir_output[$documentEntity])) {
+			$this->error = $outputlangs->trans('JpsunCoverDirectoryError');
+			return 0;
+		}
+		if ($conf->propal->multidir_output[$documentEntity]) {
 			$object->fetch_thirdparty();
 
 			$deja_regle = 0;
 
 			// Definition of $dir and $file
 			if ($object->specimen) {
-				$dir = $conf->propal->multidir_output[$conf->entity];
+				$dir = $conf->propal->multidir_output[$documentEntity];
 				$file = $dir."/SPECIMEN.pdf";
 			} else {
 				$objectref = dol_sanitizeFileName($object->ref);
@@ -331,6 +346,9 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 					}
 				}
 
+
+				$this->printCover($pdf, $object, $outputlangs);
+				$pagenb = $pdf->getNumPages();
 
 				// New page
 				$pdf->AddPage();
@@ -1206,7 +1224,7 @@ class pdf_jpsunwithoutpictures extends ModelePDFPropales
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(array("main", "dict", "companies", "bills", "products", "propal"));
+			$outputlangsbis->loadLangs(array("main", "dict", "companies", "bills", "products", "propal", "jpsun@jpsun"));
 			$default_font_size--;
 		}
 

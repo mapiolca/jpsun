@@ -54,7 +54,7 @@ class modJpsun extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Module999999Desc";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.24.2';
+		$this->version = '1.25.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_JPSUN';
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -289,6 +289,27 @@ class modJpsun extends DolibarrModules
 		dol_include_once('/core/class/extrafields.class.php');
 		$ext = new ExtraFields($db);
 		
+		// Hidden cover metadata; native proposal fields remain the source of business data.
+		$ext->fetch_name_optionals_label('propal');
+		foreach (array('jpsun_cover_image' => 'JpsunCoverIllustration', 'jpsun_cover_caption' => 'JpsunCoverCaption') as $key => $label) {
+			if (!isset($ext->attributes['propal']['label'][$key])) {
+				$result = $ext->addExtraField($key, $label, 'varchar', 210, '255', 'propal', 0, 0, '', '', 1, '0', '0', '', '', $conf->entity, 'jpsun@jpsun', 'isModEnabled("jpsun")');
+				if ($result < 0) {
+					$this->error = $ext->error;
+					return -1;
+				}
+			}
+			// Repair only visibility of technical metadata created by early cover builds.
+			// Keep labels, values and all other administrator settings unchanged.
+			$sqlvisibility = "UPDATE ".MAIN_DB_PREFIX."extrafields SET list = '0'";
+			$sqlvisibility .= " WHERE name = '".$db->escape($key)."' AND elementtype = 'propal'";
+			$sqlvisibility .= " AND entity = ".((int) $conf->entity)." AND list <> '0'";
+			if (!$db->query($sqlvisibility)) {
+				$this->error = $db->lasterror();
+				return -1;
+			}
+		}
+
 		//Proposition Fournisseurs 
 		
 		    $ext->addExtraField('jpsun_libelle', 'jpsun_libelle', 'varchar', 1, '50', 'supplier_proposal', 0, 0, '', '', 1, '', '-1', 'jpsun_libelle_help', '', $conf->entity, 'jpsun@jpsun', '$conf->jpsun->enabled', '',2 );

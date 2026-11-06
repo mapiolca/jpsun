@@ -12,6 +12,11 @@ require_once __DIR__.'/_setup_common.php';
 jpsunHandleAdminSetupActions();
 jpsunPrintAdminSetupHeader('projects');
 
+$langs->load('projects');
+setup_print_title($langs->trans('JpsunProjectStockModel'));
+print '<tr class="oddeven"><td colspan="3">'.$langs->trans('JpsunProjectStockDescription').'</td></tr>';
+print '<tr class="oddeven"><td colspan="3"><a href="'.DOL_URL_ROOT.'/projet/admin/project.php">'.$langs->trans('ProjectsModelModule').'</a></td></tr>';
+
 if (floatval(DOL_VERSION) >= 13.0) {
 	setup_print_title($langs->trans("Project"));
 	if (getDolGlobalInt('SHOW_DEPRECATED_FEATURES')) {

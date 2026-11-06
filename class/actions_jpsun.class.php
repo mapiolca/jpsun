@@ -76,6 +76,50 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
         $this->db = $db;
     }
 
+	/** Add the illustration editor to the native document block.
+	 * @param array<string,mixed> $parameters Hook metadata
+	 * @param Propal $object Proposal
+	 * @param string $action Current action
+	 * @param HookManager $hookmanager Native manager
+	 * @return int
+	 */
+	public function formBuilddocOptions($parameters, &$object, &$action, $hookmanager)
+	{
+		global $user, $langs, $conf;
+		if (($parameters['modulepart'] ?? '') !== 'propal' || !is_object($object) || empty($object->id)
+			|| !isModEnabled('jpsun') || !$user->hasRight('propal', 'creer') || !empty($user->socid)) {
+			return 0;
+		}
+		if ((int) $object->entity !== (int) $conf->entity && isModEnabled('multicompany') && !$user->hasRight('multicompany', 'propal', 'write')) {
+			return 0;
+		}
+		require_once __DIR__.'/jpsunproposalcover.class.php';
+		$cover = new JpsunProposalCover($this->db);
+		if (!$cover->isEnabled((int) $conf->entity)) {
+			return 0;
+		}
+		$langs->load('jpsun@jpsun');
+		$url = dol_buildpath('/jpsun/proposal_cover.php', 1).'?id='.(int) $object->id;
+		$this->resprints = '<tr><td colspan="'.max(1, (int) ($parameters['colspan'] ?? 1)).'"><a class="button jpsun-cover-open" href="'.$url.'">'.$langs->trans('JpsunCoverAttach').'</a></td></tr>';
+		$title = json_encode($langs->transnoentities('JpsunCoverIllustration'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+		$this->resprints .= '<script nonce="'.getNonce().'">
+		jQuery(function ($) {
+			$(document).off("click.jpsunCover", ".jpsun-cover-open").on("click.jpsunCover", ".jpsun-cover-open", function (event) {
+				if (!$.fn.dialog) return;
+				event.preventDefault();
+				const link = this;
+				if ($(link).data("loading")) return;
+				$(link).data("loading", true);
+				$.get(link.href).done(function (html) {
+					const content = $("<div>").append($.parseHTML(html)).find("#jpsun-cover-editor");
+					if (!content.length) { window.location.href = link.href; return; }
+					content.appendTo(document.body).dialog({modal:true, title:'.$title.', width:Math.min(760, window.innerWidth - 32), maxHeight:window.innerHeight - 48, close:function () { $(this).dialog("destroy").remove(); }});
+				}).fail(function () { window.location.href = link.href; }).always(function () { $(link).removeData("loading"); });
+			});
+		});</script>';
+		return 0;
+	}
+
 	/**
 	 * Insert the requested pre-v26 deposit control below native Accounting.
 	 *
