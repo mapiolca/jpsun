@@ -22,7 +22,8 @@ class pdf_jpsun_projectstock extends ModelePDFProjects
 		global $langs;
 		$this->db = $db;
 		$langs->load('jpsun@jpsun');
-		$this->description = $langs->trans('JpsunProjectStockModel');
+		$this->name = $langs->trans('JpsunProjectStockModel');
+		$this->description = $langs->trans('JpsunProjectStockDescription');
 	}
 
 	/**

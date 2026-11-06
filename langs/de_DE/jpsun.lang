@@ -1,6 +1,6 @@
 # Dolibarr language file - de_DE - tos
 # Admin-Formular
-CHARSET=ISO-8859-1
+CHARSET=UTF-8
 Module999999Desc=Modul mit allen für JPSUN entwickelten Änderungen.
 Module999999Name=JPSUN
 jpsun=JPSUN
@@ -22,13 +22,8 @@ MobileShort=Mob.
 
 ref_project=Projektreferenz
 
-DocModelJPSUNName=JPSUN
-DocModelJPSUNDescription=Lieferantenangebot-Vorlage von JPSUN.
 
-DocModelJPSUNwithpricesName=JPSUN mit Preisen
-DocModelJPSUNwithpricesDescription=Lieferantenangebot-Vorlage von JPSUN, zeigt Lieferantenpreise aus der Datenbank.
 
-StandardContractsTemplatebyJpsun=Vertragsvorlage von JPSUN.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Benutzer
@@ -121,10 +116,6 @@ jpsunEncoursFourn=Lieferantenrahmen
 JpsunCustomerProposal=Kundenangebot
 JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN=MwSt. in JPSUN-PDF-Vorlagen ausblenden (nur Kundenangebote).
 PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT=Kundenangebote fügen den bestätigenden Benutzer automatisch als Kontakt hinzu.
-JpsunWithPicturesName=JPSUN mit Bildern
-DocModelJpsunWithPicturesDescription=Eine vollständige Angebotsvorlage, angepasst von JPSUN.
-JpsunWithoutPicturesName=JPSUN ohne Bilder
-DocModelJpsunWithPicturesDescription=Eine vollständige Angebotsvorlage, angepasst von JPSUN.
 JpsunPropalSignedProjectAlreadyLinked =Ein Projekt ist bereits mit dem Angebot %s (ID %s) verknüpft.
 JpsunPropalSignedProjectNoRef =Referenz für das Projekt kann für das Angebot %s (ID %s) nicht erstellt werden.
 JpsunPropalSignedProjectModelNotFound =Projekt-Nummerierungsmodell nicht gefunden (%s) für das Angebot %s (ID %s).
@@ -161,7 +152,6 @@ SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD=Externen Download erlauben (ohne Anmel
 // #Lieferantenbestellungen
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SuppliersCommandModelJPSUN=Lieferantenbestellvorlage von JPSUN
 SUPPLIER_ORDER_AUTOADD_USER_CONTACT=Lieferantenbestellungen fügen den bestätigenden Benutzer automatisch als Kontakt hinzu.
 MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER=Lieferant im Entwurfsstatus änderbar
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -312,7 +302,6 @@ JpsunWidgetNoData=Aucune donnée
 JpsunWidgetCamembertCategorieCaTitle=Umsatz nach Kategorie
 BoxCamembertCategorieCa=Umsatz nach Kategorie Diagramm
 
-JpsunProjectLabelsPdfModel=JPSUN-Projektetiketten
 JpsunProjectLabels=Projektetiketten
 JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Etikettenformat
@@ -367,3 +356,45 @@ JpsunAboutDependencies=Abhängigkeiten
 JpsunAboutFeatures=Wichtigste Funktionen
 JpsunAboutMainFeatures=JPSUN-PDF-Vorlagen, Geschäftseinstellungen und Bericht über offene Projekte.
 JpsunAboutUsefulLinks=Nützliche Links
+
+# Document model names and descriptions
+JpsunDocumentModelSelectorTranslations=Übersetzung der Dokumentvorlagenauswahl
+JpsunDocumentModelSelectorRequirement=Dynamische JPSUN Vorlagennamen ab Dolibarr 23 (nativer Hook getListOfModels). Unter Dolibarr 20–22 bleibt die bei der Aktivierung gespeicherte Bezeichnung erhalten; Namen und Beschreibungen in den Einstellungen werden übersetzt.
+JpsunSepaMandateModelLabel=JPSUN SEPA-Mandat
+JpsunSepaMandateModelDescription=JPSUN SEPA-Lastschriftmandat.
+JpsunOrderModelName=JPSUN Kundenauftrag
+PDFJpsunDescription=Von JPSUN angepasste Vorlage für Kundenaufträge.
+JpsunInvoiceModelTitle=JPSUN Rechnung
+JpsunInvoiceModelDescription=Native Sponge-Vorlage mit separater Darstellung abgezogener Anzahlungen und gewerblicher Rabatte in der Nettoübersicht.
+JpsunContractPrivateName=Wartungsvertrag für Privatkunden V3
+JpsunContratParticulierV3Description=JPSUN Wartungsvertrag für Privatkunden, Version 3.
+JpsunContractStandardName=JPSUN Standardvertrag
+StandardContractsTemplatebyJpsun=JPSUN Standardvertragsvorlage.
+JpsunContractProName=JPSUN PRO Wartungsvertrag
+JpsunContractProModelDescription=JPSUN Wartungsvertrag für Geschäftskunden.
+JpsunSoleilAquitainContractName=SOLEIL AQUITAIN Vertrag
+JpsunSoleilAquitainContractModelDescription=Photovoltaik-Wartungsvertrag von SOLEIL AQUITAIN.
+JpsunProductSheetName=JPSUN Produktblatt
+DocModelJpsunProductSheetDescription=Einseitiges JPSUN Produktblatt im PDF-Format.
+JpsunDdrEnedisModelName=ENEDIS Netzanschlussantrag
+jpsun_DocumentModelDDREnedis=Übersicht des Projekts und verknüpfter Elemente für den ENEDIS Netzanschlussantrag.
+JpsunProjectLabelsPdfModel=JPSUN Projektetiketten
+JpsunProjectLabelsModelDescription=A4-Querformatbogen mit Ablageetiketten für das Projekt.
+JpsunProjectStockModel=Materialreservierung für die Baustelle
+JpsunProjectStockDescription=Aushang im A4-Querformat zur Materialreservierung mit verknüpftem Geschäftspartner, Projekttitel und Referenz.
+JPSUNProjectPdfSynthesis=JPSUN Projektübersicht
+JpsunProjectSynthesisDescription=Projektübersicht mit Notizen, Kontakten, verknüpften Objekten und Anhängen gemäß den JPSUN Einstellungen.
+JpsunWithPicturesName=JPSUN mit Bildern
+DocModelJpsunWithPicturesDescription=JPSUN Angebot mit Produktbildern.
+JpsunWithoutPicturesName=JPSUN ohne Bilder
+DocModelJpsunWithoutPicturesDescription=JPSUN Angebot ohne Produktbilder.
+JpsunCoverModel=JPSUN ohne Bilder mit Deckblatt
+JpsunCoverModelDescription=JPSUN Angebot ohne Produktbilder mit vorgeschaltetem Deckblatt, Illustration und Projektinformationen.
+JpsunStockModelName=JPSUN Lagerbericht
+JpsunStockModelDescription=Bericht über Lagerprodukte und deren Bewertung anhand der verfügbaren Daten.
+JpsunSupplierOrderName=JPSUN Lieferantenbestellung
+SuppliersCommandModelJPSUN=Von JPSUN angepasste Vorlage für Lieferantenbestellungen.
+DocModelJPSUNName=JPSUN Lieferantenpreisanfrage
+DocModelJPSUNDescription=JPSUN Lieferantenpreisanfrage ohne gespeicherte Preise.
+DocModelJPSUNwithpricesName=JPSUN Lieferantenpreisanfrage mit Preisen
+DocModelJPSUNwithpricesDescription=JPSUN Lieferantenpreisanfrage mit bereits gespeicherten Lieferantenpreisen.

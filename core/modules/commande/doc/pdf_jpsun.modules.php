@@ -102,7 +102,7 @@ class pdf_jpsun extends ModelePDFCommandes
 		$langs->loadLangs(array("main", "bills", "products","jpsun@jpsun"));
 
 		$this->db = $db;
-		$this->name = "jpsun";
+		$this->name = $langs->trans('JpsunOrderModelName');
 		$this->description = $langs->trans('PDFJpsunDescription');
 		$this->update_main_doc_field = 1; // Save the name of generated file as the main doc when generating a doc with this template
 

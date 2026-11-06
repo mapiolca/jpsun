@@ -98,11 +98,11 @@ class pdf_jpsun_stock extends ModelePDFStock
 		global $conf, $langs, $mysoc;
 
 		// Load traductions files required by page
-		$langs->loadLangs(array("main", "companies"));
+		$langs->loadLangs(array("main", "companies", "jpsun@jpsun"));
 
 		$this->db = $db;
-		$this->name = "JPSUN";
-		$this->description = $langs->trans("DocumentModelStandardPDF");
+		$this->name = $langs->trans('JpsunStockModelName');
+		$this->description = $langs->trans('JpsunStockModelDescription');
 
 		// Page size for A4 format
 		$this->type = 'pdf';

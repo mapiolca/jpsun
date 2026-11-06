@@ -31,6 +31,7 @@ require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php'
 require_once dirname(__DIR__) . '/lib/jpsun_delivery.lib.php';
 require_once dirname(__DIR__) . '/lib/jpsun_pdf_signature.lib.php';
 require_once __DIR__.'/jpsuncustomerdepositcompatibility.class.php';
+require_once __DIR__.'/jpsundocumentmodeltranslations.class.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**
@@ -75,6 +76,33 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
     {
         $this->db = $db;
     }
+
+	/** Translate existing native selector entries without changing model identifiers or activation.
+	 * @param array{type?:string,list?:array<string|int,string>} $parameters Native model list (passed by reference inside the array)
+	 * @param object|null $object Unused
+	 * @param string $action Unused
+	 * @param HookManager $hookmanager Native manager
+	 * @return int
+	 */
+	public function getListOfModels($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+		if (!JpsunDocumentModelTranslations::isDynamicSelectionAvailable()
+			|| !isset($parameters['type'], $parameters['list'])) {
+			return 0;
+		}
+		$names = JpsunDocumentModelTranslations::getNameKeys();
+		if (!isset($names[$parameters['type']])) {
+			return 0;
+		}
+		$langs->load('jpsun@jpsun');
+		foreach ($names[$parameters['type']] as $identifier => $key) {
+			if (array_key_exists($identifier, $parameters['list'])) {
+				$parameters['list'][$identifier] = $langs->trans($key);
+			}
+		}
+		return 0;
+	}
 
 	/** Add the illustration editor to the native document block.
 	 * @param array<string,mixed> $parameters Hook metadata

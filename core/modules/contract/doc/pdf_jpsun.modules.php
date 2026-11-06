@@ -97,9 +97,10 @@ class pdf_jpsun extends ModelePDFContract
 	{
 		global $langs, $mysoc;
 
+		$langs->load('jpsun@jpsun');
 		$this->db = $db;
-		$this->name = 'JPSUN';
-		$this->description = $langs->trans("StandardContractsTemplatebyJpsun");
+		$this->name = $langs->trans('JpsunContractStandardName');
+		$this->description = $langs->trans('StandardContractsTemplatebyJpsun');
 		$this->update_main_doc_field = 1; // Save the name of generated file as the main doc when generating a doc with this template
 
 		// Dimension page
