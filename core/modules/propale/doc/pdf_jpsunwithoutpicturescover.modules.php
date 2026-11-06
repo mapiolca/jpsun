@@ -144,7 +144,15 @@ class pdf_jpsunwithoutpicturescover extends pdf_jpsunwithoutpictures
 		$text(105, 21, 90, 8, $outputlangs->transnoentities('JpsunCoverOfferDetails', dol_print_date($object->date, 'daytext', false, $outputlangs), $object->ref), 9);
 		$text(15, 46.5, 180, 6, $outputlangs->transnoentities('JpsunCoverInstallation'), 10, 'B', true);
 		$text(15, 55.5, 180, 21, (string) $object->ref_client, 24, 'B');
-		$text(15, 78, 180, 8, (string) ($object->array_options['options_powerplantpv_consumption_type'] ?? ''), 11);
+		$consumptionType = (string) ($object->array_options['options_powerplantpv_consumption_type'] ?? '');
+		if (isModEnabled('powerplantpv')) {
+			dol_include_once('/powerplantpv/class/powerplant.class.php');
+			if (class_exists('PowerPlant') && method_exists('PowerPlant', 'getConnectionTypeLabel')) {
+				$outputlangs->load('powerplantpv@powerplantpv');
+				$consumptionType = PowerPlant::getConnectionTypeLabel($consumptionType, $outputlangs);
+			}
+		}
+		$text(15, 78, 180, 8, $consumptionType, 11);
 		$pdf->SetFillColor(...$color('JPSUN_COVER_BACKGROUND'));
 		$pdf->Rect(15, 88.5, 180, 81.5, 'F');
 		if ($this->coverImage !== '') {

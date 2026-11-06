@@ -73,13 +73,20 @@ jobs:
           DOLIBARR_TEST_VERSION: ${{ matrix.dolibarr }}
         run: python3 jpsun/test/customerdeposits.py dolibarr/htdocs
 
+      - name: Published PowerPlantPV connection-type resolver
+        # The connection-type resolver predates 1.6.1; pin its published source.
+        uses: actions/checkout@v4
+        with:
+          repository: mapiolca/powerplantpv
+          ref: 57cb7bcd563ac83ae3ae00053f63621583601764
+          path: powerplantpv
       - name: Proposal cover ownership, images and native PDF rendering
         run: |
           php -l jpsun/proposal_cover.php
           php -l jpsun/class/jpsunproposalcover.class.php
           php -l jpsun/core/modules/propale/doc/pdf_jpsunwithoutpicturescover.modules.php
           php jpsun/test/proposal_cover_owner.php
-          php jpsun/test/proposal_cover.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-cover" '${{ matrix.dolibarr }}'
+          php jpsun/test/proposal_cover.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-cover" '${{ matrix.dolibarr }}' powerplantpv
       - name: Project stock poster native PDF rendering
         run: |
           php -l jpsun/core/modules/project/doc/pdf_jpsun_projectstock.modules.php
