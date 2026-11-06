@@ -84,8 +84,8 @@ class pdf_jpsunsepamandate extends ModeleBankAccountDoc
 		$langs->loadLangs(array('main', 'bank', 'withdrawals', 'companies', 'jpsun@jpsun'));
 
 		$this->db = $db;
-		$this->name = 'jpsunsepamandate';
-		$this->description = $langs->transnoentitiesnoconv('JpsunSepaMandateModelDescription');
+		$this->name = $langs->trans('JpsunSepaMandateModelLabel');
+		$this->description = $langs->trans('JpsunSepaMandateModelDescription');
 		$this->update_main_doc_field = 1;
 		$this->type = 'pdf';
 

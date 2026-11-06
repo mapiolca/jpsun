@@ -16,7 +16,7 @@ class pdf_jpsuninvoice extends pdf_sponge
 		global $langs;
 		parent::__construct($db);
 		$langs->load('jpsun@jpsun');
-		$this->name = 'jpsuninvoice';
+		$this->name = $langs->trans('JpsunInvoiceModelTitle');
 		$this->description = $langs->trans('JpsunInvoiceModelDescription');
 		$this->version = JpsunInvoiceCompatibility::isAvailable() ? 'dolibarr' : 'disabled';
 	}

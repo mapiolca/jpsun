@@ -50,10 +50,10 @@ class pdf_jpsun_projectsynthesis extends ModelePDFProjects
 
 		$this->db = $db;
 
-		$langs->loadLangs(array('main', 'projects', 'companies'));
+		$langs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun'));
 
-		$this->name = 'jpsun_projectsynthesis';
-		$this->description = $langs->trans('JPSUNProjectPdfSynthesis');
+		$this->name = $langs->trans('JPSUNProjectPdfSynthesis');
+		$this->description = $langs->trans('JpsunProjectSynthesisDescription');
 		$this->update_main_doc_field = 1;
 
 		$this->type = 'pdf';

@@ -121,8 +121,9 @@ class pdf_soleilaquitain extends ModelePDFContract
 	{
 		global $langs, $mysoc;
 
+		$langs->load('jpsun@jpsun');
 		$this->db = $db;
-		$this->name = 'Contrat SOLEIL AQUITAIN';
+		$this->name = $langs->trans('JpsunSoleilAquitainContractName');
 		$this->description = $langs->trans('JpsunSoleilAquitainContractModelDescription');
 		$this->update_main_doc_field = 1;
 		$this->type = 'pdf';

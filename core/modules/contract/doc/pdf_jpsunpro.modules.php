@@ -117,8 +117,9 @@ class pdf_jpsunpro extends ModelePDFContract
 	{
 		global $langs, $mysoc;
 
+		$langs->load('jpsun@jpsun');
 		$this->db = $db;
-		$this->name = 'JPSUN PRO';
+		$this->name = $langs->trans('JpsunContractProName');
 		$this->description = $langs->trans('JpsunContractProModelDescription');
 		$this->update_main_doc_field = 1;
 		$this->type = 'pdf';

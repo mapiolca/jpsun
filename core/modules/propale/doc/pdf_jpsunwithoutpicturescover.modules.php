@@ -22,8 +22,8 @@ class pdf_jpsunwithoutpicturescover extends pdf_jpsunwithoutpictures
 	{
 		parent::__construct($db);
 		global $langs;
-		$this->name = JpsunProposalCover::MODEL;
-		$this->description = $langs->trans('JpsunCoverModel');
+		$this->name = $langs->trans('JpsunCoverModel');
+		$this->description = $langs->trans('JpsunCoverModelDescription');
 		$this->page_largeur = 210;
 		$this->page_hauteur = 297;
 		$this->format = array(210, 297);

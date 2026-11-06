@@ -82,8 +82,8 @@ class pdf_jpsun_projectlabels extends ModelePDFProjects
 
 		$langs->loadLangs(array('main', 'projects', 'companies', 'jpsun@jpsun'));
 
-		$this->name = 'jpsun_projectlabels';
-		$this->description = $langs->trans('JpsunProjectLabelsPdfModel');
+		$this->name = $langs->trans('JpsunProjectLabelsPdfModel');
+		$this->description = $langs->trans('JpsunProjectLabelsModelDescription');
 		$this->type = 'pdf';
 
 		// Force A4 landscape format for the labels sheet.

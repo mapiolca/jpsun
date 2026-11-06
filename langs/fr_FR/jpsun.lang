@@ -1,6 +1,6 @@
 # Dolibarr language file - fr_FR - tos
 # Admin form
-CHARSET=iso-8859-1
+CHARSET=UTF-8
 Module999999Desc= Module rassemblant toutes les modifications développées pour JPSUN.
 Module999999Name=JPSUN
 jpsun=JPSUN
@@ -22,13 +22,8 @@ MobileShort = Port.
 
 ref_project = Référence du chantier
 
-DocModelJPSUNName = JPSUN
-DocModelJPSUNDescription = Modèle de demande de prix pour/par JPSUN.
 
-DocModelJPSUNwithpricesName = JPSUN avec les prix
-DocModelJPSUNwithpricesDescription = Modèle de demande de prix pour/par JPSUN, laissant apparaître les prix du fournisseur déjà en base de données.
 
-StandardContractsTemplatebyJpsun=Modèle de contrat standard JPSUN.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Utilisateurs
@@ -145,10 +140,6 @@ jpsunEncoursFourn = Encours Fournisseur
 JpsunCustomerProposal=Devis client
 JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN = Masquer la TVA dans les modèles de PDF de JPSUN (Devis clients uniquement).
 PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT = Les devis clients ajoutent automatiquement l'utilisateur qui valide en contact.
-JpsunWithPicturesName = JPSUN avec images
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, affichant les images.
-JpsunWithoutPicturesName = JPSUN sans images
-DocModelJpsunWithPicturesDescription = Un modèle de proposition complet personnalisé par JPSUN, masquant les images.
 JpsunPropalSignedProjectAlreadyLinked = Un projet est déjà lié au devis %s (id %s).
 JpsunPropalSignedProjectNoRef = Impossible de générer la référence du projet pour le devis %s (id %s).
 JpsunPropalSignedProjectModelNotFound = Modèle de numérotation projet introuvable (%s) pour le devis %s (id %s).
@@ -187,7 +178,6 @@ SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD = Autoriser le téléchargement extern
 // #Commandes fournisseurs
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SuppliersCommandModelJPSUN = Modèle de commande fournisseur par JPSUN
 SUPPLIER_ORDER_AUTOADD_USER_CONTACT = Les commandes fournisseurs ajoutent automatiquement l'utilisateur qui valide en contact.
 MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER = Autoriser l'utilisateur à changer le Fournisseur lorsque la commande est à l'état de brouillon.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -236,8 +226,6 @@ JpsunProduitsCompatibles_help = Sélectionnez le(s) produit(s) compatible(s) ave
 jpsun_ProductDet = Détails
 jpsun_ProductDet_help = Caractéristiques diverses qui n'apparaitront pas sur les devis/commandes/factures.
 
-JpsunProductSheetName = Fiche produit JPSUN
-DocModelJpsunProductSheetDescription = Modele PDF fiche produit one-pager par JPSUN.
 JpsunProductSheetTitle = Fiche produit
 JpsunProductSheetFeatures = Caracteristiques
 JpsunProductSheetNoDescription = Aucune description renseignee.
@@ -302,14 +290,11 @@ JpsunContractPaymentDayHelp = Jour du mois de facturation. Si vide, le modèle u
 JpsunRecurrenceAnnual = Annuelle
 JpsunRecurrenceMonthly = Mensuelle
 JpsunPaymentDayOfBillingMonth = %s du mois de facturation
-JpsunContratParticulierV3Description = Modèle de contrat de maintenance particulier V3 JPSUN.
-JpsunContractProModelDescription = Modèle de contrat de maintenance JPSUN PRO.
 JpsunPowerPlantPVRequiredForContractPro = Le module Centrale PV doit être activé pour générer le modèle JPSUN PRO.
 JpsunPowerPlantPVPermissionDenied = Vous n'avez pas le droit de lire les centrales PV liées à ce contrat.
 JpsunContractProNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle JPSUN PRO.
 JpsunContractProTemplateMissing = Le fond PDF du modèle JPSUN PRO est introuvable : %s
 JpsunContractProPowerPlantAnnex = Centrale %s / %s
-JpsunSoleilAquitainContractModelDescription = Modèle de contrat SOLEIL AQUITAIN pour la maintenance photovoltaïque.
 JpsunPowerPlantPVRequiredForSoleilAquitainContract = Le module Centrale PV doit être activé pour générer le modèle Contrat SOLEIL AQUITAIN.
 JpsunSoleilAquitainNoLinkedPowerPlant = Aucune centrale PV n'est liée à ce contrat. Ajoutez au moins une centrale liée avant de générer le modèle Contrat SOLEIL AQUITAIN.
 JpsunSoleilAquitainMissingRequiredData = Le modèle Contrat SOLEIL AQUITAIN ne peut pas être généré. Données obligatoires manquantes ou invalides : %s
@@ -320,8 +305,6 @@ JpsunContractAmountOffered = Offert
 JpsunContractLineEngagementStart = Début d'engagement
 JpsunContractLineEngagementEnd = Fin d'engagement
 JpsunContractTotalEngagementDefaultUnit = mois
-JpsunSepaMandateModelLabel = Mandat SEPA JPSUN
-JpsunSepaMandateModelDescription = Modèle JPSUN de mandat de prélèvement SEPA.
 JpsunSepaMandateTitle = Mandat de prélèvement SEPA
 JpsunSepaMandateIdentifiers = Identification du mandat
 JpsunSepaMandateDate = Date du mandat
@@ -410,7 +393,6 @@ JpsunWidgetHebdomadaire=Courbe hebdomadaire
 JpsunWidgetNoData=Aucune donnée
 JpsunWidgetCamembertCategorieCaTitle=CA par catégorie
 BoxCamembertCategorieCa=Graphique CA par catégorie
-JpsunProjectLabelsPdfModel=Étiquettes projet JPSUN
 JpsunProjectLabels=Étiquettes projet
 JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Format d’étiquette
@@ -467,8 +449,6 @@ JpsunAboutDependencies=Dépendances
 JpsunAboutFeatures=Fonctionnalités principales
 JpsunAboutMainFeatures=Modèles PDF JPSUN, réglages métier et rapport des projets non soldés.
 JpsunAboutUsefulLinks=Liens utiles
-JpsunInvoiceModelTitle=Modèle de facture JPSUN
-JpsunInvoiceModelDescription=Modèle Sponge natif avec les acomptes déduits séparés des remises commerciales dans le récapitulatif HT.
 JpsunInvoiceDepositsDeducted=Acomptes déduits
 JpsunInvoiceModelRequirement=Disponible à partir de Dolibarr 24 avec les modules JPSUN et Factures actifs (PHP 8.0 minimum). Indisponible sous Dolibarr 20 à 23 : les contrôles natifs d’affichage des remises de Sponge y sont absents.
 JpsunInvoiceModelSetup=Activer le modèle jpsuninvoice dans les réglages natifs des factures
@@ -504,7 +484,6 @@ JpsunMigration1241Pending=Migration JPSUN 1.24.1 : %s marque(s) restent à migre
 
 DepositControlAmountFilterHelp=Filtre de montant : 0, =100, >=100, <=200. Les comparaisons natives peuvent être combinées.
 
-JpsunCoverModel=JPSUN sans image avec couverture
 JpsunCoverOffer=OFFRE DE PRIX du
 JpsunCoverInstallation=INSTALLATION PHOTOVOLTAÏQUE
 JpsunCoverPresentedTo=PRÉSENTÉE À
@@ -531,10 +510,50 @@ JPSUN_COVER_TEXT=Couverture : couleur du texte principal
 JPSUN_COVER_BACKGROUND=Couverture : couleur du fond de l’illustration
 JpsunCoverCompatibility=Couverture disponible sous Dolibarr 20 à 25 avec TCPDF. Le sous-titre et le nombre de modules nécessitent PowerPlantPV 1.6.0 ; puissance et stockage proviennent des extrafields existants, sans recalcul. Les versions non testées restent à vérifier.
 JpsunCoverOfferDetails=%s · N° %s
-JpsunProjectStockModel=Affiche stock chantier
-JpsunProjectStockDescription=Affiche A4 paysage de réservation du matériel, avec le tiers lié, le titre et la référence du projet. Activation et génération par les modèles et documents natifs des projets.
 JpsunProjectStockCompatibility=Disponible sur Dolibarr 20 à 25 avec le moteur PDF natif TCPDF. Le moteur historique FPDF n’est pas pris en charge. Les essais interactifs restent distincts de la matrice CI.
 JpsunProjectStockHeading=STOCK CHANTIER
 JpsunProjectStockWarning=MATÉRIEL RÉSERVÉ — NE PAS SE SERVIR
 JpsunProjectStockReference=N° AFFAIRE
 JpsunProjectStockReadError=Impossible de lire le client associé au projet.
+
+# Document model names and descriptions
+JpsunDocumentModelSelectorTranslations=Traduction des sélecteurs de modèles
+JpsunDocumentModelSelectorRequirement=Traduction dynamique des noms des modèles JPSUN à partir de Dolibarr 23 (hook natif getListOfModels). Sous Dolibarr 20–22, le sélecteur conserve le libellé enregistré à l’activation ; les noms et descriptions des réglages sont traduits.
+JpsunSepaMandateModelLabel=Mandat SEPA JPSUN
+JpsunSepaMandateModelDescription=Mandat de prélèvement SEPA JPSUN.
+JpsunOrderModelName=Commande client JPSUN
+PDFJpsunDescription=Bon de commande client personnalisé par JPSUN.
+JpsunInvoiceModelTitle=Facture JPSUN
+JpsunInvoiceModelDescription=Modèle natif Sponge séparant les acomptes déduits des remises commerciales dans le récapitulatif hors taxes.
+JpsunContractPrivateName=Contrat de maintenance particulier V3
+JpsunContratParticulierV3Description=Contrat de maintenance JPSUN pour les particuliers, version 3.
+JpsunContractStandardName=Contrat standard JPSUN
+StandardContractsTemplatebyJpsun=Modèle de contrat standard JPSUN.
+JpsunContractProName=Contrat de maintenance JPSUN PRO
+JpsunContractProModelDescription=Contrat de maintenance JPSUN pour les professionnels.
+JpsunSoleilAquitainContractName=Contrat SOLEIL AQUITAIN
+JpsunSoleilAquitainContractModelDescription=Contrat de maintenance photovoltaïque SOLEIL AQUITAIN.
+JpsunProductSheetName=Fiche produit JPSUN
+DocModelJpsunProductSheetDescription=Fiche produit PDF JPSUN sur une page.
+JpsunDdrEnedisModelName=Demande de raccordement ENEDIS
+jpsun_DocumentModelDDREnedis=Synthèse du projet et des éléments liés pour la demande de raccordement ENEDIS.
+JpsunProjectLabelsPdfModel=Étiquettes projet JPSUN
+JpsunProjectLabelsModelDescription=Planche A4 paysage d’étiquettes de classement du projet.
+JpsunProjectStockModel=Affiche stock chantier
+JpsunProjectStockDescription=Affiche A4 paysage de réservation du matériel, avec le tiers lié, le titre et la référence du projet.
+JPSUNProjectPdfSynthesis=Synthèse de projet JPSUN
+JpsunProjectSynthesisDescription=Synthèse du projet avec notes, contacts, objets liés et annexes selon les réglages JPSUN.
+JpsunWithPicturesName=JPSUN avec images
+DocModelJpsunWithPicturesDescription=Proposition commerciale JPSUN avec les images des produits.
+JpsunWithoutPicturesName=JPSUN sans image
+DocModelJpsunWithoutPicturesDescription=Proposition commerciale JPSUN sans les images des produits.
+JpsunCoverModel=JPSUN sans image avec couverture
+JpsunCoverModelDescription=Proposition commerciale JPSUN sans images de produits, précédée d’une couverture avec illustration et informations du projet.
+JpsunStockModelName=État du stock JPSUN
+JpsunStockModelDescription=État des produits en stock et de leur valorisation selon les données disponibles.
+JpsunSupplierOrderName=Commande fournisseur JPSUN
+SuppliersCommandModelJPSUN=Bon de commande fournisseur personnalisé par JPSUN.
+DocModelJPSUNName=Demande de prix fournisseur JPSUN
+DocModelJPSUNDescription=Demande de prix fournisseur JPSUN sans les prix enregistrés.
+DocModelJPSUNwithpricesName=Demande de prix fournisseur JPSUN avec prix
+DocModelJPSUNwithpricesDescription=Demande de prix fournisseur JPSUN affichant les prix du fournisseur déjà enregistrés.
