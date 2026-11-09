@@ -1,7 +1,8 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.25.1 (à publier)
+## 1.25.1 (09/11/2026)
 
+- Couverture des devis : déplacement de « du » sur la ligne de date et de numéro, sous le titre « OFFRE DE PRIX » ; traduction anglaise alignée.
 - Couverture des devis : affichage du libellé traduit du type de consommation sélectionné dans PowerPlantPV 1.6.1, avec conservation de la lecture des anciens textes.
 - Noms et descriptions des 19 modèles de document complétés et corrigés dans les cinq langues livrées (français, anglais, allemand, espagnol et italien), avec chargement explicite du catalogue lors de leur découverte.
 - Correction de la description du devis sans image, des libellés manquants ENEDIS/synthèse et de la description de commande fournisseur qui reprenait Muscadet.
