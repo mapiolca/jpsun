@@ -87,8 +87,8 @@ class pdf_jpsun extends ModelePDFSuppliersOrders
 		$langs->loadLangs(array("main", "bills", "jpsun@jpsun"));
 
 		$this->db = $db;
-		$this->name = "jpsun";
-		$this->description = $langs->trans('SuppliersCommandModelMuscadet');
+		$this->name = $langs->trans('JpsunSupplierOrderName');
+		$this->description = $langs->trans('SuppliersCommandModelJPSUN');
 		$this->update_main_doc_field = 1; // Save the name of generated file as the main doc when generating a doc with this template
 
 		// Page size for A4 format

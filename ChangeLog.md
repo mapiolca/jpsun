@@ -1,5 +1,12 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.25.1 (à publier)
+
+- Couverture des devis : affichage du libellé traduit du type de consommation sélectionné dans PowerPlantPV 1.6.1, avec conservation de la lecture des anciens textes.
+- Noms et descriptions des 19 modèles de document complétés et corrigés dans les cinq langues livrées (français, anglais, allemand, espagnol et italien), avec chargement explicite du catalogue lors de leur découverte.
+- Correction de la description du devis sans image, des libellés manquants ENEDIS/synthèse et de la description de commande fournisseur qui reprenait Muscadet.
+- Traduction à l’affichage des modèles JPSUN déjà activés dans les sélecteurs natifs sous Dolibarr 23 et plus ; identifiants, activations, modèles par défaut et données enregistrées conservés. Sous Dolibarr 20–22, le sélecteur conserve son libellé d’activation natif ; l’indisponibilité de la traduction dynamique est indiquée dans Compatibilité.
+
 ## 1.25.0 (06/11/2026)
 - Contrôle explicite du jeton natif sur la génération et le spécimen de l’affiche projet, y compris lorsque le core ne protège pas `builddoc` en GET à son niveau CSRF courant.
 - Correction de la découverte native des modèles de projet lorsque l’ancienne classe de déplacements est absente du core.

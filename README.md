@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.25.0
+- Version : 1.25.1
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -23,7 +23,7 @@
 ## Fonctionnalités
 
 - Ajout de fonctionnalités diverses pour JPSUN.
-- Modèle projet « Affiche stock chantier » (`jpsun_projectstock`) : affiche A4 paysage jaune/noir basée sur la référence Word, avec le nom du tiers lié, le titre du projet et sa référence native. Activation dans les réglages natifs **Projets > Modèles de document**, puis génération dans les fichiers joints du projet. Aucun extrafield ajouté ; les données absentes laissent leur zone vide. Les pictogrammes sont redessinés en vectoriel pour éviter les glyphes emoji manquants sur le serveur. Version conservée : 1.25.0.
+- Modèle projet « Affiche stock chantier » (`jpsun_projectstock`) : affiche A4 paysage jaune/noir basée sur la référence Word, avec le nom du tiers lié, le titre du projet et sa référence native. Activation dans les réglages natifs **Projets > Modèles de document**, puis génération dans les fichiers joints du projet. Aucun extrafield ajouté ; les données absentes laissent leur zone vide. Les pictogrammes sont redessinés en vectoriel pour éviter les glyphes emoji manquants sur le serveur.
 - Actions de masse JPSUN sur les tâches disponibles jusqu’à Dolibarr 24 inclus ; désactivées à partir de Dolibarr 25.
 - Rapport comptable des projets non soldés, avec agrégation des commandes, factures, achats, frais, temps et expéditions valorisées selon le réglage natif du module Marges.
 - Ajout du modèle PDF fiche produit JPSUN pour les produits du catalogue.
@@ -97,6 +97,14 @@ Vérifications reproductibles : `python test/legacysetup.py <racine htdocs Dolib
 - Glisser l'archive ZIP 'module_easycrm-X.Y.Z' et cliquer sur "ENVOYER FICHIER"
 - Glisser l'archive ZIP 'module_saturne-X.Y.Z' et cliquer sur "ENVOYER FICHIER"
 - Activer le module dans la liste des Modules/Applications installés
+
+### Modèles de document — 1.25.1
+
+Les noms et descriptions des 19 modèles sont traduits en français, anglais, allemand, espagnol et italien dans les réglages natifs. Les catalogues sont chargés dès la découverte des modèles. Les identifiants techniques, activations et modèles par défaut restent conservés.
+
+Sous Dolibarr 23 et plus, les sélecteurs natifs affichent les noms JPSUN dans la langue courante, même pour les modèles déjà activés, via le hook natif `getListOfModels` dans le contexte `formfile` déjà déclaré. Aucune ligne `document_model` n’est réécrite. Sous Dolibarr 20–22, ce hook n’existe pas : le sélecteur conserve le libellé enregistré à l’activation ; les réglages des modèles restent traduits. Cette limite apparaît dans l’onglet **Compatibilité**.
+
+Contrôle reproductible : `python test/document_model_translations.py /chemin/htdocs 25.0.0-alpha` (remplacer par la version des sources). Les constructeurs et le sélecteur utilisent les classes natives avec un transport SQL simulé ; aucune génération ni écriture métier.
 
 ### Couverture des offres — 1.25.0
 

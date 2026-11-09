@@ -180,6 +180,36 @@ expect($pdf->getNumPages() === 1, 'cover stays on exactly one A4 page');
 $pdf->Output(DOL_DATA_ROOT.'/cover.pdf', 'F');
 print 'PDF '.DOL_DATA_ROOT."/cover.pdf\n";
 
+// Optional integration uses the real PowerPlant label resolver, without a business database.
+if (isset($argv[4])) {
+	require_once $argv[4].'/class/powerplant.class.php';
+	$conf->modules['powerplantpv'] = 1;
+	$conf->file->dol_document_root[] = dirname(realpath($argv[4]));
+	$spy = new class {
+		public $texts = array();
+		public function __call($name, $arguments) {
+			if (strtolower($name) === 'multicell') { $this->texts[] = $arguments[2]; }
+		}
+	};
+	foreach (array('fr_FR', 'en_US') as $language) {
+		$output = new Translate('', $conf);
+		$output->setDefaultLang($language);
+		$output->load('main');
+		foreach (array('self_consumption', 'self_consumption_surplus', 'total_sale', 'collective_self_consumption', '', 'Ancien texte') as $value) {
+			$proposal->array_options['options_powerplantpv_consumption_type'] = $value;
+			$spy->texts = array();
+			$model->render($spy, $proposal, $output);
+			$expected = array(
+				'fr_FR' => array('self_consumption' => 'Autoconsommation', 'total_sale' => 'Valorisation totale de la production'),
+				'en_US' => array('self_consumption' => 'Self-consumption', 'total_sale' => 'Total sale of production'),
+			);
+			$label = $expected[$language][$value] ?? PowerPlant::getConnectionTypeLabel($value, $output);
+			expect(in_array($output->convToOutputCharset($label), $spy->texts, true), 'cover prints consumption label in '.$language.' for '.$value);
+		}
+	}
+	unset($conf->modules['powerplantpv']);
+}
+
 // Full inherited rendering on native specimen objects (no business database).
 require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';

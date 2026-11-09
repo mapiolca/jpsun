@@ -1,6 +1,6 @@
 # Dolibarr language file - en_US - tos
 # Admin form
-CHARSET=iso-8859-1
+CHARSET=UTF-8
 Module999999Desc=Module bringing together all changes developed for JPSUN.
 Module999999Name=JPSUN
 jpsun=JPSUN
@@ -22,13 +22,8 @@ MobileShort=Mob.
 
 ref_project=Project reference
 
-DocModelJPSUNName=JPSUN
-DocModelJPSUNDescription=Supplier proposal template by JPSUN.
 
-DocModelJPSUNwithpricesName=JPSUN with prices
-DocModelJPSUNwithpricesDescription=Supplier proposal template by JPSUN, showing supplier prices already in the database.
 
-StandardContractsTemplatebyJpsun=JPSUN standard contract template.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #Users
@@ -145,10 +140,6 @@ jpsunEncoursFourn=Supplier balance
 JpsunCustomerProposal=Customer proposal
 JPSUN_GENERATE_PROPALE_WITHOUT_VAT_COLUMN=Hide VAT in JPSUN PDF templates (customer proposals only).
 PROPOSAL_AUTO_ADD_AUTHOR_AS_CONTACT=Customer proposals automatically add the validating user as a contact.
-JpsunWithPicturesName=JPSUN with images
-DocModelJpsunWithPicturesDescription=A complete proposal template customized by JPSUN.
-JpsunWithoutPicturesName=JPSUN without images
-DocModelJpsunWithPicturesDescription=A complete proposal template customized by JPSUN.
 JpsunPropalSignedProjectAlreadyLinked=A project is already linked to proposal %s (id %s).
 JpsunPropalSignedProjectNoRef=Unable to generate project reference for proposal %s (id %s).
 JpsunPropalSignedProjectModelNotFound=Project numbering model not found (%s) for proposal %s (id %s).
@@ -185,7 +176,6 @@ SUPPLIER_PROPOSAL_ALLOW_EXTERNAL_DOWNLOAD=Allow external download (without login
 // #Supplier orders
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-SuppliersCommandModelJPSUN=Supplier order template by JPSUN
 SUPPLIER_ORDER_AUTOADD_USER_CONTACT=Supplier orders automatically add the validating user as a contact.
 MAIN_CAN_EDIT_SUPPLIER_ON_SUPPLIER_ORDER=Allow user to change the supplier when the order is in draft status.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -234,8 +224,6 @@ JpsunProduitsCompatibles_help=Select compatible product(s) with this product (no
 jpsun_ProductDet =Details
 jpsun_ProductDet_help =Miscellaneous characteristics which will not appear on quotes/orders/invoices.
 
-JpsunProductSheetName=JPSUN product sheet
-DocModelJpsunProductSheetDescription=One-page PDF product sheet template by JPSUN.
 JpsunProductSheetTitle=Product sheet
 JpsunProductSheetFeatures=Features
 JpsunProductSheetNoDescription=No description provided.
@@ -298,14 +286,11 @@ JpsunContractPaymentDayHelp=Day of the billing month. When empty, the template u
 JpsunRecurrenceAnnual=Annual
 JpsunRecurrenceMonthly=Monthly
 JpsunPaymentDayOfBillingMonth=Day %s of the billing month
-JpsunContratParticulierV3Description=JPSUN private customer maintenance contract V3 template.
-JpsunContractProModelDescription=JPSUN PRO maintenance contract template.
 JpsunPowerPlantPVRequiredForContractPro=The PowerPlantPV module must be enabled to generate the JPSUN PRO model.
 JpsunPowerPlantPVPermissionDenied=You do not have permission to read the PV power plants linked to this contract.
 JpsunContractProNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the JPSUN PRO model.
 JpsunContractProTemplateMissing=The JPSUN PRO PDF background is missing: %s
 JpsunContractProPowerPlantAnnex=Power plant %s / %s
-JpsunSoleilAquitainContractModelDescription=SOLEIL AQUITAIN photovoltaic maintenance contract template.
 JpsunPowerPlantPVRequiredForSoleilAquitainContract=The PowerPlantPV module must be enabled to generate the SOLEIL AQUITAIN contract model.
 JpsunSoleilAquitainNoLinkedPowerPlant=No PV power plant is linked to this contract. Link at least one power plant before generating the SOLEIL AQUITAIN contract model.
 JpsunSoleilAquitainMissingRequiredData=The SOLEIL AQUITAIN contract model cannot be generated. Required data is missing or invalid: %s
@@ -316,8 +301,6 @@ JpsunContractAmountOffered=Free of charge
 JpsunContractLineEngagementStart=Commitment start
 JpsunContractLineEngagementEnd=Commitment end
 JpsunContractTotalEngagementDefaultUnit=months
-JpsunSepaMandateModelLabel=JPSUN SEPA mandate
-JpsunSepaMandateModelDescription=JPSUN SEPA direct debit mandate template.
 JpsunSepaMandateTitle=SEPA direct debit mandate
 JpsunSepaMandateIdentifiers=Mandate identification
 JpsunSepaMandateDate=Mandate date
@@ -404,7 +387,6 @@ JpsunWidgetNoData=Aucune donnée
 JpsunWidgetCamembertCategorieCaTitle=Revenue by category
 BoxCamembertCategorieCa=Revenue by category chart
 
-JpsunProjectLabelsPdfModel=JPSUN project labels
 JpsunProjectLabels=Project labels
 JpsunProjectLabelsFileName=Etiquettes de classeur
 JpsunProjectLabelFormat=Label format
@@ -461,8 +443,6 @@ JpsunAboutDependencies=Dependencies
 JpsunAboutFeatures=Main features
 JpsunAboutMainFeatures=JPSUN PDF templates, business settings and unsettled project report.
 JpsunAboutUsefulLinks=Useful links
-JpsunInvoiceModelTitle=JPSUN invoice template
-JpsunInvoiceModelDescription=Native Sponge template with deducted deposits separated from commercial discounts in the tax-exclusive summary.
 JpsunInvoiceDepositsDeducted=Deposits deducted
 JpsunInvoiceModelRequirement=Available from Dolibarr 24 with JPSUN and Invoices enabled (PHP 8.0 minimum). Unavailable on Dolibarr 20 to 23: Sponge does not provide the native discount display controls on those versions.
 JpsunInvoiceModelSetup=Enable jpsuninvoice in the native invoice settings
@@ -498,7 +478,6 @@ JpsunMigration1241Pending=JPSUN 1.24.1 migration: %s brand(s) still need migrati
 
 DepositControlAmountFilterHelp=Amount filter: 0, =100, >=100, <=200. Native comparisons can be combined.
 
-JpsunCoverModel=JPSUN without pictures with cover
 JpsunCoverOffer=PRICE OFFER
 JpsunCoverInstallation=PHOTOVOLTAIC INSTALLATION
 JpsunCoverPresentedTo=PRESENTED TO
@@ -525,10 +504,50 @@ JPSUN_COVER_TEXT=Cover: main text color
 JPSUN_COVER_BACKGROUND=Cover: illustration background color
 JpsunCoverCompatibility=Cover available on Dolibarr 20 to 25 with TCPDF. Subtitle and module count require PowerPlantPV 1.6.0; peak power and storage use existing extrafields without recalculation. Untested versions remain to be verified.
 JpsunCoverOfferDetails=dated %s · No. %s
-JpsunProjectStockModel=Site stock notice
-JpsunProjectStockDescription=Landscape A4 material reservation notice with the linked thirdparty, project title and reference. Enable and generate through native project document models.
 JpsunProjectStockCompatibility=Available on Dolibarr 20 to 25 with the native TCPDF engine. Legacy FPDF is not supported. Interactive acceptance is separate from the CI matrix.
 JpsunProjectStockHeading=SITE STOCK
 JpsunProjectStockWarning=RESERVED MATERIAL — DO NOT TAKE
 JpsunProjectStockReference=PROJECT NUMBER
 JpsunProjectStockReadError=Unable to read the customer linked to the project.
+
+# Document model names and descriptions
+JpsunDocumentModelSelectorTranslations=Document model selector translations
+JpsunDocumentModelSelectorRequirement=Dynamic JPSUN model names from Dolibarr 23 (native getListOfModels hook). On Dolibarr 20–22, selectors retain the label saved at activation; names and descriptions in settings are translated.
+JpsunSepaMandateModelLabel=JPSUN SEPA mandate
+JpsunSepaMandateModelDescription=JPSUN SEPA direct debit mandate.
+JpsunOrderModelName=JPSUN customer order
+PDFJpsunDescription=Customer order template customized by JPSUN.
+JpsunInvoiceModelTitle=JPSUN invoice
+JpsunInvoiceModelDescription=Native Sponge template separating deducted deposits from commercial discounts in the tax-exclusive summary.
+JpsunContractPrivateName=Private customer maintenance contract V3
+JpsunContratParticulierV3Description=JPSUN maintenance contract for private customers, version 3.
+JpsunContractStandardName=JPSUN standard contract
+StandardContractsTemplatebyJpsun=JPSUN standard contract template.
+JpsunContractProName=JPSUN PRO maintenance contract
+JpsunContractProModelDescription=JPSUN maintenance contract for business customers.
+JpsunSoleilAquitainContractName=SOLEIL AQUITAIN contract
+JpsunSoleilAquitainContractModelDescription=SOLEIL AQUITAIN photovoltaic maintenance contract.
+JpsunProductSheetName=JPSUN product sheet
+DocModelJpsunProductSheetDescription=One-page JPSUN PDF product sheet.
+JpsunDdrEnedisModelName=ENEDIS grid connection request
+jpsun_DocumentModelDDREnedis=Project and linked items summary for the ENEDIS grid connection request.
+JpsunProjectLabelsPdfModel=JPSUN project labels
+JpsunProjectLabelsModelDescription=Landscape A4 sheet of project filing labels.
+JpsunProjectStockModel=Site stock notice
+JpsunProjectStockDescription=Landscape A4 material reservation notice with the linked third party, project title and reference.
+JPSUNProjectPdfSynthesis=JPSUN project summary
+JpsunProjectSynthesisDescription=Project summary with notes, contacts, linked objects and appendices according to JPSUN settings.
+JpsunWithPicturesName=JPSUN with images
+DocModelJpsunWithPicturesDescription=JPSUN commercial proposal with product images.
+JpsunWithoutPicturesName=JPSUN without images
+DocModelJpsunWithoutPicturesDescription=JPSUN commercial proposal without product images.
+JpsunCoverModel=JPSUN without images with cover
+JpsunCoverModelDescription=JPSUN commercial proposal without product images, preceded by a cover with an illustration and project information.
+JpsunStockModelName=JPSUN stock report
+JpsunStockModelDescription=Report of stocked products and their valuation according to available data.
+JpsunSupplierOrderName=JPSUN supplier order
+SuppliersCommandModelJPSUN=Supplier order template customized by JPSUN.
+DocModelJPSUNName=JPSUN supplier price request
+DocModelJPSUNDescription=JPSUN supplier price request without stored prices.
+DocModelJPSUNwithpricesName=JPSUN supplier price request with prices
+DocModelJPSUNwithpricesDescription=JPSUN supplier price request showing supplier prices already stored.

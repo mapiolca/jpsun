@@ -115,8 +115,8 @@ class pdf_ddrenedis extends ModelePDFProjects
 		$langs->loadLangs(array("main", "projects", "companies", "jpsun@jpsun"));
 
 		$this->db = $db;
-		$this->name = "ddrenedis";
-		$this->description = $langs->trans("jpsun_DocumentModelDDREnedis");
+		$this->name = $langs->trans('JpsunDdrEnedisModelName');
+		$this->description = $langs->trans('jpsun_DocumentModelDDREnedis');
 		$this->update_main_doc_field = 1; // Save the name of generated file as the main doc when generating a doc with this template
 
 	// Page size for A4 format

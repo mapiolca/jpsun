@@ -104,7 +104,7 @@ class pdf_contratpartv3 extends ModelePDFContract
 		$langs->load("jpsun@jpsun");
 
 		$this->db = $db;
-		$this->name = "Contrat de maintenance particulier V3";
+		$this->name = $langs->trans('JpsunContractPrivateName');
 		$this->description = $langs->trans('JpsunContratParticulierV3Description');
 		$this->update_main_doc_field = 1;
 
