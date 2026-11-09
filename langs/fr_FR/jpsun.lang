@@ -484,7 +484,7 @@ JpsunMigration1241Pending=Migration JPSUN 1.24.1 : %s marque(s) restent à migre
 
 DepositControlAmountFilterHelp=Filtre de montant : 0, =100, >=100, <=200. Les comparaisons natives peuvent être combinées.
 
-JpsunCoverOffer=OFFRE DE PRIX du
+JpsunCoverOffer=OFFRE DE PRIX
 JpsunCoverInstallation=INSTALLATION PHOTOVOLTAÏQUE
 JpsunCoverPresentedTo=PRÉSENTÉE À
 JpsunCoverAttention=À l’attention de %s
@@ -509,7 +509,7 @@ JPSUN_COVER_ACCENT=Couverture : couleur des titres et accents
 JPSUN_COVER_TEXT=Couverture : couleur du texte principal
 JPSUN_COVER_BACKGROUND=Couverture : couleur du fond de l’illustration
 JpsunCoverCompatibility=Couverture disponible sous Dolibarr 20 à 25 avec TCPDF. Le sous-titre et le nombre de modules nécessitent PowerPlantPV 1.6.0 ; puissance et stockage proviennent des extrafields existants, sans recalcul. Les versions non testées restent à vérifier.
-JpsunCoverOfferDetails=%s · N° %s
+JpsunCoverOfferDetails=du %s · N° %s
 JpsunProjectStockCompatibility=Disponible sur Dolibarr 20 à 25 avec le moteur PDF natif TCPDF. Le moteur historique FPDF n’est pas pris en charge. Les essais interactifs restent distincts de la matrice CI.
 JpsunProjectStockHeading=STOCK CHANTIER
 JpsunProjectStockWarning=MATÉRIEL RÉSERVÉ — NE PAS SE SERVIR
