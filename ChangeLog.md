@@ -1,5 +1,12 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.26.0 (13/11/2026)
+
+- Ajout de l’avancement pondéré par les montants HT complets après remise dans l’historique natif des factures de situation : situations précédentes, courante et suivantes, lignes à avancement nul incluses et tiret lorsque la base nette est nulle.
+- Rétroportage temporaire de Dolibarr #43005 sous Dolibarr 20 à 25, avec calcul PHP natif et insertion JavaScript contrôlée. Fonctionne avec ou sans Banque ; une structure inattendue laisse le tableau intact et la présence de la méthode native désactive le rétroportage.
+- Droits de lecture, client, cycle et entité propriétaire contrôlés ; aucune écriture métier ni requête SQL supplémentaire. Aide française/anglaise et disponibilité dans Compatibilité.
+- Après mise à jour, actualiser les hooks persistés par le parcours natif pour ajouter `invoicecard`, en conservant les réglages. Sans JavaScript, l’historique natif reste disponible sans la nouvelle colonne. Aucune migration de données ni réactivation automatique.
+
 ## 1.25.1 (09/11/2026)
 
 - Couverture des devis : déplacement de « du » sur la ligne de date et de numéro, sous le titre « OFFRE DE PRIX » ; traduction anglaise alignée.

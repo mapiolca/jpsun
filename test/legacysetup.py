@@ -110,7 +110,7 @@ class LegacySetupTests(unittest.TestCase):
         result = json.loads(process.stdout)
         self.assertEqual(result['result'], 1)
         self.assertEqual(result['tabs'], [])
-        self.assertEqual(result['version'], '1.25.1')
+        self.assertEqual(result['version'], '1.26.0')
         return result
 
     def test_fresh_and_repeated_activation_do_not_create_retired_fields(self):
