@@ -5,6 +5,7 @@ require_once __DIR__.'/_setup_common.php';
 require_once __DIR__.'/../class/jpsuninvoicecompatibility.class.php';
 require_once __DIR__.'/../class/jpsuncustomerdepositcompatibility.class.php';
 require_once __DIR__.'/../class/jpsundocumentmodeltranslations.class.php';
+require_once __DIR__.'/../class/jpsunsituationprogress.class.php';
 
 /** @var Translate $langs */
 jpsunPrintAdminSetupHeader('compatibility');
@@ -23,6 +24,7 @@ $features = array(
 	array('JpsunProjectStockModel', !getDolGlobalString('MAIN_USE_FPDF'), 'JpsunProjectStockCompatibility'),
 	array('JpsunInvoiceModelTitle', JpsunInvoiceCompatibility::isAvailable(), 'JpsunInvoiceModelRequirement'),
 	array('CustomerDepositControl', JpsunCustomerDepositCompatibility::isAvailable(), 'JpsunDepositControlRequirement'),
+	array('JpsunSituationWeightedProgress', JpsunSituationProgress::isAvailable(), 'JpsunSituationWeightedProgressRequirement'),
 );
 foreach ($features as $feature) {
 	print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($feature[0]).'</td><td>';

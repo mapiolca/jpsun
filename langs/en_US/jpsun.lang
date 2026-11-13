@@ -551,3 +551,6 @@ DocModelJPSUNName=JPSUN supplier price request
 DocModelJPSUNDescription=JPSUN supplier price request without stored prices.
 DocModelJPSUNwithpricesName=JPSUN supplier price request with prices
 DocModelJPSUNwithpricesDescription=JPSUN supplier price request showing supplier prices already stored.
+JpsunSituationWeightedProgress=Weighted progress of situation invoices
+JpsunSituationWeightedProgressHelp=Progress weighted by full line amounts excluding tax, after line discounts. Cumulative in legacy mode; invoice progress in progressive mode. A dash means the full net amount excluding tax is zero or unavailable.
+JpsunSituationWeightedProgressRequirement=Temporary backport of Dolibarr PR #43005 for Dolibarr 20 to 25. Requires Invoices and JavaScript. Inactive when Facture::getSituationProgress exists. A different table structure keeps the native display intact. Read-only PHP calculation using the permissions and data loaded by the native card.

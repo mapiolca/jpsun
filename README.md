@@ -3,7 +3,7 @@
 ## Informations
 
 - Numéro du module : 999000
-- Dernière mise à jour : 03/11/2026
+- Dernière mise à jour : 13/11/2026
 - Éditeur : [JPSUN](https://jpsun.fr)
 - Thème : Eldy Menu
 - Licence : GPLv3
@@ -11,7 +11,7 @@
 - 
 ### Version
 
-- Version : 1.25.1
+- Version : 1.26.0
 - PHP : 8.0+
 - Compatibilité : Dolibarr 20+
 
@@ -30,6 +30,16 @@
 - Le modèle PDF de stock utilise le PMP de l'entité active lorsque le partage des produits et le PMP par entité sont activés ; les valorisations incomplètes sont signalées.
 - Intégration du modèle contrat JPSUN PRO avec le module Centrale PV.
 - Intégration du modèle contrat SOLEIL AQUITAIN avec centrales PV liées, annexes natives, mentions légales configurables et zone issue des catégories de contrat `lmdbzoning`.
+
+### Version 1.26.0 — avancement des factures de situation
+
+Rétroportage temporaire demandé de [Dolibarr/dolibarr#43005](https://github.com/Dolibarr/dolibarr/pull/43005) : ajout de la colonne **Avancement** dans le tableau natif des situations précédentes, courante et suivantes. Le calcul PHP utilise `calcul_price_total()` sur les montants HT complets après remise, y compris les lignes à avancement nul ; une base nette nulle donne un tiret. Le pourcentage suit le stockage natif : cumulé en mode historique, propre à la facture en mode progressif.
+
+Le hook `invoicecard` transmet les résultats au JavaScript, qui contrôle l'ensemble du tableau avant toute modification. Sans Banque, une colonne est ajoutée ; avec Banque, la colonne vide existante est utilisée. Les totaux restent inchangés. Une structure inconnue, une colonne déjà occupée ou une incohérence entre les factures et les lignes affichées laisse le tableau natif intact. Sans JavaScript, le tableau natif reste affiché sans la nouvelle colonne.
+
+Le rétroportage cible Dolibarr 20 à 25 et s'arrête dès que `Facture::getSituationProgress()` existe, indépendamment du numéro de version. Il n'effectue aucune écriture ni lecture SQL supplémentaire et conserve le contrôle natif de la fiche, le droit de lecture des factures, le client, le cycle et l'entité propriétaire. L'onglet Compatibilité indique sa disponibilité.
+
+Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module pour ajouter `invoicecard`, en conservant les réglages. Aucun déploiement ni changement de configuration n'est effectué automatiquement. La version 1.26.0 est proposée dans cette branche ; sa release reste à publier. [Scénarios et limites de validation](test/README-situation-progress.md).
 
 ### Rapport des projets non soldés
 

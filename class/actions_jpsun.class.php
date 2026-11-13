@@ -32,6 +32,7 @@ require_once dirname(__DIR__) . '/lib/jpsun_delivery.lib.php';
 require_once dirname(__DIR__) . '/lib/jpsun_pdf_signature.lib.php';
 require_once __DIR__.'/jpsuncustomerdepositcompatibility.class.php';
 require_once __DIR__.'/jpsundocumentmodeltranslations.class.php';
+require_once __DIR__.'/jpsunsituationprogress.class.php';
 class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 {
     /**
@@ -65,6 +66,63 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 	public $listofreferent;
 
 	public $forecastProfitedPrinted = false;
+
+
+	/**
+	 * Enhance only the situation history already authorized and loaded by the card.
+	 * @param array<string,mixed> $parameters Hook metadata
+	 * @param CommonObject $object Current invoice
+	 * @param string $action Current action
+	 * @param HookManager $hookmanager Native manager
+	 * @return int Neutral: never replace the native action buttons
+	 */
+	public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
+	{
+		global $user, $langs, $db;
+		if (!in_array('invoicecard', explode(':', $parameters['context'] ?? ''), true)
+			|| !($object instanceof Facture) || (int) $object->id <= 0
+			|| !JpsunSituationProgress::isAvailable() || !$user->hasRight('facture', 'lire')
+			|| !getDolGlobalInt('INVOICE_USE_SITUATION') || !$object->situation_cycle_ref) {
+			return 0;
+		}
+		// The native card has checked restrictedArea(), including commercial access.
+		// Do not extend its scope: only the same customer, owner and cycle are accepted.
+		$entities = explode(',', getEntity('invoice'));
+		if (!in_array((string) (int) $object->entity, $entities, true)
+			|| ($user->socid > 0 && (int) $user->socid !== (int) $object->socid)) {
+			return 0;
+		}
+		$invoices = array_merge($object->tab_previous_situation_invoice, array($object), $object->tab_next_situation_invoice);
+		$values = array();
+		$langs->loadLangs(array('main', 'bills', 'jpsun@jpsun'));
+		foreach ($invoices as $invoice) {
+			if ((int) $invoice->id <= 0
+				|| (int) $invoice->entity !== (int) $object->entity
+				|| (int) $invoice->socid !== (int) $object->socid
+				|| (int) $invoice->situation_cycle_ref !== (int) $object->situation_cycle_ref) {
+				return 0;
+			}
+			$progress = JpsunSituationProgress::calculate($invoice);
+			$values[(string) (int) $invoice->id] = $progress === null ? '–'
+				: html_entity_decode(price($progress, 0, $langs, 1, getDolGlobalInt('MAIN_MAX_DECIMALS_TOT'), 'MT'), ENT_QUOTES, 'UTF-8').' %';
+		}
+		$form = new Form($db);
+		$config = array(
+			'values' => (object) $values,
+			'path' => DOL_URL_ROOT.'/compta/facture/card.php',
+			'situation' => $langs->transnoentities('Situation'),
+			'amountHT' => $langs->transnoentities('AmountHT'),
+			'amountTTC' => $langs->transnoentities('AmountTTC'),
+			'header' => $form->textwithpicto($langs->trans('Progress'), $langs->trans('JpsunSituationWeightedProgressHelp')),
+		);
+		$json = json_encode($config, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+		if ($json === false) {
+			return 0;
+		}
+		$this->resprints = '<script nonce="'.getNonce().'" src="'.dol_buildpath('/jpsun/js/situation_progress.js', 1).'"></script>'
+			.'<script nonce="'.getNonce().'">if (typeof window.jpsunSituationProgress === "function") window.jpsunSituationProgress('.$json.');</script>';
+		return 0;
+	}
 
 
     /**

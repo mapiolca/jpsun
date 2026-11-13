@@ -93,3 +93,5 @@ jobs:
           php jpsun/test/project_stock.php dolibarr/htdocs "$RUNNER_TEMP/jpsun-stock" '${{ matrix.dolibarr }}'
       - name: Document model translations and native selectors
         run: python3 jpsun/test/document_model_translations.py dolibarr/htdocs '${{ matrix.dolibarr }}'
+      - name: Situation progress calculation and native table enhancement
+        run: python3 jpsun/test/situation_progress.py dolibarr/htdocs '${{ matrix.dolibarr }}'
