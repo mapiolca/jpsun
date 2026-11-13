@@ -68,4 +68,15 @@ Base : `f65713d07a38c97e235a58a7b5e738514fe936ba`. La lecture de `CommonObject::
 
 Contrôles locaux du complément : 56 contrôles PHP et 26 scénarios DOM sur chacune des six révisions ci-dessus sous PHP 8.4.22, plus les gardes de disponibilité. Couverture ajoutée : sous-total 400 / 3000, total 3000 / 3000, avoir -300, marché absent/nul, zéro facturé valide, changement de marché avec quantité et remise, conservation des valeurs natives et refus de remplacer un total déjà rempli. PHPStan niveau 5 conserve les 44 diagnostics historiques de la classe de hooks et n’en ajoute aucun ; classe de calcul sans erreur.
 
-La recette réelle et la CI du complément doivent être rattachées au nouveau SHA ; les résultats de la PR #78 ci-dessus décrivent l’état antérieur et ne valident pas ce complément.
+Recette réelle du complément sur `06a78d419704fdc8af241ce0db17ef1d4b645dbb`, déployé par cPanel Git Version Control dans le navigateur intégré : develop, TEST 1, compte Codex, Dolibarr 25.0.0-alpha / PHP 8.3.36, Multicompany et Banque actifs. Le core avait été actualisé en parallèle au commit `cec1c2babeb5e8c9c09e6b4e6039f7b6d505a930` : il fournit déjà les totaux. Le tableau reste alors intégralement natif, sans marqueur de mutation JPSUN, malgré le script chargé ; le contrôle des cellules occupées empêche toute substitution. Ce premier affichage confirme la coexistence avec le correctif natif, pas l’exécution du rétroportage.
+
+Le core a été temporairement sélectionné sur `fix/jpsun-78-recette-base` / `4fa75eae2421fcf9dd5a017ff316a4afab333794`, par la même interface native :
+
+- Facture 5 : sous-total S1 + S2 à 13,33 %, total du cycle à 100,00 % ; montants conservés (400 / 480 puis 3000 / 3600). Marqueur DOM `data-jpsun-progress="1"` observé, sept colonnes, une seule progression après rechargement.
+- Facture 110 : total après S1 + S2 + S3 à 100,00 % ; valeurs individuelles 13,33 / 0,00 / 86,67 conservées.
+- Facture 50 vide : tirets sur la facture et le total après chargement complet, montants zéro.
+- Impression native de la facture 5 : sous-total et global identiques. Aucun message d’erreur JavaScript observé. Onglet Compatibilité disponible avec explication française et version du module inchangée.
+
+La branche core initialement observée `fix/situation-weighted-progress` a ensuite été rétablie, en préservant son nouveau commit `cec1c2ba` ; aucun fichier core n’a été modifié par ce travail. Aucun objet, règlement, document, email ou réglage métier n’a été modifié pour les essais ; aucun rechargement de module n’a été nécessaire. Captures locales hors diff : `.work/recette-1260/global-backport.png` et `global-native.png`.
+
+CI fonctionnelle `06a78d4` : six jobs Dolibarr 20–25 / PHP 8.0–8.4 réussis (run `43434733895`) et Composer réussi (`43434733715`). Les résultats de la PR #78 restent ceux de l’état antérieur. La finalisation documentaire doit également passer sa CI avant fusion. Les limites de recette décrites plus haut restent applicables : autres droits et entités, Banque inactif et autres modes ne sont pas des essais réels de ce complément.
