@@ -34,6 +34,10 @@ Couverture : pondération HT, quantités, remises, avancement nul, valeurs néga
 
 PHPStan niveau 5, cible PHP 8.0, configuration locale `.work/cover-phpstan.neon`, bootstrap core et `--memory-limit=1G` : aucune erreur dans la nouvelle classe et aucune nouvelle erreur dans le hook. Le fichier historique `actions_jpsun.class.php` conserve 44 diagnostics préexistants avec cette configuration (dont découverte de la classe de rétrocompatibilité) ; comparaison avec le fichier de HEAD, sans ignore ni baseline ajouté. Le lint et `git diff --check` sont également exécutés. La CI existante reçoit le runner sur sa matrice PHP 8.0–8.4 / Dolibarr 20–25 ; elle n'a pas été exécutée sur GitHub pour cet état local.
 
+## Correction du premier échec CI
+
+La première CI de la PR #78 sur `53579f066f9df1346069f086a71f734370ad0fcd` échoue dans les six jobs Dolibarr sur l'assertion de version de `test/legacysetup.py`, restée à 1.25.1. Cinq scénarios d'activation s'arrêtent sur cette assertion ; les étapes suivantes sont ignorées. Le job Composer réussit. L'échec a été reproduit localement avec le même résultat avant correction. L'assertion attend désormais 1.26.0 ; les contrôles de conservation des données, réglages et définitions sont conservés. Cette correction touche uniquement le test, sans changement du code métier ni des contrôles CI.
+
 ## Limites et recette à effectuer
 
 Pas de déploiement, d'activation, d'écriture métier, d'essai MySQL/MariaDB ou Multicompany réel. Pas de recette visuelle dans le navigateur intégré ni preuve du commit servi. Pas de ZIP préparé, validé ou installé. Les domaines Agenda, Notifications, documents et migrations métier ne sont pas modifiés.
