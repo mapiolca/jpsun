@@ -76,6 +76,29 @@ foreach (array(1, 2) as $mode) {
 		check($case[0] === null ? $value === null : abs($value - $case[0]) < 0.000001, 'Weighted calculation');
 	}
 }
+
+// Amounts are invoice increments in both native storage modes (legacy totals subtract prior invoices).
+foreach (array(1, 2) as $mode) {
+	$conf->global->INVOICE_USE_SITUATION = $mode;
+	$first = new Facture($db); $first->type = Facture::TYPE_SITUATION;
+	$first->lines = $invoice->lines; $first->total_ht = 400;
+	$second = clone $first; $second->total_ht = 0;
+	$last = clone $first; $last->total_ht = 2600;
+	check(abs(JpsunSituationProgress::calculateGlobal(array($first, $second)) - 100 * 400 / 3000) < 0.000001, 'Subtotal against market');
+	check(JpsunSituationProgress::calculateGlobal(array($first, $second, $last)) === 100.0, 'Global against market');
+	$credit = clone $first; $credit->type = Facture::TYPE_CREDIT_NOTE; $credit->total_ht = -300; $credit->lines = array();
+	check(JpsunSituationProgress::calculateGlobal(array($first, $last, $credit)) === 90.0, 'Credit reduces total, keeps market');
+	check(JpsunSituationProgress::calculateGlobal(array($credit)) === null, 'No market');
+	$last->lines = array();
+	check(JpsunSituationProgress::calculateGlobal(array($first, $last)) === null, 'Empty current market cannot silently reuse an old base');
+	$line = new FactureLigne($db); $line->product_type = 0; $line->qty = 2; $line->subprice = 1000; $line->remise_percent = 50;
+	$last->lines = array($line); $last->total_ht = 600;
+	check(JpsunSituationProgress::calculateGlobal(array($first, $last)) === 100.0, 'Changed market, quantity and discount');
+	$last->total_ht = -400;
+	check(JpsunSituationProgress::calculateGlobal(array($first, $last)) === 0.0, 'Zero numerator is valid');
+	$line->subprice = 0;
+	check(JpsunSituationProgress::calculateGlobal(array($last)) === null, 'Zero market');
+}
 // Only the native access/loading layer is simulated; render the original table source below.
 class ProgressInvoiceFixture extends Facture
 {

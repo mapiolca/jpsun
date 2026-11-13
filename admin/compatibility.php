@@ -24,7 +24,7 @@ $features = array(
 	array('JpsunProjectStockModel', !getDolGlobalString('MAIN_USE_FPDF'), 'JpsunProjectStockCompatibility'),
 	array('JpsunInvoiceModelTitle', JpsunInvoiceCompatibility::isAvailable(), 'JpsunInvoiceModelRequirement'),
 	array('CustomerDepositControl', JpsunCustomerDepositCompatibility::isAvailable(), 'JpsunDepositControlRequirement'),
-	array('JpsunSituationWeightedProgress', JpsunSituationProgress::isAvailable(), 'JpsunSituationWeightedProgressRequirement'),
+	array('JpsunSituationWeightedProgress', JpsunSituationProgress::isGlobalAvailable(), 'JpsunSituationWeightedProgressRequirement'),
 );
 foreach ($features as $feature) {
 	print '<tr class="oddeven"><td class="titlefield">'.$langs->trans($feature[0]).'</td><td>';

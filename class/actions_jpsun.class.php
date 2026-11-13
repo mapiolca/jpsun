@@ -81,7 +81,7 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		global $user, $langs, $db;
 		if (!in_array('invoicecard', explode(':', $parameters['context'] ?? ''), true)
 			|| !($object instanceof Facture) || (int) $object->id <= 0
-			|| !JpsunSituationProgress::isAvailable() || !$user->hasRight('facture', 'lire')
+			|| !JpsunSituationProgress::isGlobalAvailable() || !$user->hasRight('facture', 'lire')
 			|| !getDolGlobalInt('INVOICE_USE_SITUATION') || !$object->situation_cycle_ref) {
 			return 0;
 		}
@@ -106,9 +106,21 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 			$values[(string) (int) $invoice->id] = $progress === null ? '–'
 				: html_entity_decode(price($progress, 0, $langs, 1, getDolGlobalInt('MAIN_MAX_DECIMALS_TOT'), 'MT'), ENT_QUOTES, 'UTF-8').' %';
 		}
+		$totals = array();
+		foreach (array(
+			'current' => array_merge($object->tab_previous_situation_invoice, array($object)),
+			'all' => $invoices,
+		) as $scope => $scopeInvoices) {
+			$progress = JpsunSituationProgress::calculateGlobal($scopeInvoices);
+			$totals[$scope] = $progress === null ? '–'
+				: html_entity_decode(price($progress, 0, $langs, 1, getDolGlobalInt('MAIN_MAX_DECIMALS_TOT'), 'MT'), ENT_QUOTES, 'UTF-8').' %';
+		}
 		$form = new Form($db);
 		$config = array(
 			'values' => (object) $values,
+			'totals' => $totals,
+			'nativeProgress' => method_exists('Facture', 'getSituationProgress'),
+			'progressTitle' => $langs->transnoentities('Progress'),
 			'path' => DOL_URL_ROOT.'/compta/facture/card.php',
 			'situation' => $langs->transnoentities('Situation'),
 			'amountHT' => $langs->transnoentities('AmountHT'),

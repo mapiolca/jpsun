@@ -1,14 +1,14 @@
 # Avancement pondéré des situations — JPSUN 1.26.0
 
-Référence : PR Dolibarr #43005 ouverte, lue au SHA `1f2010eef91651cfeba501074affad06fc72bb3f` le 2026-11-13. Rétroportage explicitement demandé, sans modification du core. Le changelog de JPSUN 1.26.0 est finalisé au 13 novembre 2026 pour la fusion de la PR #78 ; aucune release GitHub 1.26.0 n’est publiée par cette opération. La release stable 1.25.1 et son tag ont été vérifiés sur `03f8de703e0bb7ac320328bdb22a04b1b0383d42` avant la montée de version.
+Référence : PR Dolibarr #43005 ouverte, lue au SHA `1f2010eef91651cfeba501074affad06fc72bb3f` le 2026-11-13. Rétroportage explicitement demandé, sans modification du core. La PR #78 a été fusionnée au commit `f65713d07a38c97e235a58a7b5e738514fe936ba`. La release stable [1.26.0](https://github.com/mapiolca/jpsun/releases/tag/1.26.0) a ensuite été publiée sur ce commit avant la PR complémentaire, sans déplacer le tag pour y inclure le complément. La release stable 1.25.1 et son tag ont été vérifiés sur `03f8de703e0bb7ac320328bdb22a04b1b0383d42` avant la montée de version.
 
 ## Contrat
 
 - Calcul PHP identique à la PR, avec `calcul_price_total()` et formatage `price()` suivant `MAIN_MAX_DECIMALS_TOT`. Aucune précision financière codée en dur.
 - Le hook natif `addMoreActionsButtons`, contexte `invoicecard`, s'exécute après le contrôle natif `restrictedArea()`. Droit direct `$user->hasRight('facture', 'lire')`, entité accessible via `getEntity('invoice')`, client externe contrôlé. Toutes les factures doivent avoir le même client, propriétaire et cycle que la fiche autorisée. Réutilisation des objets et lignes déjà chargés ; aucune requête supplémentaire ni effet métier.
 - JavaScript limité à `table.situationstable`. Validation complète avant mutation : un seul tableau, en-têtes attendus, six ou sept colonnes, cellules vides attendues, identifiants de facture uniques issus des liens natifs, correspondance complète avec le payload et totaux à colspan natif. Les pourcentages sont insérés comme texte ; seule l'aide provient du HTML natif `Form::textwithpicto()`.
-- Réinitialisation idempotente ; aucune substitution du tableau, action Ajax, gestionnaire de clic ou CSS ajouté. Les totaux n'obtiennent aucun pourcentage agrégé artificiel.
-- Indisponible hors Dolibarr 20–25, module Factures/JPSUN désactivé ou méthode native `Facture::getSituationProgress()` présente. Cette dernière détection évite de doubler le correctif après sa livraison dans le core. Une structure différente s'abstient même sans cette méthode.
+- Réinitialisation idempotente ; aucune substitution du tableau, action Ajax, gestionnaire de clic ou CSS ajouté. Les totaux rapportent les montants HT natifs à la base HT complète après remise de la dernière situation incluse : le sous-total s’arrête à la facture courante, le total final inclut les suivantes. Les avoirs réduisent le montant facturé sans fournir une nouvelle base du marché. Une base nulle ou indisponible affiche un tiret ; aucun ancien marché n’est réutilisé silencieusement.
+- Indisponible hors Dolibarr 20–25 ou module Factures/JPSUN désactivé. Quand `Facture::getSituationProgress()` existe, le module conserve l’en-tête, l’aide et les valeurs individuelles natifs et complète uniquement les totaux vides. Une colonne inconnue ou des totaux déjà remplis provoquent une abstention avant toute mutation.
 - Actualiser les hooks persistés par l'administration native après déploiement. Ne pas réactiver automatiquement le module ni purger ses constantes.
 
 ## Vérifications exécutées le 2026-11-13
@@ -61,3 +61,11 @@ Le core a ensuite été restauré exactement sur `fix/situation-weighted-progres
 ## Limites restantes
 
 La recette réelle ne couvre pas les droits alternatifs, les utilisateurs externes, les partages entre deux entités, Banque désactivé, JavaScript désactivé ou le changement du mode global des situations ; les contrôles correspondants de CI restent des simulations ciblées. Aucun essai d'installation ZIP ni validation Dolistore. Les domaines Agenda, Notifications, documents et migrations métier ne sont pas modifiés. Les tests d'autorisation n'équivalent pas à une recette exhaustive de tout le module.
+
+## Complément global conservant 1.26.0
+
+Base : `f65713d07a38c97e235a58a7b5e738514fe936ba`. La lecture de `CommonObject::update_price()` confirme qu’en mode historique les totaux de situation précédents sont déduits du montant de la facture. La somme des `total_ht` est donc le même numérateur que le tableau natif dans les deux modes ; additionner les pourcentages cumulés serait incorrect. Le dénominateur vient des lignes commerciales de la dernière situation incluse, valorisées à 100 avec `calcul_price_total()`, quantités et remises incluses. Aucun arrondi intermédiaire ajouté, aucun plafonnement artificiel à 100, aucune requête ni écriture métier.
+
+Contrôles locaux du complément : 56 contrôles PHP et 26 scénarios DOM sur chacune des six révisions ci-dessus sous PHP 8.4.22, plus les gardes de disponibilité. Couverture ajoutée : sous-total 400 / 3000, total 3000 / 3000, avoir -300, marché absent/nul, zéro facturé valide, changement de marché avec quantité et remise, conservation des valeurs natives et refus de remplacer un total déjà rempli. PHPStan niveau 5 conserve les 44 diagnostics historiques de la classe de hooks et n’en ajoute aucun ; classe de calcul sans erreur.
+
+La recette réelle et la CI du complément doivent être rattachées au nouveau SHA ; les résultats de la PR #78 ci-dessus décrivent l’état antérieur et ne valident pas ce complément.

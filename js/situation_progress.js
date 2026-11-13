@@ -17,7 +17,8 @@
 				|| text(header.cells[2]) !== config.situation
 				|| text(header.cells[width - 3]) !== config.amountHT
 				|| text(header.cells[width - 2]) !== config.amountTTC
-				|| (width === 7 && text(header.cells[3]) !== "")) return;
+				|| (config.nativeProgress ? width !== 7 || text(header.cells[3]) !== config.progressTitle
+					: width === 7 && text(header.cells[3]) !== "")) return;
 
 			// Validate every row before changing any of them. Unknown structures stay native.
 			const plan = [];
@@ -28,6 +29,7 @@
 					|| cells.reduce((sum, cell) => sum + cell.colSpan, 0) !== width) return;
 				let anchor;
 				let value = "";
+				let preserve = false;
 				if (cells.every(cell => cell.colSpan === 1)) {
 					const links = cells[0].querySelectorAll("a[href]");
 					if (links.length !== 1) return;
@@ -37,21 +39,27 @@
 						|| !Object.prototype.hasOwnProperty.call(config.values, id) || seen.has(id)) return;
 					seen.add(id);
 					value = config.values[id];
+					preserve = config.nativeProgress;
 					anchor = cells[3];
 				} else if (cells[0].colSpan === 2 && cells.slice(1).every(cell => cell.colSpan === 1)) {
 					anchor = cells[2];
+					value = config.totals.current;
 				} else if (cells[0].colSpan === 3 && cells.slice(1).every(cell => cell.colSpan === 1)) {
 					anchor = cells[1];
+					value = config.totals.all;
 				} else return;
-				if (width === 7 && text(anchor) !== "") return;
-				plan.push({row, anchor, value});
+				if (width === 7 && !preserve && text(anchor) !== "") return;
+				plan.push({row, anchor, value, preserve});
 			}
 			if (seen.size !== Object.keys(config.values).length) return;
-			const title = width === 7 ? header.cells[3] : header.insertCell(3);
-			title.className = "right";
-			// Trusted HTML from the native Form::textwithpicto helper, never invoice data.
-			title.innerHTML = config.header;
+			if (!config.nativeProgress) {
+				const title = width === 7 ? header.cells[3] : header.insertCell(3);
+				title.className = "right";
+				// Trusted HTML from the native Form::textwithpicto helper, never invoice data.
+				title.innerHTML = config.header;
+			}
 			for (const item of plan) {
+				if (item.preserve) continue;
 				const cell = width === 7 ? item.anchor : item.row.insertBefore(document.createElement("td"), item.anchor);
 				cell.className = "right";
 				cell.textContent = item.value;

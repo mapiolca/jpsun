@@ -32,10 +32,12 @@ function run(rows, config, expected, twice = false, loading = false) {
 	if (expected) {
 		assert.equal(table.dataset.jpsunProgress, '1');
 		for (const row of table.rows) assert.equal(row.cells.reduce((sum, td) => sum + td.colSpan, 0), 7);
-		assert.equal(table.rows[0].cells[3].innerHTML, config.header);
-		assert.equal(table.rows[1].cells[3].textContent, config.values[1]);
-		assert.equal(table.rows[2].cells[3].textContent, config.values[2]);
-		assert.equal(table.rows[4].cells[3].textContent, config.values[3]);
+		if (!config.nativeProgress) assert.equal(table.rows[0].cells[3].innerHTML, config.header);
+		assert.equal(table.rows[3].cells[2].textContent, config.totals.current);
+		assert.equal(table.rows[5].cells[1].textContent, config.totals.all);
+		assert.equal(table.rows[1].cells[3].textContent, config.nativeProgress ? 'Native 1' : config.values[1]);
+		assert.equal(table.rows[2].cells[3].textContent, config.nativeProgress ? 'Native 2' : config.values[2]);
+		assert.equal(table.rows[4].cells[3].textContent, config.nativeProgress ? 'Native 3' : config.values[3]);
 		// Existing totals, references, status and amount cells remain the same objects/content.
 		for (let i = 0; i < rows.length; i++) {
 			const old = rows[i].cells;
@@ -60,7 +62,12 @@ for (const rows of fixture.tables) {
 	const missing = structuredClone(config); delete missing.values[3]; run(rows, missing, false);
 	const extra = structuredClone(config); extra.values[4] = '20 %'; run(rows, extra, false);
 	if (rows[0].cells.length === 7) {
-		altered = structuredClone(rows); altered[0].cells[3].textContent = 'Progress'; run(altered, config, false);
+		altered = structuredClone(rows); altered[0].cells[3].textContent = 'Unknown'; run(altered, config, false);
+		const nativeConfig = {...config, nativeProgress: true};
+		altered[0].cells[3].textContent = config.progressTitle;
+		for (const [index, id] of [[1,1],[2,2],[4,3]]) altered[index].cells[3].textContent = 'Native ' + id;
+		run(altered, nativeConfig, true, true);
+		altered[3].cells[2].textContent = 'Native total'; run(altered, nativeConfig, false);
 		altered = structuredClone(rows); altered[4].cells[3].textContent = 'Already used'; run(altered, config, false);
 	}
 }
