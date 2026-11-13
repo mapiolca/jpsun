@@ -23,7 +23,7 @@ python test/situation_progress.py <racine htdocs> <version>
 
 | Dolibarr | Révision des sources | Résultat local |
 |---|---|---|
-| 20.0.0 | `697bf01970740a3339cd99cf055b4428fc5e051c` | 38 contrôles PHP et 24 scénarios DOM réussis |
+| 20.0.0 | `697bf01970740a3339cd99cf055b4428fc5e051c` | 40 contrôles PHP et 24 scénarios DOM réussis |
 | 21.0.0 | `fd970b582a4d8c5779a2958a4e9f4fce225cf085` | Idem |
 | 22.0.0 | `49b9a6d19f3deb6d410c0e9b3310e95be4ea7710` | Idem |
 | 23.0.0 | `57a1f05d490a7a80944a8232e9c613e6556d2704` | Idem |
@@ -37,6 +37,10 @@ PHPStan niveau 5, cible PHP 8.0, configuration locale `.work/cover-phpstan.neon`
 ## Correction du premier échec CI
 
 La première CI de la PR #78 sur `53579f066f9df1346069f086a71f734370ad0fcd` échoue dans les six jobs Dolibarr sur l'assertion de version de `test/legacysetup.py`, restée à 1.25.1. Cinq scénarios d'activation s'arrêtent sur cette assertion ; les étapes suivantes sont ignorées. Le job Composer réussit. L'échec a été reproduit localement avec le même résultat avant correction. L'assertion attend désormais 1.26.0 ; les contrôles de conservation des données, réglages et définitions sont conservés. Cette correction touche uniquement le test, sans changement du code métier ni des contrôles CI.
+
+## Correction révélée par la recette réelle
+
+Sur le core antérieur à la PR, `addMoreActionsButtons` ne restitue pas `HookManager::resPrint` dans la fiche facture. Le hook émet désormais directement ses balises script, conformément à ce point d’appel natif, en conservant le retour neutre. Un nouveau scénario avec le véritable `HookManager` reproduit l’absence de sortie avant correction puis vérifie la sortie et la remise à zéro après correction sur les sources v20 à v25. Les tests finaux comportent 40 contrôles PHP par version.
 
 ## Limites et recette à effectuer
 

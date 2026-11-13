@@ -119,7 +119,8 @@ class ActionsJpsun extends jpsun\RetroCompatCommonHookActions
 		if ($json === false) {
 			return 0;
 		}
-		$this->resprints = '<script nonce="'.getNonce().'" src="'.dol_buildpath('/jpsun/js/situation_progress.js', 1).'"></script>'
+		// Invoice cards do not print resPrint for addMoreActionsButtons.
+		print '<script nonce="'.getNonce().'" src="'.dol_buildpath('/jpsun/js/situation_progress.js', 1).'"></script>'
 			.'<script nonce="'.getNonce().'">if (typeof window.jpsunSituationProgress === "function") window.jpsunSituationProgress('.$json.');</script>';
 		return 0;
 	}
