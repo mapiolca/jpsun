@@ -39,7 +39,7 @@ Le hook `invoicecard` transmet les résultats au JavaScript, qui contrôle l'ens
 
 Le rétroportage cible Dolibarr 20 à 25 et s'arrête dès que `Facture::getSituationProgress()` existe, indépendamment du numéro de version. Il n'effectue aucune écriture ni lecture SQL supplémentaire et conserve le contrôle natif de la fiche, le droit de lecture des factures, le client, le cycle et l'entité propriétaire. L'onglet Compatibilité indique sa disponibilité.
 
-Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module pour ajouter `invoicecard`, en conservant les réglages. Aucun déploiement ni changement de configuration n'est effectué automatiquement. La version 1.26.0 est proposée dans cette branche ; sa release reste à publier. [Scénarios et limites de validation](test/README-situation-progress.md).
+Après déploiement, actualiser les hooks persistés par le parcours natif de mise à jour du module pour ajouter `invoicecard`, en conservant les réglages. Aucun déploiement ni changement de configuration n'est effectué automatiquement. [Scénarios et limites de validation](test/README-situation-progress.md).
 
 ### Rapport des projets non soldés
 

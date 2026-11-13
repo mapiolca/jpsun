@@ -1,6 +1,6 @@
 # JPSUN - Notes de versions (ChangeLog)
 
-## 1.26.0 (en préparation)
+## 1.26.0 (13/11/2026)
 
 - Ajout de l’avancement pondéré par les montants HT complets après remise dans l’historique natif des factures de situation : situations précédentes, courante et suivantes, lignes à avancement nul incluses et tiret lorsque la base nette est nulle.
 - Rétroportage temporaire de Dolibarr #43005 sous Dolibarr 20 à 25, avec calcul PHP natif et insertion JavaScript contrôlée. Fonctionne avec ou sans Banque ; une structure inattendue laisse le tableau intact et la présence de la méthode native désactive le rétroportage.
