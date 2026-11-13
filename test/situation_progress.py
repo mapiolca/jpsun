@@ -18,9 +18,10 @@ native.parent.mkdir(parents=True, exist_ok=True)
 code = """define('DOL_DOCUMENT_ROOT', $argv[1]); define('DOL_VERSION', $argv[3]);
 function isModEnabled($module) { return true; }
 require $argv[2];
+if (JpsunSituationProgress::isGlobalAvailable() !== ($argv[5] === '1')) { exit(2); }
 if (JpsunSituationProgress::isAvailable() !== ($argv[4] === '1')) { exit(1); }
 """
 for method, target, expected in [(False, '20.0.0', '1'), (True, '25.0.0', '0'), (False, '26.0.0-alpha', '0')]:
     native.write_text('<?php class Facture {' + ('public function getSituationProgress() {}' if method else '') + '}\n', encoding='utf-8', newline='\n')
-    subprocess.run(['php', '-r', code, str(root), str(module / 'class/jpsunsituationprogress.class.php'), target, expected], check=True)
+    subprocess.run(['php', '-r', code, str(root), str(module / 'class/jpsunsituationprogress.class.php'), target, expected, '0' if target.startswith('26.') else '1'], check=True)
 print('OK native API and version availability guards (simulated API presence)')
