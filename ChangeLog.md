@@ -1,5 +1,11 @@
 # JPSUN - Notes de versions (ChangeLog)
 
+## 1.26.1 (24/11/2026)
+
+- Modèle de facture JPSUN : espacement régulier des champs de l’en-tête et des références liées, y compris sur plusieurs lignes. Les libellés « Émetteur » et « Adressé à », les cadres et le début du tableau descendent ensemble quand l’en-tête s’allonge.
+- Le libellé du code comptable client utilise la traduction native de Dolibarr.
+- Le nouveau rendu s’applique à la génération et à la régénération avec le modèle JPSUN déjà sélectionné.
+
 ## 1.26.0 (13/11/2026)
 
 - Ajout de l’avancement pondéré par les montants HT complets après remise dans l’historique natif des factures de situation : situations précédentes, courante et suivantes, lignes à avancement nul incluses et tiret lorsque la base nette est nulle.
