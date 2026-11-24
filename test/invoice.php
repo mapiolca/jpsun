@@ -124,7 +124,7 @@ function discountRow($id, $line, $type) {
 
 $db = new InvoiceTestDatabase();
 $discovered = new pdf_jpsuninvoice($db);
-expect($discovered->name === 'jpsuninvoice', 'Native model discovery');
+expect($discovered->name === $langs->trans('JpsunInvoiceModelTitle') && $discovered->name !== 'JpsunInvoiceModelTitle', 'Translated model name on native discovery');
 expect($discovered->version === (version_compare(DOL_VERSION, '24.0.0', '>=') ? 'dolibarr' : 'disabled'), 'Unsupported model hidden during discovery');
 $model = (new ReflectionClass(InvoiceTestDocument::class))->newInstanceWithoutConstructor();
 $model->db = $db;
